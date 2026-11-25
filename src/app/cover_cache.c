@@ -30,6 +30,9 @@ void cover_cache_open(CoverCache *cache, const Library *library)
     cache->library = library;
     cache->available = false;
     clear_slots(cache);
+#ifdef ECHO_NO_COVERS
+    return;
+#endif
     if (!hal_file_open(&cache->file, COVER_CACHE_PATH)) {
         return;
     }
