@@ -391,7 +391,11 @@ static void save_settings(void)
 
 static bool history_on(void)
 {
+#ifdef ECHO_LITE
+    return false;
+#else
     return app.settings.settings.options[OPTION_LISTEN_HISTORY] == LISTEN_HISTORY_ON;
+#endif
 }
 
 static void follow_history(const PlayerStatus *status, uint32_t now_ms)
@@ -1027,6 +1031,9 @@ ECHO_STARTUP_CODE static void start_up(void)
     settings_store_load(&app.settings);
     adopt_face_theme();
     theme_store_start(app.settings.settings.options[OPTION_THEME]);
+#ifdef ECHO_LITE
+    theme_store_choose_builtin(app.settings.settings.options[OPTION_THEME]);
+#endif
     hal_power_confirm_start(app.settings.settings.options[OPTION_POWER_ON] == POWER_ON_HOLD);
     clock_store_start(&app.clock, &app.settings.settings, now_ms);
     app.history.clock = &app.clock.clock;

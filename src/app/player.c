@@ -127,9 +127,13 @@ static void load_chapters(Player *player, uint16_t track)
 
 static void note_spoken(Player *player, uint16_t track)
 {
+#ifdef ECHO_LITE
+    player->spoken = false;
+#else
     char path[PLAYER_PATH_CAPACITY];
     player->spoken =
         track_path(player, track, path, sizeof path) && spoken_kind_of(path) != SPOKEN_NONE;
+#endif
     load_chapters(player, track);
 }
 
@@ -149,8 +153,12 @@ static bool start_current(Player *player, uint32_t start_ms)
         become_idle(player);
         return false;
     }
+#ifdef ECHO_LITE
+    player->spoken = false;
+#else
     player->spoken = spoken_kind_of(path) != SPOKEN_NONE;
     load_chapters(player, track);
+#endif
     start_ms = resume_point(player, track, start_ms);
     player->track = track;
     player->has_track = true;

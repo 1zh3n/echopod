@@ -489,6 +489,7 @@ static void collect_favorites(BrowseScreen *browse)
     list_view_select(&browse->list, browse->list.selected, browse->now_ms);
 }
 
+#ifndef ECHO_LITE
 static ScreenAction toggle_favorite(void *context, int index)
 {
     BrowseScreen *browse = context;
@@ -508,6 +509,7 @@ static ScreenAction toggle_favorite(void *context, int index)
     }
     return screen_action_none();
 }
+#endif
 
 static const char *up_next_message(PlayerUpNextResult result, bool next)
 {
@@ -579,7 +581,11 @@ static ScreenAction hold_row(void *context, int index)
     if (browse->shelf != SPOKEN_NONE && item.kind == BROWSE_ITEM_FOLDER) {
         return open_child(browse, item);
     }
+#ifdef ECHO_LITE
+    return screen_action_none();
+#else
     return toggle_favorite(context, index);
+#endif
 }
 
 static ScreenAction handle_key(void *context, KeyEvent event, uint32_t now_ms)

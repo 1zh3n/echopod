@@ -398,8 +398,12 @@ ECHO_RESIDENT static const SettingChoice CHOICES[SETTINGS_CHOICE_COUNT] = {
 
 static int current_theme(const void *context)
 {
+#ifdef ECHO_LITE
+    return current_slot(context);
+#else
     int file = theme_store_current();
     return file != THEME_STORE_NONE ? THEME_COUNT + file : current_slot(context);
+#endif
 }
 
 static void choose_theme(void *context, int index)
@@ -407,9 +411,13 @@ static void choose_theme(void *context, int index)
     if (index < THEME_COUNT) {
         choose_slot(context, index);
         theme_store_choose_builtin(index);
+#ifndef ECHO_LITE
         return;
+#endif
     }
+#ifndef ECHO_LITE
     (void)theme_store_choose(index - THEME_COUNT);
+#endif
 }
 
 static const char *accent_name(int accent)
@@ -449,16 +457,24 @@ static ScreenAction open_theme_choice(SettingsEntry *entry)
 {
     SettingsScreens *screens = entry->owner;
     const char **options = theme_store_options();
+#ifdef ECHO_LITE
+    for (int theme = 0; options != NULL && theme < THEME_COUNT; theme++) {
+        options[theme] = i18n_text(THEME_OPTIONS[theme]);
+    }
+    int count = THEME_COUNT;
+#else
     int files = options != NULL ? theme_store_scan() : 0;
     for (int theme = 0; options != NULL && theme < THEME_COUNT + files; theme++) {
         options[theme] = theme < THEME_COUNT ? i18n_text(THEME_OPTIONS[theme])
                                              : theme_store_name(theme - THEME_COUNT);
     }
+    int count = THEME_COUNT + files;
+#endif
     ChoiceConfig config = {
         .title = i18n_text(entry->choice->title),
         .options = options,
         .option_ids = options != NULL ? NULL : entry->choice->options,
-        .option_count = THEME_COUNT + files,
+        .option_count = count,
         .current = current_theme,
         .choose = choose_theme,
         .context = entry,
@@ -497,9 +513,11 @@ static const char *choice_value(const void *context)
     const SettingsEntry *entry = context;
     int current = entry->choice->slot != 0 ? current_slot(entry)
                                            : entry->choice->current(&entry->owner->context);
+#ifndef ECHO_LITE
     if (entry->choice->slot - 1 == OPTION_THEME && theme_store_card()) {
         return theme_store_package()->name;
     }
+#endif
     if (entry->choice->slot - 1 == OPTION_ACCENT) {
         return default_theme_takes_accent(theme_store_package())
                    ? accent_name(current_accent(entry))
@@ -643,6 +661,14 @@ static bool choice_shown(const void *context)
     return entry->choice != &CHOICES[CHOICE_HIGHLIGHT] || default_theme_takes_highlight(package);
 }
 
+#ifdef ECHO_LITE
+static bool hidden_row(const void *context)
+{
+    (void)context;
+    return false;
+}
+#endif
+
 static MenuItem row_item(SettingsScreens *screens, int row)
 {
     if (row < SETTINGS_CHOICE_COUNT) {
@@ -675,6 +701,14 @@ static void fill_rows(SettingsScreens *screens, MenuItem *items, int first, int 
 {
     for (int index = 0; index < count; index++) {
         items[index] = row_item(screens, ROWS[first + index]);
+#ifdef ECHO_LITE
+        uint8_t choice = ROWS[first + index];
+        if (choice == CHOICE_HISTORY || choice == CHOICE_COVERS || choice == CHOICE_COVER_ORDER ||
+            choice == CHOICE_ARTIST_VIEW || choice == CHOICE_FOLDER_VIEW || choice == CHOICE_START) {
+            items[index].shown = hidden_row;
+            items[index].shown_context = NULL;
+        }
+#endif
     }
 }
 

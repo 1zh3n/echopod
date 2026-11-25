@@ -91,8 +91,14 @@ static bool list_root(FoldersScreen *folders, const MusicFolders *stored, const 
         }
         if (card && volume_is_internal_name(entry.name, length)) {
             internal = true;
+#ifdef ECHO_LITE
+        } else {
+            add_row(folders, stored, root, entry.name, first);
+#endif
+#ifndef ECHO_LITE
         } else if (!card || spoken_kind_of_name(entry.name, length) == SPOKEN_NONE) {
             add_row(folders, stored, root, entry.name, first);
+#endif
         }
     }
     hal_dir_close(&dir);

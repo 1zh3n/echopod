@@ -153,6 +153,7 @@ static void report(void *context, uint32_t files, uint32_t tracks)
     }
 }
 
+#ifndef ECHO_NO_COVERS
 static bool write_covers(void *context, uint32_t offset, const void *bytes, uint32_t length)
 {
     (void)context;
@@ -168,6 +169,7 @@ static void report_covers(void *context, uint32_t done, uint32_t total)
         rescan->progress.covers(done, total);
     }
 }
+#endif
 
 static uint32_t reserved_size_of(const char *path)
 {
@@ -195,6 +197,7 @@ static bool music_root_exists(void)
     return true;
 }
 
+#ifndef ECHO_NO_COVERS
 static ScanResult build_covers(const LibraryScanEntry *entry, const ScanJob *scan,
                                CoverStats *stats)
 {
@@ -232,6 +235,7 @@ static ScanResult build_covers(const LibraryScanEntry *entry, const ScanJob *sca
     hal_file_close(&files->library);
     return result;
 }
+#endif
 
 static void run_passes(const LibraryScanEntry *entry, const ScanJob *job, RescanOutcome *outcome)
 {
@@ -242,12 +246,14 @@ static void run_passes(const LibraryScanEntry *entry, const ScanJob *job, Rescan
     uint32_t since = hal_clock_microseconds();
     outcome->result = job->memory != NULL ? entry->scan(job, &outcome->stats) : SCAN_NO_SCRATCH;
     spend(TIME_TOTAL, since);
+#ifndef ECHO_NO_COVERS
     if (outcome->result == SCAN_OK) {
         pass = 1;
         since = hal_clock_microseconds();
         outcome->cover_result = build_covers(entry, job, &outcome->covers);
         spend(TIME_TOTAL, since);
     }
+#endif
     (void)hal_file_write(RESCAN_TIMES_PATH, spent, sizeof spent);
 }
 

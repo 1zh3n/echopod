@@ -42,6 +42,12 @@ add_library(echo_app STATIC
     screens/test_pattern_screen.c
 )
 target_include_directories(echo_app PUBLIC include PRIVATE .)
+if(ECHO_NO_COVERS)
+    target_compile_definitions(echo_app PRIVATE ECHO_NO_COVERS)
+endif()
+if(ECHO_LITE)
+    target_compile_definitions(echo_app PRIVATE ECHO_LITE)
+endif()
 if(CMAKE_CROSSCOMPILING)
     target_compile_definitions(echo_app PRIVATE ECHO_RESIDENT_TABLES ECHO_STARTUP_SECTIONS
         ECHO_EQ_FILES_HIDDEN)
