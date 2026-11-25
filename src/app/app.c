@@ -33,11 +33,15 @@
 #include "hal/system.h"
 #include "library_rescan.h"
 #include "library_store.h"
+#ifndef ECHO_LITE
 #include "listen_history.h"
+#endif
 #include "music_check.h"
 #include "player.h"
 #include "screens/charge_screen.h"
+#ifndef ECHO_LITE
 #include "scrobbler_log.h"
+#endif
 #include "settings/rocker.h"
 #include "settings_store.h"
 #include "theme_store.h"
@@ -137,7 +141,9 @@ typedef struct AppState {
     EqualizerStore equalizer;
     FavoritesStore favorites;
     SpokenStore spoken;
+#ifndef ECHO_LITE
     ListenHistory history;
+#endif
     ClockStore clock;
     bool usb_written;
     CoverCache covers;
@@ -389,13 +395,10 @@ static void save_settings(void)
     equalizer_store_save(&app.equalizer);
 }
 
+#ifndef ECHO_LITE
 static bool history_on(void)
 {
-#ifdef ECHO_LITE
-    return false;
-#else
     return app.settings.settings.options[OPTION_LISTEN_HISTORY] == LISTEN_HISTORY_ON;
-#endif
 }
 
 static void follow_history(const PlayerStatus *status, uint32_t now_ms)
@@ -406,10 +409,13 @@ static void follow_history(const PlayerStatus *status, uint32_t now_ms)
         listen_history_close(&app.history, now_ms);
     }
 }
+#endif
 
 static void save_session(void)
 {
+#ifndef ECHO_LITE
     listen_history_close(&app.history, hal_clock_milliseconds());
+#endif
     spoken_store_flush(&app.spoken, player_status(&app.player), hal_clock_milliseconds());
     player_save(&app.player);
     save_settings();
@@ -1036,7 +1042,9 @@ ECHO_STARTUP_CODE static void start_up(void)
 #endif
     hal_power_confirm_start(app.settings.settings.options[OPTION_POWER_ON] == POWER_ON_HOLD);
     clock_store_start(&app.clock, &app.settings.settings, now_ms);
+#ifndef ECHO_LITE
     app.history.clock = &app.clock.clock;
+#endif
     apply_language(app.settings.settings.language);
     apply_orientation();
     equalizer_store_load(&app.equalizer);
@@ -1139,7 +1147,9 @@ static void explain_refusals(uint32_t now_ms)
 
 static void run_rescan(void)
 {
+#ifndef ECHO_LITE
     listen_history_close(&app.history, hal_clock_milliseconds());
+#endif
     app_show_notice(i18n_text(STR_RESCAN_TITLE), i18n_text(STR_RESCAN_STARTING));
     RescanProgress progress = {show_rescan_progress, show_cover_progress};
     RescanOutcome outcome = library_rescan_run(progress);
@@ -1155,10 +1165,12 @@ static void run_rescan(void)
 
 void app_release_audio(void)
 {
+#ifndef ECHO_LITE
     if (history_on()) {
         listen_history_note_computer(&app.history, hal_clock_milliseconds());
         (void)scrobbler_log_write(&app.history, hal_system_version());
     }
+#endif
     spoken_store_flush(&app.spoken, player_status(&app.player), hal_clock_milliseconds());
     player_release_output(&app.player);
 }
@@ -1478,7 +1490,9 @@ void app_step(void)
         bluetooth_link_step(&app.bluetooth, &app.player, now_ms);
         PlayerStatus status = player_status(&app.player);
         spoken_store_follow(&app.spoken, status, now_ms);
+#ifndef ECHO_LITE
         follow_history(&status, now_ms);
+#endif
         explain_refusals(now_ms);
         update_power(now_ms);
     }
