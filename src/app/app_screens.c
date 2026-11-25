@@ -102,6 +102,7 @@ static Screen *browse_screen_for(BrowseEntry *entry)
     if (!entry->store->available) {
         return entry->unavailable;
     }
+#ifndef ECHO_LITE
     if (entry->flow != NULL && entry->query.kind != BROWSE_FOLDER) {
         return cover_flow_screen_open_all(entry->flow);
     }
@@ -112,6 +113,7 @@ static Screen *browse_screen_for(BrowseEntry *entry)
             return folders;
         }
     }
+#endif
     if (entry->favorites) {
         return browse_pool_open_favorites(entry->pool, 0);
     }
@@ -157,10 +159,12 @@ static MenuItem music_item(AppScreens *screens, const LibraryStore *store, int i
     };
 }
 
+#ifndef ECHO_LITE
 static Screen *open_group_flow(void *context, LibrarySection group, uint16_t subject, int level)
 {
     return cover_flow_screen_open_group(context, group, subject, level);
 }
+#endif
 
 static void build_music(AppScreens *screens, AppScreensContext context)
 {
@@ -173,10 +177,16 @@ static void build_music(AppScreens *screens, AppScreensContext context)
         .toast = context.toast,
         .spoken = context.spoken,
         .options = context.settings->settings.options,
+#ifdef ECHO_LITE
+        .open_flow = NULL,
+        .flow_context = NULL,
+#else
         .open_flow = open_group_flow,
         .flow_context = &screens->cover_flow,
+#endif
     };
     browse_pool_init(&screens->browse, browse);
+#ifndef ECHO_LITE
     CoverFlowConfig cover_flow = {
         .library = &context.store->library,
         .theme = context.stage_theme != NULL ? context.stage_theme : context.theme,
@@ -188,6 +198,7 @@ static void build_music(AppScreens *screens, AppScreensContext context)
         .options = context.settings->settings.options,
     };
     cover_flow_screen_init(&screens->cover_flow, cover_flow);
+#endif
     for (int index = 0; index < MUSIC_ITEM_COUNT; index++) {
         screens->music_items[index] = music_item(screens, context.store, index);
     }
