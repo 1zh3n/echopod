@@ -116,6 +116,79 @@ void icon_draw_bluetooth(Canvas *canvas, Rect area, Color color)
     }
 }
 
+static void icon_draw_folder(Canvas *canvas, Rect area, Color color)
+{
+    int width = area.width;
+    int height = area.height;
+    int border = width / 12 + 1;
+    int tab_width = width / 2;
+    int tab_height = height / 4;
+    canvas_fill_rect(canvas, (Rect){area.x + border, area.y + tab_height / 2, tab_width, tab_height},
+                     color);
+    canvas_fill_rect(canvas, (Rect){area.x, area.y + tab_height, width, height - tab_height}, color);
+    canvas_fill_rect(canvas,
+                     (Rect){area.x + border * 2, area.y + tab_height + border, width - border * 4,
+                            height - tab_height - border * 3},
+                     color);
+}
+
+static void icon_draw_list(Canvas *canvas, Rect area, Color color)
+{
+    int width = area.width;
+    int height = area.height;
+    int bullet = width / 8 > 2 ? width / 8 : 2;
+    int line = width - bullet * 3;
+    int rows[3] = {height / 4, height / 2, height * 3 / 4};
+    for (int index = 0; index < 3; index++) {
+        canvas_fill_rect(canvas, (Rect){area.x, area.y + rows[index] - bullet / 2, bullet, bullet},
+                         color);
+        canvas_fill_rect(canvas,
+                         (Rect){area.x + bullet * 2, area.y + rows[index] - bullet / 2, line, bullet},
+                         color);
+    }
+}
+
+static void icon_draw_playlist(Canvas *canvas, Rect area, Color color)
+{
+    int width = area.width;
+    int height = area.height;
+    int border = width / 14 + 1;
+    canvas_fill_rect(canvas, (Rect){area.x, area.y, width, border}, color);
+    canvas_fill_rect(canvas, (Rect){area.x, area.y + height - border, width, border}, color);
+    canvas_fill_rect(canvas, (Rect){area.x, area.y, border, height}, color);
+    canvas_fill_rect(canvas, (Rect){area.x + width - border, area.y, border, height}, color);
+    int line_start = area.x + border * 3;
+    int line_width = width / 2;
+    for (int index = 0; index < 3; index++) {
+        int y = area.y + height / 4 + index * height / 5;
+        canvas_fill_rect(canvas, (Rect){line_start, y, line_width, border}, color);
+    }
+    Rect play = {area.x + width * 2 / 3, area.y + height / 2 - height / 6, width / 5, height / 3};
+    draw_triangle(canvas, play, color, true);
+}
+
+static void icon_draw_now_playing(Canvas *canvas, Rect area, Color color)
+{
+    int size = area.width < area.height ? area.width : area.height;
+    Rect play = {area.x + (area.width - size) / 2, area.y + (area.height - size) / 2, size, size};
+    draw_triangle(canvas, play, color, true);
+}
+
+static void icon_draw_gear(Canvas *canvas, Rect area, Color color)
+{
+    int width = area.width;
+    int height = area.height;
+    int tooth = width / 5 > 2 ? width / 5 : 2;
+    int center = width / 2;
+    canvas_fill_rect(canvas, (Rect){area.x + center - tooth / 2, area.y, tooth, height}, color);
+    canvas_fill_rect(canvas, (Rect){area.x, area.y + center - tooth / 2, width, tooth}, color);
+    int diagonal = width / 3;
+    canvas_fill_rect(canvas,
+                     (Rect){area.x + diagonal, area.y + diagonal, width - diagonal * 2,
+                            height - diagonal * 2},
+                     color);
+}
+
 typedef void (*Shape)(Canvas *canvas, Rect area, Color color);
 
 static const Shape SHAPES[THEME_ICON_COUNT] = {
@@ -131,6 +204,11 @@ static const Shape SHAPES[THEME_ICON_COUNT] = {
     [THEME_ICON_STATUS_PAUSE_LARGE] = icon_draw_pause,
     [THEME_ICON_STATUS_BLUETOOTH_LARGE] = icon_draw_bluetooth,
     [THEME_ICON_STATUS_BOLT_LARGE] = icon_draw_bolt,
+    [THEME_ICON_HOME_MUSIC] = icon_draw_folder,
+    [THEME_ICON_HOME_AUDIOBOOKS] = icon_draw_list,
+    [THEME_ICON_HOME_PODCASTS] = icon_draw_playlist,
+    [THEME_ICON_HOME_NOW_PLAYING] = icon_draw_now_playing,
+    [THEME_ICON_HOME_SETTINGS] = icon_draw_gear,
 };
 
 static uint8_t mask_level(const IconMask *mask, int column, int row)

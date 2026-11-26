@@ -317,6 +317,10 @@ static void apply_orientation(void)
         default_theme_enlarge_status(&app.stage_theme);
     }
     wear_theme_file(&app.theme, &app.stage_theme);
+#ifdef ECHO_LITE
+    app.theme.metrics.header_height = 0;
+    app.stage_theme.metrics.header_height = 0;
+#endif
     hal_display_set_rotation(rotation_for(orientation));
     frame_diff_init(&app.frame_diff, row_hashes, app.theme.metrics.screen_height);
 }

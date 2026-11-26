@@ -282,10 +282,22 @@ _Static_assert(THEME_ICON_COUNT - THEME_ICON_HOME_MUSIC == HOME_ITEM_COUNT,
 #endif
 
 #ifdef ECHO_LITE
+static int32_t home_position;
+static int32_t home_target;
+
 static bool home_scene_update(void *context, uint32_t now_ms)
 {
-    (void)context;
+    AppScreens *screens = context;
     (void)now_ms;
+    home_target = screens->home.list.selected * 256;
+    int32_t delta = home_target - home_position;
+    if (delta != 0) {
+        int32_t step = delta / 3;
+        if (step == 0) {
+            step = delta > 0 ? 1 : -1;
+        }
+        home_position += step;
+    }
     return true;
 }
 
@@ -301,22 +313,27 @@ static bool home_scene_draw(void *context, Canvas *canvas, MenuScreen *menu)
     int height = theme->metrics.screen_height;
     canvas_fill_rect(canvas, (Rect){0, 0, width, height}, theme->colors->background);
     int count = menu->config.item_count;
-    int column = width / count;
+    int spacing = width / 5;
+    Rect box = {width / 2 - 34, 26, 68, 92};
+    box_draw(canvas, theme->colors, &theme->boxes->selection, box);
+    int active = -1;
     for (int index = 0; index < count; index++) {
-        int left = index * column;
-        bool active = index == menu->list.selected;
-        Rect box = {left + 4, 28, column - 8, 74};
-        if (active) {
-            box_draw(canvas, theme->colors, &theme->boxes->selection, box);
-        }
-        Rect icon_area = {left + (column - 24) / 2, 40, 24, 24};
-        Icon icon = {HOME_ICONS[index], icon_area,
-                     active ? theme->colors->selection_text : theme->colors->text};
+        int32_t relative = (int32_t)index * 256 - home_position;
+        int x = width / 2 + (int)(relative * spacing / 256);
+        bool selected = relative > -128 && relative < 128;
+        int size = selected ? 32 : 24;
+        int y = selected ? 38 : 46;
+        Icon icon = {HOME_ICONS[index], (Rect){x - size / 2, y, size, size},
+                     selected ? theme->colors->selection_text : theme->colors->text_secondary};
         icon_draw(canvas, theme, icon);
-        TextStyle style = {theme->fonts.small,
-                           active ? theme->colors->selection_text : theme->colors->text};
-        const char *text = menu->config.items[index].label;
-        Rect label_area = {left + 2, 70, column - 4, 24};
+        if (selected) {
+            active = index;
+        }
+    }
+    if (active >= 0) {
+        TextStyle style = {theme->fonts.body, theme->colors->selection_text};
+        const char *text = menu->config.items[active].label;
+        Rect label_area = {0, 116, width, 28};
         label_draw(canvas, style,
                    (Label){label_centered_area(style.font, label_area, text), text});
     }
@@ -333,6 +350,8 @@ static void build_home(AppScreens *screens, AppScreensContext context)
         app_screens_open_item(i18n_text(STR_MENU_NOW_PLAYING), &screens->now_playing.screen);
     screens->home_items[4] =
         app_screens_open_item(i18n_text(STR_MENU_SETTINGS), &screens->settings.menu.screen);
+    home_position = 0;
+    home_target = 0;
     screens->home_scene = (MenuScene){home_scene_update, home_scene_draw, screens, true};
     MenuConfig home = {.title = "EchoPod",
                        .items = screens->home_items,

@@ -9,6 +9,11 @@ enum {
 
 void header_draw(Canvas *canvas, const Theme *theme, const char *title)
 {
+#ifdef ECHO_LITE
+    (void)canvas;
+    (void)theme;
+    (void)title;
+#else
     Rect area = theme_header_area(theme);
     int inset = theme->metrics.header_inset > theme->metrics.padding ? theme->metrics.header_inset
                                                                      : theme->metrics.padding;
@@ -19,4 +24,5 @@ void header_draw(Canvas *canvas, const Theme *theme, const char *title)
     box_draw(canvas, theme->colors, &theme->boxes->header, area);
     Rect title_area = label_centered_area(style.font, title_bounds, title);
     label_draw(canvas, style, (Label){.area = title_area, .text = title});
+#endif
 }

@@ -22,6 +22,9 @@ add_library(echo_ui STATIC
     toast.c
 )
 target_include_directories(echo_ui PUBLIC include)
+if(ECHO_LITE)
+    target_compile_definitions(echo_ui PRIVATE ECHO_LITE)
+endif()
 target_link_libraries(echo_ui
     PUBLIC echo_core echo_gfx
     PRIVATE echo_options echo_compact echo_lto
