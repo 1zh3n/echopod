@@ -2,9 +2,22 @@
 
 This covers installing builds you made yourself. Release users should follow `docs/user-guide.md`. Before trying a build of your own, make sure you can recover the player (`docs/device-recovery.md`).
 
-## First install
+## 512 MB model (this fork)
 
-The first install goes through FiiO's own updater, as in the user guide: copy `HIFIEC90.IMG` (from `build/device/` or `build/release/`) to the top level of internal storage while FiiO's firmware runs, eject, unplug, take the microSD card out and restart. It has worked from FiiO 3.7.0 and 3.9.0 with the file copied from Windows.
+This fork includes the 512 MB (SD NAND) port and the Lite UI branch. The build output is still named `build/release/HIFIEC90.IMG`, but the 512 MB updater does **not** look for `HIFIECnn.IMG`. It opens `/ECHOMINI.IMG` first, then `/MINIV999.IMG` down to `/MINIV000.IMG`.
+
+- Build the Lite image with `ECHO_LITE=ON` and `ECHO_NO_COVERS=ON`, for example:
+  `cmake --preset release -DECHO_LITE=ON -DECHO_NO_COVERS=ON && cmake --build --preset release -j`.
+- For the first install from FiiO's firmware, copy the image to internal storage as `MINIV898.IMG` (or a higher number). For later EchoPod updates, use a free `MINIVnnn.IMG` number, or `/ECHOMINI.IMG`.
+- Check the file on the player: 5,242,884 bytes and the SHA-256 you built.
+- Eject both drives, then unplug. The updater runs after the USB session ends. On success it shows "Update installed" and waits for a key press; USB does not re-enumerate while it waits. Press any key, switch off with Power, then switch on.
+- Before going back to FiiO's firmware, delete every `MINIV*.IMG` and `ECHOMINI.IMG` from internal storage so the updater doesn't pick an already-installed EchoPod image.
+
+The 8 GB instructions below use `HIFIECnn.IMG` names and do not apply to the 512 MB model.
+
+## First install (8 GB model)
+
+On the 8 GB model, the first install goes through FiiO's own updater, as in the user guide: copy `HIFIEC90.IMG` (from `build/device/` or `build/release/`) to the top level of internal storage while FiiO's firmware runs, eject, unplug, take the microSD card out and restart. It has worked from FiiO 3.7.0 and 3.9.0 with the file copied from Windows.
 
 ### Fallback: a direct maskrom write
 
@@ -31,7 +44,7 @@ If FiiO's updater won't take the file, maskrom can write the image straight into
    Both read-backs must equal the first 512 bytes of `slot.bin`.
 4. `./rkdeveloptool rd`. The player starts EchoPod.
 
-## Later updates: EchoPod's own updater
+## Later updates (8 GB model): EchoPod's own updater
 
 1. Connect the player. It shows "Computer found", and two drives appear: internal storage ("ECHO MINI") and the SD card.
 2. Copy the new image to the top level of internal storage and check it:
@@ -40,7 +53,7 @@ If FiiO's updater won't take the file, maskrom can write the image straight into
 3. Eject both drives. The player shows "Checking HIFIEC90.IMG", then "Installing update" with a percentage, then "Update installed".
 4. Unplug, hold Power to switch off, then switch on. The new build starts.
 
-The updater takes the highest-numbered `HIFIECnn.IMG`. It checks the image's shape, rows, entry vector, header copy and CRC before writing, skips an image that is already installed, and writes slot 2 first, then slot 1, reading back every chunk. It also accepts FiiO's own 8 GB image (see "Going back to FiiO's firmware" in the user guide) and refuses the 512 MB model's.
+On the 8 GB model the updater takes the highest-numbered `HIFIECnn.IMG`. It checks the image's shape, rows, entry vector, header copy and CRC before writing, skips an image that is already installed, and writes slot 2 first, then slot 1, reading back every chunk. It also accepts FiiO's own 8 GB image (see "Going back to FiiO's firmware" in the user guide) and refuses the 512 MB model's. On the 512 MB model it uses the `MINIVnnn.IMG` / `ECHOMINI.IMG` path described above instead.
 
 ## What to check after an install
 

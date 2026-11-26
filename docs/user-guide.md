@@ -9,7 +9,7 @@ Read `docs/known-issues.md` before you install. EchoPod has been tested on one p
 ## Which players
 
 - **Echo Mini 8 GB: supported.** Its FiiO update file is called `HIFIECnn.IMG`.
-- **Echo Mini 512 MB: not supported.** Its FiiO update file is called `MINIVnnn.IMG`. Its firmware ignores EchoPod's file, and EchoPod refuses its firmware.
+- **Echo Mini 512 MB: supported by this personal fork, not by upstream 0.13.1.** Its FiiO update file is called `MINIVnnn.IMG`. This fork uses the SD NAND port and installs 512 MB builds from `MINIVnnn.IMG` / `ECHOMINI.IMG`; see `docs/device-install.md` for the exact steps. Upstream 0.13.1 refuses its firmware, and the stock 512 MB firmware ignores upstream EchoPod's file.
 
 Tested starting points: FiiO firmware 3.7.0, 3.9.0 and 4.0.0 (Settings → About on the player shows yours).
 

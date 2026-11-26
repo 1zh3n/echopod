@@ -2,6 +2,8 @@
 
 Replacement firmware for the Snowsky (FiiO) Echo Mini 8 GB music player. It has an iPod-style Cover Flow browser, a music library built on the player, album favorites, M3U playlists and an Up Next queue. It isn't made or supported by FiiO.
 
+> **Personal 512 MB / Lite fork:** this tree also carries the 512 MB (SD NAND) port and the `custom/lite-ui` light neo-brutalist UI. Build it with `ECHO_LITE=ON` and `ECHO_NO_COVERS=ON`. The release image is still named `build/release/HIFIEC90.IMG`, but the 512 MB updater only looks for `MINIVnnn.IMG` / `ECHOMINI.IMG`; see `docs/device-install.md` before copying it to the player.
+
 <p align="center">
   <a href="https://basilskywalk.github.io/echopod/"><img src="docs/images/theme-editor.gif" alt="The theme editor with the Aurora theme open: its colours change with one click, then Home, then the Capsule, Deck and Millennium themes on Now Playing"></a>
 </p>
