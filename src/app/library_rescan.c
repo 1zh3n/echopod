@@ -333,7 +333,7 @@ static const char *error_text(ScanResult result)
     case SCAN_NO_CODE:
         return i18n_text(STR_RESCAN_NO_CODE);
     case SCAN_RESTART_NEEDED:
-        return i18n_text(STR_RESCAN_RESTART_NEEDED);
+        return "Restart the player to finish the update";
     case SCAN_CARD_UNREADABLE:
         return i18n_text(STR_RESCAN_CARD_UNREADABLE);
     }

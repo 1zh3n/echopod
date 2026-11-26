@@ -84,8 +84,8 @@ static const UsbOverlayEntry *load_usb_code(void)
         return entry;
     }
     usb_power_down();
-    app_show_notice("USB",
-                    i18n_text(restart_pending ? STR_RESCAN_RESTART_NEEDED : STR_USB_NO_CODE));
+    app_show_notice("USB", restart_pending ? "Restart the player to finish the update"
+                                           : i18n_text(STR_USB_NO_CODE));
     board_wait_for_key();
     return NULL;
 }

@@ -1102,7 +1102,8 @@ ECHO_STARTUP_ENTRY const AppStartup APP_STARTUP = {.magic = APP_STARTUP_MAGIC, .
 static void refuse_to_start(void)
 {
     bool updated = hal_system_restart_pending();
-    app_show_notice("EchoPod", updated ? i18n_text(STR_RESCAN_RESTART_NEEDED) : START_CODE_MISSING);
+    app_show_notice("EchoPod",
+                    updated ? "Restart the player to finish the update" : START_CODE_MISSING);
     app.now_ms = hal_clock_milliseconds();
 }
 
