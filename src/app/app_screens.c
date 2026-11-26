@@ -119,9 +119,11 @@ static Screen *browse_screen_for(BrowseEntry *entry)
         return browse_pool_open_favorites(entry->pool, 0);
     }
 #endif
+#ifndef ECHO_LITE
     if (entry->shelf != SPOKEN_NONE) {
         return browse_pool_open_shelf(entry->pool, 0, entry->shelf);
     }
+#endif
     return browse_pool_open(entry->pool, 0, entry->query);
 }
 
@@ -177,7 +179,11 @@ static void build_music(AppScreens *screens, AppScreensContext context)
         .now_playing = &screens->now_playing.screen,
         .favorites = context.favorites,
         .toast = context.toast,
+#ifdef ECHO_LITE
+        .spoken = NULL,
+#else
         .spoken = context.spoken,
+#endif
         .options = context.settings->settings.options,
 #ifdef ECHO_LITE
         .open_flow = NULL,
@@ -234,11 +240,13 @@ static void build_settings(AppScreens *screens, AppScreensContext context)
     settings_screens_init(&screens->settings, settings, context.theme);
 }
 
+#ifndef ECHO_LITE
 static bool shelf_present(const void *context)
 {
     const BrowseEntry *entry = context;
     return entry->present;
 }
+#endif
 
 #ifdef ECHO_LITE
 static bool hidden_item(const void *context)
@@ -248,6 +256,7 @@ static bool hidden_item(const void *context)
 }
 #endif
 
+#ifndef ECHO_LITE
 static MenuItem shelf_item(AppScreens *screens, AppScreensContext context, SpokenKind shelf)
 {
     uint16_t folder = 0;
@@ -268,6 +277,7 @@ static MenuItem shelf_item(AppScreens *screens, AppScreensContext context, Spoke
         .shown = shelf_present,
         .shown_context = entry};
 }
+#endif
 
 _Static_assert(THEME_ICON_COUNT - THEME_ICON_HOME_MUSIC == HOME_ITEM_COUNT,
                "Home has an icon for each of its items");
@@ -302,13 +312,12 @@ static void build_home(AppScreens *screens, AppScreensContext context)
     const Theme *theme = context.theme;
     screens->home_items[0] =
         app_screens_open_item(i18n_text(STR_RESCAN_MUSIC_TITLE), &screens->music.screen);
+#ifdef ECHO_LITE
+    screens->home_items[1] = (MenuItem){.shown = hidden_item};
+    screens->home_items[2] = (MenuItem){.shown = hidden_item};
+#else
     screens->home_items[1] = shelf_item(screens, context, SPOKEN_AUDIOBOOK);
     screens->home_items[2] = shelf_item(screens, context, SPOKEN_PODCAST);
-#ifdef ECHO_LITE
-    screens->home_items[1].shown = hidden_item;
-    screens->home_items[1].shown_context = NULL;
-    screens->home_items[2].shown = hidden_item;
-    screens->home_items[2].shown_context = NULL;
 #endif
     screens->home_items[3] =
         app_screens_open_item(i18n_text(STR_MENU_SETTINGS), &screens->settings.menu.screen);

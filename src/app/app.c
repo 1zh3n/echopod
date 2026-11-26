@@ -144,7 +144,9 @@ typedef struct AppState {
 #ifndef ECHO_LITE
     FavoritesStore favorites;
 #endif
+#ifndef ECHO_LITE
     SpokenStore spoken;
+#endif
 #ifndef ECHO_LITE
     ListenHistory history;
 #endif
@@ -420,7 +422,9 @@ static void save_session(void)
 #ifndef ECHO_LITE
     listen_history_close(&app.history, hal_clock_milliseconds());
 #endif
+#ifndef ECHO_LITE
     spoken_store_flush(&app.spoken, player_status(&app.player), hal_clock_milliseconds());
+#endif
     player_save(&app.player);
     save_settings();
 }
@@ -941,8 +945,10 @@ static void start_playback(void)
 #ifndef ECHO_LITE
     favorites_store_load(&app.favorites, &app.library.library);
 #endif
+#ifndef ECHO_LITE
     spoken_store_load(&app.spoken, &app.library.library);
     player_set_resume(&app.player, spoken_store_resume(&app.spoken));
+#endif
     cover_cache_open(&app.covers, &app.library.library);
 }
 
@@ -972,7 +978,11 @@ static void start_screens(uint32_t now_ms)
         .stage_theme = &app.stage_theme,
         .store = &app.library,
         .player = &app.player,
+#ifdef ECHO_LITE
+        .spoken = NULL,
+#else
         .spoken = &app.spoken,
+#endif
         .settings = &app.settings,
 #ifdef ECHO_LITE
         .favorites = NULL,
@@ -1181,7 +1191,9 @@ void app_release_audio(void)
         (void)scrobbler_log_write(&app.history, hal_system_version());
     }
 #endif
+#ifndef ECHO_LITE
     spoken_store_flush(&app.spoken, player_status(&app.player), hal_clock_milliseconds());
+#endif
     player_release_output(&app.player);
 }
 
@@ -1498,9 +1510,9 @@ void app_step(void)
         clock_store_step(&app.clock, now_ms);
         player_update(&app.player, now_ms);
         bluetooth_link_step(&app.bluetooth, &app.player, now_ms);
+#ifndef ECHO_LITE
         PlayerStatus status = player_status(&app.player);
         spoken_store_follow(&app.spoken, status, now_ms);
-#ifndef ECHO_LITE
         follow_history(&status, now_ms);
 #endif
         explain_refusals(now_ms);

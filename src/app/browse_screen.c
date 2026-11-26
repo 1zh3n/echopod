@@ -144,6 +144,7 @@ static void mark_favorite(char *detail)
 }
 #endif
 
+#ifndef ECHO_LITE
 static void describe_spoken(const BrowseScreen *browse, BrowseItem item, char *detail)
 {
     const SpokenStore *spoken = browse->pool->config.spoken;
@@ -154,6 +155,7 @@ static void describe_spoken(const BrowseScreen *browse, BrowseItem item, char *d
         .shelf = browse->shelf, .item = item, .detail = detail, .capacity = BROWSE_DETAIL_CAPACITY};
     spoken_store_describe(spoken, row);
 }
+#endif
 
 static void load_row(BrowseScreen *browse, BrowseRows *rows, int row, int index)
 {
@@ -183,7 +185,9 @@ static void load_row(BrowseScreen *browse, BrowseRows *rows, int row, int index)
         mark_favorite(rows->details[row]);
     }
 #endif
+#ifndef ECHO_LITE
     describe_spoken(browse, item, rows->details[row]);
+#endif
 }
 
 typedef struct RowWindow {
@@ -415,6 +419,7 @@ static ScreenAction open_child(BrowseScreen *browse, BrowseItem item)
     return screen_action_push(next);
 }
 
+#ifndef ECHO_LITE
 static bool playing_folder(const BrowseScreen *browse, uint16_t folder)
 {
     LibraryTrack record;
@@ -448,6 +453,7 @@ static bool resumes_books(const BrowseScreen *browse, BrowseItem item)
     return browse->shelf == SPOKEN_AUDIOBOOK && browse->shelf_root &&
            item.kind == BROWSE_ITEM_FOLDER;
 }
+#endif
 
 static ScreenAction select_row(void *context, int index)
 {
@@ -462,9 +468,11 @@ static ScreenAction select_row(void *context, int index)
     if (item.kind == BROWSE_ITEM_TRACK) {
         return play_from(browse, index);
     }
+#ifndef ECHO_LITE
     if (resumes_books(browse, item)) {
         return resume_book(browse, item);
     }
+#endif
     return open_child(browse, item);
 }
 
@@ -744,6 +752,7 @@ Screen *browse_pool_open_favorites(BrowsePool *pool, int level)
 }
 #endif
 
+#ifndef ECHO_LITE
 static BrowseQuery shelf_query(const BrowsePool *pool, SpokenKind shelf, bool *found)
 {
     uint16_t folder = 0;
@@ -771,3 +780,4 @@ Screen *browse_pool_open_shelf(BrowsePool *pool, int level, SpokenKind shelf)
     browse->count = found ? browse->count : 0;
     return screen;
 }
+#endif
