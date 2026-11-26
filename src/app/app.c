@@ -52,6 +52,9 @@
 #include "ui/fade.h"
 #include "ui/header.h"
 #include "ui/label.h"
+#ifdef ECHO_LITE
+#include "ui/lite_icons.h"
+#endif
 #include "ui/marquee.h"
 #include "ui/message_screen.h"
 #include "ui/screen_stack.h"
@@ -710,12 +713,30 @@ static void update_screen(uint32_t now_ms)
 static void draw_fade(Canvas *canvas, const Fade *fade, const char *text)
 {
     const Theme *theme = current_theme();
+    uint8_t alpha = fade_alpha(fade, app.now_ms);
+#ifdef ECHO_LITE
+    Color background = theme->colors->background;
+    Color ink = color_blend(background, theme->colors->text, alpha);
+    Color panel = color_blend(background, theme->colors->header_background, alpha);
+    Rect card = {60, 40, 200, 90};
+    canvas_fill_rect(canvas, (Rect){card.x + 5, card.y + 5, card.width, card.height}, ink);
+    canvas_fill_rect(canvas, card, panel);
+    canvas_fill_rect(canvas, (Rect){card.x, card.y, card.width, 2}, ink);
+    canvas_fill_rect(canvas, (Rect){card.x, card.y + card.height - 2, card.width, 2}, ink);
+    canvas_fill_rect(canvas, (Rect){card.x, card.y, 2, card.height}, ink);
+    canvas_fill_rect(canvas, (Rect){card.x + card.width - 2, card.y, 2, card.height}, ink);
+    lite_icon_draw_scaled(canvas, &LITE_ICON_MUSIC_MENU, (Rect){140, 50, 40, 40}, ink);
+    TextStyle style = {.font = theme->fonts.title, .color = ink};
+    Rect line = {card.x, 96, card.width, 22};
+    label_draw(canvas, style,
+               (Label){.area = label_centered_area(style.font, line, text), .text = text});
+#else
     Rect screen = whole_screen();
-    Color color =
-        color_blend(theme->colors->background, theme->colors->text, fade_alpha(fade, app.now_ms));
+    Color color = color_blend(theme->colors->background, theme->colors->text, alpha);
     TextStyle style = {.font = theme->fonts.title, .color = color};
     label_draw(canvas, style,
                (Label){.area = label_centered_area(style.font, screen, text), .text = text});
+#endif
 }
 
 static bool draw_running_fade(Canvas *canvas)

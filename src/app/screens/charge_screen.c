@@ -79,6 +79,32 @@ void charge_screen_draw(Canvas *canvas, const Theme *theme, HalBattery battery)
     int width = theme->metrics.screen_width;
     int height = theme->metrics.screen_height;
     canvas_fill_rect(canvas, (Rect){0, 0, width, height}, theme->colors->background);
+#ifdef ECHO_LITE
+    Rect card = {60, 24, 200, 112};
+    canvas_fill_rect(canvas, (Rect){card.x + 5, card.y + 5, card.width, card.height},
+                     theme->colors->text);
+    canvas_fill_rect(canvas, card, theme->colors->header_background);
+    canvas_fill_rect(canvas, (Rect){card.x, card.y, card.width, 2}, theme->colors->text);
+    canvas_fill_rect(canvas, (Rect){card.x, card.y + card.height - 2, card.width, 2},
+                     theme->colors->text);
+    canvas_fill_rect(canvas, (Rect){card.x, card.y, 2, card.height}, theme->colors->text);
+    canvas_fill_rect(canvas, (Rect){card.x + card.width - 2, card.y, 2, card.height},
+                     theme->colors->text);
+    Rect body = {(width - BODY_WIDTH - NUB_WIDTH) / 2, 40, BODY_WIDTH, BODY_HEIGHT};
+    draw_battery(canvas, theme, body, battery);
+    char text[TEXT_CAPACITY];
+    charge_screen_text(battery, text, sizeof text);
+    Rect line = {card.x, 94, card.width, 22};
+    TextStyle style = {.font = theme->fonts.body, .color = theme->colors->text};
+    label_draw(canvas, style,
+               (Label){.area = label_centered_area(style.font, line, text), .text = text});
+    const char *hint_text = i18n_text(STR_CHARGE_HINT);
+    Rect hint = {0, height - HINT_BOTTOM - HINT_HEIGHT, width, HINT_HEIGHT};
+    TextStyle small = {.font = theme->fonts.small, .color = theme->colors->text_tertiary};
+    label_draw(
+        canvas, small,
+        (Label){.area = label_centered_area(small.font, hint, hint_text), .text = hint_text});
+#else
     int block = BODY_HEIGHT + TEXT_GAP + TEXT_HEIGHT;
     Rect body = {(width - BODY_WIDTH - NUB_WIDTH) / 2, (height - block) / 2, BODY_WIDTH,
                  BODY_HEIGHT};
@@ -95,4 +121,5 @@ void charge_screen_draw(Canvas *canvas, const Theme *theme, HalBattery battery)
     label_draw(
         canvas, small,
         (Label){.area = label_centered_area(small.font, hint, hint_text), .text = hint_text});
+#endif
 }

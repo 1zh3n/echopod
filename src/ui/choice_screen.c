@@ -3,6 +3,7 @@
 #include <stddef.h>
 
 #include "ui/header.h"
+#include "ui/lite_frame.h"
 #include "ui/list_navigation.h"
 
 static const char CHECK_MARK[] = "\xE2\x9C\x93";
@@ -57,10 +58,17 @@ static void update(void *context, uint32_t now_ms)
 
 static void draw(void *context, Canvas *canvas)
 {
-    const ChoiceScreen *choice = context;
+    ChoiceScreen *choice = context;
     const Theme *theme = choice->config.theme;
+#ifdef ECHO_LITE
+    Rect rows = lite_list_frame(canvas, theme, choice->config.title);
+    choice->list.visible_rows = 5;
+    list_view_draw_over(&choice->list, canvas, rows, choice->now_ms);
+    return;
+#else
     header_draw(canvas, theme, choice->config.title);
     list_view_draw(&choice->list, canvas, theme_content_area(theme), choice->now_ms);
+#endif
 }
 
 Screen *choice_screen_init(ChoiceScreen *choice, ChoiceConfig config)
