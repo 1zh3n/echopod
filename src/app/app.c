@@ -57,7 +57,6 @@
 #include "ui/icons.h"
 #include "ui/label.h"
 #ifdef ECHO_LITE
-#include "ui/lite_icons.h"
 #include "ui/lite_status.h"
 #endif
 #include "ui/marquee.h"
@@ -218,7 +217,11 @@ static const FadeTiming GOODBYE_TIMING = {.fade_ms = 600, .hold_ms = 400, .risin
 #ifndef ECHO_LITE
 static const char SPLASH_TEXT[] = "EchoPod";
 #endif
+#ifdef ECHO_LITE
+static const char GOODBYE_TEXT[] = "Bye";
+#else
 static const char GOODBYE_TEXT[] = "Goodbye";
+#endif
 static const char START_CODE_MISSING[] = "Start-up code missing: reinstall the update";
 static Color strip_pixels[HAL_DISPLAY_WIDTH * STRIP_HEIGHT];
 static uint32_t row_hashes[HAL_DISPLAY_LONG_SIDE];
@@ -750,9 +753,8 @@ static void draw_fade(Canvas *canvas, const Fade *fade, const char *text)
     canvas_fill_rect(canvas, (Rect){card.x, card.y + card.height - 2, card.width, 2}, ink);
     canvas_fill_rect(canvas, (Rect){card.x, card.y, 2, card.height}, ink);
     canvas_fill_rect(canvas, (Rect){card.x + card.width - 2, card.y, 2, card.height}, ink);
-    lite_icon_draw_scaled(canvas, &LITE_ICON_MUSIC_MENU, (Rect){140, 50, 40, 40}, ink);
     TextStyle style = {.font = theme->fonts.title, .color = ink};
-    Rect line = {card.x, 96, card.width, 22};
+    Rect line = {card.x, 74, card.width, 22};
     label_draw(canvas, style,
                (Label){.area = label_centered_area(style.font, line, text), .text = text});
 #else

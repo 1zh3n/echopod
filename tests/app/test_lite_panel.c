@@ -49,14 +49,19 @@ static void tap(Key key)
     step();
 }
 
-static void hold(Key key)
+static void hold_for(Key key, uint32_t duration_ms)
 {
     fake_hal_queue_transition(key, true, now_ms);
-    now_ms += 1000;
+    now_ms += duration_ms;
     step();
     fake_hal_queue_transition(key, false, now_ms);
     now_ms += 10;
     step();
+}
+
+static void hold(Key key)
+{
+    hold_for(key, 1000);
 }
 
 static bool title_is(const char *expected)
@@ -119,6 +124,13 @@ static void boot_screen_is_static(void)
     now_ms += 500;
     step();
     CHECK(fake_hal_pixel(160, 85) == first);
+}
+
+static void goodbye_screen_has_no_icon(void)
+{
+    start_app_with_library();
+    hold_for(KEY_POWER, 2000);
+    CHECK(fake_hal_pixel(160, 60) == COLOR_RGB(255, 255, 255));
 }
 
 static void charging_screen_has_green_shadow_and_no_text(void)
@@ -240,6 +252,7 @@ int main(void)
         TEST_CASE(lite_animation_streams_all_frames),
         TEST_CASE(boot_screen_draws_only_the_animation),
         TEST_CASE(boot_screen_is_static),
+        TEST_CASE(goodbye_screen_has_no_icon),
         TEST_CASE(charging_screen_has_green_shadow_and_no_text),
     };
     return test_run_all(cases, TEST_CASE_COUNT(cases));
