@@ -31,7 +31,9 @@ typedef struct MusicEntry {
 } MusicEntry;
 
 enum {
-    START_HOME_ONLY = -1
+    START_HOME_ONLY = -1,
+    HOME_ANIM_MS = 360,
+    HOME_STEPS = 256
 };
 
 static const int8_t START_ENTRIES[START_SCREEN_COUNT] = {
@@ -286,6 +288,8 @@ _Static_assert(THEME_ICON_COUNT - THEME_ICON_HOME_MUSIC == HOME_ITEM_COUNT,
 #ifdef ECHO_LITE
 static int32_t home_position;
 static int32_t home_target;
+static int32_t home_from;
+static uint32_t home_started_ms;
 
 static int32_t floor_division(int32_t value)
 {
@@ -310,31 +314,37 @@ static int32_t absolute32(int32_t value)
 static const IconMask *const HOME_MASKS[HOME_ITEM_COUNT] = {
     &LITE_ICON_MUSIC_MENU, &LITE_ICON_MUSIC_LIST, &LITE_ICON_SETTING_TWO};
 
+static int32_t home_eased(int32_t from, int32_t to, uint32_t elapsed)
+{
+    if (elapsed >= HOME_ANIM_MS) {
+        return to;
+    }
+    uint32_t progress = elapsed * HOME_STEPS / HOME_ANIM_MS;
+    uint32_t eased = progress * progress * (3 * HOME_STEPS - 2 * progress) /
+                     (HOME_STEPS * HOME_STEPS);
+    return from + (int32_t)(((int64_t)(to - from) * eased) / HOME_STEPS);
+}
+
 static bool home_scene_update(void *context, uint32_t now_ms)
 {
     (void)context;
-    (void)now_ms;
-    int32_t delta = home_target - home_position;
-    if (delta != 0) {
-        int32_t step = delta / 3;
-        if (step == 0) {
-            step = delta > 0 ? 1 : -1;
-        }
-        if (absolute32(step) > absolute32(delta)) {
-            step = delta;
-        }
-        home_position += step;
+    if (home_position != home_target) {
+        home_position = home_eased(home_from, home_target, now_ms - home_started_ms);
     }
     return true;
 }
 
-static void draw_home_card(Canvas *canvas, const Theme *theme, int x)
+static void draw_home_card_base(Canvas *canvas, const Theme *theme, int x)
 {
     Color ink = theme->colors->text;
-    Rect shadow = {x + 5, 29, 104, 104};
+    canvas_fill_rect(canvas, (Rect){x + 5, 29, 104, 104}, ink);
+    canvas_fill_rect(canvas, (Rect){x, 24, 104, 104}, theme->colors->header_background);
+}
+
+static void draw_home_card_border(Canvas *canvas, const Theme *theme, int x)
+{
+    Color ink = theme->colors->text;
     Rect card = {x, 24, 104, 104};
-    canvas_fill_rect(canvas, shadow, ink);
-    canvas_fill_rect(canvas, card, theme->colors->header_background);
     canvas_fill_rect(canvas, (Rect){card.x, card.y, card.width, 2}, ink);
     canvas_fill_rect(canvas, (Rect){card.x, card.y + card.height - 2, card.width, 2}, ink);
     canvas_fill_rect(canvas, (Rect){card.x, card.y, 2, card.height}, ink);
@@ -350,32 +360,23 @@ static bool home_scene_draw(void *context, Canvas *canvas, MenuScreen *menu)
     canvas_fill_rect(canvas, (Rect){0, 0, width, height}, theme->colors->background);
 
     int32_t base = floor_division(home_position);
-    int32_t selected_slot = base;
-    int32_t selected_distance = absolute32(base * 256 - home_position);
-    for (int32_t slot = base - 1; slot <= base + 2; slot++) {
-        if (positive_mod(slot, HOME_ITEM_COUNT) != screens->home.list.selected) {
-            continue;
-        }
-        int32_t distance = absolute32(slot * 256 - home_position);
-        if (distance < selected_distance) {
-            selected_distance = distance;
-            selected_slot = slot;
-        }
-    }
-
     int center = width / 2;
     int spacing = 96;
-    draw_home_card(canvas, theme, center + (int)((selected_slot * 256 - home_position) * spacing / 256) - 52);
+    draw_home_card_base(canvas, theme, center - 52);
 
     for (int32_t slot = base - 1; slot <= base + 2; slot++) {
         int item = (int)positive_mod(slot, HOME_ITEM_COUNT);
-        int x = center + (int)((slot * 256 - home_position) * spacing / 256);
-        bool selected = slot == selected_slot;
-        int size = selected ? 64 : 40;
-        int y = selected ? 44 : 65;
+        int32_t offset = slot * HOME_STEPS - home_position;
+        uint32_t distance = (uint32_t)absolute32(offset);
+        uint32_t closeness = distance > HOME_STEPS ? HOME_STEPS : distance;
+        int size = 64 - (int)(closeness * 24 / HOME_STEPS);
+        int y = 44 + (int)(closeness * 21 / HOME_STEPS);
+        int x = center + (int)(offset * spacing / HOME_STEPS);
+        bool selected = item == screens->home.list.selected;
         Color color = selected ? theme->colors->selection_background : theme->colors->text_secondary;
         lite_icon_draw_scaled(canvas, HOME_MASKS[item], (Rect){x - size / 2, y, size, size}, color);
     }
+    draw_home_card_border(canvas, theme, center - 52);
 
     Color accent = theme->colors->selection_background;
     static const uint8_t bars[] = {9, 14, 11, 17};
@@ -393,7 +394,9 @@ bool app_screens_home_key(AppScreens *screens, KeyEvent event, uint32_t now_ms)
         return false;
     }
     int step = navigation.intent == NAVIGATION_NEXT ? 1 : -1;
-    home_target += step * 256;
+    home_target += step * HOME_STEPS;
+    home_from = home_position;
+    home_started_ms = now_ms;
     list_view_move(&screens->home.list, step, true, now_ms);
     return true;
 }
@@ -407,6 +410,8 @@ static void build_home(AppScreens *screens, AppScreensContext context)
         app_screens_open_item(i18n_text(STR_MENU_SETTINGS), &screens->settings.menu.screen);
     home_position = 0;
     home_target = 0;
+    home_from = 0;
+    home_started_ms = 0;
     screens->home_scene = (MenuScene){home_scene_update, home_scene_draw, screens, true};
     MenuConfig home = {.title = "EchoPod",
                        .items = screens->home_items,
