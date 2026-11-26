@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Generate 4-bit alpha masks for the Lite icon family.
 
 The masks use the firmware pack order: even x in the high nibble,

@@ -1,5 +1,7 @@
 #include "settings_scene.h"
 
+#ifdef ECHO_LITE
+
 #include <stddef.h>
 
 #include "gfx/text.h"
@@ -104,6 +106,16 @@ static bool settings_scene_draw(void *context, Canvas *canvas, MenuScreen *menu)
 
 MenuScene *settings_scene(void)
 {
-    static MenuScene scene = {settings_scene_update, settings_scene_draw, NULL, true};
+    static MenuScene scene;
+    scene.update = settings_scene_update;
+    scene.draw = settings_scene_draw;
+    scene.context = NULL;
+    scene.on = true;
     return &scene;
 }
+
+#else
+
+typedef int SettingsSceneTranslationUnit;
+
+#endif
