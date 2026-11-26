@@ -4,6 +4,49 @@
 
 #include "core/resident.h"
 
+#ifdef ECHO_LITE
+ECHO_RESIDENT const ThemeBoxes THEME_STANDARD_BOXES = {
+    .selection = {.fill_top = THEME_COLOR_SELECTION_BACKGROUND,
+                  .fill_bottom = THEME_COLOR_SELECTION_BACKGROUND,
+                  .ink = THEME_COLOR_SELECTION_TEXT},
+    .selection_flat = {.fill_top = THEME_COLOR_SELECTION_BACKGROUND,
+                       .fill_bottom = THEME_COLOR_SELECTION_BACKGROUND,
+                       .ink = THEME_COLOR_SELECTION_TEXT},
+    .selection_outline = {.fill_top = THEME_COLOR_BACKGROUND,
+                          .fill_bottom = THEME_COLOR_BACKGROUND,
+                          .border = THEME_COLOR_SELECTION_BACKGROUND,
+                          .ink = THEME_COLOR_SELECTION_BACKGROUND,
+                          .border_width = 2,
+                          .border_edges = BOX_EDGE_ALL,
+                          .inset_across = 1,
+                          .inset_down = 1},
+    .header = {.fill_top = THEME_COLOR_HEADER_TOP,
+               .fill_bottom = THEME_COLOR_HEADER_BACKGROUND,
+               .border = THEME_COLOR_DIVIDER,
+               .ink = THEME_COLOR_HEADER_TEXT,
+               .border_width = 1,
+               .border_edges = BOX_EDGE_BOTTOM},
+    .toast = {.fill_top = THEME_COLOR_HEADER_BACKGROUND,
+              .fill_bottom = THEME_COLOR_HEADER_BACKGROUND,
+              .border = THEME_COLOR_TEXT,
+              .ink = THEME_COLOR_HEADER_TEXT,
+              .border_width = 2,
+              .border_edges = BOX_EDGE_ALL},
+    .section = {.fill_top = THEME_COLOR_HEADER_BACKGROUND,
+                .fill_bottom = THEME_COLOR_HEADER_BACKGROUND,
+                .border = THEME_COLOR_TEXT,
+                .ink = THEME_COLOR_HEADER_TEXT,
+                .border_width = 2,
+                .border_edges = BOX_EDGE_ALL},
+    .scrollbar_thumb = {.fill_top = THEME_COLOR_SCROLLBAR_THUMB,
+                        .fill_bottom = THEME_COLOR_SCROLLBAR_THUMB},
+    .progress_track = {.fill_top = THEME_COLOR_DIVIDER, .fill_bottom = THEME_COLOR_DIVIDER},
+    .progress_fill = {.fill_top = THEME_COLOR_SELECTION_BACKGROUND,
+                      .fill_bottom = THEME_COLOR_SELECTION_BACKGROUND},
+    .progress_active = {.fill_top = THEME_COLOR_SELECTION_BACKGROUND,
+                        .fill_bottom = THEME_COLOR_SELECTION_BACKGROUND},
+};
+#else
 ECHO_RESIDENT const ThemeBoxes THEME_STANDARD_BOXES = {
     .selection = {.fill_top = THEME_COLOR_SELECTION_TOP,
                   .fill_bottom = THEME_COLOR_SELECTION_BACKGROUND,
@@ -46,6 +89,7 @@ ECHO_RESIDENT const ThemeBoxes THEME_STANDARD_BOXES = {
     .progress_active = {.fill_top = THEME_COLOR_SELECTION_BACKGROUND,
                         .fill_bottom = THEME_COLOR_SELECTION_BACKGROUND},
 };
+#endif
 
 Color theme_color(const ThemeColors *colors, uint8_t id)
 {

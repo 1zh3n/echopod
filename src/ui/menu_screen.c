@@ -3,6 +3,7 @@
 #include <stddef.h>
 
 #include "ui/header.h"
+#include "ui/label.h"
 #include "ui/list_navigation.h"
 
 static bool is_shown(const MenuItem *item)
@@ -75,6 +76,7 @@ static bool panel_below(const MenuScreen *menu)
     return panel_shown(menu) && theme_is_portrait(menu->config.theme);
 }
 
+#ifndef ECHO_LITE
 static int rows_above_panel(const MenuScreen *menu)
 {
     const Theme *theme = menu->config.theme;
@@ -84,12 +86,19 @@ static int rows_above_panel(const MenuScreen *menu)
     int rows = count < room ? count : room;
     return rows > 0 ? rows : 1;
 }
+#endif
 
 static void fit_list(MenuScreen *menu)
 {
+#ifdef ECHO_LITE
+    if (!scene_on(menu)) {
+        menu->list.visible_rows = 5;
+    }
+#else
     if (!scene_on(menu)) {
         menu->list.visible_rows = panel_below(menu) ? rows_above_panel(menu) : 0;
     }
+#endif
 }
 
 static ScreenAction handle_key(void *context, KeyEvent event, uint32_t now_ms)
@@ -122,6 +131,30 @@ static void update(void *context, uint32_t now_ms)
     }
 }
 
+#ifdef ECHO_LITE
+static void draw_lite_menu(MenuScreen *menu, Canvas *canvas)
+{
+    const Theme *theme = menu->config.theme;
+    const ThemeColors *colors = theme->colors;
+    Rect content = theme_content_area(theme);
+    canvas_fill_rect(canvas, content, colors->background);
+    TextStyle title = {.font = theme->fonts.title, .color = colors->text};
+    label_draw(canvas, title,
+               (Label){.area = {16, 8, content.width - 32, 20}, .text = menu->config.title});
+    canvas_fill_rect(canvas, (Rect){16, 25, content.width - 32, 2}, colors->text);
+    canvas_fill_rect(canvas, (Rect){12, 32, content.width - 16, 134}, colors->text);
+    Rect card = {8, 28, content.width - 16, 134};
+    canvas_fill_rect(canvas, card, colors->header_background);
+    canvas_fill_rect(canvas, (Rect){card.x, card.y, card.width, 2}, colors->text);
+    canvas_fill_rect(canvas, (Rect){card.x, card.y + card.height - 2, card.width, 2}, colors->text);
+    canvas_fill_rect(canvas, (Rect){card.x, card.y, 2, card.height}, colors->text);
+    canvas_fill_rect(canvas, (Rect){card.x + card.width - 2, card.y, 2, card.height}, colors->text);
+    Rect rows = {12, 30, card.width - 8, 130};
+    menu->list.visible_rows = 5;
+    list_view_draw_over(&menu->list, canvas, rows, menu->now_ms);
+}
+#endif
+
 static void draw(void *context, Canvas *canvas)
 {
     MenuScreen *menu = context;
@@ -129,6 +162,10 @@ static void draw(void *context, Canvas *canvas)
     if (scene_on(menu) && scene->draw(scene->context, canvas, menu)) {
         return;
     }
+#ifdef ECHO_LITE
+    draw_lite_menu(menu, canvas);
+    return;
+#endif
     const Theme *theme = menu->config.theme;
     const MenuPanel *panel = &menu->config.panel;
     Rect content = theme_content_area(theme);

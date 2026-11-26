@@ -9,6 +9,9 @@ extern const ThemeColors DEFAULT_THEME_DARK_COLORS;
 extern const Theme DEFAULT_THEME;
 
 Theme default_theme_for(bool portrait);
+#ifdef ECHO_LITE
+void lite_theme_force(Theme *theme);
+#endif
 
 typedef struct ThemeChoice {
     int accent;

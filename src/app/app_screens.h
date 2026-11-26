@@ -27,7 +27,7 @@
 
 enum {
 #ifdef ECHO_LITE
-    HOME_ITEM_COUNT = 5,
+    HOME_ITEM_COUNT = 3,
 #else
     HOME_ITEM_COUNT = 6,
 #endif
@@ -112,3 +112,6 @@ Screen *app_screens_build_menu(MenuScreen *menu, const char *title, const MenuIt
                                int count, const Theme *theme);
 void diagnostics_menu_build(AppScreens *screens, AppOptions *options, const Theme *theme);
 int app_screens_start_path(AppScreens *screens, StartScreen start, Screen **path);
+#ifdef ECHO_LITE
+bool app_screens_home_key(AppScreens *screens, KeyEvent event, uint32_t now_ms);
+#endif

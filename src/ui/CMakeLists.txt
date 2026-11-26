@@ -7,6 +7,7 @@ add_library(echo_ui STATIC
     slide.c
     header.c
     icons.c
+    lite_icons.c
     label.c
     list_navigation.c
     list_view.c

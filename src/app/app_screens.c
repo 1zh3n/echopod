@@ -14,6 +14,8 @@
 #include "ui/box.h"
 #include "ui/icons.h"
 #include "ui/label.h"
+#include "ui/lite_icons.h"
+#include "ui/navigation.h"
 
 typedef enum MusicSource {
     MUSIC_COVER_FLOW,
@@ -285,70 +287,123 @@ _Static_assert(THEME_ICON_COUNT - THEME_ICON_HOME_MUSIC == HOME_ITEM_COUNT,
 static int32_t home_position;
 static int32_t home_target;
 
+static int32_t floor_division(int32_t value)
+{
+    int32_t quotient = value / 256;
+    if (value % 256 != 0 && value < 0) {
+        quotient--;
+    }
+    return quotient;
+}
+
+static int32_t positive_mod(int32_t value, int32_t modulus)
+{
+    int32_t result = value % modulus;
+    return result < 0 ? result + modulus : result;
+}
+
+static int32_t absolute32(int32_t value)
+{
+    return value < 0 ? -value : value;
+}
+
+static const IconMask *const HOME_MASKS[HOME_ITEM_COUNT] = {
+    &LITE_ICON_MUSIC_MENU, &LITE_ICON_MUSIC_LIST, &LITE_ICON_SETTING_TWO};
+
 static bool home_scene_update(void *context, uint32_t now_ms)
 {
-    AppScreens *screens = context;
+    (void)context;
     (void)now_ms;
-    home_target = screens->home.list.selected * 256;
     int32_t delta = home_target - home_position;
     if (delta != 0) {
         int32_t step = delta / 3;
         if (step == 0) {
             step = delta > 0 ? 1 : -1;
         }
+        if (absolute32(step) > absolute32(delta)) {
+            step = delta;
+        }
         home_position += step;
     }
     return true;
 }
 
-static const ThemeIconId HOME_ICONS[HOME_ITEM_COUNT] = {
-    THEME_ICON_HOME_MUSIC, THEME_ICON_HOME_AUDIOBOOKS, THEME_ICON_HOME_PODCASTS,
-    THEME_ICON_HOME_NOW_PLAYING, THEME_ICON_HOME_SETTINGS};
+static void draw_home_card(Canvas *canvas, const Theme *theme, int x)
+{
+    Color ink = theme->colors->text;
+    Rect shadow = {x + 5, 29, 104, 104};
+    Rect card = {x, 24, 104, 104};
+    canvas_fill_rect(canvas, shadow, ink);
+    canvas_fill_rect(canvas, card, theme->colors->header_background);
+    canvas_fill_rect(canvas, (Rect){card.x, card.y, card.width, 2}, ink);
+    canvas_fill_rect(canvas, (Rect){card.x, card.y + card.height - 2, card.width, 2}, ink);
+    canvas_fill_rect(canvas, (Rect){card.x, card.y, 2, card.height}, ink);
+    canvas_fill_rect(canvas, (Rect){card.x + card.width - 2, card.y, 2, card.height}, ink);
+}
 
 static bool home_scene_draw(void *context, Canvas *canvas, MenuScreen *menu)
 {
-    (void)context;
+    AppScreens *screens = context;
     const Theme *theme = menu->config.theme;
     int width = theme->metrics.screen_width;
     int height = theme->metrics.screen_height;
     canvas_fill_rect(canvas, (Rect){0, 0, width, height}, theme->colors->background);
-    int count = menu->config.item_count;
-    int spacing = width / 5;
-    Rect box = {width / 2 - 34, 26, 68, 92};
-    box_draw(canvas, theme->colors, &theme->boxes->selection, box);
-    int active = -1;
-    for (int index = 0; index < count; index++) {
-        int32_t relative = (int32_t)index * 256 - home_position;
-        int x = width / 2 + (int)(relative * spacing / 256);
-        bool selected = relative > -128 && relative < 128;
-        int size = selected ? 32 : 24;
-        int y = selected ? 38 : 46;
-        Icon icon = {HOME_ICONS[index], (Rect){x - size / 2, y, size, size},
-                     selected ? theme->colors->selection_text : theme->colors->text_secondary};
-        icon_draw(canvas, theme, icon);
-        if (selected) {
-            active = index;
+
+    int32_t base = floor_division(home_position);
+    int32_t selected_slot = base;
+    int32_t selected_distance = absolute32(base * 256 - home_position);
+    for (int32_t slot = base - 1; slot <= base + 2; slot++) {
+        if (positive_mod(slot, HOME_ITEM_COUNT) != screens->home.list.selected) {
+            continue;
+        }
+        int32_t distance = absolute32(slot * 256 - home_position);
+        if (distance < selected_distance) {
+            selected_distance = distance;
+            selected_slot = slot;
         }
     }
-    if (active >= 0) {
-        TextStyle style = {theme->fonts.body, theme->colors->selection_text};
-        const char *text = menu->config.items[active].label;
-        Rect label_area = {0, 116, width, 28};
-        label_draw(canvas, style,
-                   (Label){label_centered_area(style.font, label_area, text), text});
+
+    int center = width / 2;
+    int spacing = 96;
+    draw_home_card(canvas, theme, center + (int)((selected_slot * 256 - home_position) * spacing / 256) - 52);
+
+    for (int32_t slot = base - 1; slot <= base + 2; slot++) {
+        int item = (int)positive_mod(slot, HOME_ITEM_COUNT);
+        int x = center + (int)((slot * 256 - home_position) * spacing / 256);
+        bool selected = slot == selected_slot;
+        int size = selected ? 64 : 40;
+        int y = selected ? 44 : 65;
+        Color color = selected ? theme->colors->selection_background : theme->colors->text_secondary;
+        lite_icon_draw_scaled(canvas, HOME_MASKS[item], (Rect){x - size / 2, y, size, size}, color);
     }
+
+    Color accent = theme->colors->selection_background;
+    static const uint8_t bars[] = {9, 14, 11, 17};
+    for (int index = 0; index < 4; index++) {
+        canvas_fill_rect(canvas,
+                         (Rect){284 + index * 6, 160 - bars[index], 4, bars[index]}, accent);
+    }
+    return true;
+}
+
+bool app_screens_home_key(AppScreens *screens, KeyEvent event, uint32_t now_ms)
+{
+    Navigation navigation = navigation_from_key(event);
+    if (navigation.intent != NAVIGATION_NEXT && navigation.intent != NAVIGATION_PREVIOUS) {
+        return false;
+    }
+    int step = navigation.intent == NAVIGATION_NEXT ? 1 : -1;
+    home_target += step * 256;
+    list_view_move(&screens->home.list, step, true, now_ms);
     return true;
 }
 
 static void build_home(AppScreens *screens, AppScreensContext context)
 {
     const Theme *theme = context.theme;
-    screens->home_items[0] = music_item(screens, context.store, 5);
-    screens->home_items[1] = music_item(screens, context.store, 6);
-    screens->home_items[2] = music_item(screens, context.store, 7);
-    screens->home_items[3] =
-        app_screens_open_item(i18n_text(STR_MENU_NOW_PLAYING), &screens->now_playing.screen);
-    screens->home_items[4] =
+    screens->home_items[0] = music_item(screens, context.store, 6);
+    screens->home_items[1] = music_item(screens, context.store, 7);
+    screens->home_items[2] =
         app_screens_open_item(i18n_text(STR_MENU_SETTINGS), &screens->settings.menu.screen);
     home_position = 0;
     home_target = 0;

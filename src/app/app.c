@@ -318,8 +318,8 @@ static void apply_orientation(void)
     }
     wear_theme_file(&app.theme, &app.stage_theme);
 #ifdef ECHO_LITE
-    app.theme.metrics.header_height = 0;
-    app.stage_theme.metrics.header_height = 0;
+    lite_theme_force(&app.theme);
+    lite_theme_force(&app.stage_theme);
 #endif
     hal_display_set_rotation(rotation_for(orientation));
     frame_diff_init(&app.frame_diff, row_hashes, app.theme.metrics.screen_height);
@@ -568,6 +568,12 @@ static bool slide_running(void)
 static void dispatch_to_screen(KeyEvent event, uint32_t now_ms)
 {
     Screen *screen = top_screen();
+#ifdef ECHO_LITE
+    if (screen == &app.screens.home.screen &&
+        app_screens_home_key(&app.screens, event, now_ms)) {
+        return;
+    }
+#endif
     int depth_before = screen_stack_depth(&app.stack);
     ScreenAction action = opens_now_playing(event) ? now_playing_action()
                           : opens_settings(event)
@@ -780,17 +786,7 @@ static void draw_frame(void *context, Canvas *canvas)
     } else {
         screen->draw(screen->context, canvas);
     }
-#ifdef ECHO_LITE
-    if (!screen->full_screen && state->status_bar.battery_known &&
-        state->status_bar.battery_percent < 20) {
-        StatusBarState low = state->status_bar;
-        low.playback = STATUS_PLAYBACK_NONE;
-        low.bluetooth = STATUS_BLUETOOTH_OFF;
-        low.clock = NULL;
-        Theme dressed = dressed_theme(chrome_screen(screen));
-        status_bar_draw(canvas, &dressed, low);
-    }
-#else
+#ifndef ECHO_LITE
     if (!screen->full_screen) {
         Theme dressed = dressed_theme(chrome_screen(screen));
         status_bar_draw(canvas, &dressed, state->status_bar);

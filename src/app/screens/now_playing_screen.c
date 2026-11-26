@@ -49,7 +49,11 @@ enum {
     PORTRAIT_PROGRESS_GAP = 3,
     LYRICS_TOP = 49,
     LYRICS_ROWS = 5,
+#ifdef ECHO_LITE
+    LYRICS_ROW_HEIGHT = 15,
+#else
     LYRICS_ROW_HEIGHT = 19,
+#endif
     EXTENSION_ROOM = 5,
     TIMES_GAP = TIMES_TOP - PROGRESS_TOP - PROGRESS_HEIGHT,
     FACE_STREAM_CAPACITY = 24,
@@ -556,6 +560,7 @@ static bool current_cover(const NowPlayingScreen *now_playing, Image *image)
            cover_cache_full(covers, now_playing->album_index, image) == COVER_LOADED;
 }
 
+#ifndef ECHO_LITE
 static Rect row_of(Rect column, int top, int height)
 {
     return (Rect){column.x, top, column.width, height};
@@ -611,7 +616,26 @@ static void landscape_layout(const NowPlayingScreen *now_playing, Layout *layout
     layout->boxes[THEME_LAYOUT_LYRICS] =
         row_of(column, LYRICS_TOP, LYRICS_ROWS * LYRICS_ROW_HEIGHT);
 }
+#endif
 
+#ifdef ECHO_LITE
+static void lite_layout(Layout *layout)
+{
+    layout->boxes[THEME_LAYOUT_TITLE] = (Rect){16, 8, 200, 22};
+    layout->boxes[THEME_LAYOUT_ARTIST] = (Rect){16, 32, 288, 18};
+    layout->boxes[THEME_LAYOUT_ALBUM] = (Rect){16, 46, 288, 18};
+    layout->boxes[THEME_LAYOUT_FORMAT] = (Rect){216, 8, 88, 18};
+    layout->boxes[THEME_LAYOUT_LYRICS] = (Rect){16, 62, 288, 75};
+    layout->boxes[THEME_LAYOUT_PROGRESS] = (Rect){16, 144, 288, 3};
+    layout->boxes[THEME_LAYOUT_TIMES] = (Rect){16, 150, 288, 18};
+    layout->boxes[THEME_LAYOUT_COVER] = (Rect){0, 0, 0, 0};
+    layout->boxes[THEME_LAYOUT_DETAIL] = (Rect){0, 0, 0, 0};
+    layout->boxes[THEME_LAYOUT_MODES] = (Rect){0, 0, 0, 0};
+    layout->aligns[THEME_LAYOUT_FORMAT] = THEME_ALIGN_RIGHT;
+}
+#endif
+
+#ifndef ECHO_LITE
 static void portrait_layout(const NowPlayingScreen *now_playing, Layout *layout)
 {
     const Theme *theme = now_playing->config.theme;
@@ -650,17 +674,23 @@ static void wear_layout(const ThemeLayout *worn, Layout *layout)
         }
     }
 }
+#endif
 
 static void layout_of(const NowPlayingScreen *now_playing, Layout *layout)
 {
     const Theme *theme = now_playing->config.theme;
     *layout = (Layout){.lyrics = lyrics_shown(now_playing)};
+#ifdef ECHO_LITE
+    (void)theme;
+    lite_layout(layout);
+#else
     if (theme_is_portrait(theme)) {
         portrait_layout(now_playing, layout);
     } else {
         landscape_layout(now_playing, layout);
     }
     wear_layout(theme->layout, layout);
+#endif
 }
 
 void now_playing_builtin_layout(const NowPlayingScreen *now_playing, ThemeLayout *out)
@@ -753,13 +783,24 @@ static void draw_lyrics(const NowPlayingScreen *now_playing, Canvas *canvas, con
         Label label = {{area.x, area.y + row * LYRICS_ROW_HEIGHT, area.width, LYRICS_ROW_HEIGHT},
                        lyrics_line(&lyrics->lyrics, index)};
         if (synced && index == lyrics->current) {
+#ifdef ECHO_LITE
+            TextStyle style = {.font = theme->fonts.small,
+                               .color = theme->colors->selection_background};
+#else
             TextStyle style = {.font = theme->fonts.title, .color = theme->colors->text};
+#endif
             draw_moving_line(now_playing, canvas, (Line){label, style, align}, lyrics->current_ms);
             continue;
         }
+#ifdef ECHO_LITE
+        TextStyle style = {.font = theme->fonts.small,
+                           .color = synced ? theme->colors->text_tertiary
+                                           : theme->colors->text_secondary};
+#else
         TextStyle style = {.font = theme->fonts.body,
                            .color = synced ? theme->colors->text_tertiary
                                            : theme->colors->text_secondary};
+#endif
         label_draw(canvas, style, aligned(align, style.font, label));
     }
 }
@@ -769,11 +810,19 @@ static void draw_track_text(const NowPlayingScreen *now_playing, Canvas *canvas,
 {
     const Theme *theme = now_playing->config.theme;
     const char *const texts[] = {now_playing->title, now_playing->artist, now_playing->album};
+#ifdef ECHO_LITE
+    const TextStyle styles[] = {
+        {.font = theme->fonts.title, .color = theme->colors->text},
+        {.font = theme->fonts.small, .color = theme->colors->text_secondary},
+        {.font = theme->fonts.small, .color = theme->colors->text_tertiary},
+    };
+#else
     const TextStyle styles[] = {
         {.font = theme->fonts.title, .color = theme->colors->text},
         {.font = theme->fonts.body, .color = theme->colors->text_secondary},
         {.font = theme->fonts.body, .color = theme->colors->text_tertiary},
     };
+#endif
     for (int line = 0; line < 3; line++) {
         ThemeLayoutId id = (ThemeLayoutId)(THEME_LAYOUT_TITLE + line);
         if (shown(layout, id)) {
@@ -797,10 +846,20 @@ static void draw_progress(const NowPlayingScreen *now_playing, Canvas *canvas, c
     int filled = volume ? now_playing_volume_width(now_playing->status.volume, bar.width)
                         : now_playing_progress_width(shown_position(now_playing),
                                                      now_playing->status.duration_ms, bar.width);
+#ifdef ECHO_LITE
+    canvas_fill_rect(canvas, bar, theme->colors->divider);
+    Color fill = volume ? COLOR_RGB(255, 212, 59) : theme->colors->selection_background;
+    canvas_fill_rect(canvas, (Rect){bar.x, bar.y, filled, bar.height}, fill);
+    if (filled > 0) {
+        canvas_fill_rect(canvas, (Rect){bar.x + filled - 3, bar.y - 4, 6, 10},
+                         theme->colors->text);
+    }
+#else
     const BoxStyle *fill = now_playing->scrubbing || volume ? &theme->boxes->progress_active
                                                             : &theme->boxes->progress_fill;
     box_draw(canvas, theme->colors, &theme->boxes->progress_track, bar);
     box_draw(canvas, theme->colors, fill, (Rect){bar.x, bar.y, filled, bar.height});
+#endif
 }
 
 static void draw_right_aligned(Canvas *canvas, TextStyle style, Rect area, const char *text)
@@ -813,6 +872,27 @@ static void draw_right_aligned(Canvas *canvas, TextStyle style, Rect area, const
 static void draw_times(const NowPlayingScreen *now_playing, Canvas *canvas, const Layout *layout)
 {
     const Theme *theme = now_playing->config.theme;
+    Rect area = layout->boxes[THEME_LAYOUT_TIMES];
+#ifdef ECHO_LITE
+    TextStyle style = {.font = theme->fonts.small, .color = theme->colors->text};
+#else
+    TextStyle style = {.font = theme->fonts.small, .color = theme->colors->text_secondary};
+#endif
+#ifdef ECHO_LITE
+    if (showing(now_playing, NOW_PLAYING_FEEDBACK_VOLUME)) {
+        char level[TIME_CAPACITY];
+        StringBuilder text = string_builder_make(level, sizeof level);
+        string_builder_append_unsigned(&text, now_playing->status.volume);
+        draw_right_aligned(canvas, style, area, level);
+        return;
+    }
+    char elapsed[TIME_CAPACITY];
+    char total[TIME_CAPACITY];
+    format_duration(shown_position(now_playing), elapsed, sizeof elapsed);
+    format_duration(now_playing->status.duration_ms, total, sizeof total);
+    label_draw(canvas, style, (Label){.area = area, .text = elapsed});
+    draw_right_aligned(canvas, style, area, total);
+#else
     uint32_t position_ms = shown_position(now_playing);
     uint32_t duration_ms = now_playing->status.duration_ms;
     uint32_t remaining_ms = duration_ms > position_ms ? duration_ms - position_ms : 0;
@@ -826,12 +906,10 @@ static void draw_times(const NowPlayingScreen *now_playing, Canvas *canvas, cons
         StringBuilder level = string_builder_make(remaining, sizeof remaining);
         string_builder_append_unsigned(&level, now_playing->status.volume);
     }
-    Rect area = layout->boxes[THEME_LAYOUT_TIMES];
-    TextStyle style = {.font = theme->fonts.small, .color = theme->colors->text_secondary};
     label_draw(canvas, style, (Label){.area = area, .text = elapsed});
     draw_right_aligned(canvas, style, area, remaining);
+#endif
 }
-
 static void modes_text(const PlayerStatus *status, char *buffer, size_t capacity)
 {
     StringBuilder builder = string_builder_make(buffer, capacity);
@@ -846,6 +924,7 @@ static void modes_text(const PlayerStatus *status, char *buffer, size_t capacity
     }
 }
 
+#ifndef ECHO_LITE
 static void draw_outline(Canvas *canvas, Rect area, Color color)
 {
     canvas_fill_rect(canvas, (Rect){area.x, area.y, area.width, OUTLINE}, color);
@@ -855,6 +934,7 @@ static void draw_outline(Canvas *canvas, Rect area, Color color)
     canvas_fill_rect(canvas, (Rect){area.x + area.width - OUTLINE, area.y, OUTLINE, area.height},
                      color);
 }
+#endif
 
 static void draw_format(const NowPlayingScreen *now_playing, Canvas *canvas, const Layout *layout)
 {
@@ -864,6 +944,19 @@ static void draw_format(const NowPlayingScreen *now_playing, Canvas *canvas, con
     if (codec[0] == '\0' || !shown(layout, THEME_LAYOUT_FORMAT)) {
         return;
     }
+#ifdef ECHO_LITE
+    char stream[STATUS_CAPACITY];
+    now_playing_stream_text(format, stream, sizeof stream);
+    char text[STATUS_CAPACITY];
+    StringBuilder line = string_builder_make(text, sizeof text);
+    string_builder_append(&line, codec);
+    string_builder_append_char(&line, ' ');
+    string_builder_append(&line, stream);
+    TextStyle style = {.font = theme->fonts.small,
+                       .color = theme->colors->selection_background};
+    draw_right_aligned(canvas, style, layout->boxes[THEME_LAYOUT_FORMAT], text);
+    return;
+#else
     TextStyle style = {.font = theme->fonts.small, .color = theme->colors->text_secondary};
     int codec_width = text_width(style.font, codec) + 2 * CODEC_PADDING;
     char stream[STATUS_CAPACITY];
@@ -878,6 +971,7 @@ static void draw_format(const NowPlayingScreen *now_playing, Canvas *canvas, con
     int stream_left = badge.x + badge.width + CODEC_GAP;
     Rect stream_area = {stream_left, row.y, row.x + row.width - stream_left, row.height};
     label_draw(canvas, style, (Label){.area = stream_area, .text = stream});
+#endif
 }
 
 static void draw_small_line(Canvas *canvas, Line line, const Layout *layout, ThemeLayoutId id)
@@ -1102,14 +1196,50 @@ const ThemeColors *now_playing_home_colors(void)
     return home_scene(&scene, &chrome) != NULL ? chrome : NULL;
 }
 
+#ifdef ECHO_LITE
+static void draw_lite_spectrum(const NowPlayingScreen *now_playing, Canvas *canvas,
+                               const Layout *layout)
+{
+    Rect area = layout->boxes[THEME_LAYOUT_LYRICS];
+    if (area.width <= 0 || area.height <= 0) {
+        return;
+    }
+    static const uint8_t heights[] = {
+        18, 30, 14, 42, 26, 54, 34, 20, 46, 60, 28, 38, 16,
+        50, 32, 22, 44, 58, 30, 18, 40, 52, 24, 36, 14, 46};
+    static const uint8_t yellow[] = {5, 12, 19};
+    const Theme *theme = now_playing->config.theme;
+    int baseline = area.y + area.height - 4;
+    int phase = now_playing->status.state == PLAYER_PLAYING ? (int)(now_playing->now_ms / 120) : 0;
+    for (int index = 0; index < 26; index++) {
+        int height = heights[index];
+        if (now_playing->status.state == PLAYER_PLAYING) {
+            height = 10 + ((height + phase * 3 + index * 7) % 42);
+        }
+        int x = area.x + 6 + index * 10;
+        Color color = yellow[0] == index || yellow[1] == index || yellow[2] == index
+                          ? COLOR_RGB(255, 212, 59)
+                          : theme->colors->selection_background;
+        canvas_fill_rect(canvas, (Rect){x, baseline - height, 6, height}, color);
+    }
+    canvas_fill_rect(canvas, (Rect){area.x, baseline, area.width, 2}, theme->colors->text);
+}
+#endif
+
 static void draw(void *context, Canvas *canvas)
 {
     const NowPlayingScreen *now_playing = context;
+#ifdef ECHO_LITE
+    const NowPlayingFaces *faces = NULL;
+#else
     SceneCode scene;
     const ThemeColors *chrome;
     const NowPlayingFaces *faces = scene_of(now_playing, &scene, &chrome);
+#endif
     if (faces != NULL) {
+#ifndef ECHO_LITE
         draw_face(now_playing, faces, scene, chrome, canvas, NULL);
+#endif
         return;
     }
     const Theme *theme = now_playing->config.theme;
@@ -1126,9 +1256,17 @@ static void draw(void *context, Canvas *canvas)
     draw_track_text(now_playing, canvas, &layout);
     draw_progress(now_playing, canvas, &layout);
     draw_times(now_playing, canvas, &layout);
+#ifdef ECHO_LITE
+    if (layout.lyrics) {
+        draw_lyrics(now_playing, canvas, &layout);
+    } else {
+        draw_lite_spectrum(now_playing, canvas, &layout);
+    }
+#else
     if (layout.lyrics) {
         draw_lyrics(now_playing, canvas, &layout);
     }
+#endif
     draw_format(now_playing, canvas, &layout);
     draw_details(now_playing, canvas, &layout);
 }

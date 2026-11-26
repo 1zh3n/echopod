@@ -241,7 +241,11 @@ static Row draw_chevron(const ListView *view, Canvas *canvas, Row row)
         return row;
     }
     Color color = row.selected ? theme_selected_text(view->theme) : view->theme->colors->chevron;
+#ifdef ECHO_LITE
+    TextStyle style = {.font = view->theme->fonts.small, .color = color};
+#else
     TextStyle style = {.font = view->theme->fonts.title, .color = color};
+#endif
     const IconMask *mask = theme_icon(view->theme, THEME_ICON_CHEVRON);
     int width = mask != NULL ? mask->width : text_width(style.font, CHEVRON);
     Rect area = {row.text.x + row.text.width - width, row.text.y, width, row.text.height};
@@ -303,8 +307,21 @@ static void draw_row(const ListView *view, Canvas *canvas, Row row, uint32_t now
 {
     if (row.selected) {
         box_draw(canvas, view->theme->colors, theme_selection_box(view->theme), row.area);
+#ifdef ECHO_LITE
+        canvas_fill_rect(canvas,
+                         (Rect){row.area.x, row.area.y, 4, row.area.height},
+                         COLOR_RGB(255, 212, 59));
+#endif
     }
     draw_label(view, canvas, draw_detail(view, canvas, draw_chevron(view, canvas, row)), now_ms);
+#ifdef ECHO_LITE
+    if (!row.selected) {
+        canvas_fill_rect(canvas,
+                         (Rect){row.area.x + 12, row.area.y + row.area.height - 1,
+                                row.area.width - 16, 1},
+                         COLOR_RGB(209, 213, 219));
+    }
+#endif
 }
 
 static void draw_scrollbar(const ListView *view, Canvas *canvas, Rect area, int top)
@@ -350,9 +367,12 @@ static void draw_section(const ListView *view, Canvas *canvas, Rect area, uint32
     text_draw_glyph_scaled(canvas, style, inner, (uint32_t)(unsigned char)label[0], scale);
 }
 
-void list_view_draw(const ListView *view, Canvas *canvas, Rect area, uint32_t now_ms)
+static void draw_list(const ListView *view, Canvas *canvas, Rect area, uint32_t now_ms,
+                      bool paint_backdrop)
 {
-    backdrop_paint(canvas, view->theme, area);
+    if (paint_backdrop) {
+        backdrop_paint(canvas, view->theme, area);
+    }
     Rect rows = area;
     int visible = list_view_rows(view);
     int top = top_showing_selection(view);
@@ -370,4 +390,14 @@ void list_view_draw(const ListView *view, Canvas *canvas, Rect area, uint32_t no
         }
     }
     draw_section(view, canvas, area, now_ms);
+}
+
+void list_view_draw(const ListView *view, Canvas *canvas, Rect area, uint32_t now_ms)
+{
+    draw_list(view, canvas, area, now_ms, true);
+}
+
+void list_view_draw_over(const ListView *view, Canvas *canvas, Rect area, uint32_t now_ms)
+{
+    draw_list(view, canvas, area, now_ms, false);
 }

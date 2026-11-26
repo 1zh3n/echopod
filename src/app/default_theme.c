@@ -5,6 +5,26 @@
 #include "hal/display.h"
 #include "settings/settings.h"
 
+#ifdef ECHO_LITE
+ECHO_RESIDENT const ThemeColors DEFAULT_THEME_DARK_COLORS = {
+    .background = COLOR_RGB(250, 250, 249),
+    .text = COLOR_RGB(10, 10, 10),
+    .text_secondary = COLOR_RGB(75, 85, 99),
+    .text_tertiary = COLOR_RGB(107, 114, 128),
+    .selection_background = COLOR_RGB(0, 111, 238),
+    .selection_top = COLOR_RGB(0, 111, 238),
+    .selection_shine = COLOR_RGB(0, 111, 238),
+    .selection_text = COLOR_RGB(255, 255, 255),
+    .header_background = COLOR_RGB(255, 255, 255),
+    .header_top = COLOR_RGB(255, 255, 255),
+    .header_text = COLOR_RGB(10, 10, 10),
+    .divider = COLOR_RGB(209, 213, 219),
+    .scrollbar_thumb = COLOR_RGB(156, 163, 175),
+    .danger = COLOR_RGB(239, 68, 68),
+    .success = COLOR_RGB(34, 197, 94),
+    .chevron = COLOR_RGB(10, 10, 10),
+};
+#else
 ECHO_RESIDENT const ThemeColors DEFAULT_THEME_DARK_COLORS = {
     .background = COLOR_RGB(16, 17, 20),
     .text = COLOR_RGB(242, 242, 245),
@@ -23,6 +43,7 @@ ECHO_RESIDENT const ThemeColors DEFAULT_THEME_DARK_COLORS = {
     .success = COLOR_RGB(52, 199, 89),
     .chevron = COLOR_RGB(110, 110, 118),
 };
+#endif
 
 ECHO_RESIDENT const Theme DEFAULT_THEME = {
     .colors = &DEFAULT_THEME_DARK_COLORS,
@@ -37,6 +58,16 @@ ECHO_RESIDENT const Theme DEFAULT_THEME = {
         {
             .screen_width = HAL_DISPLAY_WIDTH,
             .screen_height = HAL_DISPLAY_HEIGHT,
+#ifdef ECHO_LITE
+            .header_height = 0,
+            .header_inset = 12,
+            .row_height = 26,
+            .padding = 12,
+            .scrollbar_width = 2,
+            .scrollbar_inset = 2,
+            .detail_gap = 8,
+            .status_icon_size = 10,
+#else
             .header_height = 24,
             .header_inset = 72,
             .row_height = 24,
@@ -45,6 +76,7 @@ ECHO_RESIDENT const Theme DEFAULT_THEME = {
             .scrollbar_inset = 2,
             .detail_gap = 8,
             .status_icon_size = 10,
+#endif
         },
     .marquee = {.pause_ms = 1200, .speed_px_per_s = 40, .gap_px = 32},
 };
@@ -55,6 +87,28 @@ enum {
     LARGE_STATUS_HEIGHT = 22,
     LARGE_STATUS_ICON_SIZE = 14
 };
+
+#ifdef ECHO_LITE
+void lite_theme_force(Theme *theme)
+{
+    theme->colors = &DEFAULT_THEME_DARK_COLORS;
+    theme->boxes = &THEME_STANDARD_BOXES;
+    theme->icons = NULL;
+    theme->wallpaper = NULL;
+    theme->layout = NULL;
+    theme->fonts = DEFAULT_THEME.fonts;
+    theme->marquee = DEFAULT_THEME.marquee;
+    theme->selection = THEME_SELECTION_FLAT;
+    theme->no_menu_panel = true;
+    theme->metrics.header_height = 0;
+    theme->metrics.header_inset = 12;
+    theme->metrics.row_height = 26;
+    theme->metrics.padding = 12;
+    theme->metrics.scrollbar_width = 2;
+    theme->metrics.scrollbar_inset = 2;
+    theme->metrics.status_height = 0;
+}
+#endif
 
 Theme default_theme_for(bool portrait)
 {
