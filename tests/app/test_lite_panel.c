@@ -12,6 +12,7 @@
 #include "hal/system.h"
 #include "lite_animation.h"
 #include "screens/charge_screen.h"
+#include "ui/lite_icons.h"
 
 enum {
     START_MS = 1000,
@@ -80,6 +81,15 @@ static void move_down(int times)
     for (int count = 0; count < times; count++) {
         tap(KEY_VOLUME_UP);
     }
+}
+
+static void compact_icons_are_native_18px(void)
+{
+    CHECK_EQUAL(18, LITE_ICON_SHUFFLE_18.width);
+    CHECK_EQUAL(18, LITE_ICON_LOOP_18.height);
+    CHECK_EQUAL(18, LITE_ICON_LOOP_ONE_18.width);
+    CHECK_EQUAL(18, LITE_ICON_PLAY_18.height);
+    CHECK_EQUAL(18, LITE_ICON_PAUSE_18.width);
 }
 
 static void lite_animation_arena_is_available(void)
@@ -259,6 +269,7 @@ int main(void)
     TestCase cases[] = {
         TEST_CASE(short_menu_on_the_panel_returns_to_now_playing),
         TEST_CASE(long_menu_on_the_panel_closes_it_without_opening_settings),
+        TEST_CASE(compact_icons_are_native_18px),
         TEST_CASE(lite_animation_arena_is_available),
         TEST_CASE(lite_settings_still_opens_after_diagnostics_removed),
         TEST_CASE(lite_settings_groups_have_only_visible_rows),
