@@ -47,11 +47,9 @@ static void show_percent(uint32_t percent)
 {
     char text[MESSAGE_CAPACITY];
     StringBuilder builder = string_builder_make(text, sizeof text);
-    char number[PERCENT_CAPACITY];
-    StringBuilder digits = string_builder_make(number, sizeof number);
-    string_builder_append_unsigned(&digits, percent);
-    const char *arguments[] = {number};
-    i18n_format(&builder, STR_UPDATE_DONT_UNPLUG, arguments, 1);
+    string_builder_append(&builder, "Don't unplug or turn off. ");
+    string_builder_append_unsigned(&builder, percent);
+    string_builder_append_char(&builder, '%');
     app_show_notice(install_title, text);
     board_display_service();
 }
@@ -145,17 +143,17 @@ static void remember(HalUpdateRecord record)
 
 static void install(const UpdateFile *update, const UpdateStorage *storage, bool stock)
 {
-    install_title = i18n_text(stock ? STR_UPDATE_INSTALLING_FIIO : STR_UPDATE_INSTALLING);
+    install_title = stock ? "Installing FiiO firmware" : "Installing update";
     last_percent = 0;
     show_percent(0);
     shared->flash_rewritten = true;
     bool installed = updater_install(update, storage, (UpdateProgress){report, NULL});
     remember(outcome(installed ? HAL_UPDATE_INSTALLED : HAL_UPDATE_FAILED, (uint8_t)last_percent));
     if (installed) {
-        app_show_notice(i18n_text(stock ? STR_UPDATE_FIIO_INSTALLED : STR_UPDATE_INSTALLED),
-                        i18n_text(STR_UPDATE_UNPLUG_AND_RESTART));
+        app_show_notice(stock ? "FiiO firmware installed" : "Update installed",
+                        "Unplug USB, then hold Power to turn off and on again.");
     } else {
-        app_show_notice(i18n_text(STR_UPDATE_FAILED), i18n_text(STR_UPDATE_RETRY));
+        app_show_notice("Update failed", "Copy the file again and retry before turning off.");
     }
     board_wait_for_key();
 }
