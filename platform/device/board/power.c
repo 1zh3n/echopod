@@ -70,8 +70,7 @@ void board_power_hold(void)
     register_write(GRF_PORT2_LOW_PULL, POWER_KEY_PULL_OFF);
     boot_hold.usb_power = usb_vbus_present();
     boot_hold.key_down = gpio_read(POWER_KEY);
-    bool held_by_key = boot_hold.output && boot_hold.high;
-    usb_start = boot_hold.usb_power && !boot_hold.key_down && !held_by_key;
+    usb_start = boot_hold.usb_power && !boot_hold.key_down && !hal_system_start_info().warm;
 }
 
 HalPowerHold hal_power_boot_hold(void)
