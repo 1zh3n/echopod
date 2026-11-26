@@ -110,6 +110,17 @@ static void boot_screen_draws_only_the_animation(void)
     CHECK(fake_hal_pixel(160, 85) != COLOR_RGB(250, 250, 249));
 }
 
+static void boot_screen_is_static(void)
+{
+    start_app_with_library();
+    CHECK(load_animation_asset());
+    step();
+    Color first = fake_hal_pixel(160, 85);
+    now_ms += 500;
+    step();
+    CHECK(fake_hal_pixel(160, 85) == first);
+}
+
 static void charging_screen_has_green_shadow_and_no_text(void)
 {
     CHECK(load_animation_asset());
@@ -228,6 +239,7 @@ int main(void)
         TEST_CASE(lite_settings_rows_are_compact),
         TEST_CASE(lite_animation_streams_all_frames),
         TEST_CASE(boot_screen_draws_only_the_animation),
+        TEST_CASE(boot_screen_is_static),
         TEST_CASE(charging_screen_has_green_shadow_and_no_text),
     };
     return test_run_all(cases, TEST_CASE_COUNT(cases));

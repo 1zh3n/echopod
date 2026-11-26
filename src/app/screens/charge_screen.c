@@ -88,7 +88,7 @@ void charge_screen_draw(Canvas *canvas, const Theme *theme, HalBattery battery, 
 #ifdef ECHO_LITE
     (void)battery;
     lite_animation_draw_card(canvas, (Rect){60, 29, 200, 112}, theme->colors->success,
-                             theme->colors->text, theme->colors->header_background, now_ms);
+                             theme->colors->text, theme->colors->header_background, now_ms, true);
 #else
     (void)now_ms;
     int block = BODY_HEIGHT + TEXT_GAP + TEXT_HEIGHT;

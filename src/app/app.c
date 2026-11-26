@@ -772,7 +772,7 @@ static void draw_lite_boot(Canvas *canvas, const Fade *fade)
     Color background = theme->colors->background;
     Color ink = color_blend(background, theme->colors->text, alpha);
     Color panel = color_blend(background, theme->colors->header_background, alpha);
-    lite_animation_draw_card(canvas, (Rect){60, 29, 200, 112}, ink, ink, panel, app.now_ms);
+    lite_animation_draw_card(canvas, (Rect){60, 29, 200, 112}, ink, ink, panel, app.now_ms, false);
 }
 #endif
 

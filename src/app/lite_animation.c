@@ -188,7 +188,7 @@ static void draw_box(Canvas *canvas, Rect area, Color ink)
 }
 
 void lite_animation_draw_card(Canvas *canvas, Rect card, Color shadow, Color ink, Color panel,
-                              uint32_t now_ms)
+                              uint32_t now_ms, bool animate)
 {
     Rect frame = {card.x + (card.width - FRAME_WIDTH) / 2,
                   card.y + (card.height - FRAME_HEIGHT) / 2, FRAME_WIDTH, FRAME_HEIGHT};
@@ -203,7 +203,9 @@ void lite_animation_draw_card(Canvas *canvas, Rect card, Color shadow, Color ink
     canvas_fill_rect(canvas, frame, panel);
     draw_box(canvas, frame, ink);
     if (load()) {
-        advance(now_ms);
+        if (animate) {
+            advance(now_ms);
+        }
         draw_frame(canvas,
                    (Rect){frame.x + FRAME_BORDER, frame.y + FRAME_BORDER, animation.width,
                           animation.height});
