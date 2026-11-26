@@ -5,6 +5,7 @@
 #include "check.h"
 #include "fake_hal.h"
 #include "fixture_library.h"
+#include "hal/system.h"
 
 enum {
     START_MS = 1000,
@@ -57,6 +58,76 @@ static bool title_is(const char *expected)
     return strcmp(expected, app_screen_title()) == 0;
 }
 
+static void move_down(int times)
+{
+    for (int count = 0; count < times; count++) {
+        tap(KEY_VOLUME_UP);
+    }
+}
+
+static void lite_animation_arena_is_available(void)
+{
+    uint32_t size = 0;
+    void *memory = hal_system_lite_animation(&size);
+    CHECK(memory != NULL);
+    CHECK_EQUAL(HAL_LITE_ANIMATION_BYTES, size);
+}
+
+static void lite_settings_still_opens_after_diagnostics_removed(void)
+{
+    start_app_with_library();
+    move_down(2);
+    tap(KEY_PLAY);
+    CHECK(title_is("Settings"));
+    tap(KEY_PLAY);
+    CHECK(title_is("Sound"));
+    tap(KEY_BACK);
+    CHECK(title_is("Settings"));
+}
+
+static void lite_settings_groups_have_only_visible_rows(void)
+{
+    start_app_with_library();
+    move_down(2);
+    tap(KEY_PLAY);
+    CHECK(title_is("Settings"));
+    tap(KEY_PLAY);
+    CHECK(title_is("Sound"));
+    tap(KEY_BACK);
+    move_down(1);
+    tap(KEY_PLAY);
+    CHECK(title_is("Display"));
+    tap(KEY_BACK);
+    move_down(1);
+    tap(KEY_PLAY);
+    CHECK(title_is("Library"));
+}
+
+static void lite_settings_rows_are_compact(void)
+{
+    start_app_with_library();
+    move_down(2);
+    tap(KEY_PLAY);
+    tap(KEY_PLAY);
+    move_down(5);
+    tap(KEY_PLAY);
+    CHECK(title_is("Equalizer"));
+    tap(KEY_BACK);
+    tap(KEY_BACK);
+    move_down(1);
+    tap(KEY_PLAY);
+    move_down(2);
+    tap(KEY_PLAY);
+    CHECK(title_is("Animations"));
+    tap(KEY_BACK);
+    tap(KEY_BACK);
+    move_down(1);
+    tap(KEY_PLAY);
+    move_down(2);
+    tap(KEY_PLAY);
+    CHECK(title_is("Lyrics"));
+}
+
 static void open_all_songs_and_play(void)
 {
     tap(KEY_PLAY);
@@ -100,6 +171,10 @@ int main(void)
     TestCase cases[] = {
         TEST_CASE(short_menu_on_the_panel_returns_to_now_playing),
         TEST_CASE(long_menu_on_the_panel_closes_it_without_opening_settings),
+        TEST_CASE(lite_animation_arena_is_available),
+        TEST_CASE(lite_settings_still_opens_after_diagnostics_removed),
+        TEST_CASE(lite_settings_groups_have_only_visible_rows),
+        TEST_CASE(lite_settings_rows_are_compact),
     };
     return test_run_all(cases, TEST_CASE_COUNT(cases));
 }

@@ -15,8 +15,14 @@ enum {
 
 static char tag[TAG_LENGTH + 1];
 static uint32_t theme_memory[THEME_MEMORY_WORDS];
+#ifdef ECHO_LITE
+/* Lite has no theme asset packs; this window is reserved for animation. */
+static uint32_t animation_memory[HAL_LITE_ANIMATION_BYTES / sizeof(uint32_t)]
+    __attribute__((section(".high_ram"), used));
+#else
 static uint32_t asset_memory[HAL_THEME_ASSET_BYTES / sizeof(uint32_t)]
     __attribute__((section(".high_ram")));
+#endif
 static uint32_t build_day;
 static bool tried;
 
@@ -67,6 +73,22 @@ void *hal_system_theme_memory(uint32_t *size)
 
 void *hal_system_theme_assets(uint32_t *size)
 {
+#ifdef ECHO_LITE
+    *size = 0;
+    return NULL;
+#else
     *size = sizeof asset_memory;
     return asset_memory;
+#endif
+}
+
+void *hal_system_lite_animation(uint32_t *size)
+{
+#ifdef ECHO_LITE
+    *size = sizeof animation_memory;
+    return animation_memory;
+#else
+    *size = 0;
+    return NULL;
+#endif
 }

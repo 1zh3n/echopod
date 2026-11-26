@@ -1258,6 +1258,12 @@ void *hal_system_theme_assets(uint32_t *size)
     return asset_memory;
 }
 
+void *hal_system_lite_animation(uint32_t *size)
+{
+    *size = HAL_LITE_ANIMATION_BYTES;
+    return asset_memory;
+}
+
 uint32_t hal_system_theme_asset_wipes(void)
 {
     return asset_wipes;

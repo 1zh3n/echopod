@@ -13,10 +13,12 @@ enum {
     MILLISECONDS_PER_MINUTE = 60000
 };
 
+#ifndef ECHO_LITE
 ECHO_RESIDENT static const StringId SHUFFLE_OPTIONS[SHUFFLE_MODE_COUNT] = {
     STR_OFF, STR_SETTINGS_SONGS, STR_MENU_ALBUMS};
 ECHO_RESIDENT static const StringId REPEAT_OPTIONS[REPEAT_MODE_COUNT] = {STR_OFF, STR_SETTINGS_ONE,
                                                                          STR_SETTINGS_ALL};
+#endif
 ECHO_RESIDENT static const StringId SLEEP_OPTIONS[SLEEP_TIMER_OPTION_COUNT] = {
     STR_OFF,
     STR_SETTINGS_MINUTES_15,
@@ -37,8 +39,10 @@ ECHO_RESIDENT static const StringId TIMEOUT_OPTIONS[SCREEN_TIMEOUT_OPTION_COUNT]
     STR_SETTINGS_NEVER};
 ECHO_RESIDENT static const char *const BRIGHTNESS_OPTIONS[BRIGHTNESS_LEVEL_COUNT] = {
     "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"};
+#ifndef ECHO_LITE
 ECHO_RESIDENT static const StringId ORIENTATION_OPTIONS[ORIENTATION_COUNT] = {
     STR_SETTINGS_LANDSCAPE, STR_SETTINGS_PORTRAIT, STR_SETTINGS_PORTRAIT_FLIPPED};
+#endif
 ECHO_RESIDENT static const StringId GAIN_OPTIONS[GAIN_LEVEL_COUNT] = {STR_SETTINGS_LOW,
                                                                       STR_SETTINGS_HIGH};
 ECHO_RESIDENT static const char *const FILTER_OPTIONS[DAC_FILTER_COUNT] = {"1", "2", "3", "4", "5"};
@@ -49,10 +53,12 @@ ECHO_RESIDENT static const StringId OUTPUT_OPTIONS[OUTPUT_JACK_COUNT] = {
     STR_SETTINGS_AUTO, STR_SETTINGS_JACK_35, STR_SETTINGS_JACK_44};
 ECHO_RESIDENT static const StringId OUTPUT_MESSAGES[OUTPUT_JACK_COUNT] = {
     STR_SETTINGS_OUTPUT_FOLLOWS, STR_SETTINGS_OUTPUT_USING_35, STR_SETTINGS_OUTPUT_USING_44};
+#ifndef ECHO_LITE
 ECHO_RESIDENT static const StringId START_OPTIONS[START_SCREEN_COUNT] = {
     STR_SETTINGS_MAIN_MENU, STR_MENU_NOW_PLAYING, STR_MENU_ALBUMS,     STR_MENU_ARTISTS,
     STR_MENU_FAVORITES,     STR_MENU_PLAYLISTS,   STR_MENU_COVER_FLOW, STR_MENU_ALBUM_ARTISTS,
     STR_MENU_GENRES,        STR_MENU_FOLDERS,     STR_MENU_ALL_SONGS};
+#endif
 ECHO_RESIDENT static const StringId LANGUAGE_OPTIONS[LANGUAGE_COUNT] = {
     STR_LANGUAGE_EN, STR_LANGUAGE_ZH, STR_LANGUAGE_JA, STR_LANGUAGE_KO, STR_LANGUAGE_DE,
     STR_LANGUAGE_FR, STR_LANGUAGE_ES, STR_LANGUAGE_IT, STR_LANGUAGE_PT, STR_LANGUAGE_NL,
@@ -65,6 +71,7 @@ ECHO_RESIDENT static const StringId ROCKER_OPTIONS[ROCKER_MODE_COUNT] = {
     STR_SETTINGS_ROCKER_VOLUME_SEEK};
 ECHO_RESIDENT static const StringId MENU_KEY_OPTIONS[2] = {STR_MENU_UP_NEXT,
                                                            STR_SETTINGS_NEXT_TRACK};
+#ifndef ECHO_LITE
 ECHO_RESIDENT static const StringId ACCENT_OPTIONS[ACCENT_COUNT] = {
     STR_SETTINGS_COLOR_BLUE,  STR_SETTINGS_COLOR_RED,     STR_SETTINGS_COLOR_ORANGE,
     STR_SETTINGS_COLOR_GREEN, STR_SETTINGS_COLOR_TEAL,    STR_SETTINGS_COLOR_PURPLE,
@@ -75,20 +82,27 @@ ECHO_RESIDENT static const StringId COVER_ORDER_OPTIONS[2] = {STR_SETTINGS_BY_AL
                                                               STR_SETTINGS_BY_ALBUM_TITLE};
 ECHO_RESIDENT static const StringId ARTIST_VIEW_OPTIONS[2] = {STR_SETTINGS_LIST,
                                                               STR_MENU_COVER_FLOW};
+#endif
 ECHO_RESIDENT static const StringId BLUETOOTH_LEVEL_OPTIONS[2] = {STR_SETTINGS_STANDARD,
                                                                   STR_SETTINGS_LOUDER};
+#ifndef ECHO_LITE
 ECHO_RESIDENT static const StringId COVER_COUNT_OPTIONS[2] = {STR_SETTINGS_FIVE_COVERS,
                                                               STR_SETTINGS_THREE_COVERS};
+#endif
 ECHO_RESIDENT static const StringId ANIMATION_OPTIONS[ANIMATION_SPEED_COUNT] = {
     STR_SETTINGS_NORMAL, STR_SETTINGS_SLOWER, STR_SETTINGS_FASTER};
+#ifndef ECHO_LITE
 ECHO_RESIDENT static const StringId THEME_OPTIONS[THEME_COUNT] = {
     STR_SETTINGS_DARK,     STR_SETTINGS_LIGHT,     STR_SETTINGS_FJORD,
     STR_SETTINGS_DUSK,     STR_SETTINGS_NEON,      STR_SETTINGS_PHOSPHOR,
     STR_SETTINGS_PAPER,    STR_SETTINGS_OLIVE,     STR_SETTINGS_HIGH_CONTRAST,
     STR_SETTINGS_CASSETTE, STR_SETTINGS_VU_METERS, STR_SETTINGS_TURNTABLE,
     STR_SETTINGS_LCD_DECK};
+#endif
+#ifndef ECHO_LITE
 ECHO_RESIDENT static const StringId STATUS_BAR_OPTIONS[2] = {STR_SETTINGS_STANDARD,
                                                              STR_SETTINGS_LARGE};
+#endif
 ECHO_RESIDENT static const StringId POWER_ON_OPTIONS[2] = {STR_SETTINGS_PRESS, STR_SETTINGS_HOLD};
 ECHO_RESIDENT static const StringId USB_MODE_OPTIONS[USB_MODE_COUNT] = {STR_SETTINGS_STORAGE,
                                                                         STR_SETTINGS_DAC};
@@ -123,6 +137,7 @@ static void apply_and_save(SettingsContext *context)
     save(context);
 }
 
+#ifndef ECHO_LITE
 static int current_shuffle(const void *context)
 {
     const SettingsContext *settings = context;
@@ -148,6 +163,7 @@ static void choose_repeat(void *context, int index)
     player_set_repeat(settings->player, (RepeatMode)index);
     save(settings);
 }
+#endif
 
 int settings_sleep_current(const SettingsContext *context)
 {
@@ -235,6 +251,7 @@ static void choose_brightness(void *context, int index)
     apply_and_save(context);
 }
 
+#ifndef ECHO_LITE
 static int current_orientation(const void *context)
 {
     return (int)settings_of(context)->orientation;
@@ -245,6 +262,7 @@ static void choose_orientation(void *context, int index)
     editable_settings(context)->orientation = (Orientation)index;
     save(context);
 }
+#endif
 
 static int current_gain(const void *context)
 {
@@ -312,6 +330,7 @@ static const char *describe_output(int current)
     return i18n_text(jack == HAL_AUDIO_JACK_BALANCED ? STR_SETTINGS_AUTO_44 : STR_SETTINGS_AUTO_35);
 }
 
+#ifndef ECHO_LITE
 static int current_start(const void *context)
 {
     return (int)settings_of(context)->start_screen;
@@ -322,6 +341,7 @@ static void choose_start(void *context, int index)
     editable_settings(context)->start_screen = (StartScreen)index;
     save(context);
 }
+#endif
 
 static int current_usb_mode(const void *context)
 {
@@ -375,10 +395,15 @@ static void choose_slot(void *context, int index)
     {title, options, NULL, (int)(sizeof options / sizeof options[0]), NULL, NULL, NULL, option + 1}
 
 ECHO_RESIDENT static const SettingChoice CHOICES[SETTINGS_CHOICE_COUNT] = {
+#ifdef ECHO_LITE
+    {0},
+    {0},
+#else
     {STR_SETTINGS_SHUFFLE, SHUFFLE_OPTIONS, NULL, SHUFFLE_MODE_COUNT, current_shuffle,
      choose_shuffle, NULL, 0},
     {STR_SETTINGS_REPEAT, REPEAT_OPTIONS, NULL, REPEAT_MODE_COUNT, current_repeat, choose_repeat,
      NULL, 0},
+#endif
     {STR_SETTINGS_SLEEP_TIMER, SLEEP_OPTIONS, NULL, SLEEP_TIMER_OPTION_COUNT, current_sleep,
      choose_sleep, NULL, 0},
     {STR_SETTINGS_AUTO_OFF, AUTO_OFF_OPTIONS, NULL, AUTO_OFF_OPTION_COUNT, current_auto_off,
@@ -387,8 +412,12 @@ ECHO_RESIDENT static const SettingChoice CHOICES[SETTINGS_CHOICE_COUNT] = {
      current_timeout, choose_timeout, NULL, 0},
     {STR_SETTINGS_BRIGHTNESS, NULL, BRIGHTNESS_OPTIONS, BRIGHTNESS_LEVEL_COUNT, current_brightness,
      choose_brightness, NULL, 0},
+#ifdef ECHO_LITE
+    {0},
+#else
     {STR_SETTINGS_ORIENTATION, ORIENTATION_OPTIONS, NULL, ORIENTATION_COUNT, current_orientation,
      choose_orientation, NULL, 0},
+#endif
     {STR_SETTINGS_GAIN, GAIN_OPTIONS, NULL, GAIN_LEVEL_COUNT, current_gain, choose_gain, NULL, 0},
     {STR_SETTINGS_FILTER, NULL, FILTER_OPTIONS, DAC_FILTER_COUNT, current_filter, choose_filter,
      NULL, 0},
@@ -396,42 +425,87 @@ ECHO_RESIDENT static const SettingChoice CHOICES[SETTINGS_CHOICE_COUNT] = {
      choose_balance, NULL, 0},
     {STR_SETTINGS_OUTPUT, OUTPUT_OPTIONS, NULL, OUTPUT_JACK_COUNT, current_output, choose_output,
      describe_output, 0},
+#ifdef ECHO_LITE
+    {0},
+#else
     {STR_SETTINGS_START_SCREEN, START_OPTIONS, NULL, START_SCREEN_COUNT, current_start,
      choose_start, NULL, 0},
+#endif
     {STR_SETTINGS_USB_MODE, USB_MODE_OPTIONS, NULL, USB_MODE_COUNT, current_usb_mode,
      choose_usb_mode, NULL, 0},
     {STR_LANGUAGE_TITLE, LANGUAGE_OPTIONS, NULL, LANGUAGE_COUNT, current_language, choose_language,
      NULL, 0},
+#ifdef ECHO_LITE
+    {0},
+#else
     OPTION_CHOICE(STR_SETTINGS_ACCENT, ACCENT_OPTIONS, OPTION_ACCENT),
+#endif
+#ifdef ECHO_LITE
+    {0},
+#else
     OPTION_CHOICE(STR_SETTINGS_HIGHLIGHT, HIGHLIGHT_OPTIONS, OPTION_HIGHLIGHT),
+#endif
+#ifdef ECHO_LITE
+    {0},
+#else
     OPTION_CHOICE(STR_SETTINGS_BATTERY_PERCENT, SHOWN_OPTIONS, OPTION_BATTERY),
+#endif
     OPTION_CHOICE(STR_SETTINGS_SWAP_VOLUME, SWITCH_OPTIONS, OPTION_VOLUME_KEYS),
     OPTION_CHOICE(STR_SETTINGS_ROCKER, ROCKER_OPTIONS, OPTION_ROCKER),
     OPTION_CHOICE(STR_SETTINGS_MENU_KEY, MENU_KEY_OPTIONS, OPTION_MENU_KEY),
+#ifdef ECHO_LITE
+    {0},
+#else
     OPTION_CHOICE(STR_SETTINGS_COVER_ORDER, COVER_ORDER_OPTIONS, OPTION_COVER_ORDER),
+#endif
+#ifdef ECHO_LITE
+    {0},
+#else
     OPTION_CHOICE(STR_SETTINGS_ARTIST_VIEW, ARTIST_VIEW_OPTIONS, OPTION_ARTIST_VIEW),
+#endif
+#ifdef ECHO_LITE
+    {0},
+#else
     OPTION_CHOICE(STR_SETTINGS_LISTEN_HISTORY, SHOWN_OPTIONS, OPTION_LISTEN_HISTORY),
+#endif
     {STR_SETTINGS_BLUETOOTH_LEVEL, BLUETOOTH_LEVEL_OPTIONS, NULL, 2, current_bluetooth_level,
      choose_bluetooth_level, NULL, 0},
     OPTION_CHOICE(STR_SETTINGS_USB_PROMPT, SHOWN_OPTIONS, OPTION_USB_PROMPT),
+#ifdef ECHO_LITE
+    {0},
+#else
     OPTION_CHOICE(STR_MENU_COVER_FLOW, COVER_COUNT_OPTIONS, OPTION_COVER_FLOW_COVERS),
+#endif
     OPTION_CHOICE(STR_SETTINGS_ANIMATIONS, ANIMATION_OPTIONS, OPTION_ANIMATION_SPEED),
+#ifdef ECHO_LITE
+    {0},
+#else
     OPTION_CHOICE(STR_SETTINGS_THEME, THEME_OPTIONS, OPTION_THEME),
+#endif
     OPTION_CHOICE(STR_SETTINGS_LYRICS, SHOWN_OPTIONS, OPTION_LYRICS),
+#ifdef ECHO_LITE
+    {0},
+#else
     OPTION_CHOICE(STR_SETTINGS_FOLDER_VIEW, ARTIST_VIEW_OPTIONS, OPTION_FOLDER_VIEW),
+#endif
+#ifdef ECHO_LITE
+    {0},
+#else
     OPTION_CHOICE(STR_SETTINGS_CLOCK, SWITCH_OPTIONS, OPTION_CLOCK),
+#endif
+#ifdef ECHO_LITE
+    {0},
+#else
     OPTION_CHOICE(STR_SETTINGS_STATUS_BAR, STATUS_BAR_OPTIONS, OPTION_STATUS_BAR),
+#endif
     OPTION_CHOICE(STR_SETTINGS_POWER_ON, POWER_ON_OPTIONS, OPTION_POWER_ON),
 };
 
+#ifndef ECHO_LITE
 static int current_theme(const void *context)
 {
-#ifdef ECHO_LITE
-    return current_slot(context);
-#else
     int file = theme_store_current();
     return file != THEME_STORE_NONE ? THEME_COUNT + file : current_slot(context);
-#endif
 }
 
 static void choose_theme(void *context, int index)
@@ -439,13 +513,9 @@ static void choose_theme(void *context, int index)
     if (index < THEME_COUNT) {
         choose_slot(context, index);
         theme_store_choose_builtin(index);
-#ifndef ECHO_LITE
         return;
-#endif
     }
-#ifndef ECHO_LITE
     (void)theme_store_choose(index - THEME_COUNT);
-#endif
 }
 
 static const char *accent_name(int accent)
@@ -485,19 +555,12 @@ static ScreenAction open_theme_choice(SettingsEntry *entry)
 {
     SettingsScreens *screens = entry->owner;
     const char **options = theme_store_options();
-#ifdef ECHO_LITE
-    for (int theme = 0; options != NULL && theme < THEME_COUNT; theme++) {
-        options[theme] = i18n_text(THEME_OPTIONS[theme]);
-    }
-    int count = THEME_COUNT;
-#else
     int files = options != NULL ? theme_store_scan() : 0;
     for (int theme = 0; options != NULL && theme < THEME_COUNT + files; theme++) {
         options[theme] = theme < THEME_COUNT ? i18n_text(THEME_OPTIONS[theme])
                                              : theme_store_name(theme - THEME_COUNT);
     }
     int count = THEME_COUNT + files;
-#endif
     ChoiceConfig config = {
         .title = i18n_text(entry->choice->title),
         .options = options,
@@ -510,18 +573,21 @@ static ScreenAction open_theme_choice(SettingsEntry *entry)
     };
     return screen_action_push(choice_screen_init(&screens->choice, config));
 }
+#endif
 
 static ScreenAction open_choice(void *context)
 {
     SettingsEntry *entry = context;
     SettingsScreens *screens = entry->owner;
     const SettingChoice *choice = entry->choice;
+#ifndef ECHO_LITE
     if (choice->slot - 1 == OPTION_THEME) {
         return open_theme_choice(entry);
     }
     if (choice->slot - 1 == OPTION_ACCENT) {
         return open_accent_choice(entry);
     }
+#endif
     bool slot = choice->slot != 0;
     ChoiceConfig config = {
         .title = i18n_text(choice->title),
@@ -545,12 +611,12 @@ static const char *choice_value(const void *context)
     if (entry->choice->slot - 1 == OPTION_THEME && theme_store_card()) {
         return theme_store_package()->name;
     }
-#endif
     if (entry->choice->slot - 1 == OPTION_ACCENT) {
         return default_theme_takes_accent(theme_store_package())
                    ? accent_name(current_accent(entry))
                    : "";
     }
+#endif
     if (current < 0 || current >= entry->choice->option_count) {
         return "";
     }
@@ -634,6 +700,31 @@ ECHO_RESIDENT static const SettingsLink LINKS[ROW_GROUP - ROW_BLUETOOTH] = {
     {STR_SETTINGS_RESCAN, request_rescan, NULL},
 };
 
+#ifdef ECHO_LITE
+ECHO_RESIDENT static const uint8_t ROWS[] = {
+    ROW_GROUP,          ROW_GROUP + 1,      ROW_GROUP + 2,
+    ROW_GROUP + 3,      ROW_GROUP + 4,      CHOICE_GAIN,
+    CHOICE_OUTPUT,      CHOICE_FILTER,      CHOICE_BALANCE,
+    CHOICE_BLUETOOTH_LEVEL, ROW_EQUALIZER,  CHOICE_BRIGHTNESS,
+    CHOICE_TIMEOUT,     CHOICE_ANIMATIONS,  ROW_FOLDERS,
+    ROW_RESCAN,         CHOICE_LYRICS,      CHOICE_ROCKER,
+    CHOICE_SWAP,        CHOICE_MENU_KEY,    CHOICE_POWER_ON,
+    CHOICE_LANGUAGE,    ROW_DATE_TIME,      CHOICE_AUTO_OFF,
+    CHOICE_SLEEP,       ROW_BLUETOOTH,      CHOICE_USB_MODE,
+    CHOICE_USB_PROMPT};
+
+enum {
+    SOUND_ROWS = 6,
+    DISPLAY_FIRST = SETTINGS_TOP_COUNT + SOUND_ROWS,
+    DISPLAY_ROWS = 3,
+    LIBRARY_FIRST = DISPLAY_FIRST + DISPLAY_ROWS,
+    LIBRARY_ROWS = 3,
+    BUTTONS_FIRST = LIBRARY_FIRST + LIBRARY_ROWS,
+    BUTTONS_ROWS = 4,
+    SYSTEM_FIRST = BUTTONS_FIRST + BUTTONS_ROWS,
+    SYSTEM_ROWS = 7
+};
+#else
 ECHO_RESIDENT static const uint8_t ROWS[] = {
     ROW_GROUP,          ROW_GROUP + 1,      ROW_GROUP + 2,
     ROW_GROUP + 3,      ROW_GROUP + 4,      CHOICE_GAIN,
@@ -661,6 +752,7 @@ enum {
     SYSTEM_FIRST = BUTTONS_FIRST + BUTTONS_ROWS,
     SYSTEM_ROWS = 7
 };
+#endif
 
 ECHO_RESIDENT static const SettingsGroupRows GROUPS[SETTINGS_GROUP_COUNT] = {
     {STR_SETTINGS_SOUND, SETTINGS_TOP_COUNT, SOUND_ROWS},
@@ -670,14 +762,24 @@ ECHO_RESIDENT static const SettingsGroupRows GROUPS[SETTINGS_GROUP_COUNT] = {
     {STR_SETTINGS_SYSTEM, SYSTEM_FIRST, SYSTEM_ROWS}};
 
 _Static_assert(sizeof ROWS == SYSTEM_FIRST + SYSTEM_ROWS, "the System group ends the rows");
+#ifndef ECHO_LITE
 _Static_assert((int)DISPLAY_ROWS == (int)SETTINGS_GROUP_ROWS_MAX,
                "the Display group is the longest and sizes the row buffer");
+#endif
 _Static_assert((int)SOUND_ROWS < (int)SETTINGS_GROUP_ROWS_MAX &&
-                   (int)LIBRARY_ROWS < (int)SETTINGS_GROUP_ROWS_MAX,
-               "the other groups fit the row buffer");
+                   (int)LIBRARY_ROWS < (int)SETTINGS_GROUP_ROWS_MAX &&
+                   (int)SYSTEM_ROWS < (int)SETTINGS_GROUP_ROWS_MAX,
+               "the groups fit the row buffer");
 
 static ScreenAction open_group(void *context);
 
+#ifdef ECHO_LITE
+static bool choice_shown(const void *context)
+{
+    (void)context;
+    return true;
+}
+#else
 static bool choice_shown(const void *context)
 {
     const SettingsEntry *entry = context;
@@ -686,13 +788,6 @@ static bool choice_shown(const void *context)
         return default_theme_takes_accent(package);
     }
     return entry->choice != &CHOICES[CHOICE_HIGHLIGHT] || default_theme_takes_highlight(package);
-}
-
-#ifdef ECHO_LITE
-static bool hidden_row(const void *context)
-{
-    (void)context;
-    return false;
 }
 #endif
 
@@ -728,19 +823,6 @@ static void fill_rows(SettingsScreens *screens, MenuItem *items, int first, int 
 {
     for (int index = 0; index < count; index++) {
         items[index] = row_item(screens, ROWS[first + index]);
-#ifdef ECHO_LITE
-        uint8_t choice = ROWS[first + index];
-        if (choice == CHOICE_SHUFFLE || choice == CHOICE_REPEAT || choice == CHOICE_THEME ||
-            choice == CHOICE_ACCENT || choice == CHOICE_HIGHLIGHT || choice == CHOICE_BATTERY ||
-            choice == CHOICE_STATUS_BAR || choice == CHOICE_CLOCK ||
-            choice == CHOICE_ORIENTATION || choice == CHOICE_HISTORY ||
-            choice == CHOICE_COVERS || choice == CHOICE_COVER_ORDER ||
-            choice == CHOICE_ARTIST_VIEW || choice == CHOICE_FOLDER_VIEW ||
-            choice == CHOICE_START) {
-            items[index].shown = hidden_row;
-            items[index].shown_context = NULL;
-        }
-#endif
     }
 }
 

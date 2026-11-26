@@ -6,7 +6,9 @@
 #include <stdint.h>
 
 #include "core/i18n.h"
+#ifndef ECHO_LITE
 #include "diagnostics_values.h"
+#endif
 #include "hal/power.h"
 #include "hal/storage.h"
 #include "hal/system.h"
@@ -512,7 +514,9 @@ ECHO_STARTUP_CODE Screen *app_screens_init(AppScreens *screens, AppScreensContex
     bluetooth_screen_init(&screens->bluetooth, context.bluetooth, theme);
     now_playing_screen_init(&screens->now_playing, now_playing);
     build_music(screens, context);
+#ifndef ECHO_LITE
     diagnostics_menu_build(screens, context.options, theme);
+#endif
     build_home(screens, context);
     return &screens->home.screen;
 }

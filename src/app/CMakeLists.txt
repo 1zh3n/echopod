@@ -1,3 +1,12 @@
+set(ECHO_DIAGNOSTICS_SOURCES)
+if(NOT ECHO_LITE)
+    list(APPEND ECHO_DIAGNOSTICS_SOURCES
+        diagnostics_values.c
+        diagnostics_rows.c
+        $<IF:$<BOOL:${ECHO_RELEASE}>,diagnostics_menu_release.c,diagnostics_menu.c>
+        screens/test_pattern_screen.c
+    )
+endif()
 add_library(echo_app STATIC
     app.c
     card_files.c
@@ -9,9 +18,7 @@ add_library(echo_app STATIC
     cover_cache.c
     default_theme.c
     favorites_store.c
-    diagnostics_values.c
-    diagnostics_rows.c
-    $<IF:$<BOOL:${ECHO_RELEASE}>,diagnostics_menu_release.c,diagnostics_menu.c>
+    ${ECHO_DIAGNOSTICS_SOURCES}
     equalizer_files.c
     equalizer_store.c
     folders_store.c
@@ -40,7 +47,6 @@ add_library(echo_app STATIC
     screens/playback_panel_screen.c
     screens/up_next_screen.c
     screens/stopwatch_screen.c
-    screens/test_pattern_screen.c
 )
 target_include_directories(echo_app PUBLIC include PRIVATE .)
 if(ECHO_NO_COVERS)

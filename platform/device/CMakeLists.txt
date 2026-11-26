@@ -248,6 +248,9 @@ if(CMAKE_CROSSCOMPILING)
         PROPERTIES COMPILE_OPTIONS -Os
     )
 endif()
+if(ECHO_LITE)
+    target_compile_definitions(echo_device PRIVATE ECHO_LITE)
+endif()
 target_link_libraries(echo_device PRIVATE echo_app echo_device_logic echo_options echo_lto)
 list(TRANSFORM ECHO_OVERLAY_IMPORTS PREPEND "-Wl,--require-defined=" OUTPUT_VARIABLE
     ECHO_OVERLAY_IMPORT_OPTIONS)
