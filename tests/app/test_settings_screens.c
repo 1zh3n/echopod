@@ -11,16 +11,17 @@
 #include "theme_store.h"
 
 enum {
-    TOP_GROUPS = 5
+    TOP_GROUPS = 4
 };
 
 static SettingsScreens screens;
 
 static const char *const TOP[SETTINGS_TOP_COUNT] = {
-    "Shuffle", "Repeat",  "Bluetooth", "Equalizer", "Sleep timer",
-    "Sound",   "Display", "Library",   "Buttons",   "System"};
+    "Shuffle", "Repeat", "Bluetooth", "Sleep timer", "Sound",
+    "Display", "Library", "Buttons",    "System"};
 
-static const char *const SOUND[] = {"Gain", "Output", "Filter", "Balance", "Bluetooth level"};
+static const char *const SOUND[] = {"Gain",          "Output", "Filter",
+                                    "Balance",       "Bluetooth level", "Equalizer"};
 static const char *const DISPLAY[] = {
     "Theme",       "Accent color", "Highlight",       "Brightness",          "Screen timeout",
     "Orientation", "Animations",   "Battery percent", "Portrait status bar", "Clock"};
