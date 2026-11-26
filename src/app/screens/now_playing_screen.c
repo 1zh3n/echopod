@@ -952,17 +952,17 @@ static void draw_outline(Canvas *canvas, Rect area, Color color)
 #endif
 
 #ifdef ECHO_LITE
-static const IconMask *lite_mode_icon(PlaybackMode mode)
+static const IconMask *lite_mode_icon_18(PlaybackMode mode)
 {
     switch (mode) {
     case PLAYBACK_RANDOM:
-        return &LITE_ICON_SHUFFLE;
+        return &LITE_ICON_SHUFFLE_18;
     case PLAYBACK_LOOP:
-        return &LITE_ICON_LOOP;
+        return &LITE_ICON_LOOP_18;
     case PLAYBACK_ONE:
-        return &LITE_ICON_LOOP_ONE;
+        return &LITE_ICON_LOOP_ONE_18;
     }
-    return &LITE_ICON_LOOP;
+    return &LITE_ICON_LOOP_18;
 }
 
 static void draw_lite_state(const NowPlayingScreen *now_playing, Canvas *canvas)
@@ -972,12 +972,11 @@ static void draw_lite_state(const NowPlayingScreen *now_playing, Canvas *canvas)
     }
     const Theme *theme = now_playing->config.theme;
     PlaybackMode mode = player_playback_mode(now_playing->config.player);
-    lite_icon_draw_scaled(canvas, lite_mode_icon(mode), (Rect){262, 8, 18, 18},
+    lite_icon_draw_scaled(canvas, lite_mode_icon_18(mode), (Rect){262, 8, 18, 18},
                           theme->colors->selection_background);
-    ThemeIconId state = now_playing->status.state == PLAYER_PLAYING ? THEME_ICON_BADGE_PAUSE
-                                                                    : THEME_ICON_BADGE_PLAY;
-    icon_draw(canvas, theme,
-              (Icon){.id = state, .area = {288, 8, 18, 18}, .color = theme->colors->text});
+    const IconMask *state = now_playing->status.state == PLAYER_PLAYING ? &LITE_ICON_PAUSE_18
+                                                                        : &LITE_ICON_PLAY_18;
+    lite_icon_draw_scaled(canvas, state, (Rect){288, 8, 18, 18}, theme->colors->text);
 }
 #endif
 

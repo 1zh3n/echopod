@@ -292,6 +292,15 @@ static void open_all_songs_and_play(void)
     CHECK(title_is("Now Playing"));
 }
 
+static void now_playing_uses_native_18px_icons(void)
+{
+    start_app_with_library();
+    open_all_songs_and_play();
+    wait_ms(300);
+    CHECK(area_has_color(262, 8, 18, 18, COLOR_RGB(0, 111, 238)));
+    CHECK(area_has_color(288, 8, 18, 18, COLOR_RGB(10, 10, 10)));
+}
+
 static void quick_panel_is_icon_only(void)
 {
     start_app_with_library();
@@ -357,6 +366,7 @@ static void long_menu_on_the_panel_closes_it_without_opening_settings(void)
 int main(void)
 {
     TestCase cases[] = {
+        TEST_CASE(now_playing_uses_native_18px_icons),
         TEST_CASE(quick_panel_is_icon_only),
         TEST_CASE(quick_panel_sleep_value_fits),
         TEST_CASE(short_menu_on_the_panel_returns_to_now_playing),
