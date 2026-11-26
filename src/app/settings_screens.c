@@ -1,5 +1,7 @@
 #include "settings_screens.h"
 
+#include "settings_scene.h"
+
 #include "core/i18n.h"
 #include "core/resident.h"
 #include "default_theme.h"
@@ -860,6 +862,9 @@ Screen *settings_screens_init(SettingsScreens *screens, SettingsContext context,
     MenuConfig menu = {.title = i18n_text(STR_MENU_SETTINGS),
                        .items = screens->items,
                        .item_count = SETTINGS_TOP_COUNT,
-                       .theme = theme};
-    return menu_screen_init(&screens->menu, menu);
+                       .theme = theme,
+                       .scene = settings_scene()};
+    Screen *screen = menu_screen_init(&screens->menu, menu);
+    screens->menu.list.visible_rows = SETTINGS_TOP_COUNT;
+    return screen;
 }

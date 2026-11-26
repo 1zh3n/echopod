@@ -32,6 +32,7 @@ add_library(echo_app STATIC
     player.c
     scrobbler_log.c
     settings_screens.c
+    settings_scene.c
     settings_store.c
     theme_assets.c
     theme_store.c

@@ -205,6 +205,18 @@ static void charging_screen_has_green_shadow_and_no_text(void)
     CHECK(pixels[85 * HAL_DISPLAY_WIDTH + 160] != DEFAULT_THEME.colors->header_background);
 }
 
+static void settings_has_half_gear(void)
+{
+    start_app_with_library();
+    move_down(2);
+    tap(KEY_PLAY);
+    wait_ms(300);
+    CHECK(title_is("Settings"));
+    CHECK(fake_hal_pixel(39, 95) == COLOR_RGB(139, 92, 246));
+    CHECK(fake_hal_pixel(51, 95) == COLOR_RGB(255, 255, 255));
+    CHECK(fake_hal_pixel(160, 40) == COLOR_RGB(0, 111, 238));
+}
+
 static void lite_settings_still_opens_after_diagnostics_removed(void)
 {
     start_app_with_library();
@@ -307,6 +319,7 @@ int main(void)
         TEST_CASE(badge_draws_flat_circle_and_half),
         TEST_CASE(compact_icons_are_native_18px),
         TEST_CASE(lite_animation_arena_is_available),
+        TEST_CASE(settings_has_half_gear),
         TEST_CASE(lite_settings_still_opens_after_diagnostics_removed),
         TEST_CASE(lite_settings_groups_have_only_visible_rows),
         TEST_CASE(lite_settings_rows_are_compact),
