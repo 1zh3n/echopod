@@ -19,7 +19,9 @@ enum {
     ROOT_FOLDER = 0
 };
 
+#ifndef ECHO_LITE
 static const char STAR[] = "\xE2\x98\x85";
+#endif
 
 static Screen *open_level(BrowsePool *pool, int level, BrowseQuery query, SpokenKind shelf);
 
@@ -120,6 +122,7 @@ static bool item_at(const BrowseScreen *browse, int index, BrowseItem *item)
                                      source_position(browse, index), item);
 }
 
+#ifndef ECHO_LITE
 static bool is_favorite(const BrowseScreen *browse, BrowseItem item)
 {
     const FavoritesStore *favorites = browse->pool->config.favorites;
@@ -139,6 +142,7 @@ static void mark_favorite(char *detail)
         string_builder_append(&builder, year);
     }
 }
+#endif
 
 static void describe_spoken(const BrowseScreen *browse, BrowseItem item, char *detail)
 {
@@ -174,9 +178,11 @@ static void load_row(BrowseScreen *browse, BrowseRows *rows, int row, int index)
     if (item.kind == BROWSE_ITEM_ALBUM && theme_is_portrait(browse->pool->config.theme)) {
         rows->details[row][0] = '\0';
     }
+#ifndef ECHO_LITE
     if (is_favorite(browse, item)) {
         mark_favorite(rows->details[row]);
     }
+#endif
     describe_spoken(browse, item, rows->details[row]);
 }
 
@@ -462,6 +468,7 @@ static ScreenAction select_row(void *context, int index)
     return open_child(browse, item);
 }
 
+#ifndef ECHO_LITE
 static void keep_audio_fed(void *context)
 {
     (void)context;
@@ -488,6 +495,7 @@ static void collect_favorites(BrowseScreen *browse)
     browse->count = browse->pool->favorite_count;
     list_view_select(&browse->list, browse->list.selected, browse->now_ms);
 }
+#endif
 
 #ifndef ECHO_LITE
 static ScreenAction toggle_favorite(void *context, int index)
@@ -603,9 +611,11 @@ static void enter(void *context, uint32_t now_ms)
         forget_rows(browse);
     }
     browse->now_ms = now_ms;
+#ifndef ECHO_LITE
     if (browse->favorites_only) {
         collect_favorites(browse);
     }
+#endif
     list_view_restart_marquee(&browse->list, now_ms);
     refresh_rows(browse);
 }
@@ -714,6 +724,7 @@ Screen *browse_pool_open(BrowsePool *pool, int level, BrowseQuery query)
     return open_level(pool, level, query, SPOKEN_NONE);
 }
 
+#ifndef ECHO_LITE
 Screen *browse_pool_open_favorites(BrowsePool *pool, int level)
 {
     if (pool->config.favorites == NULL) {
@@ -731,6 +742,7 @@ Screen *browse_pool_open_favorites(BrowsePool *pool, int level)
     collect_favorites(browse);
     return screen;
 }
+#endif
 
 static BrowseQuery shelf_query(const BrowsePool *pool, SpokenKind shelf, bool *found)
 {

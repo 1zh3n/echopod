@@ -114,9 +114,11 @@ static Screen *browse_screen_for(BrowseEntry *entry)
         }
     }
 #endif
+#ifndef ECHO_LITE
     if (entry->favorites) {
         return browse_pool_open_favorites(entry->pool, 0);
     }
+#endif
     if (entry->shelf != SPOKEN_NONE) {
         return browse_pool_open_shelf(entry->pool, 0, entry->shelf);
     }

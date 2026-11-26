@@ -19,7 +19,9 @@
 #include "cover_cache.h"
 #include "default_theme.h"
 #include "equalizer_store.h"
+#ifndef ECHO_LITE
 #include "favorites_store.h"
+#endif
 #include "frame_overlay.h"
 #include "gfx/frame_diff.h"
 #include "gfx/strip_renderer.h"
@@ -139,7 +141,9 @@ typedef struct AppState {
     Player player;
     SettingsStore settings;
     EqualizerStore equalizer;
+#ifndef ECHO_LITE
     FavoritesStore favorites;
+#endif
     SpokenStore spoken;
 #ifndef ECHO_LITE
     ListenHistory history;
@@ -934,7 +938,9 @@ static void start_playback(void)
     player_init(&app.player, &app.library.library);
     settings_store_restore_playback(&app.settings, &app.player, hal_clock_microseconds());
     player_restore(&app.player);
+#ifndef ECHO_LITE
     favorites_store_load(&app.favorites, &app.library.library);
+#endif
     spoken_store_load(&app.spoken, &app.library.library);
     player_set_resume(&app.player, spoken_store_resume(&app.spoken));
     cover_cache_open(&app.covers, &app.library.library);
@@ -968,7 +974,11 @@ static void start_screens(uint32_t now_ms)
         .player = &app.player,
         .spoken = &app.spoken,
         .settings = &app.settings,
+#ifdef ECHO_LITE
+        .favorites = NULL,
+#else
         .favorites = &app.favorites,
+#endif
         .power = &app.power,
         .toast = &app.toast,
         .covers = &app.covers,
