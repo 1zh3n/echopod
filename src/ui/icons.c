@@ -116,6 +116,7 @@ void icon_draw_bluetooth(Canvas *canvas, Rect area, Color color)
     }
 }
 
+#ifdef ECHO_LITE
 static void icon_draw_folder(Canvas *canvas, Rect area, Color color)
 {
     int width = area.width;
@@ -188,6 +189,7 @@ static void icon_draw_gear(Canvas *canvas, Rect area, Color color)
                             height - diagonal * 2},
                      color);
 }
+#endif
 
 typedef void (*Shape)(Canvas *canvas, Rect area, Color color);
 
@@ -204,11 +206,13 @@ static const Shape SHAPES[THEME_ICON_COUNT] = {
     [THEME_ICON_STATUS_PAUSE_LARGE] = icon_draw_pause,
     [THEME_ICON_STATUS_BLUETOOTH_LARGE] = icon_draw_bluetooth,
     [THEME_ICON_STATUS_BOLT_LARGE] = icon_draw_bolt,
+#ifdef ECHO_LITE
     [THEME_ICON_HOME_MUSIC] = icon_draw_folder,
     [THEME_ICON_HOME_AUDIOBOOKS] = icon_draw_list,
     [THEME_ICON_HOME_PODCASTS] = icon_draw_playlist,
     [THEME_ICON_HOME_NOW_PLAYING] = icon_draw_now_playing,
     [THEME_ICON_HOME_SETTINGS] = icon_draw_gear,
+#endif
 };
 
 static uint8_t mask_level(const IconMask *mask, int column, int row)
