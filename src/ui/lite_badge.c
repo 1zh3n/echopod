@@ -92,6 +92,14 @@ static void draw_half(Canvas *canvas, Point center, int radius, const LiteBadgeS
     }
 }
 
+void lite_shape_fill_circle(Canvas *canvas, Point center, int radius, Color color)
+{
+    if (canvas == NULL || radius <= 0) {
+        return;
+    }
+    draw_circle_fill(canvas, center, radius, color);
+}
+
 void lite_badge_draw_circle(Canvas *canvas, Point center, int radius,
                             const LiteBadgeStyle *style)
 {

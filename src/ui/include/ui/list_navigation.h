@@ -10,6 +10,7 @@ typedef struct ListSelection {
     ScreenAction (*select)(void *context, int index);
     ScreenAction (*hold)(void *context, int index);
     void *context;
+    void *hold_context;
 } ListSelection;
 
 ScreenAction list_navigation_handle(ListView *view, KeyEvent event, uint32_t now_ms,

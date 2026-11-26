@@ -5,20 +5,24 @@
 #include <stddef.h>
 
 #include "gfx/text.h"
+#include "settings_screens.h"
 #include "ui/label.h"
 #include "ui/lite_badge.h"
 #include "ui/lite_color_icons.h"
 #include "ui/lite_frame.h"
+#include "ui/lite_icons.h"
 
 enum {
     SETTINGS_ICON_X = 8,
     SETTINGS_ICON_Y = 95,
     SETTINGS_ICON_RADIUS = 62,
+    SETTINGS_CATEGORY_LEFT = 12,
+    SETTINGS_CATEGORY_TOP = 68,
+    SETTINGS_CATEGORY_SIZE = 54,
     SETTINGS_GEAR_LEFT = 9,
     SETTINGS_GEAR_TOP = 65,
     SETTINGS_GEAR_SIZE = 60,
     SETTINGS_TEXT_X = 84,
-    SETTINGS_TEXT_WIDTH = 200,
     SETTINGS_CHEVRON_RIGHT = 296,
     SETTINGS_CARD_X = 8,
     SETTINGS_CARD_WIDTH = 304,
@@ -26,7 +30,29 @@ enum {
     SETTINGS_CARD_HEIGHT = 134,
     SETTINGS_CARD_BORDER = 2,
     SETTINGS_DIVIDER_X = 24,
-    SETTINGS_DIVIDER_WIDTH = 280
+    SETTINGS_DIVIDER_WIDTH = 280,
+    SETTINGS_DOT_X = 254,
+    SETTINGS_DOT_Y = 18,
+    SETTINGS_DOT_GAP = 12
+};
+
+typedef struct CategoryVisual {
+    Color base;
+    Color light;
+    Color dark;
+    const IconMask *glyph;
+} CategoryVisual;
+
+static const CategoryVisual CATEGORIES[SETTINGS_GROUP_COUNT] = {
+    {COLOR_RGB(47, 168, 255), COLOR_RGB(139, 215, 255), COLOR_RGB(22, 119, 200),
+     &LITE_ICON_CATEGORY_SOUND},
+    {COLOR_RGB(53, 199, 232), COLOR_RGB(139, 227, 245), COLOR_RGB(14, 116, 144),
+     &LITE_ICON_CATEGORY_DISPLAY},
+    {COLOR_RGB(255, 159, 28), COLOR_RGB(255, 211, 122), COLOR_RGB(200, 106, 0),
+     &LITE_ICON_CATEGORY_LIBRARY},
+    {COLOR_RGB(245, 158, 11), COLOR_RGB(252, 211, 77), COLOR_RGB(180, 83, 9),
+     &LITE_ICON_CATEGORY_BUTTONS},
+    {COLOR_RGB(139, 92, 246), COLOR_RGB(196, 167, 250), COLOR_RGB(91, 33, 182), NULL},
 };
 
 static const char CHEVRON[] = ">";
@@ -38,59 +64,149 @@ static bool settings_scene_update(void *context, uint32_t now_ms)
     return true;
 }
 
+static void draw_category_title(Canvas *canvas, const Theme *theme, int group)
+{
+    TextStyle style = {.font = theme->fonts.title, .color = theme->colors->text};
+    int x = 16 + text_width(style.font, "Settings") + 6;
+    label_draw(canvas, style, (Label){.area = {x, 8, text_width(style.font, "/") + 2, 20},
+                                      .text = "/"});
+    x += text_width(style.font, "/") + 6;
+    label_draw(canvas, style,
+               (Label){.area = {x, 8, 180, 20}, .text = settings_category_title(group)});
+}
+
+static void draw_category_dots(Canvas *canvas, const Theme *theme, int group)
+{
+    for (int index = 0; index < SETTINGS_GROUP_COUNT; index++) {
+        Point center = {SETTINGS_DOT_X + index * SETTINGS_DOT_GAP, SETTINGS_DOT_Y};
+        if (index == group) {
+            lite_shape_fill_circle(canvas, center, 4, theme->colors->text);
+            lite_shape_fill_circle(canvas, center, 2, CATEGORIES[index].base);
+        } else {
+            lite_shape_fill_circle(canvas, center, 3, CATEGORIES[index].base);
+        }
+    }
+}
+
+static void draw_category_glyph(Canvas *canvas, int group)
+{
+    if (CATEGORIES[group].glyph != NULL) {
+        lite_icon_draw_scaled(
+            canvas, CATEGORIES[group].glyph,
+            (Rect){SETTINGS_CATEGORY_LEFT, SETTINGS_CATEGORY_TOP, SETTINGS_CATEGORY_SIZE,
+                   SETTINGS_CATEGORY_SIZE},
+            COLOR_RGB(255, 255, 255));
+        return;
+    }
+    color_icon_draw_glyph_scaled(
+        canvas, &LITE_COLOR_ICON_GEAR,
+        (Rect){SETTINGS_GEAR_LEFT, SETTINGS_GEAR_TOP, SETTINGS_GEAR_SIZE, SETTINGS_GEAR_SIZE},
+        (Rect){13, 13, 38, 38});
+}
+
 static bool settings_scene_draw(void *context, Canvas *canvas, MenuScreen *menu)
 {
-    (void)context;
+    SettingsScreens *screens = context;
     const Theme *theme = menu->config.theme;
     const ThemeColors *colors = theme->colors;
+    int group = screens != NULL ? screens->shown : SETTINGS_SOUND;
+    if (group < 0 || group >= SETTINGS_GROUP_COUNT) {
+        group = SETTINGS_SOUND;
+    }
+    const CategoryVisual *visual = &CATEGORIES[group];
     Rect rows = lite_list_frame(canvas, theme, menu->config.title);
     int count = menu->model.count(menu->model.context);
     int selected = menu->list.selected;
     int row_height = theme->metrics.row_height;
+    int top = menu->list.top;
+    int visible = menu->list.visible_rows;
+    if (visible <= 0) {
+        visible = SETTINGS_TOP_COUNT;
+    }
 
-    int selected_y = rows.y + selected * row_height;
-    canvas_fill_rect(canvas,
-                     (Rect){SETTINGS_CARD_X, selected_y, SETTINGS_CARD_WIDTH, row_height},
-                     colors->selection_background);
+    draw_category_title(canvas, theme, group);
+    draw_category_dots(canvas, theme, group);
 
-    for (int index = 1; index < count; index++) {
-        int y = rows.y + index * row_height;
+    int selected_position = selected - top;
+    if (selected_position >= 0 && selected_position < visible) {
+        int selected_y = rows.y + selected_position * row_height;
+        canvas_fill_rect(canvas,
+                         (Rect){SETTINGS_CARD_X, selected_y, SETTINGS_CARD_WIDTH, row_height},
+                         colors->selection_background);
+    }
+
+    for (int position = 1; position < visible; position++) {
+        int y = rows.y + position * row_height;
         canvas_fill_rect(canvas,
                          (Rect){SETTINGS_DIVIDER_X, y, SETTINGS_DIVIDER_WIDTH, 1},
                          colors->divider);
     }
 
     LiteBadgeStyle badge = {
-        .base = COLOR_RGB(139, 92, 246),
-        .light = COLOR_RGB(196, 167, 250),
-        .dark = COLOR_RGB(91, 33, 182),
+        .base = visual->base,
+        .light = visual->light,
+        .dark = visual->dark,
         .ink = colors->text,
         .shadow = colors->text,
     };
     lite_badge_draw_half(canvas, (Point){SETTINGS_ICON_X, SETTINGS_ICON_Y},
                          SETTINGS_ICON_RADIUS, &badge);
-    color_icon_draw_glyph_scaled(
-        canvas, &LITE_COLOR_ICON_GEAR,
-        (Rect){SETTINGS_GEAR_LEFT, SETTINGS_GEAR_TOP, SETTINGS_GEAR_SIZE, SETTINGS_GEAR_SIZE},
-        (Rect){13, 13, 38, 38});
+    draw_category_glyph(canvas, group);
 
     TextStyle label_style = {.font = theme->fonts.body};
+    TextStyle value_style = {.font = theme->fonts.small};
     TextStyle chevron_style = {.font = theme->fonts.small};
-    for (int index = 0; index < count; index++) {
-        int y = rows.y + index * row_height;
+    int chevron_width = text_width(chevron_style.font, CHEVRON);
+    for (int position = 0; position < visible; position++) {
+        int index = top + position;
+        if (index >= count) {
+            break;
+        }
+        int y = rows.y + position * row_height;
         bool is_selected = index == selected;
+        bool opens = menu->model.opens != NULL && menu->model.opens(menu->model.context, index);
+        const char *value =
+            menu->model.detail != NULL ? menu->model.detail(menu->model.context, index) : NULL;
+        int right = SETTINGS_CHEVRON_RIGHT;
+        if (opens) {
+            right -= chevron_width + theme->metrics.detail_gap;
+        }
+        int value_width = value != NULL ? text_width(value_style.font, value) : 0;
+        int value_left = right - value_width;
+        int label_width = value_left - SETTINGS_TEXT_X - 4;
+        if (label_width < 0) {
+            label_width = 0;
+        }
         label_style.color = is_selected ? colors->selection_text : colors->text;
         label_draw(canvas, label_style,
-                   (Label){.area = {SETTINGS_TEXT_X, y, SETTINGS_TEXT_WIDTH, row_height},
+                   (Label){.area = {SETTINGS_TEXT_X, y, label_width, row_height},
                            .text = menu->model.label(menu->model.context, index)});
-        if (menu->model.opens != NULL && !menu->model.opens(menu->model.context, index)) {
+        if (value != NULL) {
+            value_style.color = is_selected ? colors->selection_text : colors->text_secondary;
+            label_draw(canvas, value_style,
+                       (Label){.area = {value_left, y, value_width, row_height}, .text = value});
+        }
+        if (!opens) {
             continue;
         }
         chevron_style.color = is_selected ? colors->selection_text : colors->chevron;
-        int width = text_width(chevron_style.font, CHEVRON);
         label_draw(canvas, chevron_style,
-                   (Label){.area = {SETTINGS_CHEVRON_RIGHT - width, y, width, row_height},
+                   (Label){.area = {SETTINGS_CHEVRON_RIGHT - chevron_width, y, chevron_width,
+                                    row_height},
                            .text = CHEVRON});
+    }
+
+    if (count > visible) {
+        int track_x = SETTINGS_CARD_X + SETTINGS_CARD_WIDTH - 6;
+        int track_height = rows.height;
+        int thumb_height = track_height * visible / count;
+        if (thumb_height < 8) {
+            thumb_height = 8;
+        }
+        int hidden = count - visible;
+        int thumb_y = rows.y + (track_height - thumb_height) * top / hidden;
+        canvas_fill_rect(canvas, (Rect){track_x, thumb_y, 2, thumb_height},
+                         colors->scrollbar_thumb);
     }
 
     canvas_fill_rect(canvas,
@@ -104,12 +220,12 @@ static bool settings_scene_draw(void *context, Canvas *canvas, MenuScreen *menu)
     return true;
 }
 
-MenuScene *settings_scene(void)
+MenuScene *settings_scene(struct SettingsScreens *screens)
 {
     static MenuScene scene;
     scene.update = settings_scene_update;
     scene.draw = settings_scene_draw;
-    scene.context = NULL;
+    scene.context = screens;
     scene.on = true;
     return &scene;
 }

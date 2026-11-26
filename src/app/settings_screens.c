@@ -604,6 +604,30 @@ static ScreenAction open_choice(void *context)
     return screen_action_push(choice_screen_init(&screens->choice, config));
 }
 
+#ifdef ECHO_LITE
+static ScreenAction cycle_choice(void *context)
+{
+    SettingsEntry *entry = context;
+    SettingsScreens *screens = entry->owner;
+    const SettingChoice *choice = entry->choice;
+    if (choice->option_count <= 0 || (choice->slot == 0 && choice->current == NULL)) {
+        return screen_action_none();
+    }
+    int current = choice->slot != 0 ? current_slot(entry)
+                                    : choice->current(&screens->context);
+    if (current < 0 || current >= choice->option_count) {
+        current = 0;
+    }
+    int next = (current + 1) % choice->option_count;
+    if (choice->slot != 0) {
+        choose_slot(entry, next);
+    } else if (choice->choose != NULL) {
+        choice->choose(&screens->context, next);
+    }
+    return screen_action_none();
+}
+#endif
+
 static const char *choice_value(const void *context)
 {
     const SettingsEntry *entry = context;
@@ -773,7 +797,9 @@ _Static_assert((int)SOUND_ROWS < (int)SETTINGS_GROUP_ROWS_MAX &&
                    (int)SYSTEM_ROWS < (int)SETTINGS_GROUP_ROWS_MAX,
                "the groups fit the row buffer");
 
+#ifndef ECHO_LITE
 static ScreenAction open_group(void *context);
+#endif
 
 #ifdef ECHO_LITE
 static bool choice_shown(const void *context)
@@ -793,23 +819,36 @@ static bool choice_shown(const void *context)
 }
 #endif
 
+#ifdef ECHO_LITE
+enum { CYCLE_OPTION_LIMIT = 6 };
+#endif
+
 static MenuItem row_item(SettingsScreens *screens, int row)
 {
     if (row < SETTINGS_CHOICE_COUNT) {
+        ScreenAction (*select)(void *) = open_choice;
+        bool opens = true;
+#ifdef ECHO_LITE
+        bool cycle = CHOICES[row].option_count <= CYCLE_OPTION_LIMIT;
+        select = cycle ? cycle_choice : open_choice;
+        opens = !cycle;
+#endif
         return (MenuItem){.label = i18n_text(CHOICES[row].title),
-                          .select = open_choice,
+                          .select = select,
                           .context = &screens->entries[row],
                           .value = choice_value,
-                          .opens = true,
+                          .opens = opens,
                           .shown = choice_shown,
                           .shown_context = &screens->entries[row]};
     }
+#ifndef ECHO_LITE
     if (row >= ROW_GROUP) {
         return (MenuItem){.label = i18n_text(GROUPS[row - ROW_GROUP].title),
                           .select = open_group,
                           .context = &screens->links[row - ROW_GROUP],
                           .opens = true};
     }
+#endif
     SettingsContext *settings = &screens->context;
     void *contexts[] = {settings->bluetooth, settings->equalizer, settings->date_time,
                         settings->folders, settings};
@@ -828,6 +867,7 @@ static void fill_rows(SettingsScreens *screens, MenuItem *items, int first, int 
     }
 }
 
+#ifndef ECHO_LITE
 static ScreenAction open_group(void *context)
 {
     SettingsGroupLink *link = context;
@@ -844,16 +884,69 @@ static ScreenAction open_group(void *context)
     screens->shown = link->group;
     return screen_action_push(&screens->group.screen);
 }
+#endif
+
+#ifdef ECHO_LITE
+static void settings_show_category(SettingsScreens *screens, int group, int selected)
+{
+    const SettingsGroupRows *rows = &GROUPS[group];
+    screens->shown = (uint8_t)group;
+    fill_rows(screens, screens->rows, rows->first, rows->count);
+    screens->menu.config.items = screens->rows;
+    screens->menu.config.item_count = rows->count;
+    screens->menu.list.top = 0;
+    list_view_select(&screens->menu.list, selected, 0);
+    screens->menu.list.visible_rows = SETTINGS_TOP_COUNT;
+}
+
+static ScreenAction next_category(void *context, int index)
+{
+    (void)index;
+    SettingsScreens *screens = context;
+    screens->selected[screens->shown] = (uint8_t)screens->menu.list.selected;
+    int group = (screens->shown + 1) % SETTINGS_GROUP_COUNT;
+    settings_show_category(screens, group, screens->selected[group]);
+    return screen_action_none();
+}
+
+const char *settings_category_title(int group)
+{
+    if (group < 0 || group >= SETTINGS_GROUP_COUNT) {
+        group = SETTINGS_SOUND;
+    }
+    return i18n_text(GROUPS[group].title);
+}
+#endif
 
 Screen *settings_screens_init(SettingsScreens *screens, SettingsContext context, const Theme *theme)
 {
     screens->context = context;
     screens->theme = theme;
-    screens->shown = 0;
-    screens->group.list.selected = 0;
     for (int index = 0; index < SETTINGS_CHOICE_COUNT; index++) {
         screens->entries[index] = (SettingsEntry){.choice = &CHOICES[index], .owner = screens};
     }
+#ifdef ECHO_LITE
+    screens->shown = SETTINGS_SOUND;
+    for (int group = 0; group < SETTINGS_GROUP_COUNT; group++) {
+        screens->selected[group] = 0;
+    }
+    fill_rows(screens, screens->rows, GROUPS[SETTINGS_SOUND].first,
+              GROUPS[SETTINGS_SOUND].count);
+    MenuConfig menu = {.title = i18n_text(STR_MENU_SETTINGS),
+                       .items = screens->rows,
+                       .item_count = GROUPS[SETTINGS_SOUND].count,
+                       .theme = theme,
+                       .scene = settings_scene(screens),
+                       .hold = next_category,
+                       .hold_context = screens};
+    Screen *screen = menu_screen_init(&screens->menu, menu);
+    screens->menu.screen.select_on_press = false;
+    screens->menu.list.visible_rows = SETTINGS_TOP_COUNT;
+    list_view_select(&screens->menu.list, 0, 0);
+    return screen;
+#else
+    screens->shown = 0;
+    screens->group.list.selected = 0;
     for (int group = 0; group < SETTINGS_GROUP_COUNT; group++) {
         screens->links[group] = (SettingsGroupLink){.owner = screens, .group = (uint8_t)group};
         screens->selected[group] = 0;
@@ -863,12 +956,6 @@ Screen *settings_screens_init(SettingsScreens *screens, SettingsContext context,
                        .items = screens->items,
                        .item_count = SETTINGS_TOP_COUNT,
                        .theme = theme};
-#ifdef ECHO_LITE
-    menu.scene = settings_scene();
+    return menu_screen_init(&screens->menu, menu);
 #endif
-    Screen *screen = menu_screen_init(&screens->menu, menu);
-#ifdef ECHO_LITE
-    screens->menu.list.visible_rows = SETTINGS_TOP_COUNT;
-#endif
-    return screen;
 }

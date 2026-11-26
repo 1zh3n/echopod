@@ -29,6 +29,17 @@ static void step(void)
     app_step();
 }
 
+static unsigned area_hash(int x, int y, int width, int height)
+{
+    unsigned hash = 0;
+    for (int row = y; row < y + height; row++) {
+        for (int column = x; column < x + width; column++) {
+            hash = hash * 33 + fake_hal_pixel(column, row);
+        }
+    }
+    return hash;
+}
+
 static bool area_has_color(int x, int y, int width, int height, Color color)
 {
     for (int row = y; row < y + height; row++) {
@@ -129,6 +140,14 @@ static void badge_draws_flat_circle_and_half(void)
     CHECK(canvas_pixel_at(&canvas, 19, 80) == COLOR_RGB(250, 250, 249));
 }
 
+static void category_icons_are_40px(void)
+{
+    CHECK_EQUAL(40, LITE_ICON_CATEGORY_SOUND.width);
+    CHECK_EQUAL(40, LITE_ICON_CATEGORY_DISPLAY.height);
+    CHECK_EQUAL(40, LITE_ICON_CATEGORY_LIBRARY.width);
+    CHECK_EQUAL(40, LITE_ICON_CATEGORY_BUTTONS.height);
+}
+
 static void compact_icons_are_native_18px(void)
 {
     CHECK_EQUAL(18, LITE_ICON_SHUFFLE_18.width);
@@ -217,71 +236,68 @@ static void charging_screen_has_green_shadow_and_no_text(void)
     CHECK(pixels[85 * HAL_DISPLAY_WIDTH + 160] != DEFAULT_THEME.colors->header_background);
 }
 
-static void settings_has_half_gear(void)
+static void settings_starts_on_sound(void)
 {
     start_app_with_library();
     move_down(2);
     tap(KEY_PLAY);
     wait_ms(300);
     CHECK(title_is("Settings"));
-    CHECK(fake_hal_pixel(39, 95) == COLOR_RGB(139, 92, 246));
-    CHECK(fake_hal_pixel(51, 95) == COLOR_RGB(255, 255, 255));
+    CHECK(fake_hal_pixel(20, 50) == COLOR_RGB(47, 168, 255));
     CHECK(fake_hal_pixel(160, 40) == COLOR_RGB(0, 111, 238));
 }
 
-static void lite_settings_still_opens_after_diagnostics_removed(void)
+static void settings_long_press_switches_category(void)
 {
     start_app_with_library();
     move_down(2);
     tap(KEY_PLAY);
+    wait_ms(300);
+    hold(KEY_PLAY);
+    wait_ms(100);
     CHECK(title_is("Settings"));
-    tap(KEY_PLAY);
-    CHECK(title_is("Sound"));
-    tap(KEY_BACK);
-    CHECK(title_is("Settings"));
+    CHECK(fake_hal_pixel(20, 50) == COLOR_RGB(53, 199, 232));
+    hold(KEY_PLAY);
+    wait_ms(100);
+    CHECK(fake_hal_pixel(20, 50) == COLOR_RGB(255, 159, 28));
+    hold(KEY_PLAY);
+    wait_ms(100);
+    CHECK(fake_hal_pixel(20, 50) == COLOR_RGB(245, 158, 11));
+    hold(KEY_PLAY);
+    wait_ms(100);
+    CHECK(fake_hal_pixel(20, 50) == COLOR_RGB(139, 92, 246));
+    CHECK(fake_hal_pixel(39, 95) == COLOR_RGB(139, 92, 246));
+    CHECK(fake_hal_pixel(51, 95) == COLOR_RGB(255, 255, 255));
+    CHECK(fake_hal_pixel(302, 18) == COLOR_RGB(139, 92, 246));
 }
 
-static void lite_settings_groups_have_only_visible_rows(void)
+static void settings_short_press_cycles_value(void)
 {
     start_app_with_library();
     move_down(2);
     tap(KEY_PLAY);
+    wait_ms(300);
+    unsigned before = area_hash(250, 30, 46, 26);
+    int depth = app_screen_depth();
+    tap(KEY_PLAY);
+    wait_ms(100);
     CHECK(title_is("Settings"));
-    tap(KEY_PLAY);
-    CHECK(title_is("Sound"));
-    tap(KEY_BACK);
-    move_down(1);
-    tap(KEY_PLAY);
-    CHECK(title_is("Display"));
-    tap(KEY_BACK);
-    move_down(1);
-    tap(KEY_PLAY);
-    CHECK(title_is("Library"));
+    CHECK_EQUAL(depth, app_screen_depth());
+    CHECK(area_hash(250, 30, 46, 26) != before);
 }
 
-static void lite_settings_rows_are_compact(void)
+static void settings_subpage_opens(void)
 {
     start_app_with_library();
     move_down(2);
     tap(KEY_PLAY);
-    tap(KEY_PLAY);
+    wait_ms(300);
     move_down(5);
     tap(KEY_PLAY);
+    wait_ms(100);
     CHECK(title_is("Equalizer"));
     tap(KEY_BACK);
-    tap(KEY_BACK);
-    move_down(1);
-    tap(KEY_PLAY);
-    move_down(2);
-    tap(KEY_PLAY);
-    CHECK(title_is("Animations"));
-    tap(KEY_BACK);
-    tap(KEY_BACK);
-    move_down(1);
-    tap(KEY_PLAY);
-    move_down(2);
-    tap(KEY_PLAY);
-    CHECK(title_is("Lyrics"));
+    CHECK(title_is("Settings"));
 }
 
 static void open_all_songs_and_play(void)
@@ -374,12 +390,13 @@ int main(void)
         TEST_CASE(long_menu_on_the_panel_closes_it_without_opening_settings),
         TEST_CASE(gear_glyph_draws_only_white_outline),
         TEST_CASE(badge_draws_flat_circle_and_half),
+        TEST_CASE(category_icons_are_40px),
         TEST_CASE(compact_icons_are_native_18px),
+        TEST_CASE(settings_starts_on_sound),
+        TEST_CASE(settings_long_press_switches_category),
+        TEST_CASE(settings_short_press_cycles_value),
+        TEST_CASE(settings_subpage_opens),
         TEST_CASE(lite_animation_arena_is_available),
-        TEST_CASE(settings_has_half_gear),
-        TEST_CASE(lite_settings_still_opens_after_diagnostics_removed),
-        TEST_CASE(lite_settings_groups_have_only_visible_rows),
-        TEST_CASE(lite_settings_rows_are_compact),
         TEST_CASE(lite_animation_streams_all_frames),
         TEST_CASE(boot_screen_draws_only_the_animation),
         TEST_CASE(boot_screen_is_static),

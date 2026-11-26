@@ -31,7 +31,9 @@ ScreenAction list_navigation_handle(ListView *view, KeyEvent event, uint32_t now
     case NAVIGATION_SELECT:
         return run_on_current(view, selection.select, selection.context);
     case NAVIGATION_OPTIONS:
-        return run_on_current(view, selection.hold, selection.context);
+        return run_on_current(view, selection.hold,
+                              selection.hold_context != NULL ? selection.hold_context
+                                                             : selection.context);
     case NAVIGATION_BACK:
         return screen_action_pop();
     case NAVIGATION_HOME:

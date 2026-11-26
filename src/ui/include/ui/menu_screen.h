@@ -41,6 +41,8 @@ typedef struct MenuConfig {
     const Theme *theme;
     MenuPanel panel;
     MenuScene *scene;
+    ScreenAction (*hold)(void *context, int index);
+    void *hold_context;
 } MenuConfig;
 
 struct MenuScreen {

@@ -106,7 +106,10 @@ static ScreenAction handle_key(void *context, KeyEvent event, uint32_t now_ms)
 {
     MenuScreen *menu = context;
     fit_list(menu);
-    ListSelection selection = {.select = select_item, .hold = NULL, .context = menu};
+    ListSelection selection = {.select = select_item,
+                               .hold = menu->config.hold,
+                               .context = menu,
+                               .hold_context = menu->config.hold_context};
     return list_navigation_handle(&menu->list, event, now_ms, selection);
 }
 

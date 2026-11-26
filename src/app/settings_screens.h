@@ -56,27 +56,29 @@ typedef struct SettingChoice {
 
 typedef struct SettingsScreens SettingsScreens;
 
-typedef struct SettingsEntry {
-    const SettingChoice *choice;
-    SettingsScreens *owner;
-} SettingsEntry;
-
 typedef struct SettingsGroupLink {
     SettingsScreens *owner;
     uint8_t group;
 } SettingsGroupLink;
 
+typedef struct SettingsEntry {
+    const SettingChoice *choice;
+    SettingsScreens *owner;
+} SettingsEntry;
+
 struct SettingsScreens {
     SettingsContext context;
     const Theme *theme;
     MenuScreen menu;
-    MenuScreen group;
     ChoiceScreen choice;
-    SettingsEntry entries[SETTINGS_CHOICE_COUNT];
+#ifndef ECHO_LITE
+    MenuScreen group;
     SettingsGroupLink links[SETTINGS_GROUP_COUNT];
+    MenuItem items[SETTINGS_TOP_COUNT];
+#endif
+    SettingsEntry entries[SETTINGS_CHOICE_COUNT];
     uint8_t selected[SETTINGS_GROUP_COUNT];
     uint8_t shown;
-    MenuItem items[SETTINGS_TOP_COUNT];
     MenuItem rows[SETTINGS_GROUP_ROWS_MAX];
 };
 
@@ -86,3 +88,6 @@ int settings_sleep_current(const SettingsContext *context);
 const char *settings_sleep_label(int option);
 void settings_sleep_apply(SettingsContext *context, int option, uint32_t now_ms);
 void settings_playback_set_mode(SettingsContext *context, PlaybackMode mode, uint32_t seed);
+#ifdef ECHO_LITE
+const char *settings_category_title(int group);
+#endif

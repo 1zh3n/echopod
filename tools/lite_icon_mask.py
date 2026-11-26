@@ -188,3 +188,46 @@ def emit(kind):
 
 if __name__ == '__main__':
     emit(sys.argv[1] if len(sys.argv) > 1 else 'compact')
+
+def category_speaker(size):
+    s=size/40.0
+    cx=18*s; cy=20*s; w=36*s; h=w*0.72
+    body=polygon([(cx-w*0.36,cy-h*0.28),(cx-w*0.18,cy-h*0.28),(cx-w*0.18,cy+h*0.28),(cx-w*0.36,cy+h*0.28)])
+    cone=polygon([(cx-w*0.20,cy-h*0.18),(cx+w*0.16,cy-h*0.50),(cx+w*0.16,cy+h*0.50),(cx-w*0.20,cy+h*0.18)])
+    wave=lambda x,y: dist(x,y,cx+w*0.27,cy-h*0.25,cx+w*0.27,cy+h*0.25) <= w*0.055
+    return union(body,cone,wave)
+
+def category_sun(size):
+    s=size/40.0
+    cx=20*s; cy=20*s
+    parts=[circle(cx,cy,7*s)]
+    for k in range(8):
+        a=math.radians(k*45)
+        x1=cx+12*s*math.cos(a); y1=cy+12*s*math.sin(a)
+        x2=cx+18*s*math.cos(a); y2=cy+18*s*math.sin(a)
+        parts.append(segment(x1,y1,x2,y2,4*s))
+    return union(*parts)
+
+def category_books(size):
+    s=size/40.0
+    parts=[]
+    for x,h in [(4,28),(16,36),(28,24)]:
+        parts.append(polygon([(x*s,20*s-h*s/2),(x*s+8*s,20*s-h*s/2),(x*s+8*s,20*s+h*s/2),(x*s,20*s+h*s/2)]))
+    return union(*parts)
+
+def category_buttons(size):
+    s=size/40.0
+    cx=20*s; cy=20*s
+    horiz=polygon([(5*s,15.5*s),(35*s,15.5*s),(35*s,24.5*s),(5*s,24.5*s)])
+    vert=polygon([(15.5*s,5*s),(24.5*s,5*s),(24.5*s,35*s),(15.5*s,35*s)])
+    return subtract(union(horiz,vert),circle(cx,cy,3*s))
+
+def emit_category():
+    for name,shape in [('sound_levels',category_speaker(40)),('display_levels',category_sun(40)),
+                       ('library_levels',category_books(40)),('buttons_levels',category_buttons(40))]:
+        values,packed=make_mask(shape,40)
+        preview(values,40,name)
+        print(c_array(name,packed))
+
+if __name__=='__main__' and len(sys.argv)>1 and sys.argv[1]=='category':
+    emit_category()

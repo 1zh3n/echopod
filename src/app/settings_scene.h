@@ -4,6 +4,8 @@
 
 #include "ui/menu_screen.h"
 
-MenuScene *settings_scene(void);
+struct SettingsScreens;
+
+MenuScene *settings_scene(struct SettingsScreens *screens);
 
 #endif
