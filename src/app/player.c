@@ -430,7 +430,7 @@ PlaybackMode player_playback_mode(const Player *player)
     if (player->repeat == REPEAT_ONE) {
         return PLAYBACK_ONE;
     }
-    if (player->shuffle != SHUFFLE_OFF) {
+    if (player->shuffle != SHUFFLE_OFF || player->queue.plan.shuffle != SHUFFLE_OFF) {
         return PLAYBACK_RANDOM;
     }
     return PLAYBACK_LOOP;
