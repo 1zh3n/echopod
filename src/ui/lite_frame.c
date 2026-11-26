@@ -2,6 +2,7 @@
 
 #ifdef ECHO_LITE
 #include "ui/label.h"
+#include "ui/lite_status.h"
 
 Rect lite_list_frame(Canvas *canvas, const Theme *theme, const char *title)
 {
@@ -12,7 +13,8 @@ Rect lite_list_frame(Canvas *canvas, const Theme *theme, const char *title)
     label_draw(canvas, style,
                (Label){.area = {16, 8, content.width - 32, 20}, .text = title});
     canvas_fill_rect(canvas, (Rect){16, 25, content.width - 32, 2}, colors->text);
-    canvas_fill_rect(canvas, (Rect){12, 32, content.width - 16, 134}, colors->text);
+    canvas_fill_rect(canvas, (Rect){12, 32, content.width - 16, 134},
+                     lite_status_shadow());
     Rect card = {8, 28, content.width - 16, 134};
     canvas_fill_rect(canvas, card, colors->header_background);
     canvas_fill_rect(canvas, (Rect){card.x, card.y, card.width, 2}, colors->text);

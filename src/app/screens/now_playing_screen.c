@@ -17,6 +17,7 @@
 #include "ui/icons.h"
 #include "ui/label.h"
 #include "ui/lite_icons.h"
+#include "ui/lite_status.h"
 #include "ui/marquee.h"
 
 enum {
@@ -862,7 +863,7 @@ static void draw_progress(const NowPlayingScreen *now_playing, Canvas *canvas, c
                                                      now_playing->status.duration_ms, bar.width);
 #ifdef ECHO_LITE
     canvas_fill_rect(canvas, bar, theme->colors->divider);
-    Color fill = volume ? COLOR_RGB(255, 212, 59) : theme->colors->selection_background;
+    Color fill = volume ? COLOR_RGB(255, 212, 59) : lite_status_progress();
     canvas_fill_rect(canvas, (Rect){bar.x, bar.y, filled, bar.height}, fill);
     if (filled > 0) {
         canvas_fill_rect(canvas, (Rect){bar.x + filled - 3, bar.y - 4, 6, 10},

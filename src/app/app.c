@@ -51,9 +51,11 @@
 #include "ui/choice_screen.h"
 #include "ui/fade.h"
 #include "ui/header.h"
+#include "ui/icons.h"
 #include "ui/label.h"
 #ifdef ECHO_LITE
 #include "ui/lite_icons.h"
+#include "ui/lite_status.h"
 #endif
 #include "ui/marquee.h"
 #include "ui/message_screen.h"
@@ -795,6 +797,52 @@ static void draw_slide(Canvas *canvas, Screen *arriving)
     }
 }
 
+#ifdef ECHO_LITE
+static void refresh_lite_status(void)
+{
+    const ThemeColors *colors = current_theme()->colors;
+    Color shadow = colors->text;
+    Color progress = colors->selection_background;
+    HalBattery battery = hal_power_battery();
+    if (battery.charging) {
+        shadow = COLOR_RGB(34, 197, 94);
+        progress = shadow;
+    } else if (battery.known) {
+        if (battery.percent <= 5) {
+            shadow = COLOR_RGB(239, 68, 68);
+        } else if (battery.percent <= 10) {
+            shadow = COLOR_RGB(139, 92, 246);
+        } else if (battery.percent <= 20) {
+            shadow = COLOR_RGB(255, 212, 59);
+        }
+        progress = shadow == colors->text ? progress : shadow;
+    }
+    bool bluetooth = hal_bluetooth_status()->state == HAL_BLUETOOTH_CONNECTED;
+    lite_status_set(shadow, progress, bluetooth);
+}
+
+static void draw_lite_bluetooth(Canvas *canvas)
+{
+    if (!lite_status_bluetooth()) {
+        return;
+    }
+    const Theme *theme = current_theme();
+    Rect box = {2, 2, 12, 12};
+    canvas_fill_rect(canvas, (Rect){4, 4, 12, 12}, theme->colors->text);
+    canvas_fill_rect(canvas, box, theme->colors->header_background);
+    canvas_fill_rect(canvas, (Rect){box.x, box.y, box.width, 2}, theme->colors->text);
+    canvas_fill_rect(canvas, (Rect){box.x, box.y + box.height - 2, box.width, 2},
+                     theme->colors->text);
+    canvas_fill_rect(canvas, (Rect){box.x, box.y, 2, box.height}, theme->colors->text);
+    canvas_fill_rect(canvas, (Rect){box.x + box.width - 2, box.y, 2, box.height},
+                     theme->colors->text);
+    icon_draw(canvas, theme,
+              (Icon){.id = THEME_ICON_STATUS_BLUETOOTH,
+                     .area = {4, 3, 8, 9},
+                     .color = theme->colors->selection_background});
+}
+#endif
+
 static void draw_frame(void *context, Canvas *canvas)
 {
     const AppState *state = context;
@@ -807,7 +855,9 @@ static void draw_frame(void *context, Canvas *canvas)
     } else {
         screen->draw(screen->context, canvas);
     }
-#ifndef ECHO_LITE
+#ifdef ECHO_LITE
+    draw_lite_bluetooth(canvas);
+#else
     if (!screen->full_screen) {
         Theme dressed = dressed_theme(chrome_screen(screen));
         status_bar_draw(canvas, &dressed, state->status_bar);
@@ -929,6 +979,9 @@ static void render_frame(void)
     app.send_us = 0;
     app.frame_changed = false;
     app.status_bar = current_status_bar();
+#ifdef ECHO_LITE
+    refresh_lite_status();
+#endif
     bool screen_paints = top_screen()->paints_every_pixel && !fade_running() && !slide_running();
     marquee_frame_start();
     render((FrameDrawer){.draw = draw_frame, .context = &app}, screen_paints, STRIP_HEIGHT);

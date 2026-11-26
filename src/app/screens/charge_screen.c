@@ -82,7 +82,7 @@ void charge_screen_draw(Canvas *canvas, const Theme *theme, HalBattery battery)
 #ifdef ECHO_LITE
     Rect card = {60, 24, 200, 112};
     canvas_fill_rect(canvas, (Rect){card.x + 5, card.y + 5, card.width, card.height},
-                     theme->colors->text);
+                     theme->colors->success);
     canvas_fill_rect(canvas, card, theme->colors->header_background);
     canvas_fill_rect(canvas, (Rect){card.x, card.y, card.width, 2}, theme->colors->text);
     canvas_fill_rect(canvas, (Rect){card.x, card.y + card.height - 2, card.width, 2},

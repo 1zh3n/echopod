@@ -15,6 +15,7 @@
 #include "ui/icons.h"
 #include "ui/label.h"
 #include "ui/lite_icons.h"
+#include "ui/lite_status.h"
 #include "ui/navigation.h"
 
 typedef enum MusicSource {
@@ -336,8 +337,7 @@ static bool home_scene_update(void *context, uint32_t now_ms)
 
 static void draw_home_card_base(Canvas *canvas, const Theme *theme, int x)
 {
-    Color ink = theme->colors->text;
-    canvas_fill_rect(canvas, (Rect){x + 5, 29, 104, 104}, ink);
+    canvas_fill_rect(canvas, (Rect){x + 5, 29, 104, 104}, lite_status_shadow());
     canvas_fill_rect(canvas, (Rect){x, 24, 104, 104}, theme->colors->header_background);
 }
 

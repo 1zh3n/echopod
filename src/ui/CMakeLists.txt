@@ -10,6 +10,7 @@ add_library(echo_ui STATIC
     lite_icons.c
     lite_mode_icons.c
     lite_frame.c
+    lite_status.c
     label.c
     list_navigation.c
     list_view.c
