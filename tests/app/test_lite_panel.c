@@ -14,6 +14,7 @@
 #include "screens/charge_screen.h"
 #include "ui/lite_icons.h"
 #include "ui/lite_badge.h"
+#include "ui/lite_color_icons.h"
 
 enum {
     START_MS = 1000,
@@ -82,6 +83,17 @@ static void move_down(int times)
     for (int count = 0; count < times; count++) {
         tap(KEY_VOLUME_UP);
     }
+}
+
+static void gear_glyph_draws_only_white_outline(void)
+{
+    static Color pixels[HAL_DISPLAY_WIDTH * HAL_DISPLAY_HEIGHT];
+    Canvas canvas = canvas_make(pixels, (Rect){0, 0, HAL_DISPLAY_WIDTH, HAL_DISPLAY_HEIGHT});
+    canvas_clear(&canvas, COLOR_RGB(1, 2, 3));
+    color_icon_draw_glyph_scaled(&canvas, &LITE_COLOR_ICON_GEAR, (Rect){10, 10, 60, 60},
+                                 (Rect){13, 13, 38, 38});
+    CHECK(canvas_pixel_at(&canvas, 52, 40) == COLOR_RGB(255, 255, 255));
+    CHECK(canvas_pixel_at(&canvas, 40, 40) == COLOR_RGB(1, 2, 3));
 }
 
 static void badge_draws_flat_circle_and_half(void)
@@ -291,6 +303,7 @@ int main(void)
     TestCase cases[] = {
         TEST_CASE(short_menu_on_the_panel_returns_to_now_playing),
         TEST_CASE(long_menu_on_the_panel_closes_it_without_opening_settings),
+        TEST_CASE(gear_glyph_draws_only_white_outline),
         TEST_CASE(badge_draws_flat_circle_and_half),
         TEST_CASE(compact_icons_are_native_18px),
         TEST_CASE(lite_animation_arena_is_available),

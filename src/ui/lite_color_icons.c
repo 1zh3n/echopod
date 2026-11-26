@@ -572,3 +572,28 @@ void color_icon_draw_scaled(Canvas *canvas, const ColorIcon *icon, Rect area)
         }
     }
 }
+
+void color_icon_draw_glyph_scaled(Canvas *canvas, const ColorIcon *icon, Rect area, Rect source)
+{
+    if (icon == NULL || area.width <= 0 || area.height <= 0 || source.width <= 0 ||
+        source.height <= 0) {
+        return;
+    }
+    for (int y = 0; y < area.height; y++) {
+        int source_y = source.y + y * source.height / area.height;
+        if (source_y < 0 || source_y >= icon->height) {
+            continue;
+        }
+        for (int x = 0; x < area.width; x++) {
+            int source_x = source.x + x * source.width / area.width;
+            if (source_x < 0 || source_x >= icon->width) {
+                continue;
+            }
+            uint8_t level = icon_level(icon, source_x, source_y);
+            if (level == 5) {
+                canvas_blend_pixel(canvas, (Point){area.x + x, area.y + y}, icon->palette[level],
+                                   15);
+            }
+        }
+    }
+}

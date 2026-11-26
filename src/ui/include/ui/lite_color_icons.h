@@ -18,3 +18,4 @@ extern const ColorIcon LITE_COLOR_ICON_GEAR;
 extern const IconMask LITE_MASK_SHADOW;
 
 void color_icon_draw_scaled(Canvas *canvas, const ColorIcon *icon, Rect area);
+void color_icon_draw_glyph_scaled(Canvas *canvas, const ColorIcon *icon, Rect area, Rect source);
