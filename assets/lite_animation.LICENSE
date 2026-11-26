@@ -1,0 +1,8 @@
+Mountain Dusk Parallax background
+Author: ansimuz
+Source: https://ansimuz.itch.io/mountain-dusk-parallax-background
+License: Creative Commons Zero v1.0 Universal (CC0 1.0)
+
+Converted for EchoPod Lite:
+- 96x64, 8 frames, 16-color indexed
+- blob: "LANI" + version + count + width + height + 16 RGB565 colors + 4-bit frames

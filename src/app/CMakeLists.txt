@@ -27,6 +27,7 @@ add_library(echo_app STATIC
     library_rescan.c
     music_check.c
     library_store.c
+    lite_animation.c
     listen_history.c
     player.c
     scrobbler_log.c

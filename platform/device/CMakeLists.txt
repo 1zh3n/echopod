@@ -319,6 +319,10 @@ set(ECHO_GLYPH_FACE_ARGUMENTS "")
 foreach(face_file ${ECHO_GLYPH_FACE_FILES} ${ECHO_LANGUAGE_PACK_FILES} ${ECHO_BUILTIN_THEME_FILES})
     list(APPEND ECHO_GLYPH_FACE_ARGUMENTS --glyph-face ${face_file})
 endforeach()
+if(ECHO_LITE)
+    list(APPEND ECHO_GLYPH_FACE_ARGUMENTS
+        --glyph-face ${PROJECT_SOURCE_DIR}/assets/lite_animation.bin)
+endif()
 
 add_custom_target(echo_device_image ALL
     COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/make_image.py

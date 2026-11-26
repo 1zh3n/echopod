@@ -180,6 +180,10 @@ if(ECHO_LITE)
         LIBRARIES echo_app echo_library_fixtures
         PRIVATE_INCLUDES ${PROJECT_SOURCE_DIR}/src/app
     )
+    target_compile_definitions(test_lite_panel PRIVATE
+        ECHO_LITE
+        ECHO_LITE_ANIMATION_ASSET="${PROJECT_SOURCE_DIR}/assets/lite_animation.bin"
+    )
 endif()
 echo_add_unit_test(NAME test_release_diagnostics
     SOURCES app/test_release_diagnostics.c ${PROJECT_SOURCE_DIR}/src/app/diagnostics_menu_release.c

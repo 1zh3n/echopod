@@ -1264,6 +1264,30 @@ void *hal_system_lite_animation(uint32_t *size)
     return asset_memory;
 }
 
+static const uint8_t *lite_animation_blob;
+static uint32_t lite_animation_blob_size;
+
+void fake_hal_set_lite_animation(const uint8_t *data, uint32_t size)
+{
+    lite_animation_blob = data;
+    lite_animation_blob_size = size;
+}
+
+uint32_t hal_system_lite_animation_size(void)
+{
+    return lite_animation_blob_size;
+}
+
+bool hal_system_lite_animation_read(uint32_t offset, void *target, uint32_t length)
+{
+    if (lite_animation_blob == NULL || offset > lite_animation_blob_size ||
+        length > lite_animation_blob_size - offset) {
+        return false;
+    }
+    memcpy(target, lite_animation_blob + offset, length);
+    return true;
+}
+
 uint32_t hal_system_theme_asset_wipes(void)
 {
     return asset_wipes;

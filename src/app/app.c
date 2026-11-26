@@ -35,6 +35,9 @@
 #include "hal/system.h"
 #include "library_rescan.h"
 #include "library_store.h"
+#ifdef ECHO_LITE
+#include "lite_animation.h"
+#endif
 #ifndef ECHO_LITE
 #include "listen_history.h"
 #endif
@@ -201,11 +204,20 @@ typedef struct AppState {
 
 static AppState app;
 
-static const FadeTiming SPLASH_TIMING = {.fade_ms = 300, .hold_ms = 200, .rising = true};
+static const FadeTiming SPLASH_TIMING = {
+    .fade_ms = 300,
+#ifdef ECHO_LITE
+    .hold_ms = 900,
+#else
+    .hold_ms = 200,
+#endif
+    .rising = true};
 static const uint32_t SCREEN_ON_CLOCK_MHZ = 200;
 static const uint32_t IDLE_CLOCK_MHZ = 96;
 static const FadeTiming GOODBYE_TIMING = {.fade_ms = 600, .hold_ms = 400, .rising = false};
+#ifndef ECHO_LITE
 static const char SPLASH_TEXT[] = "EchoPod";
+#endif
 static const char GOODBYE_TEXT[] = "Goodbye";
 static const char START_CODE_MISSING[] = "Start-up code missing: reinstall the update";
 static Color strip_pixels[HAL_DISPLAY_WIDTH * STRIP_HEIGHT];
@@ -752,6 +764,18 @@ static void draw_fade(Canvas *canvas, const Fade *fade, const char *text)
 #endif
 }
 
+#ifdef ECHO_LITE
+static void draw_lite_boot(Canvas *canvas, const Fade *fade)
+{
+    const Theme *theme = current_theme();
+    uint8_t alpha = fade_alpha(fade, app.now_ms);
+    Color background = theme->colors->background;
+    Color ink = color_blend(background, theme->colors->text, alpha);
+    Color panel = color_blend(background, theme->colors->header_background, alpha);
+    lite_animation_draw_card(canvas, (Rect){60, 29, 200, 112}, ink, ink, panel, app.now_ms);
+}
+#endif
+
 static bool draw_running_fade(Canvas *canvas)
 {
     if (app.saying_goodbye) {
@@ -759,7 +783,11 @@ static bool draw_running_fade(Canvas *canvas)
         return true;
     }
     if (!fade_finished(&app.splash, app.now_ms)) {
+#ifdef ECHO_LITE
+        draw_lite_boot(canvas, &app.splash);
+#else
         draw_fade(canvas, &app.splash, SPLASH_TEXT);
+#endif
         return true;
     }
     return false;
@@ -1153,6 +1181,9 @@ ECHO_STARTUP_CODE static void start_up(void)
     low_battery_init(&app.low_battery);
     app.battery_check_ms = now_ms;
     app.splash = (Fade){.active = false};
+#ifdef ECHO_LITE
+    lite_animation_reset();
+#endif
     app.now_ms = now_ms;
     CardFilesReport files = card_files_prepare(show_card_setup);
     settings_store_load(&app.settings);
@@ -1520,7 +1551,7 @@ static void take_computer_clock(void)
 static void draw_charge(void *context, Canvas *canvas)
 {
     (void)context;
-    charge_screen_draw(canvas, current_theme(), app.charge_battery);
+    charge_screen_draw(canvas, current_theme(), app.charge_battery, app.now_ms);
 }
 
 static void follow_charge_keys(uint32_t now_ms)

@@ -19,7 +19,10 @@ enum {
     CACHE_WORDS = (GLYPH_RAM_BYTES - 2 * SECTOR_BYTES) / 4,
     MAX_ENTRIES = (SECTOR_BYTES - 8) / 8,
     FIRST_THEME_ENTRY = FONT_PACK_FACES + LANGUAGE_COUNT,
-    BUILTIN_THEMES = THEME_COUNT
+    BUILTIN_THEMES = THEME_COUNT,
+#ifdef ECHO_LITE
+    LITE_ANIMATION_ENTRY = FIRST_THEME_ENTRY + BUILTIN_THEMES
+#endif
 };
 
 static uint32_t table[SECTOR_WORDS] __attribute__((section(".glyph_ram")));
@@ -98,6 +101,20 @@ bool board_glyphs_entry(uint32_t entry, uint32_t *offset, uint32_t *size)
     *size = table[3 + 2 * entry];
     return true;
 }
+
+#ifdef ECHO_LITE
+uint32_t hal_system_lite_animation_size(void)
+{
+    uint32_t offset;
+    uint32_t size;
+    return board_glyphs_entry(LITE_ANIMATION_ENTRY, &offset, &size) ? size : 0;
+}
+
+bool hal_system_lite_animation_read(uint32_t offset, void *target, uint32_t length)
+{
+    return read_entry(LITE_ANIMATION_ENTRY, offset, target, length);
+}
+#endif
 
 void board_glyphs_start(void)
 {

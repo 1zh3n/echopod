@@ -16,7 +16,6 @@ enum {
 static char tag[TAG_LENGTH + 1];
 static uint32_t theme_memory[THEME_MEMORY_WORDS];
 #ifdef ECHO_LITE
-/* Lite has no theme asset packs; this window is reserved for animation. */
 static uint32_t animation_memory[HAL_LITE_ANIMATION_BYTES / sizeof(uint32_t)]
     __attribute__((section(".high_ram"), used));
 #else

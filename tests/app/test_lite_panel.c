@@ -1,11 +1,17 @@
 #include <stdint.h>
+#include <stdio.h>
 #include <string.h>
 
 #include "app/app.h"
 #include "check.h"
 #include "fake_hal.h"
 #include "fixture_library.h"
+#include "default_theme.h"
+#include "gfx/canvas.h"
+#include "gfx/color.h"
 #include "hal/system.h"
+#include "lite_animation.h"
+#include "screens/charge_screen.h"
 
 enum {
     START_MS = 1000,
@@ -71,6 +77,51 @@ static void lite_animation_arena_is_available(void)
     void *memory = hal_system_lite_animation(&size);
     CHECK(memory != NULL);
     CHECK_EQUAL(HAL_LITE_ANIMATION_BYTES, size);
+}
+
+static uint8_t animation_blob[300000];
+
+static bool load_animation_asset(void)
+{
+    FILE *file = fopen(ECHO_LITE_ANIMATION_ASSET, "rb");
+    if (file == NULL) {
+        return false;
+    }
+    size_t size = fread(animation_blob, 1, sizeof animation_blob, file);
+    fclose(file);
+    fake_hal_set_lite_animation(animation_blob, (uint32_t)size);
+    return size > 0;
+}
+
+static void lite_animation_streams_all_frames(void)
+{
+    CHECK(load_animation_asset());
+    lite_animation_reset();
+    CHECK(lite_animation_load());
+    CHECK(lite_animation_ready());
+    CHECK_EQUAL(96, lite_animation_frames());
+}
+
+static void boot_screen_draws_only_the_animation(void)
+{
+    start_app_with_library();
+    CHECK(load_animation_asset());
+    step();
+    CHECK(fake_hal_pixel(160, 85) != COLOR_RGB(250, 250, 249));
+}
+
+static void charging_screen_has_green_shadow_and_no_text(void)
+{
+    CHECK(load_animation_asset());
+    lite_animation_reset();
+    static Color pixels[HAL_DISPLAY_WIDTH * HAL_DISPLAY_HEIGHT];
+    Canvas canvas = canvas_make(pixels, (Rect){0, 0, HAL_DISPLAY_WIDTH, HAL_DISPLAY_HEIGHT});
+    HalBattery battery = {
+        .known = true, .percent = 64, .millivolts = 3900, .usb_power = true, .charging = true};
+    charge_screen_draw(&canvas, &DEFAULT_THEME, battery, 1000);
+    CHECK(pixels[142 * HAL_DISPLAY_WIDTH + 65] == DEFAULT_THEME.colors->success);
+    CHECK(pixels[150 * HAL_DISPLAY_WIDTH + 160] == DEFAULT_THEME.colors->background);
+    CHECK(pixels[85 * HAL_DISPLAY_WIDTH + 160] != DEFAULT_THEME.colors->header_background);
 }
 
 static void lite_settings_still_opens_after_diagnostics_removed(void)
@@ -175,6 +226,9 @@ int main(void)
         TEST_CASE(lite_settings_still_opens_after_diagnostics_removed),
         TEST_CASE(lite_settings_groups_have_only_visible_rows),
         TEST_CASE(lite_settings_rows_are_compact),
+        TEST_CASE(lite_animation_streams_all_frames),
+        TEST_CASE(boot_screen_draws_only_the_animation),
+        TEST_CASE(charging_screen_has_green_shadow_and_no_text),
     };
     return test_run_all(cases, TEST_CASE_COUNT(cases));
 }
