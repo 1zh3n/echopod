@@ -13,6 +13,7 @@
 #include "ui/header.h"
 #include "ui/label.h"
 #include "ui/list_navigation.h"
+#include "ui/lite_frame.h"
 
 enum {
     NO_LEVEL = -1,
@@ -656,15 +657,25 @@ static const char *empty_message(const BrowseScreen *browse)
 
 static void draw(void *context, Canvas *canvas)
 {
-    const BrowseScreen *browse = context;
+    BrowseScreen *browse = context;
     const Theme *theme = browse->pool->config.theme;
     Rect content = theme_content_area(theme);
+#ifdef ECHO_LITE
+    if (browse->count == 0) {
+        draw_empty(canvas, theme, content, empty_message(browse));
+        return;
+    }
+    Rect rows = lite_list_frame(canvas, theme, browse->title);
+    browse->list.visible_rows = 5;
+    list_view_draw_over(&browse->list, canvas, rows, browse->now_ms);
+#else
     header_draw(canvas, theme, browse->title);
     if (browse->count == 0) {
         draw_empty(canvas, theme, content, empty_message(browse));
         return;
     }
     list_view_draw(&browse->list, canvas, content, browse->now_ms);
+#endif
 }
 
 void browse_pool_init(BrowsePool *pool, BrowsePoolConfig config)

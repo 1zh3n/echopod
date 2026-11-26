@@ -5,6 +5,7 @@
 #include "ui/header.h"
 #include "ui/label.h"
 #include "ui/list_navigation.h"
+#include "ui/lite_frame.h"
 
 static bool is_shown(const MenuItem *item)
 {
@@ -134,22 +135,7 @@ static void update(void *context, uint32_t now_ms)
 #ifdef ECHO_LITE
 static void draw_lite_menu(MenuScreen *menu, Canvas *canvas)
 {
-    const Theme *theme = menu->config.theme;
-    const ThemeColors *colors = theme->colors;
-    Rect content = theme_content_area(theme);
-    canvas_fill_rect(canvas, content, colors->background);
-    TextStyle title = {.font = theme->fonts.title, .color = colors->text};
-    label_draw(canvas, title,
-               (Label){.area = {16, 8, content.width - 32, 20}, .text = menu->config.title});
-    canvas_fill_rect(canvas, (Rect){16, 25, content.width - 32, 2}, colors->text);
-    canvas_fill_rect(canvas, (Rect){12, 32, content.width - 16, 134}, colors->text);
-    Rect card = {8, 28, content.width - 16, 134};
-    canvas_fill_rect(canvas, card, colors->header_background);
-    canvas_fill_rect(canvas, (Rect){card.x, card.y, card.width, 2}, colors->text);
-    canvas_fill_rect(canvas, (Rect){card.x, card.y + card.height - 2, card.width, 2}, colors->text);
-    canvas_fill_rect(canvas, (Rect){card.x, card.y, 2, card.height}, colors->text);
-    canvas_fill_rect(canvas, (Rect){card.x + card.width - 2, card.y, 2, card.height}, colors->text);
-    Rect rows = {12, 30, card.width - 8, 130};
+    Rect rows = lite_list_frame(canvas, menu->config.theme, menu->config.title);
     menu->list.visible_rows = 5;
     list_view_draw_over(&menu->list, canvas, rows, menu->now_ms);
 }

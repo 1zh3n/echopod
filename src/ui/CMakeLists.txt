@@ -8,6 +8,7 @@ add_library(echo_ui STATIC
     header.c
     icons.c
     lite_icons.c
+    lite_frame.c
     label.c
     list_navigation.c
     list_view.c
