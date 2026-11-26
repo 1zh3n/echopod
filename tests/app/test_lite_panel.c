@@ -13,6 +13,7 @@
 #include "lite_animation.h"
 #include "screens/charge_screen.h"
 #include "ui/lite_icons.h"
+#include "ui/lite_badge.h"
 
 enum {
     START_MS = 1000,
@@ -81,6 +82,27 @@ static void move_down(int times)
     for (int count = 0; count < times; count++) {
         tap(KEY_VOLUME_UP);
     }
+}
+
+static void badge_draws_flat_circle_and_half(void)
+{
+    static Color pixels[HAL_DISPLAY_WIDTH * HAL_DISPLAY_HEIGHT];
+    Canvas canvas = canvas_make(pixels, (Rect){0, 0, HAL_DISPLAY_WIDTH, HAL_DISPLAY_HEIGHT});
+    canvas_clear(&canvas, COLOR_RGB(250, 250, 249));
+    LiteBadgeStyle style = {
+        .base = COLOR_RGB(47, 168, 255),
+        .light = COLOR_RGB(139, 215, 255),
+        .dark = COLOR_RGB(22, 119, 200),
+        .ink = COLOR_RGB(10, 10, 10),
+        .shadow = COLOR_RGB(10, 10, 10),
+    };
+    lite_badge_draw_circle(&canvas, (Point){80, 80}, 32, &style);
+    CHECK(canvas_pixel_at(&canvas, 80, 80) == style.base);
+    CHECK(canvas_pixel_at(&canvas, 80 - 36, 80) == COLOR_RGB(250, 250, 249));
+
+    lite_badge_draw_half(&canvas, (Point){20, 80}, 40, &style);
+    CHECK(canvas_pixel_at(&canvas, 20, 80) == style.base);
+    CHECK(canvas_pixel_at(&canvas, 19, 80) == COLOR_RGB(250, 250, 249));
 }
 
 static void compact_icons_are_native_18px(void)
@@ -269,6 +291,7 @@ int main(void)
     TestCase cases[] = {
         TEST_CASE(short_menu_on_the_panel_returns_to_now_playing),
         TEST_CASE(long_menu_on_the_panel_closes_it_without_opening_settings),
+        TEST_CASE(badge_draws_flat_circle_and_half),
         TEST_CASE(compact_icons_are_native_18px),
         TEST_CASE(lite_animation_arena_is_available),
         TEST_CASE(lite_settings_still_opens_after_diagnostics_removed),
