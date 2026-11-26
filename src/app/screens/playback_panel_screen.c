@@ -112,7 +112,8 @@ static void draw_sleep_badge(Canvas *canvas, const Theme *theme, Rect card, int 
                          (Rect){center.x - 5, SLEEP_PILL_TOP + SLEEP_PILL_HEIGHT / 2 - 1, 10, 2},
                          COLOR_RGB(255, 255, 255));
     } else {
-        label_draw(canvas, text, (Label){.area = pill, .text = value});
+        label_draw(canvas, text,
+                   (Label){.area = label_centered_area(text.font, pill, value), .text = value});
     }
 }
 

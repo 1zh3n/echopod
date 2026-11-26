@@ -324,6 +324,7 @@ static void quick_panel_sleep_value_fits(void)
     tap(KEY_PLAY);
     wait_ms(100);
     CHECK(area_has_color(224, 100, 28, 16, COLOR_RGB(255, 255, 255)));
+    CHECK(fake_hal_pixel(168, 31) == COLOR_RGB(99, 102, 241));
     for (int step = 0; step < 5; step++) {
         tap(KEY_PLAY);
         wait_ms(20);
