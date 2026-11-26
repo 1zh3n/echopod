@@ -482,6 +482,7 @@ static void build_home(AppScreens *screens, AppScreensContext context)
 ECHO_STARTUP_CODE Screen *app_screens_init(AppScreens *screens, AppScreensContext context)
 {
     const Theme *theme = context.theme;
+    build_settings(screens, context);
     bool card = hal_storage_card_ready();
     MessageConfig no_library = {
         .title = i18n_text(card ? STR_MENU_NO_LIBRARY : STR_MENU_NO_CARD),
@@ -498,11 +499,14 @@ ECHO_STARTUP_CODE Screen *app_screens_init(AppScreens *screens, AppScreensContex
     EqualizerConfig equalizer = {
         .store = context.equalizer, .toast = context.toast, .theme = theme};
     now_playing.equalizer = equalizer_screen_init(&screens->equalizer, equalizer);
+#ifdef ECHO_LITE
+    now_playing.panel =
+        playback_panel_screen_init(&screens->playback_panel, &screens->settings.context, theme);
+#endif
     message_screen_init(&screens->no_library, no_library);
     bluetooth_screen_init(&screens->bluetooth, context.bluetooth, theme);
     now_playing_screen_init(&screens->now_playing, now_playing);
     build_music(screens, context);
-    build_settings(screens, context);
     diagnostics_menu_build(screens, context.options, theme);
     build_home(screens, context);
     return &screens->home.screen;

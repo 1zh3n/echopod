@@ -238,9 +238,17 @@ NowPlayingCommand now_playing_command_with(KeyEvent event, bool scrubbing,
     case KEY_BACK:
         return by_gesture(event.gesture, NOW_PLAYING_LEAVE, NOW_PLAYING_HOME);
     case KEY_MENU:
+#ifdef ECHO_LITE
+        if (event.gesture == KEY_GESTURE_LONG_PRESS) {
+            return NOW_PLAYING_PANEL;
+        }
+        return by_gesture(event.gesture, controls.menu_skips ? NOW_PLAYING_NEXT : NOW_PLAYING_UP_NEXT,
+                          NOW_PLAYING_NONE);
+#else
         return controls.menu_skips
                    ? by_gesture(event.gesture, NOW_PLAYING_NEXT, NOW_PLAYING_UP_NEXT)
                    : by_gesture(event.gesture, NOW_PLAYING_UP_NEXT, NOW_PLAYING_EQUALIZER);
+#endif
     case KEY_POWER:
         return NOW_PLAYING_NONE;
     }
@@ -366,6 +374,11 @@ static ScreenAction run_command(NowPlayingScreen *now_playing, NowPlayingCommand
     case NOW_PLAYING_UP_NEXT:
         return now_playing->config.up_next != NULL ? screen_action_push(now_playing->config.up_next)
                                                    : screen_action_none();
+#ifdef ECHO_LITE
+    case NOW_PLAYING_PANEL:
+        return now_playing->config.panel != NULL ? screen_action_push(now_playing->config.panel)
+                                                 : screen_action_none();
+#endif
     case NOW_PLAYING_EQUALIZER:
         return now_playing->config.equalizer != NULL
                    ? screen_action_push(now_playing->config.equalizer)

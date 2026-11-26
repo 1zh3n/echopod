@@ -16,6 +16,9 @@
 #include "screens/date_time_screen.h"
 #include "screens/equalizer_screen.h"
 #include "screens/now_playing_screen.h"
+#ifdef ECHO_LITE
+#include "screens/playback_panel_screen.h"
+#endif
 #include "screens/test_pattern_screen.h"
 #include "screens/up_next_screen.h"
 #include "settings/settings.h"
@@ -69,6 +72,9 @@ typedef struct AppScreens {
     MenuScreen diagnostics;
     MessageScreen no_library;
     BrowsePool browse;
+#ifdef ECHO_LITE
+    PlaybackPanelScreen playback_panel;
+#endif
     NowPlayingScreen now_playing;
     UpNextScreen up_next;
     CoverFlowScreen cover_flow;

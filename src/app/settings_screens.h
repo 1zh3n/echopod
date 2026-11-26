@@ -82,3 +82,7 @@ struct SettingsScreens {
 
 Screen *settings_screens_init(SettingsScreens *screens, SettingsContext context,
                               const Theme *theme);
+int settings_sleep_current(const SettingsContext *context);
+const char *settings_sleep_label(int option);
+void settings_sleep_apply(SettingsContext *context, int option, uint32_t now_ms);
+void settings_playback_set_mode(SettingsContext *context, PlaybackMode mode, uint32_t seed);

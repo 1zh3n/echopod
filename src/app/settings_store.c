@@ -80,8 +80,15 @@ void settings_store_restore_playback(const SettingsStore *store, Player *player,
 {
     const Settings *settings = &store->settings;
     player_change_volume(player, (int)settings->volume - (int)player_status(player).volume);
+#ifdef ECHO_LITE
+    PlaybackMode mode = settings->repeat == REPEAT_ONE ? PLAYBACK_ONE
+                        : settings->shuffle != SHUFFLE_OFF ? PLAYBACK_RANDOM
+                                                           : PLAYBACK_LOOP;
+    player_set_playback_mode(player, mode, seed);
+#else
     player_set_shuffle(player, settings->shuffle, seed);
     player_set_repeat(player, settings->repeat);
+#endif
 }
 
 void settings_store_apply_hardware(const Settings *settings)

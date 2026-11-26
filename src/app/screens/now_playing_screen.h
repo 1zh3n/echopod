@@ -40,6 +40,9 @@ typedef enum NowPlayingCommand {
     NOW_PLAYING_SCRUB_COMMIT,
     NOW_PLAYING_SCRUB_CANCEL,
     NOW_PLAYING_UP_NEXT,
+#ifdef ECHO_LITE
+    NOW_PLAYING_PANEL,
+#endif
     NOW_PLAYING_EQUALIZER,
     NOW_PLAYING_SEEK_FORWARD,
     NOW_PLAYING_SEEK_BACK
@@ -65,6 +68,9 @@ typedef struct NowPlayingConfig {
     const Theme *theme;
     CoverCache *covers;
     Screen *up_next;
+#ifdef ECHO_LITE
+    Screen *panel;
+#endif
     Screen *equalizer;
     const uint8_t *options;
 } NowPlayingConfig;

@@ -393,7 +393,7 @@ void player_change_volume(Player *player, int delta)
     hal_audio_set_volume(player->volume);
 }
 
-void player_set_shuffle(Player *player, ShuffleMode shuffle, uint32_t seed)
+static void apply_shuffle(Player *player, ShuffleMode shuffle, uint32_t seed)
 {
     player->shuffle = shuffle;
     if (!player->has_track) {
@@ -411,6 +411,11 @@ void player_set_shuffle(Player *player, ShuffleMode shuffle, uint32_t seed)
     save_later(player);
 }
 
+void player_set_shuffle(Player *player, ShuffleMode shuffle, uint32_t seed)
+{
+    apply_shuffle(player, shuffle, seed);
+}
+
 void player_set_repeat(Player *player, RepeatMode repeat)
 {
     player->repeat = repeat;
@@ -418,6 +423,25 @@ void player_set_repeat(Player *player, RepeatMode repeat)
         queue_upcoming(player);
     }
 }
+
+#ifdef ECHO_LITE
+PlaybackMode player_playback_mode(const Player *player)
+{
+    if (player->repeat == REPEAT_ONE) {
+        return PLAYBACK_ONE;
+    }
+    if (player->shuffle != SHUFFLE_OFF) {
+        return PLAYBACK_RANDOM;
+    }
+    return PLAYBACK_LOOP;
+}
+
+void player_set_playback_mode(Player *player, PlaybackMode mode, uint32_t seed)
+{
+    player->repeat = mode == PLAYBACK_ONE ? REPEAT_ONE : REPEAT_ALL;
+    apply_shuffle(player, mode == PLAYBACK_RANDOM ? SHUFFLE_SONGS : SHUFFLE_OFF, seed);
+}
+#endif
 
 static void take_next(Player *player)
 {

@@ -149,24 +149,52 @@ static void choose_repeat(void *context, int index)
     save(settings);
 }
 
+int settings_sleep_current(const SettingsContext *context)
+{
+    return context->power->sleep_timer_active ? context->sleep_option : 0;
+}
+
+#ifdef ECHO_LITE
+const char *settings_sleep_label(int option)
+{
+    if (option < 0 || option >= SLEEP_TIMER_OPTION_COUNT) {
+        option = 0;
+    }
+    return i18n_text(SLEEP_OPTIONS[option]);
+}
+#endif
+
+void settings_sleep_apply(SettingsContext *context, int option, uint32_t now_ms)
+{
+    if (option < 0 || option >= SLEEP_TIMER_OPTION_COUNT) {
+        option = 0;
+    }
+    uint32_t minutes = settings_sleep_option_minutes(option);
+    context->sleep_option = option;
+    if (minutes == 0) {
+        power_policy_cancel_sleep_timer(context->power);
+    } else {
+        power_policy_start_sleep_timer(context->power, minutes * MILLISECONDS_PER_MINUTE, now_ms);
+    }
+    toast_show(context->toast, i18n_text(SLEEP_MESSAGES[option]), now_ms);
+}
+
+#ifdef ECHO_LITE
+void settings_playback_set_mode(SettingsContext *context, PlaybackMode mode, uint32_t seed)
+{
+    player_set_playback_mode(context->player, mode, seed);
+    save(context);
+}
+#endif
+
 static int current_sleep(const void *context)
 {
-    const SettingsContext *settings = context;
-    return settings->power->sleep_timer_active ? settings->sleep_option : 0;
+    return settings_sleep_current(context);
 }
 
 static void choose_sleep(void *context, int index)
 {
-    SettingsContext *settings = context;
-    uint32_t now_ms = hal_clock_milliseconds();
-    uint32_t minutes = settings_sleep_option_minutes(index);
-    settings->sleep_option = index;
-    if (minutes == 0) {
-        power_policy_cancel_sleep_timer(settings->power);
-    } else {
-        power_policy_start_sleep_timer(settings->power, minutes * MILLISECONDS_PER_MINUTE, now_ms);
-    }
-    toast_show(settings->toast, i18n_text(SLEEP_MESSAGES[index]), now_ms);
+    settings_sleep_apply(context, index, hal_clock_milliseconds());
 }
 
 static int current_timeout(const void *context)
@@ -703,8 +731,10 @@ static void fill_rows(SettingsScreens *screens, MenuItem *items, int first, int 
         items[index] = row_item(screens, ROWS[first + index]);
 #ifdef ECHO_LITE
         uint8_t choice = ROWS[first + index];
-        if (choice == CHOICE_HISTORY || choice == CHOICE_COVERS || choice == CHOICE_COVER_ORDER ||
-            choice == CHOICE_ARTIST_VIEW || choice == CHOICE_FOLDER_VIEW || choice == CHOICE_START) {
+        if (choice == CHOICE_SHUFFLE || choice == CHOICE_REPEAT || choice == CHOICE_HISTORY ||
+            choice == CHOICE_COVERS || choice == CHOICE_COVER_ORDER ||
+            choice == CHOICE_ARTIST_VIEW || choice == CHOICE_FOLDER_VIEW ||
+            choice == CHOICE_START) {
             items[index].shown = hidden_row;
             items[index].shown_context = NULL;
         }

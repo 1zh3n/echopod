@@ -32,6 +32,12 @@ typedef enum PlayerNextSource {
     PLAYER_NEXT_SAME_SONG
 } PlayerNextSource;
 
+typedef enum PlaybackMode {
+    PLAYBACK_RANDOM,
+    PLAYBACK_LOOP,
+    PLAYBACK_ONE
+} PlaybackMode;
+
 typedef struct PlayerResume {
     uint32_t (*position_for)(void *context, uint16_t track);
     void *context;
@@ -89,6 +95,8 @@ void player_seek(Player *player, uint32_t position_ms);
 void player_change_volume(Player *player, int delta);
 void player_set_shuffle(Player *player, ShuffleMode shuffle, uint32_t seed);
 void player_set_repeat(Player *player, RepeatMode repeat);
+PlaybackMode player_playback_mode(const Player *player);
+void player_set_playback_mode(Player *player, PlaybackMode mode, uint32_t seed);
 PlayerUpNextResult player_play_next(Player *player, uint16_t track);
 PlayerUpNextResult player_add_to_up_next(Player *player, uint16_t track);
 bool player_jump_to_up_next(Player *player, uint16_t index);

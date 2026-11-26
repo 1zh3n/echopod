@@ -954,6 +954,10 @@ static void start_playback(void)
     player_init(&app.player, &app.library.library);
     settings_store_restore_playback(&app.settings, &app.player, hal_clock_microseconds());
     player_restore(&app.player);
+#ifdef ECHO_LITE
+    player_set_playback_mode(&app.player, player_playback_mode(&app.player),
+                             hal_clock_microseconds());
+#endif
 #ifndef ECHO_LITE
     favorites_store_load(&app.favorites, &app.library.library);
 #endif
