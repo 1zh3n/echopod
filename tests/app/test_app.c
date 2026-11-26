@@ -49,12 +49,9 @@ enum {
     BJORK_POSITION = 3,
     HOME_SETTINGS_INDEX = 1,
     HOME_NOW_PLAYING_INDEX = 3,
-    SETTINGS_REPEAT_INDEX = 1,
-    SETTINGS_BLUETOOTH_INDEX = 2,
-    SETTINGS_EQUALIZER_INDEX = 3,
-    SETTINGS_SLEEP_INDEX = 4,
-    SETTINGS_FIRST_GROUP_INDEX = 5,
+    SETTINGS_FIRST_GROUP_INDEX = 0,
     SOUND_GAIN_ROW = 0,
+    SOUND_EQUALIZER_ROW = 5,
     DISPLAY_THEME_ROW = 0,
     DISPLAY_ACCENT_ROW = 1,
     DISPLAY_HIGHLIGHT_ROW = 2,
@@ -72,7 +69,8 @@ enum {
     BUTTONS_POWER_ON_ROW = 3,
     SYSTEM_LANGUAGE_ROW = 0,
     SYSTEM_DATE_TIME_ROW = 1,
-    SYSTEM_USB_PROMPT_ROW = 4,
+    SYSTEM_SLEEP_ROW = 3,
+    SYSTEM_USB_PROMPT_ROW = 6,
     DAC_VOLUME_WINDOW_MS = 3000,
     MUSIC_COVER_FLOW_INDEX = 0,
     MUSIC_PLAYLISTS_INDEX = 7,
@@ -619,23 +617,6 @@ static void open_setting(SettingsGroup group, int row)
     tap(KEY_PLAY);
 }
 
-static void settings_choose_shuffle_and_repeat(void)
-{
-    start_app_with_library();
-    open_top_setting(0);
-    CHECK(title_is("Shuffle"));
-    move_down(1);
-    tap(KEY_PLAY);
-    CHECK(title_is("Settings"));
-    CHECK_EQUAL(SHUFFLE_SONGS, app_player_status().shuffle);
-    move_down(SETTINGS_REPEAT_INDEX);
-    tap(KEY_PLAY);
-    CHECK(title_is("Repeat"));
-    move_down(2);
-    tap(KEY_PLAY);
-    CHECK_EQUAL(REPEAT_ALL, app_player_status().repeat);
-}
-
 static bool saved_settings(Settings *settings)
 {
     uint32_t size = 0;
@@ -661,12 +642,12 @@ static void the_equalizer_opens_from_settings_and_is_applied(void)
 {
     start_app_with_library();
     CHECK_EQUAL(0, fake_hal_equalizer().band_count);
-    open_top_setting(SETTINGS_EQUALIZER_INDEX);
+    open_setting(SETTINGS_SOUND, SOUND_EQUALIZER_ROW);
     CHECK(title_is("Equalizer"));
     move_down(2);
     CHECK_EQUAL(2, fake_hal_equalizer().band_count);
     tap(KEY_BACK);
-    CHECK(title_is("Settings"));
+    CHECK(title_is("Sound"));
 }
 
 static void gain_is_applied(void)
@@ -831,7 +812,7 @@ static void dac_keys_leave_on_a_long_back_press_and_then_serve_the_screens_again
     dac_release(KEY_BACK);
     app_dac_keys_stop();
     open_top_setting(0);
-    CHECK(title_is("Shuffle"));
+    CHECK(title_is("Sound"));
 }
 
 static const StringId USB_PROMPT_OPTIONS[] = {STR_SETTINGS_STORAGE, STR_SETTINGS_DAC, STR_OFF};
@@ -852,7 +833,7 @@ static void a_usb_choice_is_picked_with_play(void)
     CHECK_EQUAL(2, app_choice_step());
     app_choice_close();
     open_top_setting(0);
-    CHECK(title_is("Shuffle"));
+    CHECK(title_is("Sound"));
 }
 
 static void a_dismissed_usb_choice_keeps_the_saved_one(void)
@@ -1598,7 +1579,7 @@ static void the_sleep_timer_turns_the_player_off(void)
     start_app_with_library();
     fake_hal_set_battery(
         (HalBattery){.known = true, .percent = 80, .millivolts = 3900, .usb_power = true});
-    open_top_setting(SETTINGS_SLEEP_INDEX);
+    open_setting(SETTINGS_SYSTEM, SYSTEM_SLEEP_ROW);
     CHECK(title_is("Sleep timer"));
     move_down(1);
     tap(KEY_PLAY);
@@ -4070,7 +4051,6 @@ int main(void)
         TEST_CASE(home_art_shows_a_library_cover_when_idle),
         TEST_CASE(home_art_moves_on_and_skips_albums_without_a_cover),
         TEST_CASE(home_art_keeps_the_playing_album),
-        TEST_CASE(settings_choose_shuffle_and_repeat),
         TEST_CASE(brightness_is_applied_and_saved),
         TEST_CASE(the_equalizer_opens_from_settings_and_is_applied),
         TEST_CASE(gain_is_applied),
