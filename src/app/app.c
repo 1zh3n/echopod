@@ -776,10 +776,22 @@ static void draw_frame(void *context, Canvas *canvas)
     } else {
         screen->draw(screen->context, canvas);
     }
+#ifdef ECHO_LITE
+    if (!screen->full_screen && state->status_bar.battery_known &&
+        state->status_bar.battery_percent < 20) {
+        StatusBarState low = state->status_bar;
+        low.playback = STATUS_PLAYBACK_NONE;
+        low.bluetooth = STATUS_BLUETOOTH_OFF;
+        low.clock = NULL;
+        Theme dressed = dressed_theme(chrome_screen(screen));
+        status_bar_draw(canvas, &dressed, low);
+    }
+#else
     if (!screen->full_screen) {
         Theme dressed = dressed_theme(chrome_screen(screen));
         status_bar_draw(canvas, &dressed, state->status_bar);
     }
+#endif
     toast_draw(&state->toast, canvas, current_theme());
     if (state->options.show_frame_time) {
         FrameBreakdown breakdown = {

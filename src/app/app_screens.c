@@ -11,6 +11,9 @@
 #include "hal/storage.h"
 #include "hal/system.h"
 #include "theme_store.h"
+#include "ui/box.h"
+#include "ui/icons.h"
+#include "ui/label.h"
 
 typedef enum MusicSource {
     MUSIC_COVER_FLOW,
@@ -76,10 +79,12 @@ static int music_position(int entry)
 #endif
 }
 
+#ifndef ECHO_LITE
 static bool player_has_track(const void *context)
 {
     return player_status(context).has_track;
 }
+#endif
 
 MenuItem app_screens_open_item(const char *label, Screen *target)
 {
@@ -248,14 +253,6 @@ static bool shelf_present(const void *context)
 }
 #endif
 
-#ifdef ECHO_LITE
-static bool hidden_item(const void *context)
-{
-    (void)context;
-    return false;
-}
-#endif
-
 #ifndef ECHO_LITE
 static MenuItem shelf_item(AppScreens *screens, AppScreensContext context, SpokenKind shelf)
 {
@@ -279,9 +276,73 @@ static MenuItem shelf_item(AppScreens *screens, AppScreensContext context, Spoke
 }
 #endif
 
+#ifndef ECHO_LITE
 _Static_assert(THEME_ICON_COUNT - THEME_ICON_HOME_MUSIC == HOME_ITEM_COUNT,
                "Home has an icon for each of its items");
+#endif
 
+#ifdef ECHO_LITE
+static bool home_scene_update(void *context, uint32_t now_ms)
+{
+    (void)context;
+    (void)now_ms;
+    return true;
+}
+
+static const ThemeIconId HOME_ICONS[HOME_ITEM_COUNT] = {
+    THEME_ICON_HOME_MUSIC, THEME_ICON_HOME_AUDIOBOOKS, THEME_ICON_HOME_PODCASTS,
+    THEME_ICON_HOME_NOW_PLAYING, THEME_ICON_HOME_SETTINGS};
+
+static bool home_scene_draw(void *context, Canvas *canvas, MenuScreen *menu)
+{
+    (void)context;
+    const Theme *theme = menu->config.theme;
+    int width = theme->metrics.screen_width;
+    int height = theme->metrics.screen_height;
+    canvas_fill_rect(canvas, (Rect){0, 0, width, height}, theme->colors->background);
+    int count = menu->config.item_count;
+    int column = width / count;
+    for (int index = 0; index < count; index++) {
+        int left = index * column;
+        bool active = index == menu->list.selected;
+        Rect box = {left + 4, 28, column - 8, 74};
+        if (active) {
+            box_draw(canvas, theme->colors, &theme->boxes->selection, box);
+        }
+        Rect icon_area = {left + (column - 24) / 2, 40, 24, 24};
+        Icon icon = {HOME_ICONS[index], icon_area,
+                     active ? theme->colors->selection_text : theme->colors->text};
+        icon_draw(canvas, theme, icon);
+        TextStyle style = {theme->fonts.small,
+                           active ? theme->colors->selection_text : theme->colors->text};
+        const char *text = menu->config.items[index].label;
+        Rect label_area = {left + 2, 70, column - 4, 24};
+        label_draw(canvas, style,
+                   (Label){label_centered_area(style.font, label_area, text), text});
+    }
+    return true;
+}
+
+static void build_home(AppScreens *screens, AppScreensContext context)
+{
+    const Theme *theme = context.theme;
+    screens->home_items[0] = music_item(screens, context.store, 5);
+    screens->home_items[1] = music_item(screens, context.store, 6);
+    screens->home_items[2] = music_item(screens, context.store, 7);
+    screens->home_items[3] =
+        app_screens_open_item(i18n_text(STR_MENU_NOW_PLAYING), &screens->now_playing.screen);
+    screens->home_items[4] =
+        app_screens_open_item(i18n_text(STR_MENU_SETTINGS), &screens->settings.menu.screen);
+    screens->home_scene = (MenuScene){home_scene_update, home_scene_draw, screens, true};
+    MenuConfig home = {.title = "EchoPod",
+                       .items = screens->home_items,
+                       .item_count = HOME_ITEM_COUNT,
+                       .theme = theme,
+                       .scene = &screens->home_scene};
+    menu_screen_init(&screens->home, home);
+    screens->home.list.visible_rows = HOME_ITEM_COUNT;
+}
+#else
 static bool home_scene_update(void *context, uint32_t now_ms)
 {
     AppScreens *screens = context;
@@ -312,13 +373,8 @@ static void build_home(AppScreens *screens, AppScreensContext context)
     const Theme *theme = context.theme;
     screens->home_items[0] =
         app_screens_open_item(i18n_text(STR_RESCAN_MUSIC_TITLE), &screens->music.screen);
-#ifdef ECHO_LITE
-    screens->home_items[1] = (MenuItem){.shown = hidden_item};
-    screens->home_items[2] = (MenuItem){.shown = hidden_item};
-#else
     screens->home_items[1] = shelf_item(screens, context, SPOKEN_AUDIOBOOK);
     screens->home_items[2] = shelf_item(screens, context, SPOKEN_PODCAST);
-#endif
     screens->home_items[3] =
         app_screens_open_item(i18n_text(STR_MENU_SETTINGS), &screens->settings.menu.screen);
     screens->home_items[4] =
@@ -342,6 +398,7 @@ static void build_home(AppScreens *screens, AppScreensContext context)
                        .scene = &screens->home_scene};
     menu_screen_init(&screens->home, home);
 }
+#endif
 
 ECHO_STARTUP_CODE Screen *app_screens_init(AppScreens *screens, AppScreensContext context)
 {
