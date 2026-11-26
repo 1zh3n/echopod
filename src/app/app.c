@@ -543,13 +543,24 @@ static bool settings_open(void)
 
 static bool opens_settings(KeyEvent event)
 {
-    return event.key == KEY_MENU && event.gesture == KEY_GESTURE_LONG_PRESS &&
-           top_screen() != &app.screens.now_playing.screen && !settings_open();
+    Screen *top = top_screen();
+    bool now_playing_flow = top == &app.screens.now_playing.screen;
+#ifdef ECHO_LITE
+    now_playing_flow |= top == &app.screens.playback_panel.screen;
+#endif
+    return event.key == KEY_MENU && event.gesture == KEY_GESTURE_LONG_PRESS && !now_playing_flow &&
+           !settings_open();
 }
 
 static ScreenAction now_playing_action(void)
 {
-    return top_screen() == &app.screens.up_next.screen
+    Screen *top = top_screen();
+#ifdef ECHO_LITE
+    if (top == &app.screens.playback_panel.screen) {
+        return screen_action_pop();
+    }
+#endif
+    return top == &app.screens.up_next.screen
                ? screen_action_pop()
                : screen_action_push(&app.screens.now_playing.screen);
 }

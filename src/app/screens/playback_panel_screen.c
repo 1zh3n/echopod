@@ -158,6 +158,9 @@ static ScreenAction handle_key(void *context, KeyEvent event, uint32_t now_ms)
 {
     PlaybackPanelScreen *panel = context;
     panel->now_ms = now_ms;
+    if (event.key == KEY_MENU) {
+        return screen_action_pop();
+    }
     if (event.gesture != KEY_GESTURE_PRESS) {
         return screen_action_none();
     }

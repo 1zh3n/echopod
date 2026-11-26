@@ -174,6 +174,13 @@ echo_add_unit_test(NAME test_app
 )
 target_compile_definitions(test_app PRIVATE ECHO_FIXTURE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/fixtures"
     ECHO_THEME_PACKS="${PROJECT_SOURCE_DIR}/src/themes/packs")
+if(ECHO_LITE)
+    echo_add_unit_test(NAME test_lite_panel
+        SOURCES app/test_lite_panel.c app/fake_hal.c
+        LIBRARIES echo_app echo_library_fixtures
+        PRIVATE_INCLUDES ${PROJECT_SOURCE_DIR}/src/app
+    )
+endif()
 echo_add_unit_test(NAME test_release_diagnostics
     SOURCES app/test_release_diagnostics.c ${PROJECT_SOURCE_DIR}/src/app/diagnostics_menu_release.c
         app/fake_hal.c
