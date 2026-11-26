@@ -29,6 +29,18 @@ static void step(void)
     app_step();
 }
 
+static bool area_has_color(int x, int y, int width, int height, Color color)
+{
+    for (int row = y; row < y + height; row++) {
+        for (int column = x; column < x + width; column++) {
+            if (fake_hal_pixel(column, row) == color) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 static void start_app_with_library(void)
 {
     uint32_t size = 0;
@@ -280,6 +292,38 @@ static void open_all_songs_and_play(void)
     CHECK(title_is("Now Playing"));
 }
 
+static void quick_panel_is_icon_only(void)
+{
+    start_app_with_library();
+    open_all_songs_and_play();
+    hold(KEY_MENU);
+    wait_ms(300);
+    CHECK(title_is("Playback"));
+    CHECK(fake_hal_pixel(55, 86) == COLOR_RGB(47, 168, 255));
+    CHECK(fake_hal_pixel(211, 86) == COLOR_RGB(99, 102, 241));
+    CHECK(fake_hal_pixel(229, 104) == COLOR_RGB(55, 48, 163));
+    CHECK(fake_hal_pixel(160, 155) == COLOR_RGB(250, 250, 249));
+}
+
+static void quick_panel_sleep_value_fits(void)
+{
+    start_app_with_library();
+    open_all_songs_and_play();
+    hold(KEY_MENU);
+    wait_ms(300);
+    tap(KEY_VOLUME_UP);
+    tap(KEY_PLAY);
+    wait_ms(100);
+    CHECK(area_has_color(224, 100, 28, 16, COLOR_RGB(255, 255, 255)));
+    for (int step = 0; step < 5; step++) {
+        tap(KEY_PLAY);
+        wait_ms(20);
+    }
+    wait_ms(100);
+    CHECK(area_has_color(220, 100, 36, 16, COLOR_RGB(255, 255, 255)));
+    CHECK(fake_hal_pixel(270, 108) != COLOR_RGB(55, 48, 163));
+}
+
 static void short_menu_on_the_panel_returns_to_now_playing(void)
 {
     start_app_with_library();
@@ -313,6 +357,8 @@ static void long_menu_on_the_panel_closes_it_without_opening_settings(void)
 int main(void)
 {
     TestCase cases[] = {
+        TEST_CASE(quick_panel_is_icon_only),
+        TEST_CASE(quick_panel_sleep_value_fits),
         TEST_CASE(short_menu_on_the_panel_returns_to_now_playing),
         TEST_CASE(long_menu_on_the_panel_closes_it_without_opening_settings),
         TEST_CASE(gear_glyph_draws_only_white_outline),

@@ -4,11 +4,11 @@
 
 #include <stddef.h>
 
-#include "core/i18n.h"
 #include "hal/clock.h"
 #include "player.h"
 #include "settings_screens.h"
 #include "ui/label.h"
+#include "ui/lite_badge.h"
 #include "ui/lite_icons.h"
 
 enum {
@@ -19,15 +19,25 @@ enum {
     CARD_GAP = 16,
     CARD_SHADOW = 5,
     CARD_BORDER = 2,
-    ICON_SIZE = 48,
-    ICON_TOP = 44,
-    LABEL_TOP = 98,
-    LABEL_HEIGHT = 20,
-    VALUE_TOP = 120,
-    VALUE_HEIGHT = 16,
-    HINT_TOP = 151,
-    HINT_HEIGHT = 16
+    BADGE_CENTER_Y = 86,
+    BADGE_RADIUS = 32,
+    MODE_GLYPH = 38,
+    MOON_GLYPH = 30,
+    MOON_TOP = 64,
+    SLEEP_PILL_TOP = 100,
+    SLEEP_PILL_HEIGHT = 16,
+    SLEEP_PILL_PAD = 10
 };
+
+static const Color MODE_BASE = COLOR_RGB(47, 168, 255);
+static const Color MODE_LIGHT = COLOR_RGB(139, 215, 255);
+static const Color MODE_DARK = COLOR_RGB(22, 119, 200);
+static const Color SLEEP_BASE = COLOR_RGB(99, 102, 241);
+static const Color SLEEP_LIGHT = COLOR_RGB(165, 180, 252);
+static const Color SLEEP_DARK = COLOR_RGB(55, 48, 163);
+
+static const char *const SLEEP_VALUES[SLEEP_TIMER_OPTION_COUNT] = {
+    "", "15", "30", "45", "60", "90", "120"};
 
 static const IconMask *mode_icon(PlaybackMode mode)
 {
@@ -42,23 +52,9 @@ static const IconMask *mode_icon(PlaybackMode mode)
     return &LITE_ICON_LOOP;
 }
 
-static StringId mode_label(PlaybackMode mode)
-{
-    switch (mode) {
-    case PLAYBACK_RANDOM:
-        return STR_MENU_SHUFFLE_SONGS;
-    case PLAYBACK_LOOP:
-        return STR_MENU_REPEAT_ALL;
-    case PLAYBACK_ONE:
-        return STR_MENU_REPEAT_ONE;
-    }
-    return STR_MENU_REPEAT_ALL;
-}
-
-static void draw_card(Canvas *canvas, const Theme *theme, Rect area, bool selected)
+static void draw_card(Canvas *canvas, const Theme *theme, Rect area, Color border)
 {
     Color ink = theme->colors->text;
-    Color border = selected ? theme->colors->selection_background : ink;
     canvas_fill_rect(canvas,
                      (Rect){area.x + CARD_SHADOW, area.y + CARD_SHADOW, area.width, area.height},
                      ink);
@@ -73,21 +69,51 @@ static void draw_card(Canvas *canvas, const Theme *theme, Rect area, bool select
                      border);
 }
 
-static void draw_icon(Canvas *canvas, const Theme *theme, Rect area, const IconMask *mask,
-                      bool selected)
+static void draw_mode_badge(Canvas *canvas, const Theme *theme, Rect card, PlaybackMode mode)
 {
-    Color color = selected ? theme->colors->selection_background : theme->colors->text_secondary;
-    lite_icon_draw_scaled(canvas, mask, area, color);
+    Point center = {card.x + card.width / 2, BADGE_CENTER_Y};
+    LiteBadgeStyle style = {
+        .base = MODE_BASE,
+        .light = MODE_LIGHT,
+        .dark = MODE_DARK,
+        .ink = theme->colors->text,
+        .shadow = theme->colors->text,
+    };
+    lite_badge_draw_circle(canvas, center, BADGE_RADIUS, &style);
+    lite_icon_draw_scaled(
+        canvas, mode_icon(mode),
+        (Rect){center.x - MODE_GLYPH / 2, center.y - MODE_GLYPH / 2, MODE_GLYPH, MODE_GLYPH},
+        COLOR_RGB(255, 255, 255));
 }
 
-static void draw_text(Canvas *canvas, const Theme *theme, Rect area, StringId text, bool title,
-                      bool selected)
+static void draw_sleep_badge(Canvas *canvas, const Theme *theme, Rect card, int sleep)
 {
-    TextStyle style = {.font = title ? theme->fonts.title : theme->fonts.small,
-                       .color = selected ? theme->colors->text : theme->colors->text_secondary};
-    label_draw(canvas, style,
-               (Label){.area = label_centered_area(style.font, area, i18n_text(text)),
-                       .text = i18n_text(text)});
+    Point center = {card.x + card.width / 2, BADGE_CENTER_Y};
+    LiteBadgeStyle style = {
+        .base = SLEEP_BASE,
+        .light = SLEEP_LIGHT,
+        .dark = SLEEP_DARK,
+        .ink = theme->colors->text,
+        .shadow = theme->colors->text,
+    };
+    lite_badge_draw_circle(canvas, center, BADGE_RADIUS, &style);
+    lite_icon_draw_scaled(
+        canvas, &LITE_ICON_MOON,
+        (Rect){center.x - MOON_GLYPH / 2, MOON_TOP, MOON_GLYPH, MOON_GLYPH},
+        COLOR_RGB(255, 255, 255));
+
+    TextStyle text = {.font = theme->fonts.small, .color = COLOR_RGB(255, 255, 255)};
+    const char *value = sleep >= 0 && sleep < SLEEP_TIMER_OPTION_COUNT ? SLEEP_VALUES[sleep] : "";
+    int width = value[0] == '\0' ? 20 : text_width(text.font, value) + SLEEP_PILL_PAD;
+    Rect pill = {center.x - width / 2, SLEEP_PILL_TOP, width, SLEEP_PILL_HEIGHT};
+    canvas_fill_rect(canvas, pill, SLEEP_DARK);
+    if (value[0] == '\0') {
+        canvas_fill_rect(canvas,
+                         (Rect){center.x - 5, SLEEP_PILL_TOP + SLEEP_PILL_HEIGHT / 2 - 1, 10, 2},
+                         COLOR_RGB(255, 255, 255));
+    } else {
+        label_draw(canvas, text, (Label){.area = pill, .text = value});
+    }
 }
 
 static void draw(void *context, Canvas *canvas)
@@ -102,56 +128,13 @@ static void draw(void *context, Canvas *canvas)
     int sleep = settings_sleep_current(panel->settings);
     Rect first = {CARD_X, CARD_Y, CARD_WIDTH, CARD_HEIGHT};
     Rect second = {CARD_X + CARD_WIDTH + CARD_GAP, CARD_Y, CARD_WIDTH, CARD_HEIGHT};
-    draw_card(canvas, theme, first, panel->selected == 0);
-    draw_card(canvas, theme, second, panel->selected == 1);
+    draw_card(canvas, theme, first,
+              panel->selected == 0 ? theme->colors->selection_background : theme->colors->text);
+    draw_card(canvas, theme, second,
+              panel->selected == 1 ? SLEEP_BASE : theme->colors->text);
 
-    draw_icon(canvas, theme,
-              (Rect){first.x + (first.width - ICON_SIZE) / 2, ICON_TOP, ICON_SIZE, ICON_SIZE},
-              mode_icon(mode), panel->selected == 0);
-    draw_icon(canvas, theme,
-              (Rect){second.x + (second.width - ICON_SIZE) / 2, ICON_TOP, ICON_SIZE, ICON_SIZE},
-              &LITE_ICON_MOON, panel->selected == 1);
-
-    draw_text(canvas, theme, (Rect){first.x, LABEL_TOP, first.width, LABEL_HEIGHT}, mode_label(mode),
-              true, panel->selected == 0);
-    draw_text(canvas, theme, (Rect){second.x, LABEL_TOP, second.width, LABEL_HEIGHT},
-              STR_SETTINGS_SLEEP_TIMER, true, panel->selected == 1);
-
-    TextStyle value = {.font = theme->fonts.small,
-                       .color = panel->selected == 0 ? theme->colors->text
-                                                     : theme->colors->text_secondary};
-    const char *mode_value = "";
-    if (mode == PLAYBACK_RANDOM) {
-        mode_value = i18n_text(STR_SETTINGS_LIST);
-    } else if (mode == PLAYBACK_LOOP) {
-        mode_value = i18n_text(STR_SETTINGS_ALL);
-    } else {
-        mode_value = i18n_text(STR_SETTINGS_ONE);
-    }
-    label_draw(canvas, value,
-               (Label){.area = label_centered_area(value.font,
-                                                   (Rect){first.x, VALUE_TOP, first.width,
-                                                          VALUE_HEIGHT},
-                                                   mode_value),
-                       .text = mode_value});
-
-    TextStyle sleep_style = {.font = theme->fonts.small,
-                             .color = panel->selected == 1 ? theme->colors->text
-                                                           : theme->colors->text_secondary};
-    const char *sleep_value = settings_sleep_label(sleep);
-    label_draw(canvas, sleep_style,
-               (Label){.area = label_centered_area(sleep_style.font,
-                                                   (Rect){second.x, VALUE_TOP, second.width,
-                                                          VALUE_HEIGHT},
-                                                   sleep_value),
-                       .text = sleep_value});
-
-    TextStyle hint = {.font = theme->fonts.small, .color = theme->colors->text_tertiary};
-    static const char HINT[] = "VOL +/-   PLAY   BACK";
-    label_draw(canvas, hint,
-               (Label){.area = label_centered_area(hint.font,
-                                                   (Rect){0, HINT_TOP, width, HINT_HEIGHT}, HINT),
-                       .text = HINT});
+    draw_mode_badge(canvas, theme, first, mode);
+    draw_sleep_badge(canvas, theme, second, sleep);
 }
 
 static ScreenAction handle_key(void *context, KeyEvent event, uint32_t now_ms)
