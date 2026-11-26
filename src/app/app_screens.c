@@ -378,11 +378,13 @@ static bool home_scene_draw(void *context, Canvas *canvas, MenuScreen *menu)
     }
     draw_home_card_border(canvas, theme, center - 52);
 
-    Color accent = theme->colors->selection_background;
-    static const uint8_t bars[] = {9, 14, 11, 17};
-    for (int index = 0; index < 4; index++) {
-        canvas_fill_rect(canvas,
-                         (Rect){284 + index * 6, 160 - bars[index], 4, bars[index]}, accent);
+    if (screens->player != NULL && player_status(screens->player).state == PLAYER_PLAYING) {
+        Color accent = theme->colors->selection_background;
+        static const uint8_t bars[] = {9, 14, 11, 17};
+        for (int index = 0; index < 4; index++) {
+            canvas_fill_rect(canvas,
+                             (Rect){284 + index * 6, 160 - bars[index], 4, bars[index]}, accent);
+        }
     }
     return true;
 }
@@ -482,6 +484,9 @@ static void build_home(AppScreens *screens, AppScreensContext context)
 ECHO_STARTUP_CODE Screen *app_screens_init(AppScreens *screens, AppScreensContext context)
 {
     const Theme *theme = context.theme;
+#ifdef ECHO_LITE
+    screens->player = context.player;
+#endif
     build_settings(screens, context);
     bool card = hal_storage_card_ready();
     MessageConfig no_library = {

@@ -4,13 +4,13 @@
       "name": "cjk_16",
       "file": "noto-cjk/NotoSansCJKsc-Regular.otf",
       "size": 16,
-      "character_sets": ["hangul", "hanzi", "hanzi_traditional", "kanji", "kana", "cjk_punctuation", "fullwidth"]
+      "character_sets": ["hangul", "hanzi", "hanzi_traditional", "kanji", "kana", "cjk_punctuation", "fullwidth", "extra_hanzi"]
     },
     {
       "name": "cjk_12",
       "file": "noto-cjk/NotoSansCJKsc-Regular.otf",
       "size": 12,
-      "character_sets": ["hangul", "hanzi", "hanzi_traditional", "kanji", "kana", "cjk_punctuation", "fullwidth"]
+      "character_sets": ["hangul", "hanzi", "hanzi_traditional", "kanji", "kana", "cjk_punctuation", "fullwidth", "extra_hanzi"]
     },
     {
       "name": "inter_regular_12_latin1",
@@ -68,6 +68,10 @@
     "fullwidth": {
       "description": "Fullwidth forms",
       "ranges": [[65281, 65374]]
+    },
+    "extra_hanzi": {
+      "description": "Common GBK-only characters missing from GB 2312",
+      "ranges": [[21894, 21894]]
     }
   }
 }

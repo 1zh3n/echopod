@@ -1071,6 +1071,9 @@ ECHO_STARTUP_CODE static void start_up(void)
     app.now_ms = now_ms;
     CardFilesReport files = card_files_prepare(show_card_setup);
     settings_store_load(&app.settings);
+#ifdef ECHO_LITE
+    app.settings.settings.orientation = ORIENTATION_LANDSCAPE;
+#endif
     adopt_face_theme();
     theme_store_start(app.settings.settings.options[OPTION_THEME]);
 #ifdef ECHO_LITE

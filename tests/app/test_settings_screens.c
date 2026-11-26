@@ -11,14 +11,13 @@
 #include "theme_store.h"
 
 enum {
-    TOP_GROUPS = 4
+    TOP_GROUPS = 0
 };
 
 static SettingsScreens screens;
 
 static const char *const TOP[SETTINGS_TOP_COUNT] = {
-    "Shuffle", "Repeat", "Bluetooth", "Sleep timer", "Sound",
-    "Display", "Library", "Buttons",    "System"};
+    "Sound", "Display", "Library", "Buttons", "System"};
 
 static const char *const SOUND[] = {"Gain",          "Output", "Filter",
                                     "Balance",       "Bluetooth level", "Equalizer"};
@@ -30,7 +29,8 @@ static const char *const LIBRARY[] = {"Music folders",       "Rescan library",  
                                       "Folders & playlists", "Lyrics",           "Listen history"};
 static const char *const BUTTONS[] = {"Volume buttons", "Swap volume buttons", "Menu button",
                                       "Power on"};
-static const char *const SYSTEM[] = {"Language", "Date & time", "Auto off", "USB mode",
+static const char *const SYSTEM[] = {"Language",    "Date & time", "Auto off",
+                                     "Sleep timer", "Bluetooth",   "USB mode",
                                      "Ask when connected"};
 
 typedef struct GroupRows {

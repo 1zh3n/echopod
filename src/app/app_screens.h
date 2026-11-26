@@ -88,6 +88,9 @@ typedef struct AppScreens {
     ClockOption clock;
     Core1AccelOption core1_accel;
     MenuItem home_items[HOME_ITEM_COUNT];
+#ifdef ECHO_LITE
+    const Player *player;
+#endif
     HomeArt home_art;
     MenuScene home_scene;
     MenuItem music_items[MUSIC_ITEM_COUNT];

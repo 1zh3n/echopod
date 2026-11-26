@@ -16,6 +16,7 @@
 #include "ui/header.h"
 #include "ui/icons.h"
 #include "ui/label.h"
+#include "ui/lite_icons.h"
 #include "ui/marquee.h"
 
 enum {
@@ -949,6 +950,37 @@ static void draw_outline(Canvas *canvas, Rect area, Color color)
 }
 #endif
 
+#ifdef ECHO_LITE
+static const IconMask *lite_mode_icon(PlaybackMode mode)
+{
+    switch (mode) {
+    case PLAYBACK_RANDOM:
+        return &LITE_ICON_SHUFFLE;
+    case PLAYBACK_LOOP:
+        return &LITE_ICON_LOOP;
+    case PLAYBACK_ONE:
+        return &LITE_ICON_LOOP_ONE;
+    }
+    return &LITE_ICON_LOOP;
+}
+
+static void draw_lite_state(const NowPlayingScreen *now_playing, Canvas *canvas)
+{
+    if (!now_playing->status.has_track) {
+        return;
+    }
+    const Theme *theme = now_playing->config.theme;
+    PlaybackMode mode = player_playback_mode(now_playing->config.player);
+    lite_icon_draw_scaled(canvas, lite_mode_icon(mode), (Rect){262, 8, 18, 18},
+                          theme->colors->selection_background);
+    ThemeIconId state = now_playing->status.state == PLAYER_PLAYING ? THEME_ICON_BADGE_PAUSE
+                                                                    : THEME_ICON_BADGE_PLAY;
+    icon_draw(canvas, theme,
+              (Icon){.id = state, .area = {288, 8, 18, 18}, .color = theme->colors->text});
+}
+#endif
+
+#ifndef ECHO_LITE
 static void draw_format(const NowPlayingScreen *now_playing, Canvas *canvas, const Layout *layout)
 {
     const Theme *theme = now_playing->config.theme;
@@ -1011,6 +1043,7 @@ static void draw_details(const NowPlayingScreen *now_playing, Canvas *canvas, co
     draw_small_line(canvas, line_at(layout, THEME_LAYOUT_MODES, modes, style), layout,
                     THEME_LAYOUT_MODES);
 }
+#endif
 
 static void draw_badge_icon(Canvas *canvas, const Theme *theme, NowPlayingFeedback feedback,
                             Rect area)
@@ -1267,6 +1300,9 @@ static void draw(void *context, Canvas *canvas)
     draw_cover(now_playing, canvas, &layout);
     draw_badge(now_playing, canvas, &layout);
     draw_track_text(now_playing, canvas, &layout);
+#ifdef ECHO_LITE
+    draw_lite_state(now_playing, canvas);
+#endif
     draw_progress(now_playing, canvas, &layout);
     draw_times(now_playing, canvas, &layout);
 #ifdef ECHO_LITE
@@ -1280,8 +1316,10 @@ static void draw(void *context, Canvas *canvas)
         draw_lyrics(now_playing, canvas, &layout);
     }
 #endif
+#ifndef ECHO_LITE
     draw_format(now_playing, canvas, &layout);
     draw_details(now_playing, canvas, &layout);
+#endif
 }
 
 Screen *now_playing_screen_init(NowPlayingScreen *now_playing, NowPlayingConfig config)
