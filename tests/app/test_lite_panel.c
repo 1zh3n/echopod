@@ -69,6 +69,12 @@ static bool title_is(const char *expected)
     return strcmp(expected, app_screen_title()) == 0;
 }
 
+static void wait_ms(uint32_t duration_ms)
+{
+    now_ms += duration_ms;
+    step();
+}
+
 static void move_down(int times)
 {
     for (int count = 0; count < times; count++) {
@@ -124,6 +130,14 @@ static void boot_screen_is_static(void)
     now_ms += 500;
     step();
     CHECK(fake_hal_pixel(160, 85) == first);
+}
+
+static void colorful_home_has_no_text(void)
+{
+    start_app_with_library();
+    wait_ms(1400);
+    CHECK(fake_hal_pixel(160, 95) == COLOR_RGB(47, 168, 255));
+    CHECK(fake_hal_pixel(160, 118) == COLOR_RGB(255, 255, 255));
 }
 
 static void goodbye_screen_has_no_icon(void)
@@ -252,6 +266,7 @@ int main(void)
         TEST_CASE(lite_animation_streams_all_frames),
         TEST_CASE(boot_screen_draws_only_the_animation),
         TEST_CASE(boot_screen_is_static),
+        TEST_CASE(colorful_home_has_no_text),
         TEST_CASE(goodbye_screen_has_no_icon),
         TEST_CASE(charging_screen_has_green_shadow_and_no_text),
     };

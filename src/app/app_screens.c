@@ -16,6 +16,7 @@
 #include "ui/box.h"
 #include "ui/icons.h"
 #include "ui/label.h"
+#include "ui/lite_color_icons.h"
 #include "ui/lite_icons.h"
 #include "ui/lite_status.h"
 #include "ui/navigation.h"
@@ -314,8 +315,8 @@ static int32_t absolute32(int32_t value)
     return value < 0 ? -value : value;
 }
 
-static const IconMask *const HOME_MASKS[HOME_ITEM_COUNT] = {
-    &LITE_ICON_MUSIC_MENU, &LITE_ICON_MUSIC_LIST, &LITE_ICON_SETTING_TWO};
+static const ColorIcon *const HOME_ICONS[HOME_ITEM_COUNT] = {
+    &LITE_COLOR_ICON_ALL, &LITE_COLOR_ICON_LIST, &LITE_COLOR_ICON_GEAR};
 
 static int32_t home_eased(int32_t from, int32_t to, uint32_t elapsed)
 {
@@ -375,8 +376,11 @@ static bool home_scene_draw(void *context, Canvas *canvas, MenuScreen *menu)
         int y = 44 + (int)(closeness * 21 / HOME_STEPS);
         int x = center + (int)(offset * spacing / HOME_STEPS);
         bool selected = item == screens->home.list.selected;
-        Color color = selected ? theme->colors->selection_background : theme->colors->text_secondary;
-        lite_icon_draw_scaled(canvas, HOME_MASKS[item], (Rect){x - size / 2, y, size, size}, color);
+        int left = x - size / 2;
+        int shadow = selected ? 4 : 3;
+        lite_icon_draw_scaled(canvas, &LITE_MASK_SHADOW,
+                              (Rect){left + shadow, y + shadow, size, size}, theme->colors->text);
+        color_icon_draw_scaled(canvas, HOME_ICONS[item], (Rect){left, y, size, size});
     }
     draw_home_card_border(canvas, theme, center - 52);
 

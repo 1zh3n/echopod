@@ -8,7 +8,7 @@
 
 #include "hal/clock.h"
 #include "hal/system.h"
-#include "ui/lite_icons.h"
+#include "ui/lite_color_icons.h"
 
 enum {
     HEADER_BYTES = 40,
@@ -210,11 +210,10 @@ void lite_animation_draw_card(Canvas *canvas, Rect card, Color shadow, Color ink
                    (Rect){frame.x + FRAME_BORDER, frame.y + FRAME_BORDER, animation.width,
                           animation.height});
     } else {
-        lite_icon_draw_scaled(canvas, &LITE_ICON_MUSIC_MENU,
-                              (Rect){frame.x + (FRAME_WIDTH - FALLBACK_ICON) / 2,
-                                     frame.y + (FRAME_HEIGHT - FALLBACK_ICON) / 2, FALLBACK_ICON,
-                                     FALLBACK_ICON},
-                              ink);
+        color_icon_draw_scaled(canvas, &LITE_COLOR_ICON_ALL,
+                               (Rect){frame.x + (FRAME_WIDTH - FALLBACK_ICON) / 2,
+                                      frame.y + (FRAME_HEIGHT - FALLBACK_ICON) / 2, FALLBACK_ICON,
+                                      FALLBACK_ICON});
     }
 }
 
