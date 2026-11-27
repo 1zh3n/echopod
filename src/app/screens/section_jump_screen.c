@@ -129,6 +129,7 @@ Screen *section_jump_screen_init(SectionJumpScreen *jump, SectionJumpConfig conf
         .paints_every_pixel = true,
         .select_on_press = true,
         .overlay = true,
+        .menu_consumes = true,
         .enter = enter,
         .handle_key = handle_key,
         .update = update,

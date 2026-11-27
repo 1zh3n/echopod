@@ -577,8 +577,9 @@ static void use_screen_key_behaviors(void)
 
 static bool opens_now_playing(KeyEvent event)
 {
-    return event.key == KEY_MENU && event.gesture == KEY_GESTURE_PRESS &&
-           player_status(&app.player).has_track && top_screen() != &app.screens.now_playing.screen;
+    Screen *top = top_screen();
+    return event.key == KEY_MENU && event.gesture == KEY_GESTURE_PRESS && !top->menu_consumes &&
+           player_status(&app.player).has_track && top != &app.screens.now_playing.screen;
 }
 
 #ifndef ECHO_LITE
@@ -596,8 +597,9 @@ static bool settings_open(void)
 static bool opens_settings(KeyEvent event)
 {
 #ifdef ECHO_LITE
-    return event.key == KEY_MENU && event.gesture == KEY_GESTURE_LONG_PRESS &&
-           top_screen() != &app.screens.settings.menu.screen;
+    Screen *top = top_screen();
+    return event.key == KEY_MENU && event.gesture == KEY_GESTURE_LONG_PRESS && !top->menu_consumes &&
+           top != &app.screens.settings.menu.screen;
 #else
     Screen *top = top_screen();
     bool now_playing_flow = top == &app.screens.now_playing.screen;

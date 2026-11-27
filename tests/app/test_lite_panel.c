@@ -715,6 +715,20 @@ static void double_menu_opens_and_closes_section_jump(void)
     CHECK(title_is("All Songs"));
 }
 
+static void menu_closes_section_jump_without_opening_now_playing(void)
+{
+    start_app_with_library();
+    open_all_songs_and_play();
+    tap(KEY_BACK);
+    CHECK(title_is("All Songs"));
+    double_tap(KEY_MENU);
+    CHECK(title_is("A-Z"));
+    tap(KEY_MENU);
+    CHECK(title_is("All Songs"));
+    wait_ms(300);
+    CHECK(title_is("All Songs"));
+}
+
 static void section_jump_play_returns_to_the_list(void)
 {
     start_app_with_library();
@@ -942,6 +956,7 @@ int main(void)
         TEST_CASE(settings_menu_goes_to_now_playing_and_drops_settings),
         TEST_CASE(lite_ignores_the_menu_key_setting),
         TEST_CASE(double_menu_opens_and_closes_section_jump),
+        TEST_CASE(menu_closes_section_jump_without_opening_now_playing),
         TEST_CASE(section_jump_play_returns_to_the_list),
         TEST_CASE(short_menu_in_a_lettered_list_waits_for_the_double_window),
         TEST_CASE(long_back_on_panel_goes_home),

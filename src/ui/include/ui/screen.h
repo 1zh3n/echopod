@@ -29,6 +29,7 @@ struct Screen {
     bool stays_on_wake;
     bool select_on_press;
     bool overlay;
+    bool menu_consumes;
     bool double_menu_enabled;
     void *double_menu_context;
     void (*enter)(void *context, uint32_t now_ms);

@@ -249,12 +249,24 @@ static ScreenAction handle_key(void *context, KeyEvent event, uint32_t now_ms)
     return action;
 }
 
+static void set_visible_rows(UpNextScreen *up_next)
+{
+#ifdef ECHO_LITE
+    up_next->list.visible_rows = theme_is_portrait(up_next->config.theme)
+                                     ? 0
+                                     : lite_list_rows(up_next->config.theme);
+#else
+    (void)up_next;
+#endif
+}
+
 static void enter(void *context, uint32_t now_ms)
 {
     UpNextScreen *up_next = context;
     up_next->now_ms = now_ms;
     count_rows(up_next);
     list_view_init(&up_next->list, &up_next->model, up_next->config.theme, now_ms);
+    set_visible_rows(up_next);
     if (up_next->chapters) {
         list_view_select(&up_next->list, player_status(up_next->config.player).chapter, now_ms);
     }
@@ -269,6 +281,7 @@ static void update(void *context, uint32_t now_ms)
         return;
     }
     up_next->now_ms = now_ms;
+    set_visible_rows(up_next);
     refresh_rows(up_next);
 }
 
@@ -281,7 +294,6 @@ static void draw(void *context, Canvas *canvas)
     bool paint_backdrop = theme_is_portrait(theme);
     if (!paint_backdrop) {
         content = lite_list_frame_no_title(canvas, theme);
-        up_next->list.visible_rows = lite_list_rows(theme);
     } else {
         header_draw(canvas, theme,
                     i18n_text(up_next->chapters ? STR_MENU_CHAPTERS : STR_MENU_UP_NEXT));
