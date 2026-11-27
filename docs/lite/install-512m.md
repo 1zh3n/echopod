@@ -37,7 +37,7 @@ cmake --build --preset release-lite
 
 ```text
 image:  MINIV923.IMG
-sha256: 4356ca9edf00117b1012a15627100a9b7b4bec45075eb9ade5d836587aed56e4
+sha256: 08cfddaaab880eec7d56c8b15db1df9c86eb49f6c3848714956464b36a51c4e4
 ```
 
 `MINIV923` contains the runtime Light/Dark and landscape/portrait build, the native 12×20
