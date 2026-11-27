@@ -40,7 +40,7 @@ a screenshot source.
 
 ## Sleep timer
 
-Implemented in MINIV928. The moon pill shows the remaining time; after the deadline it shows `END` while
+Implemented. The moon pill shows the remaining time; after the deadline it shows `END` while
 waiting for the current track, then the player shuts down. No pause mode.
 
 ![Sleep timer countdown](../../images/lite/sleep-timer-countdown.png)

@@ -85,8 +85,7 @@ was prototyped and deferred because it duplicated that feedback and hid the Blue
 
 ### Sleep timer
 
-The sleep timer remains a **shutdown** timer; this pass does not add a pause mode. Implemented
-in MINIV928.
+The sleep timer remains a **shutdown** timer; this pass does not add a pause mode. Implemented.
 
 - Panel: the moon pill shows the remaining time (`14:32`, `0:45`), updated every second; when
   the deadline passes while a track is playing, it shows `END` while waiting for that track.
