@@ -109,8 +109,31 @@ No repeated overlay, no stack depth growth, no silent push failure.
   - Long Menu in Settings and long Play in the panel do nothing.
   - Repeated Menu/Menu/Back/panel cycles never grow the stack.
 
-## Deferred
+## Long Menu proposal (recorded, not implemented)
 
-- Long Play in the playback panel closing the panel (would be a toggle). Kept as a no-op for
-  now to avoid adding another key rule.
-- A visible back-stack indicator or history menu. Not part of this pass.
+`MINIV938` uses double Menu for the group actions. The next proposal removes the double window
+and moves the same actions to long Menu:
+
+| Screen | Short Menu | Long Menu |
+|---|---|---|
+| Home | Now Playing | no action |
+| Lettered list | Now Playing | A-Z/# overlay |
+| Now Playing | Up Next | Quick Panel |
+| Settings | Now Playing | next category |
+| Playback panel | close | no action |
+| Up Next | Now Playing | no action |
+| A-Z/# overlay | close | close |
+
+- No double Menu. Short Menu acts immediately, so the 200 ms wait disappears.
+- Settings is no longer opened from anywhere by Menu. It is reached from the Home Settings
+  card, which matches its low frequency; Back returns Home.
+- Lite lowers the Menu long-press threshold from 600 ms to 400 ms. Volume long press stays at
+  1000 ms.
+- The panel changes from `KEY_MENU` closing on any gesture to closing only on short Menu.
+- Long Menu is a group/navigation key, not a global Settings shortcut.
+- If Settings later needs quicker access, add it to the Quick Panel rather than restoring the
+  double-Menu wait.
+
+Assessed risks: the group actions are slower than double tap, Settings from a deep list needs
+Long Back -> Home -> Settings, and long press is less discoverable. The proposal is recorded,
+not implemented.
