@@ -5,6 +5,19 @@ Settings and Quick panel sheets are **design mockups, not device screenshots**; 
 rendering and final asset placement can differ slightly. The boot sheet is rendered from the
 actual `LBOO` / `LBO2` firmware assets.
 
+The PNG files below are the design source. The HTML page is only a convenience index; it is not
+a screenshot source.
+
+## Final design rules
+
+- Home card: 6 px radius, 104×104 landscape / 112×112 portrait, 64 px selected icon, no keyline.
+- Status: 28×8 meter at top-left (blue = Bluetooth, cyan = playing). Now Playing uses a
+  14×8 Bluetooth-only chip beside shuffle/play.
+- Settings: landscape has no text header; the status meter and category dots share the top band.
+  Portrait keeps the category name.
+- Battery/charging: still carried by the card shadow.
+- Dark: border `#52525B`, shadow `#000000`.
+
 ## Home
 
 ![Home](../../images/lite/home-final-v5.png)
@@ -41,5 +54,5 @@ purple     #8B5CF6
 indigo     #6366F1
 ```
 
-The HTML version is [index.html](index.html). The implementation-level layout spec is
+The optional HTML index is [index.html](index.html). The implementation-level layout spec is
 [../design.md](../design.md).

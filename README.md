@@ -82,7 +82,7 @@ play/pause icon already shows playback. The card shadow carries the battery/char
 
 *Actual boot art (2×), not a device photo: 200×112 landscape and 146×112 portrait cards, 2px frame and 5px shadow. Art: Mountain Dusk by ansimuz, CC0 1.0.*
 
-Full mockup sheet: [docs/lite/mockups/README.md](docs/lite/mockups/README.md) · [HTML](docs/lite/mockups/index.html).
+Design images (PNG): [docs/lite/mockups/README.md](docs/lite/mockups/README.md).
 
 ## Build
 

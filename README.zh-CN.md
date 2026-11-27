@@ -70,7 +70,7 @@ Home 左上角 28×8 状态 meter：左段是蓝牙，右段是播放。Now Play
 
 *真实开机素材渲染（2×），不是设备照片：横版 200×112，竖版 146×112，2px 框 + 5px 阴影。美术：ansimuz 的 Mountain Dusk，CC0 1.0。*
 
-完整 mockup：[docs/lite/mockups/README.md](docs/lite/mockups/README.md) · [HTML](docs/lite/mockups/index.html)。
+设计稿图片（PNG）：[docs/lite/mockups/README.md](docs/lite/mockups/README.md)。
 
 ## 构建
 
