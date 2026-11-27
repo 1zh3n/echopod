@@ -32,7 +32,7 @@ enum {
     SETTINGS_DIVIDER_X = 24,
     SETTINGS_DIVIDER_WIDTH = 280,
     SETTINGS_DOT_X = 254,
-    SETTINGS_DOT_Y = 14,
+    SETTINGS_DOT_Y = 6,
     SETTINGS_DOT_GAP = 12
 };
 
@@ -168,7 +168,7 @@ static bool settings_scene_draw(void *context, Canvas *canvas, MenuScreen *menu)
             .light = visual->light,
             .dark = visual->dark,
             .ink = colors->text,
-            .shadow = colors->text,
+            .shadow = lite_card_shadow_color(theme),
         };
         lite_badge_draw_half(canvas, (Point){SETTINGS_ICON_X, SETTINGS_ICON_Y},
                              SETTINGS_ICON_RADIUS, &badge);

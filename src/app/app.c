@@ -58,7 +58,6 @@
 #include "ui/label.h"
 #ifdef ECHO_LITE
 #include "ui/lite_frame.h"
-#include "ui/lite_icons.h"
 #include "ui/lite_status.h"
 #endif
 #include "ui/marquee.h"
@@ -900,14 +899,17 @@ static void refresh_lite_status(void)
     lite_status_set(shadow, progress, bluetooth);
 }
 
-static void draw_lite_bluetooth(Canvas *canvas)
+static void draw_lite_status_meter(Canvas *canvas)
 {
-    if (!lite_status_bluetooth()) {
+    const Theme *theme = current_theme();
+    bool bluetooth = lite_status_bluetooth();
+    bool playing = player_status(&app.player).state == PLAYER_PLAYING;
+    if (top_screen() == &app.screens.now_playing.screen) {
+        Point origin = {theme_is_portrait(theme) ? 96 : 236, 13};
+        lite_status_bt_chip_draw(canvas, theme, origin, bluetooth);
         return;
     }
-    const Theme *theme = current_theme();
-    lite_icon_draw_scaled(canvas, &LITE_ICON_BLUETOOTH, (Rect){3, 4, 12, 20},
-                          theme->colors->selection_background);
+    lite_status_meter_draw(canvas, theme, (Point){2, 2}, bluetooth, playing);
 }
 #endif
 
@@ -924,7 +926,7 @@ static void draw_frame(void *context, Canvas *canvas)
         screen->draw(screen->context, canvas);
     }
 #ifdef ECHO_LITE
-    draw_lite_bluetooth(canvas);
+    draw_lite_status_meter(canvas);
 #else
     if (!screen->full_screen) {
         Theme dressed = dressed_theme(chrome_screen(screen));

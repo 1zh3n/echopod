@@ -8,7 +8,7 @@
 > 只在 **512 MB** Echo Mini 上测试过；**不支持 8 GB 型号**。
 
 <p align="center">
-  <img src="docs/images/lite/home-final-v4.png" alt="Home 的 Light/Dark、横屏/竖屏" width="100%">
+  <img src="docs/images/lite/home-final-v5.png" alt="Home 的 Light/Dark、横屏/竖屏" width="100%">
 </p>
 
 <p align="center"><em>Home、Now Playing、Settings、Quick panel 是设计稿（2×），不是实机截图；下方开机图是从真实固件素材渲染的。</em></p>
@@ -39,10 +39,11 @@
 - **512 MB 移植和 Lite 构建：** `ECHO_LITE=ON`，无封面，Lite 菜单和布局。
 - **运行时 Light / Dark：** Settings → Display → Theme；默认 Light。
 - **运行时 Landscape / Portrait：** Settings → Display → Orientation，320×170 或 170×320。
-- **Lite Home：** 三个自绘彩色 badge，无文字，无 page dots。
+- **Lite Home：** 三个自绘彩色 badge，无文字，无 page dots；左上角 28×8 状态 meter
+  显示蓝牙和播放。
 - **Lite Settings：** 一屏一类；长按 Play 切换类别。横屏去掉文字标题，由半圆 icon、类别圆点和菜单项表达；竖屏保留类别名。
 - **Quick panel：** 两张 icon-only 卡片，播放模式和睡眠定时。
-- **Now Playing：** 18px 原生模式/状态图标，无封面框。
+- **Now Playing：** 18px 原生模式/状态图标，无封面框；shuffle/play 旁是 14×8 的蓝牙-only chip。
 - **启动和充电：** 开机图为 200×112 横版 / 146×112 竖版卡片大小，带 2px 框和 5px 阴影，没有外层卡片；充电仍用 96×64 动画卡。
 - **按键：** Now Playing 音量单击/双击/长按；长按 Play 打开播放面板；长按 Menu 打开 Settings；面板长按 Back 回 Home。
 - **空间清理：** Lite 图标 mask 移到 glyph face；移除 Lite theme store/assets；删掉未使用的 Lite 路径。
@@ -55,15 +56,15 @@
 > **这些是设计稿，不是实机截图。** 它们展示预期布局和配色；实机字体渲染和最终素材位置可能略有不同。
 > 开机图是从真实 `LBOO` / `LBO2` 素材渲染的，不是设备照片。
 
-Home 左上角蓝色蓝牙符号是连接状态，右上角四根竖条表示正在播放；卡片阴影承担电量/充电颜色。
+Home 左上角 28×8 状态 meter：左段是蓝牙，右段是播放。Now Playing 的 shuffle/play 旁保留一个蓝牙-only chip；播放状态由 play/pause 图标表达。卡片阴影承担电量/充电颜色。
 
 | Home | Now Playing |
 |---|---|
-| ![Home](docs/images/lite/home-final-v4.png) | ![Now Playing](docs/images/lite/now-playing-final.png) |
+| ![Home](docs/images/lite/home-final-v5.png) | ![Now Playing](docs/images/lite/now-playing-final-v2.png) |
 
 | Settings | Quick panel |
 |---|---|
-| ![Settings](docs/images/lite/settings-final-v2.png) | ![Quick panel](docs/images/lite/quick-panel-final.png) |
+| ![Settings](docs/images/lite/settings-final-v3.png) | ![Quick panel](docs/images/lite/quick-panel-final-v2.png) |
 
 ![Boot](docs/images/lite/boot-cards.png)
 

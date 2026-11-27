@@ -13,16 +13,19 @@ front end. The list below is the useful summary; the git history has the exact c
 ## UI
 
 - Neo-brutalist Lite visual language: 2 px borders, hard shadows, flat colour badges.
-- Three-icon Home carousel: All Songs / Playlists / Settings, no text.
+- Three-icon Home carousel: All Songs / Playlists / Settings, no text; 6 px card radius.
+- 28×8 global status meter: blue = Bluetooth, cyan = playing; Now Playing uses a 14×8
+  Bluetooth-only chip beside shuffle/play.
 - Settings is one category per screen: Sound / Display / Library / Buttons / System.
 - Landscape Settings has no text header; the half-badge, category dots and rows carry the
   category. Portrait keeps the category name.
 - Quick panel with two icon-only cards: playback mode and sleep timer.
-- Now Playing uses native 18 px mode/state icons and no cover frame.
+- Now Playing uses native 18 px mode/state icons, no cover frame, and a Bluetooth-only chip.
 - Boot uses 200×112 landscape / 146×112 portrait card-sized images with a 2px frame and 5px shadow, no outer card.
 - Charging keeps the 96×64 animation card.
 - Runtime Light/Dark and Landscape/Portrait in Settings → Display.
-- Dark borders: large surfaces 1 px `#52525B`, badges 2 px light, selection blue.
+- Dark borders: large surfaces 1 px `#52525B`, badges 2 px light, selection blue; shadows are
+  `#000000` so they read as shadows against the dark page.
 
 ## Controls
 

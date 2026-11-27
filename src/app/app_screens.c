@@ -341,7 +341,7 @@ static bool home_scene_update(void *context, uint32_t now_ms)
 
 static void draw_home_card(Canvas *canvas, const Theme *theme, Rect card)
 {
-    lite_card(canvas, theme, card, 5);
+    lite_card_rounded(canvas, theme, card, 5, 6);
 }
 
 static bool home_scene_draw(void *context, Canvas *canvas, MenuScreen *menu)
@@ -356,7 +356,7 @@ static bool home_scene_draw(void *context, Canvas *canvas, MenuScreen *menu)
     int32_t base = floor_division(home_position);
     int center = width / 2;
     int spacing = portrait ? 108 : 96;
-    Rect card = portrait ? (Rect){17, 96, 136, 136} : (Rect){center - 52, 24, 104, 104};
+    Rect card = portrait ? (Rect){center - 56, 108, 112, 112} : (Rect){center - 52, 24, 104, 104};
     draw_home_card(canvas, theme, card);
     Color shadow_color = lite_card_shadow_color(theme);
 
@@ -372,7 +372,7 @@ static bool home_scene_draw(void *context, Canvas *canvas, MenuScreen *menu)
         int x;
         int y;
         if (portrait) {
-            size = 80 - (int)(closeness * 40 / HOME_STEPS);
+            size = 64 - (int)(closeness * 24 / HOME_STEPS);
             x = center;
             y = 164 + (int)(offset * spacing / HOME_STEPS);
         } else {
@@ -389,16 +389,6 @@ static bool home_scene_draw(void *context, Canvas *canvas, MenuScreen *menu)
         color_icon_draw_scaled(canvas, HOME_ICONS[item], (Rect){left, top, size, size});
     }
 
-    if (screens->player != NULL && player_status(screens->player).state == PLAYER_PLAYING) {
-        Color accent = theme->colors->selection_background;
-        static const uint8_t bars[] = {9, 14, 11, 17};
-        int x = portrait ? 132 : 284;
-        int bottom = 28;
-        for (int index = 0; index < 4; index++) {
-            canvas_fill_rect(canvas, (Rect){x + index * 6, bottom - bars[index], 4, bars[index]},
-                             accent);
-        }
-    }
     return true;
 }
 

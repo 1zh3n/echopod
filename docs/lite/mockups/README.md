@@ -7,19 +7,19 @@ actual `LBOO` / `LBO2` firmware assets.
 
 ## Home
 
-![Home](../../images/lite/home-final-v4.png)
+![Home](../../images/lite/home-final-v5.png)
 
 ## Now Playing
 
-![Now Playing](../../images/lite/now-playing-final.png)
+![Now Playing](../../images/lite/now-playing-final-v2.png)
 
 ## Settings
 
-![Settings](../../images/lite/settings-final-v2.png)
+![Settings](../../images/lite/settings-final-v3.png)
 
 ## Quick panel
 
-![Quick panel](../../images/lite/quick-panel-final.png)
+![Quick panel](../../images/lite/quick-panel-final-v2.png)
 
 ## Boot stills
 
@@ -33,6 +33,7 @@ card       #17171C
 text       #F4F4F5
 muted      #A1A1AA
 border     #52525B
+shadow     #000000
 selection  #006FEE
 blue       #2FA8FF
 orange     #FF9F1C

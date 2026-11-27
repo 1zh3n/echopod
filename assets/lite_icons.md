@@ -1,6 +1,6 @@
 # Lite icon glyph face
 
-`lite_icons.bin` is a 16,930-byte glyph-table entry used only by the Lite build. It holds the
+`lite_icons.bin` is a 16,810-byte glyph-table entry used only by the Lite build. It holds the
 Lite icon masks that used to live in the code window as `static const` arrays. The masks are
 4-bit alpha levels, high nibble first; every icon starts on a byte boundary.
 
@@ -28,7 +28,6 @@ RAM address. `src/ui/lite_icons.c` decodes the offset, streams the mask through 
 | 14,410 | 800 | 40×40 | Display category |
 | 15,210 | 800 | 40×40 | Library category |
 | 16,010 | 800 | 40×40 | Buttons category |
-| 16,810 | 120 | 12×20 | Bluetooth status |
 
 The face is appended after `lite_animation.bin` in the Lite glyph table. The image builder places
 faces largest first, so the table offset changes when assets change; only the entry order and the

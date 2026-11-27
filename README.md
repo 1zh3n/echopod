@@ -8,7 +8,7 @@
 > Tested only on the **512 MB** Echo Mini. The **8 GB** model is not supported.
 
 <p align="center">
-  <img src="docs/images/lite/home-final-v4.png" alt="Home screen in light and dark, landscape and portrait" width="100%">
+  <img src="docs/images/lite/home-final-v5.png" alt="Home screen in light and dark, landscape and portrait" width="100%">
 </p>
 
 <p align="center"><em>Home, Now Playing, Settings and Quick panel are design mockups (2×), not device screenshots. The boot sheet below is rendered from the actual firmware assets.</em></p>
@@ -42,11 +42,13 @@ Keep the official firmware and a known recovery path before flashing.
 - **512 MB port and Lite build:** `ECHO_LITE=ON`, no covers, Lite menus and layouts.
 - **Runtime Light / Dark:** Settings → Display → Theme. Light is the default.
 - **Runtime Landscape / Portrait:** Settings → Display → Orientation, 320×170 or 170×320.
-- **Lite Home:** three self-drawn colour badges, no text, no page dots.
+- **Lite Home:** three self-drawn colour badges, no text, no page dots; a 28×8 status meter
+  at top-left shows Bluetooth and playback.
 - **Lite Settings:** one category per screen; long Play switches category. Landscape drops the text
   header, leaving the half-badge, category dots and rows; portrait keeps the category name.
 - **Quick panel:** two icon-only cards for playback mode and sleep timer.
-- **Now Playing:** 18 px native mode/state icons, no cover frame.
+- **Now Playing:** 18 px native mode/state icons, no cover frame; a 14×8 Bluetooth-only
+  chip sits next to the shuffle/play controls.
 - **Boot and charging:** boot uses 200×112 landscape / 146×112 portrait card-sized images with
   a 2px frame and 5px shadow, no outer card; charging keeps the 96×64 animation card.
 - **Controls:** volume single/double/long press in Now Playing; long Play opens the playback
@@ -64,16 +66,17 @@ The boot chain, IDB, PMU firmware, fw2 and slot layout are not modified.
 > palette; the real screen may differ in font rendering and final asset placement. The boot sheet
 > is rendered from the actual `LBOO` / `LBO2` assets, not a device photo.
 
-On Home, the top-left blue Bluetooth rune is the connection indicator and the top-right bars mean
-playback. The card shadow carries the battery/charging colour.
+On Home, the top-left 28×8 status meter uses its left segment for Bluetooth and its right segment
+for playback. Now Playing keeps a Bluetooth-only chip beside the shuffle/play controls; the
+play/pause icon already shows playback. The card shadow carries the battery/charging colour.
 
 | Home | Now Playing |
 |---|---|
-| ![Home](docs/images/lite/home-final-v4.png) | ![Now Playing](docs/images/lite/now-playing-final.png) |
+| ![Home](docs/images/lite/home-final-v5.png) | ![Now Playing](docs/images/lite/now-playing-final-v2.png) |
 
 | Settings | Quick panel |
 |---|---|
-| ![Settings](docs/images/lite/settings-final-v2.png) | ![Quick panel](docs/images/lite/quick-panel-final.png) |
+| ![Settings](docs/images/lite/settings-final-v3.png) | ![Quick panel](docs/images/lite/quick-panel-final-v2.png) |
 
 ![Boot](docs/images/lite/boot-cards.png)
 
