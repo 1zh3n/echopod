@@ -171,6 +171,8 @@ static void fullwidth_latin_uses_the_same_section_as_ascii(void)
     CHECK_EQUAL('d', sort_key_initial("\xEF\xBC\xA4"));
     CHECK_EQUAL('d', sort_key_initial("Da"));
     CHECK_EQUAL('d', sort_key_initial("\xEF\xBC\xA4" "a"));
+    CHECK_EQUAL('f', sort_key_initial("\xEF\xAC\x81ne"));
+    CHECK_EQUAL('a', sort_key_initial("\xE2\x84\xAB"));
 }
 
 static void the_initial_matches_the_first_byte_of_the_key(void)

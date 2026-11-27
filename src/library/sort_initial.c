@@ -37,6 +37,25 @@ static uint32_t folded(uint32_t code_point)
     if (code_point >= FULLWIDTH_FIRST && code_point <= FULLWIDTH_LAST) {
         return code_point - FULLWIDTH_OFFSET;
     }
+    switch (code_point) {
+    case 0xFB00:
+    case 0xFB01:
+    case 0xFB02:
+    case 0xFB03:
+    case 0xFB04:
+        return 'f';
+    case 0xFB05:
+    case 0xFB06:
+        return 's';
+    case 0x212A:
+        return 'k';
+    case 0x212B:
+        return 'a';
+    case 0x1E9E:
+        return 's';
+    default:
+        break;
+    }
     return code_point;
 }
 
