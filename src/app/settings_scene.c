@@ -32,7 +32,7 @@ enum {
     SETTINGS_DIVIDER_X = 24,
     SETTINGS_DIVIDER_WIDTH = 280,
     SETTINGS_DOT_X = 254,
-    SETTINGS_DOT_Y = 18,
+    SETTINGS_DOT_Y = 14,
     SETTINGS_DOT_GAP = 12
 };
 
@@ -63,17 +63,6 @@ static bool settings_scene_update(void *context, uint32_t now_ms)
     (void)now_ms;
     screens->menu.list.visible_rows = theme_is_portrait(screens->theme) ? 7 : 5;
     return true;
-}
-
-static void draw_category_title(Canvas *canvas, const Theme *theme, int group)
-{
-    TextStyle style = {.font = theme->fonts.title, .color = theme->colors->text};
-    int x = 16 + text_width(style.font, "Settings") + 6;
-    label_draw(canvas, style, (Label){.area = {x, 8, text_width(style.font, "/") + 2, 20},
-                                      .text = "/"});
-    x += text_width(style.font, "/") + 6;
-    label_draw(canvas, style,
-               (Label){.area = {x, 8, 180, 20}, .text = settings_category_title(group)});
 }
 
 static void draw_category_dots(Canvas *canvas, const Theme *theme, int group, int x, int y)
@@ -144,8 +133,11 @@ static bool settings_scene_draw(void *context, Canvas *canvas, MenuScreen *menu)
         divider_x = 20;
         divider_width = 130;
     } else {
-        rows = lite_list_frame(canvas, theme, menu->config.title);
-        draw_category_title(canvas, theme, group);
+        canvas_fill_rect(canvas, theme_content_area(theme), colors->background);
+        rows = lite_card(canvas, theme,
+                         (Rect){SETTINGS_CARD_X, SETTINGS_CARD_TOP, SETTINGS_CARD_WIDTH,
+                                SETTINGS_CARD_HEIGHT},
+                         4);
         draw_category_dots(canvas, theme, group, SETTINGS_DOT_X, SETTINGS_DOT_Y);
         row_height = theme->metrics.row_height;
         visible = menu->list.visible_rows;

@@ -15,6 +15,8 @@ front end. The list below is the useful summary; the git history has the exact c
 - Neo-brutalist Lite visual language: 2 px borders, hard shadows, flat colour badges.
 - Three-icon Home carousel: All Songs / Playlists / Settings, no text.
 - Settings is one category per screen: Sound / Display / Library / Buttons / System.
+- Landscape Settings has no text header; the half-badge, category dots and rows carry the
+  category. Portrait keeps the category name.
 - Quick panel with two icon-only cards: playback mode and sleep timer.
 - Now Playing uses native 18 px mode/state icons and no cover frame.
 - Boot uses 200×112 landscape / 146×112 portrait card-sized images with a 2px frame and 5px shadow, no outer card.

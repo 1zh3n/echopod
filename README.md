@@ -43,7 +43,8 @@ Keep the official firmware and a known recovery path before flashing.
 - **Runtime Light / Dark:** Settings → Display → Theme. Light is the default.
 - **Runtime Landscape / Portrait:** Settings → Display → Orientation, 320×170 or 170×320.
 - **Lite Home:** three self-drawn colour badges, no text, no page dots.
-- **Lite Settings:** one category per screen; long Play switches category.
+- **Lite Settings:** one category per screen; long Play switches category. Landscape drops the text
+  header, leaving the half-badge, category dots and rows; portrait keeps the category name.
 - **Quick panel:** two icon-only cards for playback mode and sleep timer.
 - **Now Playing:** 18 px native mode/state icons, no cover frame.
 - **Boot and charging:** boot uses 200×112 landscape / 146×112 portrait card-sized images with
@@ -72,7 +73,7 @@ playback. The card shadow carries the battery/charging colour.
 
 | Settings | Quick panel |
 |---|---|
-| ![Settings](docs/images/lite/settings-final.png) | ![Quick panel](docs/images/lite/quick-panel-final.png) |
+| ![Settings](docs/images/lite/settings-final-v2.png) | ![Quick panel](docs/images/lite/quick-panel-final.png) |
 
 ![Boot](docs/images/lite/boot-cards.png)
 

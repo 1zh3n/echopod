@@ -356,6 +356,17 @@ static void settings_starts_on_sound(void)
     CHECK(fake_hal_pixel(160, 40) == COLOR_RGB(0, 111, 238));
 }
 
+static void landscape_settings_has_no_title(void)
+{
+    start_app_with_library();
+    move_down(2);
+    tap(KEY_PLAY);
+    wait_ms(300);
+    CHECK(title_is("Settings"));
+    CHECK(fake_hal_pixel(20, 12) == COLOR_RGB(250, 250, 249));
+    CHECK(fake_hal_pixel(302, 14) == COLOR_RGB(139, 92, 246));
+}
+
 static void settings_long_press_switches_category(void)
 {
     start_app_with_library();
@@ -377,7 +388,7 @@ static void settings_long_press_switches_category(void)
     CHECK(fake_hal_pixel(20, 50) == COLOR_RGB(139, 92, 246));
     CHECK(fake_hal_pixel(39, 95) == COLOR_RGB(139, 92, 246));
     CHECK(fake_hal_pixel(51, 95) == COLOR_RGB(255, 255, 255));
-    CHECK(fake_hal_pixel(302, 18) == COLOR_RGB(139, 92, 246));
+    CHECK(fake_hal_pixel(302, 14) == COLOR_RGB(139, 92, 246));
 }
 
 static void settings_short_press_cycles_value(void)
@@ -688,6 +699,7 @@ int main(void)
         TEST_CASE(compact_icons_are_native_18px),
         TEST_CASE(bluetooth_status_is_a_native_antialiased_rune),
         TEST_CASE(settings_starts_on_sound),
+        TEST_CASE(landscape_settings_has_no_title),
         TEST_CASE(settings_long_press_switches_category),
         TEST_CASE(settings_short_press_cycles_value),
         TEST_CASE(settings_subpage_opens),

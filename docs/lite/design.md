@@ -46,9 +46,12 @@ cyan `#35C7E8`, amber `#F59E0B`, success `#22C55E`.
 
 ### Settings
 
-- Landscape: half badge at the left, five 26 px rows.
+- Landscape: no text header; the half-badge, category dots and rows carry the category. The
+  top-left status mark and the category dots share the top band at y=14; the card stays at
+  y=28; five 26 px rows.
 - Portrait: no large icon; category title, colour rule, two-line rows.
-  Sound 6×38 px, System 7×34 px in a 154×244 card.
+  Sound 6×38 px, System 7×34 px in a 154×244 card at y=58. The category title stays because
+  portrait has no half-badge.
 
 ### Quick panel
 

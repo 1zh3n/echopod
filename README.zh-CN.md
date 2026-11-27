@@ -40,7 +40,7 @@
 - **运行时 Light / Dark：** Settings → Display → Theme；默认 Light。
 - **运行时 Landscape / Portrait：** Settings → Display → Orientation，320×170 或 170×320。
 - **Lite Home：** 三个自绘彩色 badge，无文字，无 page dots。
-- **Lite Settings：** 一屏一类；长按 Play 切换类别。
+- **Lite Settings：** 一屏一类；长按 Play 切换类别。横屏去掉文字标题，由半圆 icon、类别圆点和菜单项表达；竖屏保留类别名。
 - **Quick panel：** 两张 icon-only 卡片，播放模式和睡眠定时。
 - **Now Playing：** 18px 原生模式/状态图标，无封面框。
 - **启动和充电：** 开机图为 200×112 横版 / 146×112 竖版卡片大小，带 2px 框和 5px 阴影，没有外层卡片；充电仍用 96×64 动画卡。
@@ -63,7 +63,7 @@ Home 左上角蓝色蓝牙符号是连接状态，右上角四根竖条表示正
 
 | Settings | Quick panel |
 |---|---|
-| ![Settings](docs/images/lite/settings-final.png) | ![Quick panel](docs/images/lite/quick-panel-final.png) |
+| ![Settings](docs/images/lite/settings-final-v2.png) | ![Quick panel](docs/images/lite/quick-panel-final.png) |
 
 ![Boot](docs/images/lite/boot-cards.png)
 

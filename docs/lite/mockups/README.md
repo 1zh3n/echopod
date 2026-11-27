@@ -15,7 +15,7 @@ actual `LBOO` / `LBO2` firmware assets.
 
 ## Settings
 
-![Settings](../../images/lite/settings-final.png)
+![Settings](../../images/lite/settings-final-v2.png)
 
 ## Quick panel
 
