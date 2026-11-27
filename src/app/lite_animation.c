@@ -135,7 +135,7 @@ static void advance(uint32_t now_ms)
     }
 }
 
-bool lite_boot_draw(Canvas *canvas, Color shadow, bool portrait)
+bool lite_boot_draw(Canvas *canvas, Rect screen, Color shadow, bool portrait)
 {
     if (canvas == NULL || !load()) {
         return false;
@@ -173,12 +173,12 @@ bool lite_boot_draw(Canvas *canvas, Color shadow, bool portrait)
     }
     int width = header[6] | (header[7] << 8);
     int height = header[8] | (header[9] << 8);
-    if (width <= 0 || height <= 0 || width > canvas->bounds.width ||
-        height > canvas->bounds.height || (width & 1) != 0) {
+    if (width <= 0 || height <= 0 || width > screen.width || height > screen.height ||
+        (width & 1) != 0) {
         return false;
     }
-    Rect image = {(canvas->bounds.width - width) / 2, (canvas->bounds.height - height) / 2,
-                  width, height};
+    Rect image = {screen.x + (screen.width - width) / 2,
+                  screen.y + (screen.height - height) / 2, width, height};
     canvas_fill_rect(canvas, (Rect){image.x + BOOT_SHADOW, image.y + BOOT_SHADOW, image.width,
                                     image.height},
                      shadow);
@@ -192,7 +192,13 @@ bool lite_boot_draw(Canvas *canvas, Color shadow, bool portrait)
         return false;
     }
     uint32_t data_offset = header_offset + BOOT_HEADER_BYTES;
+    int clip_top = canvas->clip.y;
+    int clip_bottom = clip_top + canvas->clip.height;
     for (int y = 0; y < height; y++) {
+        int screen_y = image.y + y;
+        if (screen_y < clip_top || screen_y >= clip_bottom) {
+            continue;
+        }
         if (!hal_system_lite_animation_read(data_offset + (uint32_t)y * (uint32_t)row_bytes, row,
                                             (uint32_t)row_bytes)) {
             return false;

@@ -122,6 +122,30 @@ static void gear_glyph_draws_only_white_outline(void)
     CHECK(canvas_pixel_at(&canvas, 40, 40) == COLOR_RGB(1, 2, 3));
 }
 
+static void category_dots_have_no_cardinal_spikes(void)
+{
+    static Color pixels[HAL_DISPLAY_WIDTH * HAL_DISPLAY_HEIGHT];
+    Canvas canvas = canvas_make(pixels, (Rect){0, 0, HAL_DISPLAY_WIDTH, HAL_DISPLAY_HEIGHT});
+    canvas_clear(&canvas, COLOR_RGB(250, 250, 249));
+    Color blue = COLOR_RGB(47, 168, 255);
+    lite_shape_fill_circle(&canvas, (Point){20, 20}, 3, blue);
+    CHECK(canvas_pixel_at(&canvas, 19, 17) == blue);
+    CHECK(canvas_pixel_at(&canvas, 20, 17) == blue);
+    CHECK(canvas_pixel_at(&canvas, 21, 17) == blue);
+    CHECK(canvas_pixel_at(&canvas, 18, 17) == COLOR_RGB(250, 250, 249));
+    CHECK(canvas_pixel_at(&canvas, 22, 17) == COLOR_RGB(250, 250, 249));
+    CHECK(canvas_pixel_at(&canvas, 17, 20) == blue);
+    CHECK(canvas_pixel_at(&canvas, 23, 20) == blue);
+
+    Color ink = COLOR_RGB(10, 10, 10);
+    lite_shape_fill_circle(&canvas, (Point){40, 20}, 4, ink);
+    CHECK(canvas_pixel_at(&canvas, 39, 16) == ink);
+    CHECK(canvas_pixel_at(&canvas, 40, 16) == ink);
+    CHECK(canvas_pixel_at(&canvas, 41, 16) == ink);
+    CHECK(canvas_pixel_at(&canvas, 38, 16) == COLOR_RGB(250, 250, 249));
+    CHECK(canvas_pixel_at(&canvas, 42, 16) == COLOR_RGB(250, 250, 249));
+}
+
 static void badge_draws_flat_circle_and_half(void)
 {
     static Color pixels[HAL_DISPLAY_WIDTH * HAL_DISPLAY_HEIGHT];
@@ -236,7 +260,8 @@ static void lite_animation_streams_all_frames(void)
 static bool draw_boot_image(Canvas *canvas)
 {
     canvas_clear(canvas, COLOR_RGB(250, 250, 249));
-    return lite_boot_draw(canvas, COLOR_RGB(10, 10, 10), false);
+    return lite_boot_draw(canvas, (Rect){0, 0, HAL_DISPLAY_WIDTH, HAL_DISPLAY_HEIGHT},
+                          COLOR_RGB(10, 10, 10), false);
 }
 
 static void boot_screen_is_a_shadowed_image(void)
@@ -264,6 +289,35 @@ static void boot_screen_draws_the_still(void)
     Canvas canvas = canvas_make(pixels, (Rect){0, 0, HAL_DISPLAY_WIDTH, HAL_DISPLAY_HEIGHT});
     CHECK(draw_boot_image(&canvas));
     CHECK(canvas_pixel_at(&canvas, 160, 85) != COLOR_RGB(250, 250, 249));
+}
+
+static void boot_draws_across_strips(void)
+{
+    fake_hal_reset();
+    CHECK(load_animation_asset());
+    lite_animation_reset();
+    Rect screen = {0, 0, HAL_DISPLAY_WIDTH, HAL_DISPLAY_HEIGHT};
+    Color shadow = COLOR_RGB(10, 10, 10);
+    static Color pixels[HAL_DISPLAY_WIDTH * 34];
+    Canvas top = canvas_make(pixels, (Rect){0, 0, HAL_DISPLAY_WIDTH, 34});
+    canvas_clear(&top, COLOR_RGB(250, 250, 249));
+    CHECK(lite_boot_draw(&top, screen, shadow, false));
+    CHECK(canvas_pixel_at(&top, 60, 28) == COLOR_RGB(250, 250, 249));
+    CHECK(canvas_pixel_at(&top, 60, 29) != COLOR_RGB(250, 250, 249));
+
+    Canvas middle = canvas_make(pixels, (Rect){0, 34, HAL_DISPLAY_WIDTH, 34});
+    canvas_clear(&middle, COLOR_RGB(250, 250, 249));
+    CHECK(lite_boot_draw(&middle, screen, shadow, false));
+    CHECK(canvas_pixel_at(&middle, 60, 34) != COLOR_RGB(250, 250, 249));
+    CHECK(canvas_pixel_at(&middle, 264, 34) == shadow);
+
+    Canvas bottom = canvas_make(pixels, (Rect){0, 136, HAL_DISPLAY_WIDTH, 34});
+    canvas_clear(&bottom, COLOR_RGB(250, 250, 249));
+    CHECK(lite_boot_draw(&bottom, screen, shadow, false));
+    CHECK(canvas_pixel_at(&bottom, 60, 140) != COLOR_RGB(250, 250, 249));
+    CHECK(canvas_pixel_at(&bottom, 60, 141) == COLOR_RGB(250, 250, 249));
+    CHECK(canvas_pixel_at(&bottom, 264, 141) == shadow);
+    CHECK(canvas_pixel_at(&bottom, 264, 146) == COLOR_RGB(250, 250, 249));
 }
 
 static void boot_screen_is_static(void)
@@ -720,7 +774,7 @@ static void boot_has_portrait_still(void)
     static Color pixels[HAL_DISPLAY_WIDTH * HAL_DISPLAY_LONG_SIDE];
     Canvas canvas = canvas_make(pixels, (Rect){0, 0, 170, 320});
     canvas_clear(&canvas, COLOR_RGB(250, 250, 249));
-    CHECK(lite_boot_draw(&canvas, COLOR_RGB(10, 10, 10), true));
+    CHECK(lite_boot_draw(&canvas, (Rect){0, 0, 170, 320}, COLOR_RGB(10, 10, 10), true));
     CHECK(canvas_pixel_at(&canvas, 1, 1) == COLOR_RGB(250, 250, 249));
     CHECK(canvas_pixel_at(&canvas, 11, 104) == COLOR_RGB(250, 250, 249));
     CHECK(canvas_pixel_at(&canvas, 12, 104) != COLOR_RGB(250, 250, 249));
@@ -761,6 +815,7 @@ int main(void)
         TEST_CASE(gear_glyph_draws_only_white_outline),
         TEST_CASE(every_lite_icon_draws),
         TEST_CASE(badge_draws_flat_circle_and_half),
+        TEST_CASE(category_dots_have_no_cardinal_spikes),
         TEST_CASE(dark_palette_and_borders),
         TEST_CASE(status_meter_and_chip_draw_native_segments),
         TEST_CASE(settings_can_switch_to_portrait),
@@ -781,6 +836,7 @@ int main(void)
         TEST_CASE(boot_screen_is_a_shadowed_image),
         TEST_CASE(boot_screen_draws_the_still),
         TEST_CASE(boot_screen_is_static),
+        TEST_CASE(boot_draws_across_strips),
         TEST_CASE(colorful_home_has_no_text),
         TEST_CASE(home_card_is_rounded),
         TEST_CASE(home_status_meter_tracks_bluetooth),

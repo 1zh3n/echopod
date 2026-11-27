@@ -92,12 +92,43 @@ static void draw_half(Canvas *canvas, Point center, int radius, const LiteBadgeS
     }
 }
 
+static void draw_small_circle(Canvas *canvas, Point center, int radius, Color color)
+{
+    static const uint8_t ROWS_2[] = {3, 5, 5, 5, 3};
+    static const uint8_t ROWS_3[] = {3, 5, 7, 7, 7, 5, 3};
+    static const uint8_t ROWS_4[] = {3, 5, 7, 9, 9, 9, 7, 5, 3};
+    const uint8_t *rows = NULL;
+    int count = 0;
+    switch (radius) {
+    case 2:
+        rows = ROWS_2;
+        count = (int)(sizeof ROWS_2 / sizeof ROWS_2[0]);
+        break;
+    case 3:
+        rows = ROWS_3;
+        count = (int)(sizeof ROWS_3 / sizeof ROWS_3[0]);
+        break;
+    case 4:
+        rows = ROWS_4;
+        count = (int)(sizeof ROWS_4 / sizeof ROWS_4[0]);
+        break;
+    default:
+        draw_circle_fill(canvas, center, radius, color);
+        return;
+    }
+    int top = center.y - count / 2;
+    for (int index = 0; index < count; index++) {
+        int width = rows[index];
+        fill_span(canvas, center.x - width / 2, top + index, width, color);
+    }
+}
+
 void lite_shape_fill_circle(Canvas *canvas, Point center, int radius, Color color)
 {
     if (canvas == NULL || radius <= 0) {
         return;
     }
-    draw_circle_fill(canvas, center, radius, color);
+    draw_small_circle(canvas, center, radius, color);
 }
 
 void lite_badge_draw_circle(Canvas *canvas, Point center, int radius,

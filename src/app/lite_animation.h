@@ -14,6 +14,6 @@ uint8_t lite_animation_frames(void);
 void lite_animation_draw_card(Canvas *canvas, Rect card, Color shadow, Color card_border,
                               int card_border_width, Color frame_ink, Color panel,
                               uint32_t now_ms, bool animate);
-bool lite_boot_draw(Canvas *canvas, Color shadow, bool portrait);
+bool lite_boot_draw(Canvas *canvas, Rect screen, Color shadow, bool portrait);
 
 #endif
