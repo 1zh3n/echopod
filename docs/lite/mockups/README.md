@@ -48,6 +48,13 @@ are out of scope for now.
 
 ![Quick panel](../../images/lite/quick-panel-final-v3.png)
 
+## Sleep timer (planned)
+
+Not in MINIV926. The moon pill shows the remaining time; after the deadline it shows `END` while
+waiting for the current track, then the player shuts down. No pause mode.
+
+![Sleep timer countdown](../../images/lite/sleep-timer-countdown.png)
+
 ## Boot stills
 
 ![Boot cards](../../images/lite/boot-cards.png)

@@ -99,6 +99,23 @@ other keys.
 - Landscape: two 140×112 cards side by side.
 - Portrait: two 146×118 cards stacked at y=35/167.
 
+### Sleep timer (planned)
+
+The sleep timer remains a **shutdown** timer; this pass does not add a pause mode. It is not in
+MINIV926 yet.
+
+- Panel: the moon pill shows the remaining time (`14:32`, `0:45`), updated every second; when
+  the deadline passes while a track is playing, it shows `END` while waiting for that track.
+- At the deadline, playing with a track: wait for the natural end of the current track, then
+  power off. Do not start the next track audibly.
+- Paused, idle, or no track at the deadline: power off immediately.
+- Manual next/previous counts as the current track ending; repeat-one's loop point counts as
+  the end. Seeking within the track does not.
+- Pausing during the `END` wait powers off immediately.
+- The timer lives in RAM; a restart or power loss cancels it. There is no RTC alarm.
+
+![Sleep timer countdown](../images/lite/sleep-timer-countdown.png)
+
 ### Lists
 
 - Landscape: five rows.
