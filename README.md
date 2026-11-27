@@ -75,7 +75,7 @@ The boot chain, IDB, PMU firmware, fw2 and slot layout are not modified.
 
 *Actual boot art (2×), not a device photo: landscape 316×166 and portrait 166×316. Art: Mountain Dusk by ansimuz, CC0 1.0.*
 
-Full mockup sheet: [docs/lite/mockups/index.html](docs/lite/mockups/index.html).
+Full mockup sheet: [docs/lite/mockups/README.md](docs/lite/mockups/README.md) · [HTML](docs/lite/mockups/index.html).
 
 ## Build
 

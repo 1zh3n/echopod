@@ -6,7 +6,7 @@ This directory holds two kinds of documentation:
   - [Lite overview](lite/README.md)
   - [What changed from EchoPod](lite/customizations.md)
   - [Final design and mockups](lite/design.md)
-  - [UI mockup sheet](lite/mockups/index.html)
+  - [Final mockups](lite/mockups/README.md) / [HTML sheet](lite/mockups/index.html)
   - [Install and recovery for the 512 MB player](lite/install-512m.md)
   - [Controls](lite/shortcuts.md)
 - **Upstream EchoPod docs** — kept for reference because this is a fork:

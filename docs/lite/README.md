@@ -11,7 +11,7 @@ Personal EchoPod-based firmware for the **512 MB** Snowsky (FiiO) Echo Mini.
 
 - [What changed from EchoPod](customizations.md)
 - [Design tokens and layout](design.md)
-- [Final mockup sheet](mockups/index.html)
+- [Final mockups](mockups/README.md) / [HTML sheet](mockups/index.html)
 - [Install and recovery](install-512m.md)
 - [Controls](shortcuts.md)
 

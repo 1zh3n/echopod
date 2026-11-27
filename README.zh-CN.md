@@ -67,7 +67,7 @@
 
 *真实开机素材渲染（2×），不是设备照片：横版 316×166，竖版 166×316。美术：ansimuz 的 Mountain Dusk，CC0 1.0。*
 
-完整 mockup 页面：[docs/lite/mockups/index.html](docs/lite/mockups/index.html)。
+完整 mockup：[docs/lite/mockups/README.md](docs/lite/mockups/README.md) · [HTML](docs/lite/mockups/index.html)。
 
 ## 构建
 
