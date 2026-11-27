@@ -126,7 +126,7 @@ Proposed map for lettered lists:
 This is three gestures, but each gesture has one meaning. It does not change what a continuous
 hold does, and it does not collide with the Play song-actions menu.
 
-The cost is double-press detection: a single Menu in a lettered list has to wait for the 280 ms
+The cost is double-press detection: a single Menu in a lettered list has to wait for the 200 ms trial
 `KEY_TRACKER_DOUBLE_PRESS_MS` window before opening Now Playing. The window is measured from the
 first release to the second press down; a single action is emitted at the deadline, while a
 second press inside the window is recognised on its key-down. The key scan is 5 ms, so the

@@ -7,7 +7,7 @@
 
 enum {
     KEY_TRACKER_QUEUE_CAPACITY = 8,
-    KEY_TRACKER_DOUBLE_PRESS_MS = 280
+    KEY_TRACKER_DOUBLE_PRESS_MS = 200
 };
 
 typedef enum KeyGesture {
