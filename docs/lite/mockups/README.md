@@ -7,7 +7,7 @@ actual `LBOO` / `LBO2` firmware assets.
 
 ## Home
 
-![Home](../../images/lite/home-final.png)
+![Home](../../images/lite/home-final-v2.png)
 
 ## Now Playing
 

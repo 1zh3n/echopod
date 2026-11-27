@@ -528,7 +528,7 @@ static void dark_palette_and_borders(void)
 static void settings_can_switch_to_portrait(void)
 {
     switch_orientation_to_portrait();
-    CHECK(fake_hal_pixel(85, 140) == COLOR_RGB(139, 92, 246));
+    CHECK(fake_hal_pixel(85, 164) == COLOR_RGB(139, 92, 246));
     CHECK(fake_hal_pixel(160, 76) != COLOR_RGB(139, 92, 246));
 
     tap(KEY_PLAY);
@@ -562,9 +562,9 @@ static void dark_portrait_home_and_settings(void)
 {
     switch_dark_portrait();
     CHECK(fake_hal_pixel(10, 10) == COLOR_RGB(11, 11, 13));
-    CHECK(fake_hal_pixel(85, 90) == COLOR_RGB(23, 23, 28));
-    CHECK(fake_hal_pixel(21, 78) == COLOR_RGB(82, 82, 91));
-    CHECK(fake_hal_pixel(85, 140) == COLOR_RGB(139, 92, 246));
+    CHECK(fake_hal_pixel(85, 110) == COLOR_RGB(23, 23, 28));
+    CHECK(fake_hal_pixel(17, 96) == COLOR_RGB(82, 82, 91));
+    CHECK(fake_hal_pixel(85, 164) == COLOR_RGB(139, 92, 246));
 
     tap(KEY_PLAY);
     wait_ms(300);

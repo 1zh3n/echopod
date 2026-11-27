@@ -30,8 +30,15 @@ cyan `#35C7E8`, amber `#F59E0B`, success `#22C55E`.
 ### Home
 
 - Landscape: 104×104 card, 64 px selected icon, 40 px side icons.
-- Portrait: 128×128 card at (21, 78), 80 px selected icon, 40 px side icons above/below; 16 px gap to the card.
+- Portrait: 136×136 card at (17, 96), 80 px selected icon, 40 px side icons above/below; 20 px gap to the card. Status icons sit in a top row; the playing equalizer is top right.
 - No text, no page dots. Equalizer appears only while playing.
+
+### Home status
+
+- Top-left 12×12 box: Bluetooth connected; hidden when disconnected.
+- Top-right four bars: playing indicator; hidden when paused or stopped. It is not a button.
+- The card shadow carries the battery/charging colour; the status box and bars do not.
+- The old mockup drew an unboxed white Bluetooth rune, which was invisible on the light page. The box is the real treatment.
 
 ### Now Playing
 
