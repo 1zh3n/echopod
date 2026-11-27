@@ -145,6 +145,9 @@ static ScreenAction handle_key(void *context, KeyEvent event, uint32_t now_ms)
     if (event.key == KEY_MENU) {
         return screen_action_pop();
     }
+    if (event.key == KEY_BACK && event.gesture == KEY_GESTURE_LONG_PRESS) {
+        return screen_action_pop_to_root();
+    }
     if (event.gesture != KEY_GESTURE_PRESS) {
         return screen_action_none();
     }

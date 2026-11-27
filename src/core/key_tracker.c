@@ -9,7 +9,9 @@ static bool repeats(const KeyTracker *tracker, Key key)
 
 static bool repeats_after_hold(const KeyTracker *tracker, Key key)
 {
-    return tracker->config.behaviors[key] == KEY_BEHAVIOR_TAP_HOLD_REPEAT;
+    KeyBehavior behavior = tracker->config.behaviors[key];
+    return behavior == KEY_BEHAVIOR_TAP_HOLD_REPEAT ||
+           behavior == KEY_BEHAVIOR_TAP_HOLD_REPEAT_DOUBLE;
 }
 
 static uint32_t long_press_ms(const KeyTracker *tracker, Key key)
@@ -50,6 +52,22 @@ void key_tracker_key_down(KeyTracker *tracker, Key key, uint32_t now_ms)
     if (state->held) {
         return;
     }
+    bool double_behavior =
+        tracker->config.behaviors[key] == KEY_BEHAVIOR_TAP_HOLD_REPEAT_DOUBLE;
+    if (double_behavior && state->double_pending) {
+        if (now_ms - state->released_at_ms <= KEY_TRACKER_DOUBLE_PRESS_MS) {
+            push_event(tracker, key, KEY_GESTURE_DOUBLE_PRESS);
+            *state = (KeyState){
+                .held = true,
+                .second_press = true,
+                .pressed_at_ms = now_ms,
+                .next_repeat_at_ms = now_ms + tracker->config.timing.repeat_delay_ms,
+            };
+            return;
+        }
+        push_event(tracker, key, KEY_GESTURE_PRESS);
+        state->double_pending = false;
+    }
     bool immediate = tracker->config.behaviors[key] == KEY_BEHAVIOR_PRESS;
     *state = (KeyState){
         .held = true,
@@ -73,13 +91,33 @@ static void finish_tap_or_hold(KeyTracker *tracker, Key key, uint32_t now_ms)
 
 void key_tracker_key_up(KeyTracker *tracker, Key key, uint32_t now_ms)
 {
-    if (!tracker->states[key].held) {
+    KeyState *state = &tracker->states[key];
+    if (!state->held) {
         return;
     }
-    if (!repeats(tracker, key) && !tracker->states[key].immediate) {
+    if (state->second_press) {
+        state->held = false;
+        state->second_press = false;
+        return;
+    }
+    if (tracker->config.behaviors[key] == KEY_BEHAVIOR_TAP_HOLD_REPEAT_DOUBLE) {
+        if (state->long_press_sent || long_press_due(tracker, key, now_ms)) {
+            if (!state->long_press_sent) {
+                push_event(tracker, key, KEY_GESTURE_LONG_PRESS);
+                state->long_press_sent = true;
+            }
+            state->held = false;
+            return;
+        }
+        state->held = false;
+        state->double_pending = true;
+        state->released_at_ms = now_ms;
+        return;
+    }
+    if (!repeats(tracker, key) && !state->immediate) {
         finish_tap_or_hold(tracker, key, now_ms);
     }
-    tracker->states[key].held = false;
+    state->held = false;
 }
 
 static void update_repeat(KeyTracker *tracker, Key key, uint32_t now_ms)
@@ -105,6 +143,15 @@ static void update_long_press(KeyTracker *tracker, Key key, uint32_t now_ms)
 
 void key_tracker_update(KeyTracker *tracker, uint32_t now_ms)
 {
+    for (int index = 0; index < KEY_COUNT; index++) {
+        Key key = (Key)index;
+        KeyState *state = &tracker->states[key];
+        if (state->double_pending && !state->held &&
+            deadline_reached(now_ms, state->released_at_ms + KEY_TRACKER_DOUBLE_PRESS_MS)) {
+            push_event(tracker, key, KEY_GESTURE_PRESS);
+            state->double_pending = false;
+        }
+    }
     for (int index = 0; index < KEY_COUNT; index++) {
         Key key = (Key)index;
         if (!tracker->states[key].held || tracker->states[key].immediate) {

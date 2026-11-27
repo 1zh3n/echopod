@@ -531,11 +531,17 @@ static void drain_key_events(void)
 
 static void use_screen_key_behaviors(void)
 {
-    bool hold = !app.display_on || top_screen()->hold_volume_keys;
+    Screen *top = top_screen();
+    bool hold = !app.display_on || top->hold_volume_keys;
     KeyBehavior volume = hold ? KEY_BEHAVIOR_TAP_HOLD_REPEAT : KEY_BEHAVIOR_REPEAT;
+#ifdef ECHO_LITE
+    if (app.display_on && top == &app.screens.now_playing.screen) {
+        volume = KEY_BEHAVIOR_TAP_HOLD_REPEAT_DOUBLE;
+    }
+#endif
     key_tracker_set_behavior(&app.keys, KEY_VOLUME_UP, volume);
     key_tracker_set_behavior(&app.keys, KEY_VOLUME_DOWN, volume);
-    bool at_once = app.display_on && top_screen()->select_on_press;
+    bool at_once = app.display_on && top->select_on_press;
     key_tracker_set_behavior(&app.keys, KEY_PLAY,
                              at_once ? KEY_BEHAVIOR_PRESS : KEY_BEHAVIOR_TAP_OR_HOLD);
 }
@@ -558,13 +564,14 @@ static bool settings_open(void)
 
 static bool opens_settings(KeyEvent event)
 {
+#ifdef ECHO_LITE
+    return event.key == KEY_MENU && event.gesture == KEY_GESTURE_LONG_PRESS && !settings_open();
+#else
     Screen *top = top_screen();
     bool now_playing_flow = top == &app.screens.now_playing.screen;
-#ifdef ECHO_LITE
-    now_playing_flow |= top == &app.screens.playback_panel.screen;
-#endif
     return event.key == KEY_MENU && event.gesture == KEY_GESTURE_LONG_PRESS && !now_playing_flow &&
            !settings_open();
+#endif
 }
 
 static ScreenAction now_playing_action(void)

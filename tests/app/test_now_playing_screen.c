@@ -232,6 +232,12 @@ static void hold_to_seek_moves_within_the_track(void)
     CHECK_EQUAL(NOW_PLAYING_SEEK_BACK, controlled(KEY_VOLUME_DOWN, KEY_GESTURE_REPEAT, controls));
 }
 
+static void double_volume_skips_a_track(void)
+{
+    CHECK_EQUAL(NOW_PLAYING_NEXT, command(KEY_VOLUME_UP, KEY_GESTURE_DOUBLE_PRESS));
+    CHECK_EQUAL(NOW_PLAYING_PREVIOUS, command(KEY_VOLUME_DOWN, KEY_GESTURE_DOUBLE_PRESS));
+}
+
 static void holding_while_the_volume_shows_keeps_changing_it(void)
 {
     NowPlayingControls controls = {.rocker = ROCKER_VOLUME_SKIP, .volume_shown = true};
@@ -268,6 +274,7 @@ int main(void)
         TEST_CASE(the_detail_line_shows_the_chapter_of_a_book_with_chapters),
         TEST_CASE(tap_skip_hold_volume_swaps_the_rocker_gestures),
         TEST_CASE(hold_to_seek_moves_within_the_track),
+        TEST_CASE(double_volume_skips_a_track),
         TEST_CASE(holding_while_the_volume_shows_keeps_changing_it),
         TEST_CASE(the_menu_button_can_skip_to_the_next_track),
         TEST_CASE(controls_follow_the_saved_options),

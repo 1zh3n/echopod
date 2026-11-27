@@ -6,20 +6,23 @@
 #include "core/key.h"
 
 enum {
-    KEY_TRACKER_QUEUE_CAPACITY = 8
+    KEY_TRACKER_QUEUE_CAPACITY = 8,
+    KEY_TRACKER_DOUBLE_PRESS_MS = 280
 };
 
 typedef enum KeyGesture {
     KEY_GESTURE_PRESS,
     KEY_GESTURE_LONG_PRESS,
-    KEY_GESTURE_REPEAT
+    KEY_GESTURE_REPEAT,
+    KEY_GESTURE_DOUBLE_PRESS
 } KeyGesture;
 
 typedef enum KeyBehavior {
     KEY_BEHAVIOR_TAP_OR_HOLD,
     KEY_BEHAVIOR_REPEAT,
     KEY_BEHAVIOR_TAP_HOLD_REPEAT,
-    KEY_BEHAVIOR_PRESS
+    KEY_BEHAVIOR_PRESS,
+    KEY_BEHAVIOR_TAP_HOLD_REPEAT_DOUBLE
 } KeyBehavior;
 
 typedef struct KeyEvent {
@@ -43,7 +46,10 @@ typedef struct KeyState {
     bool held;
     bool immediate;
     bool long_press_sent;
+    bool double_pending;
+    bool second_press;
     uint32_t pressed_at_ms;
+    uint32_t released_at_ms;
     uint32_t next_repeat_at_ms;
 } KeyState;
 

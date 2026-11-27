@@ -13,6 +13,7 @@ static Navigation from_play(KeyGesture gesture)
     case KEY_GESTURE_LONG_PRESS:
         return navigation(NAVIGATION_OPTIONS, false);
     case KEY_GESTURE_REPEAT:
+    case KEY_GESTURE_DOUBLE_PRESS:
         return navigation(NAVIGATION_NONE, false);
     }
     return navigation(NAVIGATION_NONE, false);
@@ -26,6 +27,7 @@ static Navigation from_back(KeyGesture gesture)
     case KEY_GESTURE_LONG_PRESS:
         return navigation(NAVIGATION_HOME, false);
     case KEY_GESTURE_REPEAT:
+    case KEY_GESTURE_DOUBLE_PRESS:
         return navigation(NAVIGATION_NONE, false);
     }
     return navigation(NAVIGATION_NONE, false);

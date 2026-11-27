@@ -161,6 +161,7 @@ static NowPlayingCommand by_gesture(KeyGesture gesture, NowPlayingCommand press,
     case KEY_GESTURE_LONG_PRESS:
         return hold;
     case KEY_GESTURE_REPEAT:
+    case KEY_GESTURE_DOUBLE_PRESS:
         return NOW_PLAYING_NONE;
     }
     return NOW_PLAYING_NONE;
@@ -196,15 +197,24 @@ static NowPlayingCommand scrub_command_for(KeyEvent event)
 
 NowPlayingControls now_playing_controls_of(const uint8_t *options)
 {
+#ifdef ECHO_LITE
+    return (NowPlayingControls){
+        .rocker = ROCKER_VOLUME_SEEK,
+        .menu_skips = options != NULL && options[OPTION_MENU_KEY] == MENU_KEY_NEXT};
+#else
     if (options == NULL) {
         return (NowPlayingControls){0};
     }
     return (NowPlayingControls){.rocker = options[OPTION_ROCKER],
                                 .menu_skips = options[OPTION_MENU_KEY] == MENU_KEY_NEXT};
+#endif
 }
 
 static NowPlayingCommand rocker_command(KeyGesture gesture, NowPlayingControls controls, bool up)
 {
+    if (gesture == KEY_GESTURE_DOUBLE_PRESS) {
+        return up ? NOW_PLAYING_NEXT : NOW_PLAYING_PREVIOUS;
+    }
     NowPlayingCommand volume = up ? NOW_PLAYING_VOLUME_UP : NOW_PLAYING_VOLUME_DOWN;
     NowPlayingCommand skip = up ? NOW_PLAYING_NEXT : NOW_PLAYING_PREVIOUS;
     bool held = gesture != KEY_GESTURE_PRESS;
@@ -236,14 +246,15 @@ NowPlayingCommand now_playing_command_with(KeyEvent event, bool scrubbing,
     case KEY_VOLUME_DOWN:
         return rocker_command(event.gesture, controls, event.key == KEY_VOLUME_UP);
     case KEY_PLAY:
+#ifdef ECHO_LITE
+        return by_gesture(event.gesture, NOW_PLAYING_TOGGLE_PAUSE, NOW_PLAYING_PANEL);
+#else
         return by_gesture(event.gesture, NOW_PLAYING_TOGGLE_PAUSE, NOW_PLAYING_SCRUB_START);
+#endif
     case KEY_BACK:
         return by_gesture(event.gesture, NOW_PLAYING_LEAVE, NOW_PLAYING_HOME);
     case KEY_MENU:
 #ifdef ECHO_LITE
-        if (event.gesture == KEY_GESTURE_LONG_PRESS) {
-            return NOW_PLAYING_PANEL;
-        }
         return by_gesture(event.gesture, controls.menu_skips ? NOW_PLAYING_NEXT : NOW_PLAYING_UP_NEXT,
                           NOW_PLAYING_NONE);
 #else

@@ -57,6 +57,8 @@ Color test_pattern_gesture_color(KeyGesture gesture)
         return color_from_rgb(255, 140, 0);
     case KEY_GESTURE_REPEAT:
         return color_from_rgb(0, 120, 255);
+    case KEY_GESTURE_DOUBLE_PRESS:
+        return color_from_rgb(180, 80, 255);
     }
     return test_pattern_idle_color();
 }

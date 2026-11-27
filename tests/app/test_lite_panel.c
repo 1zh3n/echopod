@@ -345,7 +345,7 @@ static void quick_panel_is_icon_only(void)
 {
     start_app_with_library();
     open_all_songs_and_play();
-    hold(KEY_MENU);
+    hold(KEY_PLAY);
     wait_ms(300);
     CHECK(title_is("Playback"));
     CHECK(fake_hal_pixel(55, 86) == COLOR_RGB(47, 168, 255));
@@ -358,7 +358,7 @@ static void quick_panel_sleep_value_fits(void)
 {
     start_app_with_library();
     open_all_songs_and_play();
-    hold(KEY_MENU);
+    hold(KEY_PLAY);
     wait_ms(300);
     tap(KEY_VOLUME_UP);
     tap(KEY_PLAY);
@@ -379,29 +379,51 @@ static void short_menu_on_the_panel_returns_to_now_playing(void)
     start_app_with_library();
     open_all_songs_and_play();
     int depth = app_screen_depth();
-    hold(KEY_MENU);
+    hold(KEY_PLAY);
     CHECK(title_is("Playback"));
     CHECK_EQUAL(depth + 1, app_screen_depth());
     tap(KEY_MENU);
     CHECK(title_is("Now Playing"));
     CHECK_EQUAL(depth, app_screen_depth());
-    hold(KEY_MENU);
+    hold(KEY_PLAY);
     CHECK(title_is("Playback"));
     tap(KEY_MENU);
     CHECK(title_is("Now Playing"));
     CHECK_EQUAL(depth, app_screen_depth());
 }
 
-static void long_menu_on_the_panel_closes_it_without_opening_settings(void)
+static void long_menu_on_now_playing_opens_settings(void)
 {
     start_app_with_library();
     open_all_songs_and_play();
-    int depth = app_screen_depth();
     hold(KEY_MENU);
+    CHECK(title_is("Settings"));
+    tap(KEY_BACK);
+    CHECK(title_is("Now Playing"));
+}
+
+static void long_back_on_panel_goes_home(void)
+{
+    start_app_with_library();
+    open_all_songs_and_play();
+    hold(KEY_PLAY);
+    CHECK(title_is("Playback"));
+    hold(KEY_BACK);
+    CHECK(title_is("EchoPod"));
+}
+
+static void long_menu_on_the_panel_opens_settings(void)
+{
+    start_app_with_library();
+    open_all_songs_and_play();
+    hold(KEY_PLAY);
     CHECK(title_is("Playback"));
     hold(KEY_MENU);
+    CHECK(title_is("Settings"));
+    tap(KEY_BACK);
+    CHECK(title_is("Playback"));
+    tap(KEY_MENU);
     CHECK(title_is("Now Playing"));
-    CHECK_EQUAL(depth, app_screen_depth());
 }
 
 int main(void)
@@ -411,7 +433,9 @@ int main(void)
         TEST_CASE(quick_panel_is_icon_only),
         TEST_CASE(quick_panel_sleep_value_fits),
         TEST_CASE(short_menu_on_the_panel_returns_to_now_playing),
-        TEST_CASE(long_menu_on_the_panel_closes_it_without_opening_settings),
+        TEST_CASE(long_menu_on_now_playing_opens_settings),
+        TEST_CASE(long_back_on_panel_goes_home),
+        TEST_CASE(long_menu_on_the_panel_opens_settings),
         TEST_CASE(gear_glyph_draws_only_white_outline),
         TEST_CASE(badge_draws_flat_circle_and_half),
         TEST_CASE(category_icons_are_40px),
