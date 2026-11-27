@@ -1,6 +1,7 @@
 # Lite motion system
 
-Status: **implemented in MINIV937/938; final device check pending.** Recorded 2026-11-28.
+Status: **implemented in MINIV937/938; local-motion follow-up recorded, not implemented.**
+Recorded 2026-11-28.
 
 ## Decision
 
@@ -16,7 +17,7 @@ Use layered motion, not one animation for everything:
 First choices, recorded 2026-11-28:
 
 - **Overlay: vertical sheet.** Now Playing, Settings and Quick Panel use the short sheet
-  transition, not a fade and not the page slide.
+  transition in `MINIV938`; the local-motion pass below removes it.
 - **No Off value.** The `Animations` setting stays Normal / Slower / Faster; all UI transitions
   obey that scale, while ambient loops stay independent.
 - **Home: 240 ms first.** Use the same page duration and easing as the stack slide; 280 ms is
@@ -178,6 +179,37 @@ Options, not implemented:
 
 Complex rendering work (pre-rendering screens, a second framebuffer) does not fit the Lite RAM
 and code budget and would not create frames when the panel is the limit.
+
+## Local motion pass
+
+Recorded 2026-11-28, after the `MINIV938` device feedback. This supersedes the overlay sheet and
+the full-scene Settings category transition in the current build.
+
+The principle: animate only the element that carries the state change; do not redraw two full
+screens for it.
+
+| Change | Next pass |
+|---|---|
+| Page / browse navigation | keep the horizontal slide |
+| Now Playing / Quick Panel / Settings / Up Next / A-Z opening and closing | no transition, appear and disappear directly |
+| Settings category | rows switch immediately; only the category badge, glyph, title and dots animate |
+| Home card | keep the carousel |
+| Quick Panel card / list row selection | immediate |
+| List section picker | immediate |
+
+Settings category local transition:
+
+- duration 120-140 ms normal, scaled by the `Animations` setting;
+- the selected category dot slides from the old dot to the new dot; the other dots stay put;
+- the badge base/light/dark colors blend between the old and new category colors;
+- the glyph switches at the midpoint, or wipes in over 6-8 px;
+- the title and rows switch immediately; no previous rows and no previous `MenuScreen`;
+- do not draw an old/new full scene.
+
+This removes the most expensive animation path: the current Settings transition draws two full
+scenes every frame. The local version changes only the badge/dot region, which also keeps the
+display writes small at the `Faster` setting. The overlay sheet can be deleted with its
+`canvas_shifted_y` path.
 
 ## Still open
 
