@@ -372,7 +372,11 @@ static void follow_orientation(void)
         app.frame_stable = false;
     }
 #endif
+#ifdef ECHO_LITE
+    app.power.menu_is_media = false;
+#else
     app.power.menu_is_media = app.settings.settings.options[OPTION_MENU_KEY] == MENU_KEY_NEXT;
+#endif
 }
 
 static Key oriented_key(HalKeyTransition transition)
@@ -562,6 +566,12 @@ static void use_screen_key_behaviors(void)
     bool at_once = app.display_on && top->select_on_press;
     key_tracker_set_behavior(&app.keys, KEY_PLAY,
                              at_once ? KEY_BEHAVIOR_PRESS : KEY_BEHAVIOR_TAP_OR_HOLD);
+#ifdef ECHO_LITE
+    key_tracker_set_behavior(
+        &app.keys, KEY_MENU,
+        app.display_on && top->double_menu_enabled ? KEY_BEHAVIOR_TAP_HOLD_DOUBLE
+                                                   : KEY_BEHAVIOR_TAP_OR_HOLD);
+#endif
 }
 
 static bool opens_now_playing(KeyEvent event)
@@ -570,6 +580,7 @@ static bool opens_now_playing(KeyEvent event)
            player_status(&app.player).has_track && top_screen() != &app.screens.now_playing.screen;
 }
 
+#ifndef ECHO_LITE
 static bool settings_open(void)
 {
     for (int index = 0; index < app.stack.depth; index++) {
@@ -579,30 +590,19 @@ static bool settings_open(void)
     }
     return false;
 }
+#endif
 
 static bool opens_settings(KeyEvent event)
 {
 #ifdef ECHO_LITE
-    return event.key == KEY_MENU && event.gesture == KEY_GESTURE_LONG_PRESS && !settings_open();
+    return event.key == KEY_MENU && event.gesture == KEY_GESTURE_LONG_PRESS &&
+           top_screen() != &app.screens.settings.menu.screen;
 #else
     Screen *top = top_screen();
     bool now_playing_flow = top == &app.screens.now_playing.screen;
     return event.key == KEY_MENU && event.gesture == KEY_GESTURE_LONG_PRESS && !now_playing_flow &&
            !settings_open();
 #endif
-}
-
-static ScreenAction now_playing_action(void)
-{
-    Screen *top = top_screen();
-#ifdef ECHO_LITE
-    if (top == &app.screens.playback_panel.screen) {
-        return screen_action_pop();
-    }
-#endif
-    return top == &app.screens.up_next.screen
-               ? screen_action_pop()
-               : screen_action_push(&app.screens.now_playing.screen);
 }
 
 static void start_slide(Screen *leaving, int depth_before, uint32_t now_ms)
@@ -621,15 +621,70 @@ static bool slide_running(void)
     return app.slide.active && !slide_finished(&app.slide, app.now_ms);
 }
 
+#ifdef ECHO_LITE
+static bool open_overlay(Screen *target, bool replace_overlays, uint32_t now_ms)
+{
+    Screen *leaving = top_screen();
+    int depth_before = screen_stack_depth(&app.stack);
+    bool shown = replace_overlays
+                     ? screen_stack_show_replacing_overlays(&app.stack, target, now_ms)
+                     : screen_stack_show(&app.stack, target, now_ms);
+    if (!shown) {
+        return false;
+    }
+    use_screen_key_behaviors();
+    start_slide(leaving, depth_before, now_ms);
+    return true;
+}
+
+static void apply_screen_action(Screen *leaving, ScreenAction action, int depth_before,
+                                uint32_t now_ms)
+{
+    if (screen_stack_apply(&app.stack, action, now_ms)) {
+        use_screen_key_behaviors();
+        start_slide(leaving, depth_before, hal_clock_milliseconds());
+    }
+}
+
 static void dispatch_to_screen(KeyEvent event, uint32_t now_ms)
 {
     Screen *screen = top_screen();
-#ifdef ECHO_LITE
     if (screen == &app.screens.home.screen &&
         app_screens_home_key(&app.screens, event, now_ms)) {
         return;
     }
-#endif
+    if (event.key == KEY_MENU && event.gesture == KEY_GESTURE_DOUBLE_PRESS) {
+        if (screen->double_menu_enabled && screen->double_menu != NULL) {
+            int depth_before = screen_stack_depth(&app.stack);
+            ScreenAction action =
+                screen->double_menu(screen->double_menu_context, now_ms);
+            apply_screen_action(screen, action, depth_before, now_ms);
+        }
+        return;
+    }
+    if (opens_now_playing(event)) {
+        open_overlay(&app.screens.now_playing.screen, true, now_ms);
+        return;
+    }
+    if (opens_settings(event)) {
+        open_overlay(&app.screens.settings.menu.screen, false, now_ms);
+        return;
+    }
+    int depth_before = screen_stack_depth(&app.stack);
+    ScreenAction action = screen->handle_key(screen->context, event, now_ms);
+    apply_screen_action(screen, action, depth_before, now_ms);
+}
+#else
+static ScreenAction now_playing_action(void)
+{
+    return top_screen() == &app.screens.up_next.screen
+               ? screen_action_pop()
+               : screen_action_push(&app.screens.now_playing.screen);
+}
+
+static void dispatch_to_screen(KeyEvent event, uint32_t now_ms)
+{
+    Screen *screen = top_screen();
     int depth_before = screen_stack_depth(&app.stack);
     ScreenAction action = opens_now_playing(event) ? now_playing_action()
                           : opens_settings(event)
@@ -640,6 +695,7 @@ static void dispatch_to_screen(KeyEvent event, uint32_t now_ms)
         start_slide(screen, depth_before, hal_clock_milliseconds());
     }
 }
+#endif
 
 static bool may_show_now_playing(void)
 {
@@ -651,11 +707,19 @@ static bool may_show_now_playing(void)
 
 static void show_now_playing(uint32_t now_ms)
 {
+#ifdef ECHO_LITE
+    if (may_show_now_playing() &&
+        screen_stack_show_replacing_overlays(&app.stack, &app.screens.now_playing.screen,
+                                             now_ms)) {
+        use_screen_key_behaviors();
+    }
+#else
     if (may_show_now_playing() &&
         screen_stack_apply(&app.stack, screen_action_push(&app.screens.now_playing.screen),
                            now_ms)) {
         use_screen_key_behaviors();
     }
+#endif
 }
 
 static void run_background(KeyEvent event)

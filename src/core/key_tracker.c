@@ -14,6 +14,13 @@ static bool repeats_after_hold(const KeyTracker *tracker, Key key)
            behavior == KEY_BEHAVIOR_TAP_HOLD_REPEAT_DOUBLE;
 }
 
+static bool has_double_press(const KeyTracker *tracker, Key key)
+{
+    KeyBehavior behavior = tracker->config.behaviors[key];
+    return behavior == KEY_BEHAVIOR_TAP_HOLD_REPEAT_DOUBLE ||
+           behavior == KEY_BEHAVIOR_TAP_HOLD_DOUBLE;
+}
+
 static uint32_t long_press_ms(const KeyTracker *tracker, Key key)
 {
     uint32_t own = tracker->config.long_press_ms[key];
@@ -52,9 +59,7 @@ void key_tracker_key_down(KeyTracker *tracker, Key key, uint32_t now_ms)
     if (state->held) {
         return;
     }
-    bool double_behavior =
-        tracker->config.behaviors[key] == KEY_BEHAVIOR_TAP_HOLD_REPEAT_DOUBLE;
-    if (double_behavior && state->double_pending) {
+    if (has_double_press(tracker, key) && state->double_pending) {
         if (now_ms - state->released_at_ms <= KEY_TRACKER_DOUBLE_PRESS_MS) {
             push_event(tracker, key, KEY_GESTURE_DOUBLE_PRESS);
             *state = (KeyState){
@@ -100,7 +105,7 @@ void key_tracker_key_up(KeyTracker *tracker, Key key, uint32_t now_ms)
         state->second_press = false;
         return;
     }
-    if (tracker->config.behaviors[key] == KEY_BEHAVIOR_TAP_HOLD_REPEAT_DOUBLE) {
+    if (has_double_press(tracker, key)) {
         if (state->long_press_sent || long_press_due(tracker, key, now_ms)) {
             if (!state->long_press_sent) {
                 push_event(tracker, key, KEY_GESTURE_LONG_PRESS);

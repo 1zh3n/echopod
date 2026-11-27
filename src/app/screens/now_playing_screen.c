@@ -200,9 +200,8 @@ static NowPlayingCommand scrub_command_for(KeyEvent event)
 NowPlayingControls now_playing_controls_of(const uint8_t *options)
 {
 #ifdef ECHO_LITE
-    return (NowPlayingControls){
-        .rocker = ROCKER_VOLUME_SEEK,
-        .menu_skips = options != NULL && options[OPTION_MENU_KEY] == MENU_KEY_NEXT};
+    (void)options;
+    return (NowPlayingControls){.rocker = ROCKER_VOLUME_SEEK, .menu_skips = false};
 #else
     if (options == NULL) {
         return (NowPlayingControls){0};
@@ -249,7 +248,7 @@ NowPlayingCommand now_playing_command_with(KeyEvent event, bool scrubbing,
         return rocker_command(event.gesture, controls, event.key == KEY_VOLUME_UP);
     case KEY_PLAY:
 #ifdef ECHO_LITE
-        return by_gesture(event.gesture, NOW_PLAYING_TOGGLE_PAUSE, NOW_PLAYING_PANEL);
+        return event.gesture == KEY_GESTURE_PRESS ? NOW_PLAYING_TOGGLE_PAUSE : NOW_PLAYING_NONE;
 #else
         return by_gesture(event.gesture, NOW_PLAYING_TOGGLE_PAUSE, NOW_PLAYING_SCRUB_START);
 #endif
@@ -1364,6 +1363,16 @@ static void draw(void *context, Canvas *canvas)
 #endif
 }
 
+#ifdef ECHO_LITE
+static ScreenAction open_panel(void *context, uint32_t now_ms)
+{
+    (void)now_ms;
+    NowPlayingScreen *now_playing = context;
+    return now_playing->config.panel != NULL ? screen_action_push(now_playing->config.panel)
+                                             : screen_action_none();
+}
+#endif
+
 Screen *now_playing_screen_init(NowPlayingScreen *now_playing, NowPlayingConfig config)
 {
     now_playing->config = config;
@@ -1379,8 +1388,16 @@ Screen *now_playing_screen_init(NowPlayingScreen *now_playing, NowPlayingConfig 
         .title = i18n_text(STR_MENU_NOW_PLAYING),
         .context = now_playing,
         .hold_volume_keys = true,
+#ifdef ECHO_LITE
+        .overlay = true,
+        .double_menu_enabled = true,
+        .double_menu_context = now_playing,
+#endif
         .enter = enter,
         .handle_key = handle_key,
+#ifdef ECHO_LITE
+        .double_menu = open_panel,
+#endif
         .update = update,
         .draw = draw,
     };

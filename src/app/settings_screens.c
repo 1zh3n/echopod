@@ -812,8 +812,8 @@ static ScreenAction open_group(void *context);
 #ifdef ECHO_LITE
 static bool choice_shown(const void *context)
 {
-    (void)context;
-    return true;
+    const SettingsEntry *entry = context;
+    return entry->choice != &CHOICES[CHOICE_MENU_KEY];
 }
 #else
 static bool choice_shown(const void *context)
@@ -895,7 +895,8 @@ static ScreenAction open_group(void *context)
 #endif
 
 #ifdef ECHO_LITE
-static void settings_show_category(SettingsScreens *screens, int group, int selected)
+static void settings_show_category(SettingsScreens *screens, int group, int selected,
+                                   uint32_t now_ms)
 {
     const SettingsGroupRows *rows = &GROUPS[group];
     screens->shown = (uint8_t)group;
@@ -903,18 +904,21 @@ static void settings_show_category(SettingsScreens *screens, int group, int sele
     screens->menu.config.items = screens->rows;
     screens->menu.config.item_count = rows->count;
     screens->menu.list.top = 0;
-    list_view_select(&screens->menu.list, selected, 0);
+    list_view_select(&screens->menu.list, selected, now_ms);
     screens->menu.list.visible_rows =
         theme_is_portrait(screens->theme) ? 7 : SETTINGS_TOP_COUNT;
 }
 
-static ScreenAction next_category(void *context, int index)
+void settings_next_category(SettingsScreens *screens, uint32_t now_ms)
 {
-    (void)index;
-    SettingsScreens *screens = context;
     screens->selected[screens->shown] = (uint8_t)screens->menu.list.selected;
     int group = (screens->shown + 1) % SETTINGS_GROUP_COUNT;
-    settings_show_category(screens, group, screens->selected[group]);
+    settings_show_category(screens, group, screens->selected[group], now_ms);
+}
+
+static ScreenAction double_menu(void *context, uint32_t now_ms)
+{
+    settings_next_category(context, now_ms);
     return screen_action_none();
 }
 
@@ -945,11 +949,13 @@ Screen *settings_screens_init(SettingsScreens *screens, SettingsContext context,
                        .items = screens->rows,
                        .item_count = GROUPS[SETTINGS_SOUND].count,
                        .theme = theme,
-                       .scene = settings_scene(screens),
-                       .hold = next_category,
-                       .hold_context = screens};
+                       .scene = settings_scene(screens)};
     Screen *screen = menu_screen_init(&screens->menu, menu);
     screens->menu.screen.select_on_press = false;
+    screens->menu.screen.overlay = true;
+    screens->menu.screen.double_menu_enabled = true;
+    screens->menu.screen.double_menu_context = screens;
+    screens->menu.screen.double_menu = double_menu;
     screens->menu.list.visible_rows = SETTINGS_TOP_COUNT;
     list_view_select(&screens->menu.list, 0, 0);
     return screen;

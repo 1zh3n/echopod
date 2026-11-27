@@ -90,4 +90,5 @@ void settings_sleep_apply(SettingsContext *context, int option, uint32_t now_ms)
 void settings_playback_set_mode(SettingsContext *context, PlaybackMode mode, uint32_t seed);
 #ifdef ECHO_LITE
 const char *settings_category_title(int group);
+void settings_next_category(SettingsScreens *screens, uint32_t now_ms);
 #endif

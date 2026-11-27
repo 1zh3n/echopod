@@ -235,6 +235,7 @@ Screen *playback_panel_screen_init(PlaybackPanelScreen *panel, SettingsContext *
                              .full_screen = true,
                              .paints_every_pixel = true,
                              .select_on_press = true,
+                             .overlay = true,
                              .enter = enter,
                              .handle_key = handle_key,
                              .update = update,

@@ -28,8 +28,12 @@ struct Screen {
     bool hold_volume_keys;
     bool stays_on_wake;
     bool select_on_press;
+    bool overlay;
+    bool double_menu_enabled;
+    void *double_menu_context;
     void (*enter)(void *context, uint32_t now_ms);
     ScreenAction (*handle_key)(void *context, KeyEvent event, uint32_t now_ms);
+    ScreenAction (*double_menu)(void *context, uint32_t now_ms);
     void (*update)(void *context, uint32_t now_ms);
     void (*draw)(void *context, Canvas *canvas);
 };

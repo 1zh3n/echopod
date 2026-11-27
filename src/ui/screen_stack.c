@@ -76,3 +76,54 @@ bool screen_stack_apply(ScreenStack *stack, ScreenAction action, uint32_t now_ms
     enter_top(stack, now_ms);
     return true;
 }
+
+bool screen_stack_show(ScreenStack *stack, Screen *target, uint32_t now_ms)
+{
+    if (target == NULL) {
+        return false;
+    }
+    for (int index = 0; index < stack->depth; index++) {
+        if (stack->screens[index] != target) {
+            continue;
+        }
+        if (index == stack->depth - 1) {
+            return false;
+        }
+        stack->depth = index + 1;
+        enter_top(stack, now_ms);
+        return true;
+    }
+    if (stack->depth == SCREEN_STACK_CAPACITY) {
+        return false;
+    }
+    stack->screens[stack->depth++] = target;
+    enter_top(stack, now_ms);
+    return true;
+}
+
+bool screen_stack_show_replacing_overlays(ScreenStack *stack, Screen *target, uint32_t now_ms)
+{
+    if (target == NULL) {
+        return false;
+    }
+    for (int index = 0; index < stack->depth; index++) {
+        if (stack->screens[index] != target) {
+            continue;
+        }
+        if (index == stack->depth - 1) {
+            return false;
+        }
+        stack->depth = index + 1;
+        enter_top(stack, now_ms);
+        return true;
+    }
+    while (stack->depth > 1 && stack->screens[stack->depth - 1]->overlay) {
+        stack->depth--;
+    }
+    if (stack->depth == SCREEN_STACK_CAPACITY) {
+        return false;
+    }
+    stack->screens[stack->depth++] = target;
+    enter_top(stack, now_ms);
+    return true;
+}

@@ -164,6 +164,48 @@ static void holding_a_double_key_long_presses_then_repeats(void)
     CHECK_EQUAL(KEY_GESTURE_REPEAT, next_gesture(&tracker, KEY_VOLUME_UP));
 }
 
+static KeyTracker make_tap_hold_double_tracker(void)
+{
+    KeyTracker tracker = make_tracker();
+    key_tracker_set_behavior(&tracker, KEY_MENU, KEY_BEHAVIOR_TAP_HOLD_DOUBLE);
+    return tracker;
+}
+
+static void a_tap_hold_double_single_tap_waits_for_the_window(void)
+{
+    KeyTracker tracker = make_tap_hold_double_tracker();
+    key_tracker_key_down(&tracker, KEY_MENU, 1000);
+    key_tracker_key_up(&tracker, KEY_MENU, 1030);
+    key_tracker_update(&tracker, 1030 + KEY_TRACKER_DOUBLE_PRESS_MS - 1);
+    CHECK_EQUAL(NO_EVENT, next_gesture(&tracker, KEY_MENU));
+    key_tracker_update(&tracker, 1030 + KEY_TRACKER_DOUBLE_PRESS_MS);
+    CHECK_EQUAL(KEY_GESTURE_PRESS, next_gesture(&tracker, KEY_MENU));
+}
+
+static void a_tap_hold_double_second_tap_emits_double_press(void)
+{
+    KeyTracker tracker = make_tap_hold_double_tracker();
+    key_tracker_key_down(&tracker, KEY_MENU, 1000);
+    key_tracker_key_up(&tracker, KEY_MENU, 1030);
+    key_tracker_key_down(&tracker, KEY_MENU, 1100);
+    CHECK_EQUAL(KEY_GESTURE_DOUBLE_PRESS, next_gesture(&tracker, KEY_MENU));
+    key_tracker_key_up(&tracker, KEY_MENU, 1130);
+    key_tracker_update(&tracker, 1600);
+    CHECK_EQUAL(NO_EVENT, next_gesture(&tracker, KEY_MENU));
+}
+
+static void a_tap_hold_double_long_press_does_not_repeat(void)
+{
+    KeyTracker tracker = make_tap_hold_double_tracker();
+    key_tracker_key_down(&tracker, KEY_MENU, 1000);
+    key_tracker_update(&tracker, 1000 + LONG_PRESS_MS);
+    CHECK_EQUAL(KEY_GESTURE_LONG_PRESS, next_gesture(&tracker, KEY_MENU));
+    key_tracker_update(&tracker, 1000 + LONG_PRESS_MS + REPEAT_INTERVAL_MS * 3);
+    CHECK_EQUAL(NO_EVENT, next_gesture(&tracker, KEY_MENU));
+    key_tracker_key_up(&tracker, KEY_MENU, 2000);
+    CHECK_EQUAL(NO_EVENT, next_gesture(&tracker, KEY_MENU));
+}
+
 static void a_release_without_press_is_ignored(void)
 {
     KeyTracker tracker = make_tracker();
@@ -348,6 +390,9 @@ int main(void)
         TEST_CASE(a_single_tap_waits_for_the_double_window),
         TEST_CASE(a_quick_second_tap_emits_one_double_press),
         TEST_CASE(holding_a_double_key_long_presses_then_repeats),
+        TEST_CASE(a_tap_hold_double_single_tap_waits_for_the_window),
+        TEST_CASE(a_tap_hold_double_second_tap_emits_double_press),
+        TEST_CASE(a_tap_hold_double_long_press_does_not_repeat),
         TEST_CASE(a_release_without_press_is_ignored),
         TEST_CASE(keys_are_tracked_independently),
         TEST_CASE(a_full_queue_keeps_the_oldest_events),

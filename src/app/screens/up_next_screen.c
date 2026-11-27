@@ -304,6 +304,9 @@ Screen *up_next_screen_init(UpNextScreen *up_next, UpNextConfig config)
     up_next->screen = (Screen){
         .title = i18n_text(STR_MENU_UP_NEXT),
         .context = up_next,
+#ifdef ECHO_LITE
+        .overlay = true,
+#endif
         .enter = enter,
         .handle_key = handle_key,
         .update = update,
