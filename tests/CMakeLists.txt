@@ -621,6 +621,12 @@ if(EXISTS ${ECHO_TOOLS_PYTHON})
             --style ${PROJECT_SOURCE_DIR}/.clang-format
             --check
     )
+    add_test(NAME pinyin_table_up_to_date
+        COMMAND ${ECHO_TOOLS_PYTHON} ${PROJECT_SOURCE_DIR}/tools/pinyin_table.py check
+            --source ${PROJECT_SOURCE_DIR}/tools/data/pinyin-gb2312.txt
+            --asset ${PROJECT_SOURCE_DIR}/assets/pinyin.bin
+            --manifest ${PROJECT_SOURCE_DIR}/assets/pinyin.md
+    )
     add_test(NAME library_fixture_up_to_date
         COMMAND ${ECHO_TOOLS_PYTHON} ${PROJECT_SOURCE_DIR}/tools/library_fixture.py
             --output ${CMAKE_CURRENT_SOURCE_DIR}/fixtures/small_library.db
