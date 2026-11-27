@@ -1,6 +1,6 @@
 # List section jump: duplicate letters and key feel
 
-Status: **assessment recorded, not implemented.** 2026-11-28.
+Status: **interaction approved: double Menu, not implemented.** 2026-11-28.
 
 ## Current behaviour
 
@@ -78,8 +78,8 @@ Options for the next pass:
 - **C. Use long Menu in lettered lists for the A-Z overlay.** Volume hold stays scrolling.
   Cost: Settings is no longer reachable by long Menu from those lists.
 
-Recommendation: **A** if the double-Menu delay is acceptable; otherwise **B** is the
-cleanest no-new-key option. Do not keep section jump on the same hold as scrolling.
+The double-Menu choice is A. B and C are kept as rejected alternatives in case the double
+window proves unusable on the device. Do not keep section jump on the same hold as scrolling.
 
 ### Long Play is not a free gesture
 
@@ -133,6 +133,12 @@ is:
 - long Menu = A-Z jump in lettered lists;
 - Settings remains available by long Menu from Home/Now Playing, but not from those lists.
 
-Recommendation: **double Menu**, limited to lettered lists. Keep the window as short as the key
-tracker can reliably detect, and keep the overlay explicit: it opens only on the double gesture,
-never as an automatic phase of a hold.
+**Decision: double Menu**, limited to lettered lists with more than one section. Keep the
+double window as short as the key tracker can reliably detect. The overlay opens only on the
+double gesture, never as an automatic phase of a hold.
+
+- Short Menu keeps going to Now Playing.
+- Long Menu keeps going to Settings.
+- Long Play keeps the song-actions menu where it exists.
+- Volume hold keeps scrolling rows only; section jump is removed from the hold.
+- The hold thresholds and the 4-row fast-scroll phase are no longer part of section jump.
