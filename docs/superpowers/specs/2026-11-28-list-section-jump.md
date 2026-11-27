@@ -177,3 +177,23 @@ stays no-op.
 A category chooser overlay (double Menu opens the five categories, volume selects, Play
 switches) is a larger alternative. It is more explicit but not needed for five categories;
 cycling one category per double press is the smaller change.
+
+## Double Menu in Now Playing: Quick Panel
+
+Proposal: while in Now Playing, double Menu opens the Quick Panel (playback mode / sleep
+timer). The only short-Menu action that waits for the double window is the Now Playing one:
+Up Next by default, or **next track** when Settings → Buttons → Menu key is Next.
+
+Two costs:
+
+1. If Menu is configured as Next, every short Menu skip is delayed by the double window.
+2. Long Play already opens the Quick Panel. Keeping both gestures is redundant, and the user
+   pays the Up Next delay for no new capability. The realistic choices are:
+   - **A. Double Menu replaces Long Play** for the Quick Panel; Long Play in Now Playing becomes
+     a no-op or gets another role later.
+   - **B. Keep Long Play only**; do not add double Menu in Now Playing.
+   - **C. Keep both** as aliases; not recommended.
+
+If double Menu is meant to be the general "go to the group" gesture, A is coherent:
+Now Playing -> Quick Panel, lettered list -> A-Z overlay, Settings -> next category. B is the
+smaller change and preserves the direct Long Play gesture. C adds delay without adding access.
