@@ -141,6 +141,19 @@ void lite_status_bt_chip_draw(Canvas *canvas, const Theme *theme, Point origin, 
                      bluetooth ? theme->colors->selection_background : theme->colors->divider);
 }
 
+Rect lite_list_frame_no_title(Canvas *canvas, const Theme *theme)
+{
+    const ThemeColors *colors = theme->colors;
+    Rect content = theme_content_area(theme);
+    canvas_fill_rect(canvas, content, colors->background);
+    if (theme_is_portrait(theme)) {
+        lite_card(canvas, theme, (Rect){8, 28, content.width - 16, 280}, 4);
+        return (Rect){12, 30, content.width - 24, 276};
+    }
+    lite_card(canvas, theme, (Rect){8, 28, content.width - 16, 134}, 4);
+    return (Rect){12, 30, content.width - 24, 130};
+}
+
 Rect lite_list_frame(Canvas *canvas, const Theme *theme, const char *title)
 {
     const ThemeColors *colors = theme->colors;

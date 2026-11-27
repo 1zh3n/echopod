@@ -165,6 +165,14 @@ static int category(unsigned char first)
     return first > 'z' ? 2 : 1;
 }
 
+static void fullwidth_latin_uses_the_same_section_as_ascii(void)
+{
+    CHECK_EQUAL('d', sort_key_initial("D"));
+    CHECK_EQUAL('d', sort_key_initial("\xEF\xBC\xA4"));
+    CHECK_EQUAL('d', sort_key_initial("Da"));
+    CHECK_EQUAL('d', sort_key_initial("\xEF\xBC\xA4" "a"));
+}
+
 static void the_initial_matches_the_first_byte_of_the_key(void)
 {
     static const char *const NAMES[] = {"The Beatles",
@@ -209,6 +217,7 @@ static void the_initial_matches_the_first_byte_of_the_key(void)
 int main(void)
 {
     static const TestCase cases[] = {
+        TEST_CASE(fullwidth_latin_uses_the_same_section_as_ascii),
         TEST_CASE(the_initial_matches_the_first_byte_of_the_key),
         TEST_CASE(keys_match_the_pc_indexer),
         TEST_CASE(cjk_keys_match_the_pc_indexer),

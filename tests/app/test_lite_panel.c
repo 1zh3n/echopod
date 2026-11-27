@@ -294,6 +294,19 @@ static bool draw_boot_image(Canvas *canvas)
                           COLOR_RGB(10, 10, 10), false);
 }
 
+static void no_title_list_frame_starts_below_the_meter(void)
+{
+    Theme theme = default_theme_for(false);
+    lite_theme_force(&theme, false);
+    static Color pixels[HAL_DISPLAY_WIDTH * HAL_DISPLAY_HEIGHT];
+    Canvas canvas = canvas_make(pixels, (Rect){0, 0, HAL_DISPLAY_WIDTH, HAL_DISPLAY_HEIGHT});
+    canvas_clear(&canvas, COLOR_RGB(1, 2, 3));
+    Rect rows = lite_list_frame_no_title(&canvas, &theme);
+    CHECK_EQUAL(30, rows.y);
+    CHECK(canvas_pixel_at(&canvas, 16, 8) == theme.colors->background);
+    CHECK(canvas_pixel_at(&canvas, 16, 25) == theme.colors->background);
+}
+
 static void cjk_section_initials_follow_pinyin(void)
 {
     CHECK(load_pinyin_asset());
@@ -691,6 +704,40 @@ static void lite_ignores_the_menu_key_setting(void)
     CHECK(!now_playing_controls_of(options).menu_skips);
 }
 
+static void double_menu_opens_and_closes_section_jump(void)
+{
+    start_app_with_library();
+    tap(KEY_PLAY);
+    CHECK(title_is("All Songs"));
+    double_tap(KEY_MENU);
+    CHECK(title_is("A-Z"));
+    tap(KEY_BACK);
+    CHECK(title_is("All Songs"));
+}
+
+static void section_jump_play_returns_to_the_list(void)
+{
+    start_app_with_library();
+    tap(KEY_PLAY);
+    double_tap(KEY_MENU);
+    CHECK(title_is("A-Z"));
+    move_down(4);
+    tap(KEY_PLAY);
+    CHECK(title_is("All Songs"));
+}
+
+static void short_menu_in_a_lettered_list_waits_for_the_double_window(void)
+{
+    start_app_with_library();
+    open_all_songs_and_play();
+    tap(KEY_BACK);
+    CHECK(title_is("All Songs"));
+    tap(KEY_MENU);
+    CHECK(title_is("All Songs"));
+    wait_ms(300);
+    CHECK(title_is("Now Playing"));
+}
+
 static void long_back_on_panel_goes_home(void)
 {
     start_app_with_library();
@@ -882,6 +929,9 @@ int main(void)
         TEST_CASE(long_play_on_now_playing_does_nothing),
         TEST_CASE(settings_menu_goes_to_now_playing_and_drops_settings),
         TEST_CASE(lite_ignores_the_menu_key_setting),
+        TEST_CASE(double_menu_opens_and_closes_section_jump),
+        TEST_CASE(section_jump_play_returns_to_the_list),
+        TEST_CASE(short_menu_in_a_lettered_list_waits_for_the_double_window),
         TEST_CASE(long_back_on_panel_goes_home),
         TEST_CASE(long_menu_on_the_panel_opens_settings),
         TEST_CASE(gear_glyph_draws_only_white_outline),
@@ -905,6 +955,7 @@ int main(void)
         TEST_CASE(settings_subpage_opens),
         TEST_CASE(lite_animation_arena_is_available),
         TEST_CASE(lite_animation_streams_all_frames),
+        TEST_CASE(no_title_list_frame_starts_below_the_meter),
         TEST_CASE(cjk_section_initials_follow_pinyin),
         TEST_CASE(boot_screen_is_a_shadowed_image),
         TEST_CASE(boot_screen_draws_the_still),

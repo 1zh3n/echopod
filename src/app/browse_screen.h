@@ -6,6 +6,9 @@
 #include "library/favorites.h"
 #include "library/library_browse.h"
 #include "player.h"
+#ifdef ECHO_LITE
+#include "screens/section_jump_screen.h"
+#endif
 #include "spoken_store.h"
 #include "ui/list_view.h"
 #include "ui/menu_screen.h"
@@ -88,6 +91,9 @@ struct BrowsePool {
     uint16_t favorite_count;
     bool favorites_collected;
     uint32_t favorites_revision;
+#ifdef ECHO_LITE
+    SectionJumpScreen section_jump;
+#endif
     SongActions song_actions;
 };
 

@@ -665,7 +665,9 @@ static void draw(void *context, Canvas *canvas)
         draw_empty(canvas, theme, content, empty_message(browse));
         return;
     }
-    Rect rows = lite_list_frame(canvas, theme, browse->title);
+    Rect rows = browse->query.kind == BROWSE_ALL_SONGS
+                    ? lite_list_frame_no_title(canvas, theme)
+                    : lite_list_frame(canvas, theme, browse->title);
     browse->list.visible_rows = 5;
     list_view_draw_over(&browse->list, canvas, rows, browse->now_ms);
 #else
@@ -693,6 +695,19 @@ static bool folder_shows_shuffle(const BrowsePoolConfig *config, BrowseQuery que
     return query.subject != ROOT_FOLDER &&
            browse_count(config->library, browse_folder_tracks(query)) > 0;
 }
+
+#ifdef ECHO_LITE
+static ScreenAction open_section_jump(void *context, uint32_t now_ms)
+{
+    (void)now_ms;
+    BrowseScreen *browse = context;
+    if (!list_view_sections_vary(&browse->list)) {
+        return screen_action_none();
+    }
+    SectionJumpConfig config = {.list = &browse->list, .theme = browse->pool->config.theme};
+    return screen_action_push(section_jump_screen_init(&browse->pool->section_jump, config));
+}
+#endif
 
 static Screen *open_level(BrowsePool *pool, int level, BrowseQuery query, SpokenKind shelf)
 {
@@ -735,6 +750,12 @@ static Screen *open_level(BrowsePool *pool, int level, BrowseQuery query, Spoken
         .update = update,
         .draw = draw,
     };
+#ifdef ECHO_LITE
+    browse->screen.double_menu_enabled =
+        is_lettered(query.kind) && list_view_sections_vary(&browse->list);
+    browse->screen.double_menu_context = browse;
+    browse->screen.double_menu = open_section_jump;
+#endif
     return &browse->screen;
 }
 

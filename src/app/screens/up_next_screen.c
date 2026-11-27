@@ -9,6 +9,9 @@
 #include "ui/header.h"
 #include "ui/label.h"
 #include "ui/list_navigation.h"
+#ifdef ECHO_LITE
+#include "ui/lite_frame.h"
+#endif
 
 enum {
     DETAIL_MAX_WIDTH = 110,
@@ -271,19 +274,37 @@ static void update(void *context, uint32_t now_ms)
 
 static void draw(void *context, Canvas *canvas)
 {
-    const UpNextScreen *up_next = context;
+    UpNextScreen *up_next = context;
     const Theme *theme = up_next->config.theme;
     Rect content = theme_content_area(theme);
+#ifdef ECHO_LITE
+    bool paint_backdrop = theme_is_portrait(theme);
+    if (!paint_backdrop) {
+        content = lite_list_frame_no_title(canvas, theme);
+        up_next->list.visible_rows = lite_list_rows(theme);
+    } else {
+        header_draw(canvas, theme,
+                    i18n_text(up_next->chapters ? STR_MENU_CHAPTERS : STR_MENU_UP_NEXT));
+    }
+#else
+    bool paint_backdrop = true;
     header_draw(canvas, theme, i18n_text(up_next->chapters ? STR_MENU_CHAPTERS : STR_MENU_UP_NEXT));
+#endif
     if (up_next->count == 0) {
         TextStyle style = {.font = theme->fonts.body, .color = theme->colors->text_secondary};
-        backdrop_paint(canvas, theme, content);
+        if (paint_backdrop) {
+            backdrop_paint(canvas, theme, content);
+        }
         const char *message = i18n_text(STR_MENU_NOTHING_IS_PLAYING);
         Rect area = label_centered_area(style.font, content, message);
         label_draw(canvas, style, (Label){.area = area, .text = message});
         return;
     }
-    list_view_draw(&up_next->list, canvas, content, up_next->now_ms);
+    if (paint_backdrop) {
+        list_view_draw(&up_next->list, canvas, content, up_next->now_ms);
+    } else {
+        list_view_draw_over(&up_next->list, canvas, content, up_next->now_ms);
+    }
 }
 
 Screen *up_next_screen_init(UpNextScreen *up_next, UpNextConfig config)

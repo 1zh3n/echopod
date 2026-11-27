@@ -18,4 +18,5 @@ void lite_status_meter_draw(Canvas *canvas, const Theme *theme, Point origin, bo
 void lite_status_bt_chip_draw(Canvas *canvas, const Theme *theme, Point origin,
                               bool bluetooth);
 Rect lite_list_frame(Canvas *canvas, const Theme *theme, const char *title);
+Rect lite_list_frame_no_title(Canvas *canvas, const Theme *theme);
 #endif

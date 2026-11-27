@@ -11,6 +11,9 @@
 enum {
     LATIN_FIRST = 0xC0,
     LATIN_LAST = 0x17F,
+    FULLWIDTH_FIRST = 0xFF01,
+    FULLWIDTH_LAST = 0xFF5E,
+    FULLWIDTH_OFFSET = 0xFEE0,
     OTHER_SCRIPT = 0x80,
     UNMAPPED = '~'
 };
@@ -27,6 +30,14 @@ static bool is_space(uint32_t code_point)
            code_point == 0x1680 || (code_point >= 0x2000 && code_point <= 0x200A) ||
            code_point == 0x2028 || code_point == 0x2029 || code_point == 0x202F ||
            code_point == 0x205F || code_point == 0x3000;
+}
+
+static uint32_t folded(uint32_t code_point)
+{
+    if (code_point >= FULLWIDTH_FIRST && code_point <= FULLWIDTH_LAST) {
+        return code_point - FULLWIDTH_OFFSET;
+    }
+    return code_point;
 }
 
 static uint32_t lowered(uint32_t code_point)
@@ -64,7 +75,7 @@ static const char *after_article(const char *text)
 char sort_key_initial(const char *text)
 {
     const char *cursor = after_article(skip_spaces(text));
-    uint32_t code_point = lowered(utf8_next(&cursor));
+    uint32_t code_point = lowered(folded(utf8_next(&cursor)));
     if (code_point < OTHER_SCRIPT) {
         return (char)code_point;
     }
