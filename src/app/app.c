@@ -147,6 +147,10 @@ typedef struct AppState {
     ScreenStack stack;
     LibraryStore library;
     Player player;
+#ifdef ECHO_LITE
+    uint16_t sleep_track;
+    uint32_t sleep_end_count;
+#endif
     SettingsStore settings;
     EqualizerStore equalizer;
 #ifndef ECHO_LITE
@@ -736,6 +740,26 @@ static void update_power(uint32_t now_ms)
         return;
     }
     keep_awake_while_busy(now_ms);
+#ifdef ECHO_LITE
+    PlayerStatus status = player_status(&app.player);
+    if (power_policy_sleep_due(&app.power, now_ms) && !app.power.sleep_pending) {
+        if (status.state == PLAYER_PLAYING && status.has_track) {
+            app.sleep_track = status.track;
+            app.sleep_end_count = status.end_count;
+            power_policy_sleep_wait(&app.power);
+        }
+    }
+    if (app.power.sleep_pending) {
+        bool ended = status.state != PLAYER_PLAYING || !status.has_track ||
+                     status.track != app.sleep_track ||
+                     status.end_count != app.sleep_end_count;
+        if (ended) {
+            power_policy_cancel_sleep_timer(&app.power);
+            shut_down(GOODBYE_TEXT, false);
+            return;
+        }
+    }
+#endif
     if (power_policy_update(&app.power, now_ms)) {
         shut_down(GOODBYE_TEXT, false);
         return;
@@ -903,8 +927,32 @@ static void draw_lite_status_meter(Canvas *canvas)
 {
     const Theme *theme = current_theme();
     bool bluetooth = lite_status_bluetooth();
-    bool playing = player_status(&app.player).state == PLAYER_PLAYING;
+    PlayerStatus playback = player_status(&app.player);
+    bool playing = playback.state == PLAYER_PLAYING;
     if (top_screen() == &app.screens.now_playing.screen) {
+        uint32_t held = 0;
+        Key held_key = KEY_VOLUME_UP;
+        uint32_t up = key_tracker_held_ms(&app.keys, KEY_VOLUME_UP, app.now_ms);
+        uint32_t down = key_tracker_held_ms(&app.keys, KEY_VOLUME_DOWN, app.now_ms);
+        if (up >= down) {
+            held = up;
+            held_key = KEY_VOLUME_UP;
+        } else {
+            held = down;
+            held_key = KEY_VOLUME_DOWN;
+        }
+        uint32_t threshold = key_tracker_long_press_ms(&app.keys, held_key);
+        if (playback.has_track && threshold > 0 && held >= KEY_TRACKER_DOUBLE_PRESS_MS) {
+            int progress = (int)((uint64_t)held * 24u / threshold);
+            progress = (progress / 4) * 4;
+            bool ready = held >= threshold;
+            if (ready) {
+                progress = 24;
+            }
+            Point origin = {theme_is_portrait(theme) ? 79 : 229, 13};
+            lite_status_hold_draw(canvas, theme, origin, progress, ready);
+            return;
+        }
         Point origin = {theme_is_portrait(theme) ? 93 : 243, 13};
         lite_status_bt_chip_draw(canvas, theme, origin, bluetooth);
         return;

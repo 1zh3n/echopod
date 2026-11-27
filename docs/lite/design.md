@@ -64,9 +64,9 @@ cyan `#35C7E8`, amber `#F59E0B`, success `#22C55E`.
 - Portrait: Bluetooth chip at x=93, state icons at x=119/144, title at (8, 24), spectrum
   154×194 at y=86, progress at y=288, times at y=294. The time row ends 8 px above the bottom.
 
-### Now Playing hold feedback (planned)
+### Now Playing hold feedback
 
-This is a planned temporary state; it is **not in MINIV926** yet.
+Implemented in MINIV927.
 
 - Idle: the 14×8 Bluetooth chip at the top right.
 - Volume key down: the chip expands left to 28×8, keeping its right edge. The
@@ -99,10 +99,10 @@ other keys.
 - Landscape: two 140×112 cards side by side.
 - Portrait: two 146×118 cards stacked at y=35/167.
 
-### Sleep timer (planned)
+### Sleep timer
 
-The sleep timer remains a **shutdown** timer; this pass does not add a pause mode. It is not in
-MINIV926 yet.
+The sleep timer remains a **shutdown** timer; this pass does not add a pause mode. Implemented
+in MINIV927.
 
 - Panel: the moon pill shows the remaining time (`14:32`, `0:45`), updated every second; when
   the deadline passes while a track is playing, it shows `END` while waiting for that track.

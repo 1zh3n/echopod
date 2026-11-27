@@ -132,6 +132,23 @@ static void the_sleep_timer_fires_once_and_turns_the_display_off(void)
     CHECK(!power_policy_update(&policy, START_MS + 2 * SLEEP_MS));
 }
 
+static void the_sleep_timer_reports_remaining_and_can_hold(void)
+{
+    PowerPolicy policy = fresh_policy();
+    power_policy_set_timeout(&policy, 0);
+    power_policy_start_sleep_timer(&policy, SLEEP_MS, START_MS);
+    CHECK(!power_policy_sleep_due(&policy, START_MS + SLEEP_MS - 1));
+    CHECK_EQUAL(SLEEP_MS, power_policy_sleep_remaining_ms(&policy, START_MS));
+    CHECK_EQUAL(1000, power_policy_sleep_remaining_ms(&policy, START_MS + SLEEP_MS - 1000));
+    CHECK(power_policy_sleep_due(&policy, START_MS + SLEEP_MS));
+    power_policy_sleep_wait(&policy);
+    CHECK(!policy.sleep_timer_active);
+    CHECK(policy.sleep_pending);
+    CHECK(!power_policy_update(&policy, START_MS + SLEEP_MS + 1000));
+    power_policy_cancel_sleep_timer(&policy);
+    CHECK(!policy.sleep_pending);
+}
+
 static void a_cancelled_sleep_timer_never_fires(void)
 {
     PowerPolicy policy = fresh_policy();
@@ -213,6 +230,7 @@ int main(void)
         TEST_CASE(with_the_screen_on_keys_reach_the_screen),
         TEST_CASE(holding_power_asks_for_shutdown),
         TEST_CASE(the_sleep_timer_fires_once_and_turns_the_display_off),
+        TEST_CASE(the_sleep_timer_reports_remaining_and_can_hold),
         TEST_CASE(a_cancelled_sleep_timer_never_fires),
         TEST_CASE(a_wake_turns_the_display_on_and_restarts_the_timeout),
         TEST_CASE(a_wake_after_a_power_tap_turns_the_screen_on),

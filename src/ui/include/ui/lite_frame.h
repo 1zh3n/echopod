@@ -17,5 +17,7 @@ void lite_status_meter_draw(Canvas *canvas, const Theme *theme, Point origin, bo
                             bool playing);
 void lite_status_bt_chip_draw(Canvas *canvas, const Theme *theme, Point origin,
                               bool bluetooth);
+void lite_status_hold_draw(Canvas *canvas, const Theme *theme, Point origin, int progress_px,
+                           bool ready);
 Rect lite_list_frame(Canvas *canvas, const Theme *theme, const char *title);
 #endif

@@ -30,9 +30,9 @@ a screenshot source.
 
 ![Now Playing](../../images/lite/now-playing-final-v3.png)
 
-## Now Playing hold feedback (planned)
+## Now Playing hold feedback
 
-This is a design target, **not in MINIV926**. A volume long-press temporarily replaces the
+Implemented in MINIV927. A volume long-press temporarily replaces the
 14×8 Bluetooth chip with a 28×8 progress bar; at 1000 ms it turns amber and seek begins.
 
 Scope: volume long-press seek only; not a general long-press gauge. Play/Menu/Back and Power
@@ -48,9 +48,9 @@ are out of scope for now.
 
 ![Quick panel](../../images/lite/quick-panel-final-v3.png)
 
-## Sleep timer (planned)
+## Sleep timer
 
-Not in MINIV926. The moon pill shows the remaining time; after the deadline it shows `END` while
+Implemented in MINIV927. The moon pill shows the remaining time; after the deadline it shows `END` while
 waiting for the current track, then the player shuts down. No pause mode.
 
 ![Sleep timer countdown](../../images/lite/sleep-timer-countdown.png)

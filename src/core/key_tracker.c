@@ -141,6 +141,24 @@ static void update_long_press(KeyTracker *tracker, Key key, uint32_t now_ms)
     state->next_repeat_at_ms = now_ms + tracker->config.timing.repeat_interval_ms;
 }
 
+uint32_t key_tracker_held_ms(const KeyTracker *tracker, Key key, uint32_t now_ms)
+{
+    int index = (int)key;
+    if (index < 0 || index >= KEY_COUNT || !tracker->states[index].held) {
+        return 0;
+    }
+    return now_ms - tracker->states[index].pressed_at_ms;
+}
+
+uint32_t key_tracker_long_press_ms(const KeyTracker *tracker, Key key)
+{
+    int index = (int)key;
+    if (index < 0 || index >= KEY_COUNT) {
+        return 0;
+    }
+    return long_press_ms(tracker, key);
+}
+
 void key_tracker_update(KeyTracker *tracker, uint32_t now_ms)
 {
     for (int index = 0; index < KEY_COUNT; index++) {

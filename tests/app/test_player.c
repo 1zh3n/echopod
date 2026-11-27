@@ -114,6 +114,15 @@ static void a_finished_track_moves_the_queue_on(void)
     CHECK_EQUAL(1, fake_hal_audio_play_count());
 }
 
+static void a_finished_track_increments_the_end_count(void)
+{
+    Player *started = playing(0);
+    uint32_t before = player_status(started).end_count;
+    fake_hal_audio_finish_track();
+    player_update(started, 100);
+    CHECK_EQUAL(before + 1, player_status(started).end_count);
+}
+
 static void the_end_of_the_queue_stops_playback(void)
 {
     Player *started = playing(1);
@@ -599,6 +608,7 @@ int main(void)
         TEST_CASE(the_status_counts_the_place_in_the_queue),
         TEST_CASE(the_following_track_is_queued_for_gapless_playback),
         TEST_CASE(a_finished_track_moves_the_queue_on),
+        TEST_CASE(a_finished_track_increments_the_end_count),
         TEST_CASE(the_end_of_the_queue_stops_playback),
         TEST_CASE(repeat_one_queues_the_same_track),
         TEST_CASE(repeat_all_wraps_back_to_the_first_track),

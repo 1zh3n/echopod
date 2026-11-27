@@ -67,3 +67,5 @@ void key_tracker_key_down(KeyTracker *tracker, Key key, uint32_t now_ms);
 void key_tracker_key_up(KeyTracker *tracker, Key key, uint32_t now_ms);
 void key_tracker_update(KeyTracker *tracker, uint32_t now_ms);
 bool key_tracker_next_event(KeyTracker *tracker, KeyEvent *event);
+uint32_t key_tracker_held_ms(const KeyTracker *tracker, Key key, uint32_t now_ms);
+uint32_t key_tracker_long_press_ms(const KeyTracker *tracker, Key key);

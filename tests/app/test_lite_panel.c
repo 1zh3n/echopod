@@ -20,6 +20,8 @@
 enum {
     START_MS = 1000,
     KEY_HOLD_MS = 30,
+    FIFTEEN_MINUTES_MS = 15 * 60 * 1000,
+    GOODBYE_MS = 1000,
 };
 
 static uint32_t now_ms;
@@ -330,6 +332,70 @@ static void now_playing_uses_bt_chip_with_controls(void)
     wait_ms(300);
     CHECK(fake_hal_pixel(248, 16) == COLOR_RGB(0, 111, 238));
     CHECK(fake_hal_pixel(8, 6) != COLOR_RGB(0, 111, 238));
+}
+
+static void hold_the_volume_key_shows_seek_progress(void)
+{
+    start_app_with_library();
+    open_all_songs_and_play();
+    fake_hal_bluetooth()->state = HAL_BLUETOOTH_CONNECTED;
+    wait_ms(300);
+    CHECK(fake_hal_pixel(248, 16) == COLOR_RGB(0, 111, 238));
+
+    fake_hal_queue_transition(KEY_VOLUME_UP, true, now_ms);
+    now_ms += 500;
+    step();
+    CHECK(fake_hal_pixel(240, 16) == COLOR_RGB(53, 199, 232));
+
+    now_ms += 600;
+    step();
+    CHECK(fake_hal_pixel(240, 16) == COLOR_RGB(245, 158, 11));
+    CHECK(fake_hal_pixel(229, 18) == COLOR_RGB(245, 158, 11));
+
+    fake_hal_queue_transition(KEY_VOLUME_UP, false, now_ms);
+    now_ms += 10;
+    step();
+    CHECK(fake_hal_pixel(248, 16) == COLOR_RGB(0, 111, 238));
+}
+
+static void the_sleep_timer_waits_for_the_current_track(void)
+{
+    start_app_with_library();
+    fake_hal_set_battery(
+        (HalBattery){.known = true, .percent = 80, .millivolts = 3900, .usb_power = false});
+    open_all_songs_and_play();
+    hold(KEY_MENU);
+    hold(KEY_PLAY);
+    hold(KEY_PLAY);
+    hold(KEY_PLAY);
+    hold(KEY_PLAY);
+    move_down(3);
+    tap(KEY_PLAY);
+    move_down(1);
+    tap(KEY_PLAY);
+
+    wait_ms(FIFTEEN_MINUTES_MS - 1000);
+    wait_ms(1000);
+    CHECK_EQUAL(0, fake_hal_power_off_count());
+
+    fake_hal_audio_finish_track();
+    step();
+    wait_ms(GOODBYE_MS);
+    CHECK_EQUAL(1, fake_hal_power_off_count());
+}
+
+static void the_sleep_panel_counts_down(void)
+{
+    start_app_with_library();
+    open_all_songs_and_play();
+    hold(KEY_PLAY);
+    move_down(1);
+    tap(KEY_PLAY);
+    wait_ms(100);
+    unsigned before = area_hash(214, 98, 48, 20);
+    wait_ms(1000);
+    unsigned after = area_hash(214, 98, 48, 20);
+    CHECK(before != after);
 }
 
 static void goodbye_screen_has_no_icon(void)
@@ -719,10 +785,13 @@ int main(void)
         TEST_CASE(boot_screen_draws_only_the_animation),
         TEST_CASE(boot_screen_is_static),
         TEST_CASE(colorful_home_has_no_text),
+        TEST_CASE(hold_the_volume_key_shows_seek_progress),
         TEST_CASE(home_card_is_rounded),
         TEST_CASE(home_status_meter_tracks_bluetooth),
         TEST_CASE(now_playing_uses_bt_chip_with_controls),
         TEST_CASE(goodbye_screen_has_no_icon),
+        TEST_CASE(the_sleep_timer_waits_for_the_current_track),
+        TEST_CASE(the_sleep_panel_counts_down),
         TEST_CASE(charging_screen_has_green_shadow_and_no_text),
     };
     return test_run_all(cases, TEST_CASE_COUNT(cases));

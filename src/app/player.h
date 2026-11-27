@@ -64,6 +64,7 @@ typedef struct Player {
     bool has_track;
     bool loaded;
     uint16_t track;
+    uint32_t end_count;
     uint32_t paused_position_ms;
     uint32_t token_counter;
     uint32_t current_token;

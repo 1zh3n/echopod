@@ -8,6 +8,7 @@
 typedef struct PowerPolicy {
     bool display_on;
     bool sleep_timer_active;
+    bool sleep_pending;
     uint32_t last_activity_ms;
     uint32_t timeout_ms;
     uint32_t sleep_deadline_ms;
@@ -27,6 +28,9 @@ void power_policy_set_timeout(PowerPolicy *policy, uint32_t timeout_ms);
 PowerKeyOutcome power_policy_key(PowerPolicy *policy, KeyEvent event, uint32_t now_ms);
 void power_policy_start_sleep_timer(PowerPolicy *policy, uint32_t duration_ms, uint32_t now_ms);
 void power_policy_cancel_sleep_timer(PowerPolicy *policy);
+void power_policy_sleep_wait(PowerPolicy *policy);
+bool power_policy_sleep_due(const PowerPolicy *policy, uint32_t now_ms);
+uint32_t power_policy_sleep_remaining_ms(const PowerPolicy *policy, uint32_t now_ms);
 bool power_policy_update(PowerPolicy *policy, uint32_t now_ms);
 void power_policy_wake(PowerPolicy *policy, uint32_t now_ms);
 void power_policy_set_auto_off(PowerPolicy *policy, uint32_t auto_off_ms, uint32_t now_ms);

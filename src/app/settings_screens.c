@@ -175,7 +175,7 @@ static void choose_repeat(void *context, int index)
 
 int settings_sleep_current(const SettingsContext *context)
 {
-    return context->power->sleep_timer_active ? context->sleep_option : 0;
+    return context->power->sleep_timer_active || context->power->sleep_pending ? context->sleep_option : 0;
 }
 
 #ifdef ECHO_LITE

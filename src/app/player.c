@@ -256,6 +256,7 @@ void player_init(Player *player, const Library *library)
     player->volume = PLAYER_DEFAULT_VOLUME;
     player->has_track = false;
     player->track = 0;
+    player->end_count = 0;
     player->token_counter = 0;
     player->current_token = 0;
     player->last_save_ms = 0;
@@ -588,10 +589,16 @@ void player_update(Player *player, uint32_t now_ms)
         return;
     }
     HalAudioStatus status = hal_audio_status();
+    bool ended = false;
     if (player->has_next && status.token == player->next_token) {
         advance_to_next(player);
+        ended = true;
     } else if (status.state == HAL_AUDIO_STOPPED && status.token == player->current_token) {
         finish_track(player, status.failed);
+        ended = true;
+    }
+    if (ended) {
+        player->end_count++;
     }
     save_periodically(player, now_ms);
 }
@@ -698,6 +705,7 @@ PlayerStatus player_status(const Player *player)
         .state = player->state,
         .has_track = player->has_track,
         .track = player->track,
+        .end_count = player->end_count,
         .position_ms = position_ms,
         .duration_ms = known ? record.duration_ms : 0,
         .volume = player->volume,

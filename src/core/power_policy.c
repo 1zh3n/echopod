@@ -54,12 +54,35 @@ PowerKeyOutcome power_policy_key(PowerPolicy *policy, KeyEvent event, uint32_t n
 void power_policy_start_sleep_timer(PowerPolicy *policy, uint32_t duration_ms, uint32_t now_ms)
 {
     policy->sleep_timer_active = true;
+    policy->sleep_pending = false;
     policy->sleep_deadline_ms = now_ms + duration_ms;
 }
 
 void power_policy_cancel_sleep_timer(PowerPolicy *policy)
 {
     policy->sleep_timer_active = false;
+    policy->sleep_pending = false;
+}
+
+void power_policy_sleep_wait(PowerPolicy *policy)
+{
+    policy->sleep_timer_active = false;
+    policy->sleep_pending = true;
+}
+
+bool power_policy_sleep_due(const PowerPolicy *policy, uint32_t now_ms)
+{
+    return policy->sleep_timer_active && deadline_reached(now_ms, policy->sleep_deadline_ms);
+}
+
+uint32_t power_policy_sleep_remaining_ms(const PowerPolicy *policy, uint32_t now_ms)
+{
+    if (!policy->sleep_timer_active) {
+        return 0;
+    }
+    return deadline_reached(now_ms, policy->sleep_deadline_ms)
+               ? 0
+               : policy->sleep_deadline_ms - now_ms;
 }
 
 void power_policy_wake(PowerPolicy *policy, uint32_t now_ms)

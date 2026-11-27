@@ -4,6 +4,7 @@
 
 #include <stddef.h>
 
+#include "core/string_builder.h"
 #include "hal/clock.h"
 #include "player.h"
 #include "settings_screens.h"
@@ -33,9 +34,6 @@ static const Color MODE_DARK = COLOR_RGB(22, 119, 200);
 static const Color SLEEP_BASE = COLOR_RGB(99, 102, 241);
 static const Color SLEEP_LIGHT = COLOR_RGB(165, 180, 252);
 static const Color SLEEP_DARK = COLOR_RGB(55, 48, 163);
-
-static const char *const SLEEP_VALUES[SLEEP_TIMER_OPTION_COUNT] = {
-    "", "15", "30", "45", "60", "90", "120"};
 
 static const IconMask *mode_icon(PlaybackMode mode)
 {
@@ -75,7 +73,45 @@ static void draw_mode_badge(Canvas *canvas, const Theme *theme, Rect card, Playb
         COLOR_RGB(255, 255, 255));
 }
 
-static void draw_sleep_badge(Canvas *canvas, const Theme *theme, Rect card, int sleep)
+static void append_two_digits(StringBuilder *builder, uint32_t value)
+{
+    string_builder_append_char(builder, (char)('0' + (value / 10) % 10));
+    string_builder_append_char(builder, (char)('0' + value % 10));
+}
+
+static void sleep_value_text(const PowerPolicy *power, uint32_t now_ms, char *buffer, size_t capacity)
+{
+    if (capacity == 0) {
+        return;
+    }
+    buffer[0] = '\0';
+    if (power == NULL) {
+        return;
+    }
+    if (power->sleep_pending) {
+        StringBuilder text = string_builder_make(buffer, capacity);
+        string_builder_append(&text, "END");
+        return;
+    }
+    if (!power->sleep_timer_active) {
+        return;
+    }
+    uint32_t seconds =
+        (power_policy_sleep_remaining_ms(power, now_ms) + 999u) / 1000u;
+    StringBuilder text = string_builder_make(buffer, capacity);
+    if (seconds >= 3600u) {
+        string_builder_append_unsigned(&text, seconds / 3600u);
+        string_builder_append_char(&text, ':');
+        append_two_digits(&text, (seconds / 60u) % 60u);
+    } else {
+        string_builder_append_unsigned(&text, seconds / 60u);
+        string_builder_append_char(&text, ':');
+    }
+    append_two_digits(&text, seconds % 60u);
+}
+
+static void draw_sleep_badge(Canvas *canvas, const Theme *theme, Rect card,
+                             const PowerPolicy *power, uint32_t now_ms)
 {
     Point center = {card.x + card.width / 2, card.y + 56};
     LiteBadgeStyle style = {
@@ -92,7 +128,8 @@ static void draw_sleep_badge(Canvas *canvas, const Theme *theme, Rect card, int 
         COLOR_RGB(255, 255, 255));
 
     TextStyle text = {.font = theme->fonts.small, .color = COLOR_RGB(255, 255, 255)};
-    const char *value = sleep >= 0 && sleep < SLEEP_TIMER_OPTION_COUNT ? SLEEP_VALUES[sleep] : "";
+    char value[12];
+    sleep_value_text(power, now_ms, value, sizeof value);
     int width = value[0] == '\0' ? 20 : text_width(text.font, value) + SLEEP_PILL_PAD;
     Rect pill = {center.x - width / 2, card.y + 70, width, SLEEP_PILL_HEIGHT};
     canvas_fill_rect(canvas, pill, SLEEP_DARK);
@@ -115,7 +152,6 @@ static void draw(void *context, Canvas *canvas)
     canvas_fill_rect(canvas, (Rect){0, 0, width, height}, theme->colors->background);
 
     PlaybackMode mode = player_playback_mode(panel->settings->player);
-    int sleep = settings_sleep_current(panel->settings);
     Rect first;
     Rect second;
     if (theme_is_portrait(theme)) {
@@ -134,7 +170,7 @@ static void draw(void *context, Canvas *canvas)
     }
 
     draw_mode_badge(canvas, theme, first, mode);
-    draw_sleep_badge(canvas, theme, second, sleep);
+    draw_sleep_badge(canvas, theme, second, panel->settings->power, panel->now_ms);
 }
 
 static ScreenAction handle_key(void *context, KeyEvent event, uint32_t now_ms)
