@@ -37,7 +37,7 @@ cmake --build --preset release-lite
 
 ```text
 image:  MINIV938.IMG
-sha256: ebf7c3c2c97a6fb78933fbe3c595ba35be9b34ee5bf28afb8d8926623f105fee
+sha256: 6c59b5d64a8b8b42a89298f8b5d67226e16d231f230408688ce56bbd703355b0
 ```
 
 `MINIV938` is the final incremental UI build for this pass. It contains the runtime Light/Dark
@@ -60,7 +60,7 @@ The incremental images for this pass are:
 | `MINIV935` | singleton-overlay navigation, Menu behavior, double-Menu infrastructure | `d5614b05560c26578e8486f008b8693dfaca339d237b93751457c1aab84b3ba2` |
 | `MINIV936` | section initial fix, A-Z/# overlay, volume-hold cleanup, All Songs / Up Next headers | `5a2dbdf7f0ea4a8920019a398b818297597bf723f214944e5ac0ccd94c2b6d47` |
 | `MINIV937` | page/overlay motion, Settings category transition, portrait-flipped | `4e4600bec521765a5b32986db06447a9bede7b2e582ccc40f03671499dcc3f4c` |
-| `MINIV938` | final fixes: Menu closes the A-Z overlay, Up Next row sizing, compatibility initials and docs | `ebf7c3c2c97a6fb78933fbe3c595ba35be9b34ee5bf28afb8d8926623f105fee` |
+| `MINIV938` | final fixes: Menu closes the A-Z overlay, Up Next row sizing, compatibility initials and docs | `6c59b5d64a8b8b42a89298f8b5d67226e16d231f230408688ce56bbd703355b0` |
 
 The 8 GB model is not supported.
 
