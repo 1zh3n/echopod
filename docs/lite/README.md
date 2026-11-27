@@ -6,8 +6,7 @@ Personal EchoPod-based firmware for the **512 MB** Snowsky (FiiO) Echo Mini.
 - **Hardware:** tested on one 512 MB unit; the 8 GB model is not supported.
 - **Current build:** `release-lite` preset; image `MINIV928.IMG` pending a final device check.
 - **Upstream:** EchoPod 0.13.2.
-- **Implemented:** Now Playing volume hold feedback (amber seek-ready bar, seek only); sleep timer
-  countdown and finish-track shutdown.
+- **Implemented:** Sleep timer countdown and finish-track shutdown.
 
 ## Start here
 

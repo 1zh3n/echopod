@@ -49,8 +49,8 @@ Keep the official firmware and a known recovery path before flashing.
 - **Quick panel:** two icon-only cards for playback mode and sleep timer; the timer shows a
   second-by-second countdown and can wait for the current track before powering off.
 - **Now Playing:** 18 px native mode/state icons, no cover frame; a 14×8 Bluetooth-only
-  chip sits next to the shuffle/play controls. A volume long-press expands it into a 28×8
-  seek progress bar and turns amber at the threshold.
+  chip sits next to the shuffle/play controls. Short volume changes volume, double skips,
+  long press seeks; the progress/time display is the seek feedback.
 - **Boot and charging:** boot uses 200×112 landscape / 146×112 portrait card-sized images with
   a 2px frame and 5px shadow, no outer card; charging keeps the 96×64 animation card.
 - **Controls:** volume single/double/long press in Now Playing; long Play opens the playback

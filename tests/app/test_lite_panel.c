@@ -324,6 +324,24 @@ static void status_meter_and_chip_draw_native_segments(void)
     CHECK(canvas_pixel_at(&canvas, 54, 14) == COLOR_RGB(0, 111, 238));
 }
 
+static void hold_the_volume_key_seeks_without_a_hold_bar(void)
+{
+    start_app_with_library();
+    open_all_songs_and_play();
+    fake_hal_bluetooth()->state = HAL_BLUETOOTH_CONNECTED;
+    wait_ms(300);
+    int seeks_before = fake_hal_audio_seek_count();
+    fake_hal_queue_transition(KEY_VOLUME_UP, true, now_ms);
+    now_ms += 1100;
+    step();
+    CHECK(fake_hal_audio_seek_count() > seeks_before);
+    CHECK(fake_hal_pixel(248, 16) == COLOR_RGB(0, 111, 238));
+    CHECK(fake_hal_pixel(229, 18) != COLOR_RGB(245, 158, 11));
+    fake_hal_queue_transition(KEY_VOLUME_UP, false, now_ms);
+    now_ms += 10;
+    step();
+}
+
 static void now_playing_uses_bt_chip_with_controls(void)
 {
     start_app_with_library();
@@ -332,30 +350,6 @@ static void now_playing_uses_bt_chip_with_controls(void)
     wait_ms(300);
     CHECK(fake_hal_pixel(248, 16) == COLOR_RGB(0, 111, 238));
     CHECK(fake_hal_pixel(8, 6) != COLOR_RGB(0, 111, 238));
-}
-
-static void hold_the_volume_key_shows_seek_progress(void)
-{
-    start_app_with_library();
-    open_all_songs_and_play();
-    fake_hal_bluetooth()->state = HAL_BLUETOOTH_CONNECTED;
-    wait_ms(300);
-    CHECK(fake_hal_pixel(248, 16) == COLOR_RGB(0, 111, 238));
-
-    fake_hal_queue_transition(KEY_VOLUME_UP, true, now_ms);
-    now_ms += 500;
-    step();
-    CHECK(fake_hal_pixel(240, 16) == COLOR_RGB(53, 199, 232));
-
-    now_ms += 600;
-    step();
-    CHECK(fake_hal_pixel(240, 16) == COLOR_RGB(245, 158, 11));
-    CHECK(fake_hal_pixel(229, 18) == COLOR_RGB(245, 158, 11));
-
-    fake_hal_queue_transition(KEY_VOLUME_UP, false, now_ms);
-    now_ms += 10;
-    step();
-    CHECK(fake_hal_pixel(248, 16) == COLOR_RGB(0, 111, 238));
 }
 
 static void the_sleep_timer_waits_for_the_current_track(void)
@@ -785,10 +779,10 @@ int main(void)
         TEST_CASE(boot_screen_draws_only_the_animation),
         TEST_CASE(boot_screen_is_static),
         TEST_CASE(colorful_home_has_no_text),
-        TEST_CASE(hold_the_volume_key_shows_seek_progress),
         TEST_CASE(home_card_is_rounded),
         TEST_CASE(home_status_meter_tracks_bluetooth),
         TEST_CASE(now_playing_uses_bt_chip_with_controls),
+        TEST_CASE(hold_the_volume_key_seeks_without_a_hold_bar),
         TEST_CASE(goodbye_screen_has_no_icon),
         TEST_CASE(the_sleep_timer_waits_for_the_current_track),
         TEST_CASE(the_sleep_panel_counts_down),

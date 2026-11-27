@@ -122,36 +122,6 @@ void lite_status_meter_draw(Canvas *canvas, const Theme *theme, Point origin, bo
                      playing ? COLOR_RGB(53, 199, 232) : track);
 }
 
-void lite_status_hold_draw(Canvas *canvas, const Theme *theme, Point origin, int progress_px,
-                           bool ready)
-{
-    if (canvas == NULL || theme == NULL) {
-        return;
-    }
-    const int width = 28;
-    const int height = 8;
-    const int radius = 2;
-    const int border = 2;
-    if (progress_px < 0) {
-        progress_px = 0;
-    }
-    if (progress_px > width - 2 * border) {
-        progress_px = width - 2 * border;
-    }
-    Color edge = ready ? COLOR_RGB(245, 158, 11) : lite_card_border_color(theme);
-    fill_round_rect(canvas,
-                    (Rect){origin.x + 2, origin.y + 2, width, height}, radius,
-                    lite_card_shadow_color(theme));
-    fill_round_rect(canvas, (Rect){origin.x, origin.y, width, height}, radius, edge);
-    canvas_fill_rect(canvas, (Rect){origin.x + border, origin.y + border, width - 2 * border, 4},
-                     theme->colors->divider);
-    if (progress_px > 0) {
-        canvas_fill_rect(canvas,
-                         (Rect){origin.x + border, origin.y + border, progress_px, 4},
-                         ready ? COLOR_RGB(245, 158, 11) : COLOR_RGB(53, 199, 232));
-    }
-}
-
 void lite_status_bt_chip_draw(Canvas *canvas, const Theme *theme, Point origin, bool bluetooth)
 {
     if (canvas == NULL || theme == NULL) {

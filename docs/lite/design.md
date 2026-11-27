@@ -64,27 +64,10 @@ cyan `#35C7E8`, amber `#F59E0B`, success `#22C55E`.
 - Portrait: Bluetooth chip at x=93, state icons at x=119/144, title at (8, 24), spectrum
   154×194 at y=86, progress at y=288, times at y=294. The time row ends 8 px above the bottom.
 
-### Now Playing hold feedback
+### Now Playing seek feedback
 
-Implemented in MINIV928.
-
-- Idle: the 14×8 Bluetooth chip at the top right.
-- Volume key down: the chip expands left to 28×8, keeping its right edge. The
-  whole 24×4 inner area becomes a progress bar; the Bluetooth cell is hidden for
-  the duration. It appears after the 280 ms double-press window, so a normal
-  volume tap does not flash it.
-- Fill: cyan, 4 px blocks, over the 1000 ms volume long-press threshold.
-- At 1000 ms: the bar fills and the 2 px border turns amber; seek is ready.
-- Release: shrink back to the 14×8 Bluetooth chip.
-- Playback state remains the pause/play icon; double-press pending is not shown
-  because the 280 ms window is too short for a useful blink.
-
-Scope: this is only the **volume long-press seek** feedback. It is not a general
-long-press gauge; Play/Menu/Back (600 ms) and Power (2000 ms) are out of scope for
-now. The hold gauge can be implemented as a reusable primitive without wiring it to
-other keys.
-
-![Now Playing hold feedback](../images/lite/now-playing-hold-feedback.png)
+Seek uses the progress and time display; there is no separate hold gauge. A 28×8 hold gauge
+was prototyped and deferred because it duplicated that feedback and hid the Bluetooth chip.
 
 ### Settings
 
