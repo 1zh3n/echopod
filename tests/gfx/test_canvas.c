@@ -113,6 +113,26 @@ static void a_shifted_canvas_only_paints_its_own_area(void)
     CHECK_EQUAL(PAINT, canvas_pixel_at(&canvas, 1, 12));
 }
 
+static void a_shifted_canvas_moves_what_is_drawn_vertically(void)
+{
+    Canvas canvas = make_strip_canvas();
+    Canvas shifted = canvas_shifted_y(&canvas, 2, (Rect){0, 0, 100, 100});
+    canvas_fill_rect(&shifted, (Rect){0, 10, 1, 1}, PAINT);
+    CHECK_EQUAL(1, count_pixels_of(PAINT));
+    CHECK_EQUAL(PAINT, canvas_pixel_at(&canvas, 0, 12));
+}
+
+static void a_vertical_shift_only_paints_its_own_area(void)
+{
+    Canvas canvas = make_strip_canvas();
+    Canvas shifted = canvas_shifted_y(&canvas, 2, (Rect){0, 10, 2, 2});
+    canvas_clear(&shifted, PAINT);
+    CHECK_EQUAL(2, count_pixels_of(PAINT));
+    CHECK_EQUAL(PAINT, canvas_pixel_at(&canvas, 0, 12));
+    CHECK_EQUAL(PAINT, canvas_pixel_at(&canvas, 1, 12));
+    CHECK_EQUAL(BACKGROUND, canvas_pixel_at(&canvas, 0, 10));
+}
+
 static void a_canvas_shifted_back_keeps_the_original_clip(void)
 {
     Canvas canvas = make_strip_canvas();
@@ -198,6 +218,8 @@ int main(void)
         TEST_CASE(clipping_can_only_shrink_the_drawable_area),
         TEST_CASE(a_shifted_canvas_moves_what_is_drawn_sideways),
         TEST_CASE(a_shifted_canvas_only_paints_its_own_area),
+        TEST_CASE(a_shifted_canvas_moves_what_is_drawn_vertically),
+        TEST_CASE(a_vertical_shift_only_paints_its_own_area),
         TEST_CASE(a_canvas_shifted_back_keeps_the_original_clip),
         TEST_CASE(a_gradient_runs_from_its_top_color_to_its_bottom_color),
         TEST_CASE(a_gradient_keeps_its_colors_when_clipped),

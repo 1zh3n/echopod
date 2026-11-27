@@ -5,6 +5,7 @@
 #include <stddef.h>
 
 #include "gfx/text.h"
+#include "settings/settings.h"
 #include "settings_screens.h"
 #include "ui/label.h"
 #include "ui/lite_badge.h"
@@ -13,6 +14,8 @@
 #include "ui/lite_icons.h"
 
 enum {
+    SETTINGS_TRANSITION_MS = 140,
+    SETTINGS_TRANSITION_PX = 24,
     SETTINGS_ICON_X = 8,
     SETTINGS_ICON_Y = 95,
     SETTINGS_ICON_RADIUS = 62,
@@ -60,8 +63,14 @@ static const char CHEVRON[] = ">";
 static bool settings_scene_update(void *context, uint32_t now_ms)
 {
     SettingsScreens *screens = context;
-    (void)now_ms;
     screens->menu.list.visible_rows = theme_is_portrait(screens->theme) ? 7 : 5;
+    if (screens->transitioning) {
+        uint32_t duration = settings_animation_ms(screens->context.store->settings.options,
+                                                  SETTINGS_TRANSITION_MS);
+        if (now_ms - screens->transition_started_ms >= duration) {
+            screens->transitioning = false;
+        }
+    }
     return true;
 }
 
@@ -94,12 +103,12 @@ static void draw_category_glyph(Canvas *canvas, int group)
         (Rect){13, 13, 38, 38});
 }
 
-static bool settings_scene_draw(void *context, Canvas *canvas, MenuScreen *menu)
+static void draw_scene(Canvas *canvas, MenuScreen *menu, int group, int dx)
 {
-    SettingsScreens *screens = context;
     const Theme *theme = menu->config.theme;
+    Canvas shifted = canvas_shifted(canvas, dx, theme_content_area(theme));
+    canvas = &shifted;
     const ThemeColors *colors = theme->colors;
-    int group = screens != NULL ? screens->shown : SETTINGS_SOUND;
     if (group < 0 || group >= SETTINGS_GROUP_COUNT) {
         group = SETTINGS_SOUND;
     }
@@ -253,6 +262,38 @@ static bool settings_scene_draw(void *context, Canvas *canvas, MenuScreen *menu)
                                 border, SETTINGS_CARD_HEIGHT},
                          border_color);
     }
+}
+
+static int transition_distance(uint32_t elapsed, uint32_t duration)
+{
+    if (duration == 0 || elapsed >= duration) {
+        return SETTINGS_TRANSITION_PX;
+    }
+    uint64_t remaining = duration - elapsed;
+    uint64_t left = (uint64_t)SETTINGS_TRANSITION_PX * remaining * remaining * remaining /
+                    ((uint64_t)duration * duration * duration);
+    return SETTINGS_TRANSITION_PX - (int)left;
+}
+
+static bool settings_scene_draw(void *context, Canvas *canvas, MenuScreen *menu)
+{
+    SettingsScreens *screens = context;
+    if (!screens->transitioning) {
+        draw_scene(canvas, menu, screens->shown, 0);
+        return true;
+    }
+    uint32_t duration =
+        settings_animation_ms(screens->context.store->settings.options, SETTINGS_TRANSITION_MS);
+    uint32_t elapsed = screens->menu.now_ms - screens->transition_started_ms;
+    if (duration == 0 || elapsed >= duration) {
+        screens->transitioning = false;
+        draw_scene(canvas, menu, screens->shown, 0);
+        return true;
+    }
+    int moved = transition_distance(elapsed, duration);
+    screens->previous_menu.now_ms = screens->menu.now_ms;
+    draw_scene(canvas, &screens->previous_menu, screens->previous_group, -moved);
+    draw_scene(canvas, menu, screens->shown, SETTINGS_TRANSITION_PX - moved);
     return true;
 }
 

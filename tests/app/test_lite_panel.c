@@ -550,17 +550,17 @@ static void settings_double_menu_switches_category(void)
     tap(KEY_PLAY);
     wait_ms(300);
     double_tap(KEY_MENU);
-    wait_ms(100);
+    wait_ms(200);
     CHECK(title_is("Settings"));
     CHECK(fake_hal_pixel(20, 50) == COLOR_RGB(53, 199, 232));
     double_tap(KEY_MENU);
-    wait_ms(100);
+    wait_ms(200);
     CHECK(fake_hal_pixel(20, 50) == COLOR_RGB(255, 159, 28));
     double_tap(KEY_MENU);
-    wait_ms(100);
+    wait_ms(200);
     CHECK(fake_hal_pixel(20, 50) == COLOR_RGB(245, 158, 11));
     double_tap(KEY_MENU);
-    wait_ms(100);
+    wait_ms(200);
     CHECK(fake_hal_pixel(20, 50) == COLOR_RGB(139, 92, 246));
     CHECK(fake_hal_pixel(39, 95) == COLOR_RGB(139, 92, 246));
     CHECK(fake_hal_pixel(51, 95) == COLOR_RGB(255, 255, 255));
@@ -769,7 +769,7 @@ static void open_settings_display(void)
     tap(KEY_PLAY);
     wait_ms(300);
     double_tap(KEY_MENU);
-    wait_ms(100);
+    wait_ms(200);
 }
 
 static void switch_orientation_to_portrait(void)
@@ -829,6 +829,18 @@ static void settings_can_switch_to_portrait(void)
     CHECK(fake_hal_pixel(20, 50) == COLOR_RGB(250, 250, 249));
     CHECK(fake_hal_pixel(12, 34) == COLOR_RGB(53, 199, 232));
     CHECK(fake_hal_pixel(20, 100) == COLOR_RGB(0, 111, 238));
+}
+
+static void settings_can_switch_to_portrait_flipped(void)
+{
+    open_settings_display();
+    move_down(1);
+    tap(KEY_PLAY);
+    wait_ms(300);
+    CHECK_EQUAL(HAL_DISPLAY_PORTRAIT, fake_hal_display_rotation());
+    tap(KEY_PLAY);
+    wait_ms(300);
+    CHECK_EQUAL(HAL_DISPLAY_PORTRAIT_FLIPPED, fake_hal_display_rotation());
 }
 
 static void settings_can_switch_to_dark(void)
@@ -941,6 +953,7 @@ int main(void)
         TEST_CASE(dark_palette_and_borders),
         TEST_CASE(status_meter_and_chip_draw_native_segments),
         TEST_CASE(settings_can_switch_to_portrait),
+        TEST_CASE(settings_can_switch_to_portrait_flipped),
         TEST_CASE(settings_can_switch_to_dark),
         TEST_CASE(dark_portrait_home_and_settings),
         TEST_CASE(portrait_now_playing_and_panel),

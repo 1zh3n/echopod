@@ -42,8 +42,8 @@ ECHO_RESIDENT static const StringId TIMEOUT_OPTIONS[SCREEN_TIMEOUT_OPTION_COUNT]
 ECHO_RESIDENT static const char *const BRIGHTNESS_OPTIONS[BRIGHTNESS_LEVEL_COUNT] = {
     "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"};
 #ifdef ECHO_LITE
-ECHO_RESIDENT static const StringId LITE_ORIENTATION_OPTIONS[2] = {
-    STR_SETTINGS_LANDSCAPE, STR_SETTINGS_PORTRAIT};
+ECHO_RESIDENT static const StringId LITE_ORIENTATION_OPTIONS[ORIENTATION_COUNT] = {
+    STR_SETTINGS_LANDSCAPE, STR_SETTINGS_PORTRAIT, STR_SETTINGS_PORTRAIT_FLIPPED};
 #else
 ECHO_RESIDENT static const StringId ORIENTATION_OPTIONS[ORIENTATION_COUNT] = {
     STR_SETTINGS_LANDSCAPE, STR_SETTINGS_PORTRAIT, STR_SETTINGS_PORTRAIT_FLIPPED};
@@ -422,8 +422,8 @@ ECHO_RESIDENT static const SettingChoice CHOICES[SETTINGS_CHOICE_COUNT] = {
     {STR_SETTINGS_BRIGHTNESS, NULL, BRIGHTNESS_OPTIONS, BRIGHTNESS_LEVEL_COUNT, current_brightness,
      choose_brightness, NULL, 0},
 #ifdef ECHO_LITE
-    {STR_SETTINGS_ORIENTATION, LITE_ORIENTATION_OPTIONS, NULL, 2, current_orientation,
-     choose_orientation, NULL, 0},
+    {STR_SETTINGS_ORIENTATION, LITE_ORIENTATION_OPTIONS, NULL, ORIENTATION_COUNT,
+     current_orientation, choose_orientation, NULL, 0},
 #else
     {STR_SETTINGS_ORIENTATION, ORIENTATION_OPTIONS, NULL, ORIENTATION_COUNT, current_orientation,
      choose_orientation, NULL, 0},
@@ -898,6 +898,28 @@ static ScreenAction open_group(void *context)
 static void settings_show_category(SettingsScreens *screens, int group, int selected,
                                    uint32_t now_ms)
 {
+    int previous_count = screens->menu.config.item_count;
+    int previous_selected = screens->menu.list.selected;
+    int previous_top = screens->menu.list.top;
+    screens->previous_group = screens->shown;
+    if (previous_count > SETTINGS_GROUP_ROWS_MAX) {
+        previous_count = SETTINGS_GROUP_ROWS_MAX;
+    }
+    for (int index = 0; index < previous_count; index++) {
+        screens->previous_rows[index] = screens->rows[index];
+    }
+    screens->previous_menu.now_ms = now_ms;
+    MenuConfig previous = {.title = i18n_text(STR_MENU_SETTINGS),
+                           .items = screens->previous_rows,
+                           .item_count = previous_count,
+                           .theme = screens->theme};
+    menu_screen_init(&screens->previous_menu, previous);
+    screens->previous_menu.list.selected = previous_selected;
+    screens->previous_menu.list.top = previous_top;
+    screens->previous_menu.list.visible_rows = screens->menu.list.visible_rows;
+    screens->transitioning = previous_count > 0;
+    screens->transition_started_ms = now_ms;
+
     const SettingsGroupRows *rows = &GROUPS[group];
     screens->shown = (uint8_t)group;
     fill_rows(screens, screens->rows, rows->first, rows->count);

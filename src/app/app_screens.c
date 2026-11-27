@@ -12,6 +12,7 @@
 #include "hal/power.h"
 #include "hal/storage.h"
 #include "hal/system.h"
+#include "settings/settings.h"
 #include "theme_store.h"
 #include "ui/box.h"
 #include "ui/icons.h"
@@ -21,6 +22,7 @@
 #include "ui/lite_icons.h"
 #include "ui/lite_status.h"
 #include "ui/navigation.h"
+#include "ui/slide.h"
 
 typedef enum MusicSource {
     MUSIC_COVER_FLOW,
@@ -37,7 +39,6 @@ typedef struct MusicEntry {
 
 enum {
     START_HOME_ONLY = -1,
-    HOME_ANIM_MS = 360,
     HOME_STEPS = 256
 };
 
@@ -295,6 +296,7 @@ static int32_t home_position;
 static int32_t home_target;
 static int32_t home_from;
 static uint32_t home_started_ms;
+static const uint8_t *home_options;
 
 static int32_t floor_division(int32_t value)
 {
@@ -319,14 +321,20 @@ static int32_t absolute32(int32_t value)
 static const ColorIcon *const HOME_ICONS[HOME_ITEM_COUNT] = {
     &LITE_COLOR_ICON_ALL, &LITE_COLOR_ICON_LIST, &LITE_COLOR_ICON_GEAR};
 
-static int32_t home_eased(int32_t from, int32_t to, uint32_t elapsed)
+static uint32_t home_duration_ms(void)
 {
-    if (elapsed >= HOME_ANIM_MS) {
+    return settings_animation_ms(home_options, SLIDE_DURATION_MS);
+}
+
+static int32_t home_eased(int32_t from, int32_t to, uint32_t elapsed, uint32_t duration)
+{
+    if (duration == 0 || elapsed >= duration) {
         return to;
     }
-    uint32_t progress = elapsed * HOME_STEPS / HOME_ANIM_MS;
-    uint32_t eased = progress * progress * (3 * HOME_STEPS - 2 * progress) /
-                     (HOME_STEPS * HOME_STEPS);
+    uint64_t remaining = duration - elapsed;
+    uint64_t left = (uint64_t)HOME_STEPS * remaining * remaining * remaining /
+                    ((uint64_t)duration * duration * duration);
+    uint32_t eased = HOME_STEPS - (uint32_t)left;
     return from + (int32_t)(((int64_t)(to - from) * eased) / HOME_STEPS);
 }
 
@@ -334,7 +342,8 @@ static bool home_scene_update(void *context, uint32_t now_ms)
 {
     (void)context;
     if (home_position != home_target) {
-        home_position = home_eased(home_from, home_target, now_ms - home_started_ms);
+        home_position =
+            home_eased(home_from, home_target, now_ms - home_started_ms, home_duration_ms());
     }
     return true;
 }
@@ -417,6 +426,7 @@ static void build_home(AppScreens *screens, AppScreensContext context)
     home_target = 0;
     home_from = 0;
     home_started_ms = 0;
+    home_options = context.settings->settings.options;
     screens->home_scene = (MenuScene){home_scene_update, home_scene_draw, screens, true};
     MenuConfig home = {.title = "EchoPod",
                        .items = screens->home_items,

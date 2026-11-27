@@ -1,5 +1,6 @@
 #pragma once
 
+#include <stdbool.h>
 #include <stdint.h>
 
 #include "core/i18n.h"
@@ -80,6 +81,13 @@ struct SettingsScreens {
     uint8_t selected[SETTINGS_GROUP_COUNT];
     uint8_t shown;
     MenuItem rows[SETTINGS_GROUP_ROWS_MAX];
+#ifdef ECHO_LITE
+    MenuScreen previous_menu;
+    MenuItem previous_rows[SETTINGS_GROUP_ROWS_MAX];
+    uint8_t previous_group;
+    uint32_t transition_started_ms;
+    bool transitioning;
+#endif
 };
 
 Screen *settings_screens_init(SettingsScreens *screens, SettingsContext context,

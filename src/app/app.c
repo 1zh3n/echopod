@@ -195,6 +195,7 @@ typedef struct AppState {
     Fade goodbye;
     Slide slide;
     Screen *leaving;
+    bool slide_vertical;
     bool saying_goodbye;
     uint32_t now_ms;
     AppOptions options;
@@ -612,8 +613,14 @@ static void start_slide(Screen *leaving, int depth_before, uint32_t now_ms)
     }
     bool deeper = screen_stack_depth(&app.stack) > depth_before;
     app.leaving = leaving;
+#ifdef ECHO_LITE
+    app.slide_vertical = leaving->overlay || top_screen()->overlay;
+#else
+    app.slide_vertical = false;
+#endif
+    uint32_t duration = app.slide_vertical ? OVERLAY_DURATION_MS : SLIDE_DURATION_MS;
     slide_start(&app.slide, now_ms, deeper ? SLIDE_FORWARD : SLIDE_BACK,
-                settings_animation_ms(app.settings.settings.options, SLIDE_DURATION_MS));
+                settings_animation_ms(app.settings.settings.options, duration));
 }
 
 static bool slide_running(void)
@@ -919,6 +926,14 @@ static void draw_shifted(Screen *screen, Canvas *canvas, int x, Rect area)
     }
 }
 
+static void draw_shifted_y(Screen *screen, Canvas *canvas, int y, Rect area)
+{
+    Canvas shifted = canvas_shifted_y(canvas, y, area);
+    if (!rect_is_empty(shifted.clip)) {
+        screen->draw(screen->context, &shifted);
+    }
+}
+
 __attribute__((noinline)) static Theme dressed_theme(const Screen *screen)
 {
     Theme theme = *current_theme();
@@ -942,8 +957,29 @@ static const Screen *chrome_screen(const Screen *top)
     return leaving ? app.leaving : top;
 }
 
+static void draw_sheet_slide(Canvas *canvas, Screen *arriving)
+{
+    const Theme *theme = current_theme();
+    Screen *leaving = app.leaving;
+    bool whole = arriving->full_screen || leaving->full_screen;
+    Rect area = whole ? whole_screen() : theme_content_area(theme);
+    int travel = 20;
+    int moved = slide_progress(&app.slide, app.now_ms, travel);
+    if (app.slide.direction == SLIDE_FORWARD) {
+        draw_shifted_y(leaving, canvas, 0, area);
+        draw_shifted_y(arriving, canvas, travel - moved, area);
+    } else {
+        draw_shifted_y(arriving, canvas, 0, area);
+        draw_shifted_y(leaving, canvas, moved, area);
+    }
+}
+
 static void draw_slide(Canvas *canvas, Screen *arriving)
 {
+    if (app.slide_vertical) {
+        draw_sheet_slide(canvas, arriving);
+        return;
+    }
     const Theme *theme = current_theme();
     Screen *leaving = app.leaving;
     bool whole = arriving->full_screen || leaving->full_screen;

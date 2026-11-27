@@ -4,7 +4,8 @@
 #include <stdint.h>
 
 enum {
-    SLIDE_DURATION_MS = 240
+    SLIDE_DURATION_MS = 240,
+    OVERLAY_DURATION_MS = 160
 };
 
 typedef enum SlideDirection {
