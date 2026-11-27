@@ -197,3 +197,21 @@ Two costs:
 If double Menu is meant to be the general "go to the group" gesture, A is coherent:
 Now Playing -> Quick Panel, lettered list -> A-Z overlay, Settings -> next category. B is the
 smaller change and preserves the direct Long Play gesture. C adds delay without adding access.
+
+## Final decision
+
+**A.** Double Menu is the group/navigation key:
+
+- Now Playing: double Menu -> Quick Panel; long Play no longer opens the panel.
+- Lettered list: double Menu -> A-Z/# jump overlay.
+- Settings: double Menu -> next category; long Play no longer switches category.
+- Quick panel: volume selects the two cards; double Menu is not assigned.
+- Short Menu keeps Now Playing / Up Next (or Next when configured).
+- Long Menu keeps Settings; no action when already in Settings.
+
+Long Play is now only meaningful in lists that have a song-actions/context action. In Now
+Playing and Settings it is a no-op.
+
+Caveat: in Now Playing, short Menu waits for the double window. With the default Up Next that
+delays only Up Next; if Menu is configured as Next, it delays the track skip too. If that is
+unacceptable, the double gesture should be disabled while Menu is set to Next.

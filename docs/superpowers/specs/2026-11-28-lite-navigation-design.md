@@ -46,13 +46,14 @@ duplicated. Closing an overlay returns to what was underneath it.
 
 ## Key table
 
-| Screen | Menu | Long Menu | Long Play | Back | Long Back |
-|---|---|---|---|---|---|
-| Home / list | Now Playing | Settings | existing list action | up one browse level | Home |
-| Now Playing | Up Next, or next track when configured | Settings | playback panel | list | Home |
-| Playback panel | Now Playing | Settings | no action | Now Playing | Home |
-| Settings | Now Playing, closing the overlay | no action | switch Settings category (existing) | the screen that opened Settings | Home |
-| Up Next | Now Playing | Settings | no action | Now Playing | Home |
+| Screen | Menu | Long Menu | Double Menu | Long Play | Back | Long Back |
+|---|---|---|---|---|---|---|
+| Home | Now Playing | Settings | no action | no action | up one browse level | Home |
+| Lettered list | Now Playing | Settings | A-Z/# jump overlay | existing list action | up one browse level | Home |
+| Now Playing | Up Next, or next track when configured | Settings | Quick Panel | no action | list | Home |
+| Playback panel | Now Playing | Settings | no action | no action | Now Playing | Home |
+| Settings | Now Playing, closing the overlay | no action | next Settings category | no action | the screen that opened Settings | Home |
+| Up Next | Now Playing | Settings | no action | no action | Now Playing | Home |
 
 - Settings opened from Now Playing: Back -> Now Playing.
 - Settings opened from the playback panel: Back -> playback panel.
@@ -60,8 +61,10 @@ duplicated. Closing an overlay returns to what was underneath it.
 - Menu from Settings always goes to Now Playing and closes Settings (and the panel if Settings was
   opened over it).
 - Long Back goes Home from every overlay and list.
-- Long Play in the playback panel stays a no-op for this pass.
+- Long Play in Now Playing, the playback panel and Settings stays a no-op for this pass.
 - Long Menu in Settings stays a no-op for this pass.
+- Double Menu is the group/navigation key: A-Z jump in lettered lists, next category in Settings,
+  Quick Panel in Now Playing. It waits for the double-press window only where it is enabled.
 
 ## Sequences
 
