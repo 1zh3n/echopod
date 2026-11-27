@@ -8,7 +8,7 @@
 > 只在 **512 MB** Echo Mini 上测试过；**不支持 8 GB 型号**。
 
 <p align="center">
-  <img src="docs/images/lite/home.png" alt="Home 的 Light/Dark、横屏/竖屏" width="100%">
+  <img src="docs/images/lite/home-final.png" alt="Home 的 Light/Dark、横屏/竖屏" width="100%">
 </p>
 
 <p align="center"><em>Home、Now Playing、Settings、Quick panel 是设计稿（2×），不是实机截图；下方开机图是从真实固件素材渲染的。</em></p>
@@ -57,11 +57,11 @@
 
 | Home | Now Playing |
 |---|---|
-| ![Home](docs/images/lite/home.png) | ![Now Playing](docs/images/lite/now-playing.png) |
+| ![Home](docs/images/lite/home-final.png) | ![Now Playing](docs/images/lite/now-playing-final.png) |
 
 | Settings | Quick panel |
 |---|---|
-| ![Settings](docs/images/lite/settings.png) | ![Quick panel](docs/images/lite/quick-panel.png) |
+| ![Settings](docs/images/lite/settings-final.png) | ![Quick panel](docs/images/lite/quick-panel-final.png) |
 
 ![Boot](docs/images/lite/boot-stills.png)
 
@@ -91,7 +91,7 @@ ctest --preset dev
 ## 安装（仅 512 MB）
 
 512 MB updater 只扫描 `/ECHOMINI.IMG` 或 `/MINIV000.IMG`–`/MINIV999.IMG`，**不扫描**
-`HIFIEC90.IMG`。把镜像复制到卡根目录并改名为例如 `MINIV919.IMG`，再用播放器的 updater 安装。
+`HIFIEC90.IMG`。把镜像复制到卡根目录并改名为例如 `MINIVnnn.IMG`，再用播放器的 updater 安装。
 
 - 先保留一份官方 512 MB 固件，并阅读 [docs/lite/install-512m.md](docs/lite/install-512m.md)。
 - 不支持 8 GB 型号。

@@ -8,7 +8,7 @@
 > Tested only on the **512 MB** Echo Mini. The **8 GB** model is not supported.
 
 <p align="center">
-  <img src="docs/images/lite/home.png" alt="Home screen in light and dark, landscape and portrait" width="100%">
+  <img src="docs/images/lite/home-final.png" alt="Home screen in light and dark, landscape and portrait" width="100%">
 </p>
 
 <p align="center"><em>Home, Now Playing, Settings and Quick panel are design mockups (2×), not device screenshots. The boot sheet below is rendered from the actual firmware assets.</em></p>
@@ -65,11 +65,11 @@ The boot chain, IDB, PMU firmware, fw2 and slot layout are not modified.
 
 | Home | Now Playing |
 |---|---|
-| ![Home](docs/images/lite/home.png) | ![Now Playing](docs/images/lite/now-playing.png) |
+| ![Home](docs/images/lite/home-final.png) | ![Now Playing](docs/images/lite/now-playing-final.png) |
 
 | Settings | Quick panel |
 |---|---|
-| ![Settings](docs/images/lite/settings.png) | ![Quick panel](docs/images/lite/quick-panel.png) |
+| ![Settings](docs/images/lite/settings-final.png) | ![Quick panel](docs/images/lite/quick-panel-final.png) |
 
 ![Boot](docs/images/lite/boot-stills.png)
 
@@ -101,7 +101,7 @@ ctest --preset dev
 ## Install (512 MB only)
 
 The 512 MB updater looks for `/ECHOMINI.IMG` or `/MINIV000.IMG`–`/MINIV999.IMG`; it does **not**
-look for `HIFIEC90.IMG`. Copy the image to the card root as, for example, `MINIV919.IMG`, then
+look for `HIFIEC90.IMG`. Copy the image to the card root as, for example, `MINIVnnn.IMG`, then
 install it with the player's updater.
 
 - Keep a copy of the official 512 MB firmware and read [docs/lite/install-512m.md](docs/lite/install-512m.md) first.

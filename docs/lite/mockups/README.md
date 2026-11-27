@@ -7,19 +7,19 @@ actual `LBOO` / `LBO2` firmware assets.
 
 ## Home
 
-![Home](../../images/lite/home.png)
+![Home](../../images/lite/home-final.png)
 
 ## Now Playing
 
-![Now Playing](../../images/lite/now-playing.png)
+![Now Playing](../../images/lite/now-playing-final.png)
 
 ## Settings
 
-![Settings](../../images/lite/settings.png)
+![Settings](../../images/lite/settings-final.png)
 
 ## Quick panel
 
-![Quick panel](../../images/lite/quick-panel.png)
+![Quick panel](../../images/lite/quick-panel-final.png)
 
 ## Boot stills
 
