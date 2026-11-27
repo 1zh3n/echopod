@@ -33,6 +33,16 @@
       }
     },
     {
+      "name": "release-lite",
+      "displayName": "Release firmware (512 MB Lite UI)",
+      "inherits": "release",
+      "binaryDir": "${sourceDir}/build/release-lite",
+      "cacheVariables": {
+        "ECHO_LITE": "ON",
+        "ECHO_NO_COVERS": "ON"
+      }
+    },
+    {
       "name": "web",
       "displayName": "Theme editor preview (WebAssembly, Release)",
       "binaryDir": "${sourceDir}/build/web",
@@ -57,6 +67,10 @@
     {
       "name": "release",
       "configurePreset": "release"
+    },
+    {
+      "name": "release-lite",
+      "configurePreset": "release-lite"
     },
     {
       "name": "web",

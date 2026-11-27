@@ -1,0 +1,137 @@
+# EchoNeubrutalism
+
+**基于 EchoPod 的 512 MB Snowsky（FiiO）Echo Mini 固件，带个人 neo-brutalist Lite UI。**
+
+[English](README.md) · [AI 声明](AI_DISCLOSURE.md)
+
+> **个人分支。** 不是 EchoPod 官方项目，也不隶属于 FiiO 或 Snowsky。
+> 只在 **512 MB** Echo Mini 上测试过；**不支持 8 GB 型号**。
+
+<p align="center">
+  <img src="docs/images/lite/home.png" alt="Home 的 Light/Dark、横屏/竖屏" width="100%">
+</p>
+
+<p align="center"><em>Lite UI 设计预览（2×）。实机使用相同布局和配色。</em></p>
+
+## 这是什么
+
+这是我自己维护的 **512 MB** Echo Mini 版 [EchoPod](https://github.com/BasilSkyWalk/echopod)。
+保留 EchoPod 的播放引擎和修复，把界面换成为 320×170 小屏设计的 Lite UI。
+
+它不是 8 GB 机型的通用替代固件。不要在 8 GB 机器上刷这些镜像。
+
+## 测试过的硬件
+
+| | |
+|---|---|
+| 设备 | Snowsky（FiiO）Echo Mini **512 MB** |
+| 硬件版本 | 2.2.0 |
+| 存储 | SD NAND，内部 FAT32 用户分区 |
+| 测试 | 较早的 Lite 构建在一台 512 MB 实机上测试过，2026 年 |
+| 未测试 | 8 GB Echo Mini、其他硬件版本 |
+
+本分支的 dark/portrait 构建还需要最后一次实机检查。
+
+开发过程中验证过 FiiO 原厂 updater 和 MaskROM 恢复路径。刷机前请保留官方固件和可用的恢复路径。
+
+## 我改了什么
+
+- **512 MB 移植和 Lite 构建：** `ECHO_LITE=ON`，无封面，Lite 菜单和布局。
+- **运行时 Light / Dark：** Settings → Display → Theme；默认 Light。
+- **运行时 Landscape / Portrait：** Settings → Display → Orientation，320×170 或 170×320。
+- **Lite Home：** 三个自绘彩色 badge，无文字，无 page dots。
+- **Lite Settings：** 一屏一类；长按 Play 切换类别。
+- **Quick panel：** 两张 icon-only 卡片，播放模式和睡眠定时。
+- **Now Playing：** 18px 原生模式/状态图标，无封面框。
+- **启动和充电：** 316×166 横版静态开机图 + 166×316 竖版静态图；充电仍用 96×64 动画卡。
+- **按键：** Now Playing 音量单击/双击/长按；长按 Play 打开播放面板；长按 Menu 打开 Settings；面板长按 Back 回 Home。
+- **空间清理：** Lite 图标 mask 移到 glyph face；移除 Lite theme store/assets；删掉未使用的 Lite 路径。
+- **上游：** 写这份说明时已合入 EchoPod 0.13.2，包括播放、USB、FAT 和 HE-AAC 修复。
+
+没有修改启动链、IDB、PMU 固件、fw2 或 slot 布局。
+
+## 界面预览
+
+| Home | Now Playing |
+|---|---|
+| ![Home](docs/images/lite/home.png) | ![Now Playing](docs/images/lite/now-playing.png) |
+
+| Settings | Quick panel |
+|---|---|
+| ![Settings](docs/images/lite/settings.png) | ![Quick panel](docs/images/lite/quick-panel.png) |
+
+![Boot](docs/images/lite/boot.png)
+
+## 构建
+
+需要 CMake、Python 3、模拟器所需的 SDL2，以及带 newlib 头文件的 `arm-none-eabi-gcc`。
+
+```sh
+cmake --preset release-lite
+cmake --build --preset release-lite
+```
+
+输出 `build/release-lite/HIFIEC90.IMG`。普通 `release` preset 仍构建上游风格固件。
+
+开发构建：
+
+```sh
+cmake --preset dev
+cmake --build --preset dev
+ctest --preset dev
+```
+
+## 安装（仅 512 MB）
+
+512 MB updater 只扫描 `/ECHOMINI.IMG` 或 `/MINIV000.IMG`–`/MINIV999.IMG`，**不扫描**
+`HIFIEC90.IMG`。把镜像复制到卡根目录并改名为例如 `MINIV919.IMG`，再用播放器的 updater 安装。
+
+- 先保留一份官方 512 MB 固件，并阅读 `docs/device-install.md`。
+- 不支持 8 GB 型号。
+- 刷写自定义固件可能导致设备变砖或数据丢失。
+
+## 上游与致谢
+
+本项目基于 [EchoPod](https://github.com/BasilSkyWalk/echopod)，作者是 BasilSkyWalk 及其贡献者。
+感谢上游提供播放引擎、硬件支持和 GPL 固件基础。
+
+- EchoPod 上游**不负责**这个分支，也不为本分支提供支持。
+- 请不要把本分支的 bug 或安装问题报到上游。
+- 硬件研究也参考了 [ReChord](https://github.com/brnomt/ReChord) 项目。
+- 开机图来自 ansimuz 的 **Mountain Dusk**，CC0 1.0。
+
+## AI 声明
+
+本分支的自定义修改（Lite UI、512 MB 移植/胶水代码、测试和文档）由 **DeepSeek AI** 在人工指导下生成。
+没有经过逐行人工代码审查；验证只包括自动化测试和一台 512 MB 实机测试。没有做正式的安全、许可证或来源审计，
+也没有做 8 GB 测试。
+
+上游 EchoPod 代码和第三方组件仍归原作者所有，并遵循其许可证。维护者负责发布这个分支，但不提供任何保证，
+也不声称代码没有错误。
+
+完整说明见 [AI_DISCLOSURE.md](AI_DISCLOSURE.md)。
+
+## 免责声明
+
+本项目是非官方个人项目，与 FiiO、Snowsky、EchoPod 上游及其贡献者没有隶属、授权、赞助或支持关系。
+相关商标归其所有者。
+
+刷写自定义固件可能导致设备变砖、数据丢失、影响厂商保修或产生其他后果。请自行承担风险，并保留官方固件、
+备份和可用的恢复路径。维护者不对损坏、数据丢失或其他后果承担责任。
+
+本项目仅用于在您拥有的 512 MB Echo Mini 上进行个人、非商业用途；8 GB 型号未测试、不支持。
+本声明不构成法律意见。
+
+## 许可证
+
+GPL-3.0-or-later，见 `LICENSE`。Inter 字体、Noto CJK 字库和其他第三方组件分别遵循
+`third_party/` 中的许可证。
+
+## 上游同步
+
+本仓库用 `origin` 指向个人分支，用 `upstream` 指向 EchoPod：
+
+```sh
+git fetch upstream
+git merge upstream/main
+```

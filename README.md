@@ -1,151 +1,154 @@
-# EchoPod
+# EchoNeubrutalism
 
-Replacement firmware for the Snowsky (FiiO) Echo Mini 8 GB music player. It has an iPod-style Cover Flow browser, a music library built on the player, album favorites, M3U playlists and an Up Next queue. It isn't made or supported by FiiO.
+**EchoPod-based firmware for the 512 MB Snowsky (FiiO) Echo Mini, with a personal neo-brutalist Lite UI.**
 
-> **Personal 512 MB / Lite fork:** this tree also carries the 512 MB (SD NAND) port and the `custom/lite-ui` light neo-brutalist UI. Build it with `ECHO_LITE=ON` and `ECHO_NO_COVERS=ON`. The release image is still named `build/release/HIFIEC90.IMG`, but the 512 MB updater only looks for `MINIVnnn.IMG` / `ECHOMINI.IMG`; see `docs/device-install.md` before copying it to the player.
+[中文说明](README.zh-CN.md) · [AI disclosure](AI_DISCLOSURE.md)
 
-<p align="center">
-  <a href="https://basilskywalk.github.io/echopod/"><img src="docs/images/theme-editor.gif" alt="The theme editor with the Aurora theme open: its colours change with one click, then Home, then the Capsule, Deck and Millennium themes on Now Playing"></a>
-</p>
-
-**[Make your own theme](https://basilskywalk.github.io/echopod/)** in the browser, with nothing to install, or take one from the **[gallery](https://basilskywalk.github.io/echopod/gallery.html)**. Theme files need EchoPod 0.13.0 or later.
+> **Personal fork.** Not the official EchoPod project, and not affiliated with FiiO or Snowsky.
+> Tested only on the **512 MB** Echo Mini. The **8 GB** model is not supported.
 
 <p align="center">
-  <a href="https://basilskywalk.github.io/echopod/gallery.html"><img src="docs/images/themes/aurora.png" alt="Aurora" width="32%"></a>
-  <a href="https://basilskywalk.github.io/echopod/gallery.html"><img src="docs/images/themes/blueprint.png" alt="Blueprint" width="32%"></a>
-  <a href="https://basilskywalk.github.io/echopod/gallery.html"><img src="docs/images/themes/capsule.png" alt="Capsule" width="32%"></a>
-  <a href="https://basilskywalk.github.io/echopod/gallery.html"><img src="docs/images/themes/deck.png" alt="Deck" width="32%"></a>
-  <a href="https://basilskywalk.github.io/echopod/gallery.html"><img src="docs/images/themes/millennium.png" alt="Millennium" width="32%"></a>
-  <a href="https://basilskywalk.github.io/echopod/gallery.html"><img src="docs/images/themes/receipt.png" alt="Receipt" width="32%"></a>
+  <img src="docs/images/lite/home.png" alt="Home screen in light and dark, landscape and portrait" width="100%">
 </p>
 
-- **Installing and using it:** `docs/user-guide.md`.
-- **Read first:** `docs/known-issues.md`. EchoPod is early, and has been tested on one player.
-- **What's new:** `docs/release-notes.md`.
-- **How theme files work:** `docs/themes.md`.
+<p align="center"><em>Design previews of the Lite UI (2×). Actual firmware uses the same layout and palette.</em></p>
 
-The hardware knowledge it relies on comes largely from the [ReChord](https://github.com/brnomt/ReChord) project's research (`docs/hardware.md`, `CREDITS.md`).
+## What this is
 
-## What it does
+This is my personal build of [EchoPod](https://github.com/BasilSkyWalk/echopod) for the
+**512 MB** Echo Mini. It keeps EchoPod's playback engine and fixes, and replaces the interface
+with a compact Lite UI built around the 320×170 screen.
 
-- **Plays** FLAC, ALAC, MP3, AAC, Opus, QOA and WAV, from 8 to 192 kHz with 24-bit output, gapless.
-- **Cover Flow**, with every album and a Random album tile, and **Now Playing** with the cover, progress and seeking.
-- **A library built on the player:** Artists, Album Artists, Albums, Genres, Folders, All Songs, Playlists (M3U and M3U8) and Favorites, with fast scroll and letter jumps. Or build it on a computer with **echo-sync**.
-- **Queue and modes:** shuffle songs or albums, repeat, and Up Next (Play Next, Add to Up Next). The queue and position come back after power-off.
-- **Equalizer:** FiiO's presets and a 7-band Custom EQ.
-- **Themes:** thirteen built in, four of which (Cassette, VU meters, Turntable and LCD deck) redraw Now Playing. From 0.13.0, a theme file on the card changes the colours, shapes, fonts and wallpaper, and can draw Home and Now Playing itself. Make one in the [theme editor](https://basilskywalk.github.io/echopod/).
-- **Portrait mode:** Settings → Orientation turns the screen upright either way, with layouts made for it. The volume rocker turns with it.
-- **Languages:** Settings → Language: English, Simplified Chinese, Japanese, Korean, German, French, Spanish, Italian, Portuguese, Dutch, Swedish, Danish, Norwegian, Finnish, Russian, Ukrainian, Polish and Indonesian. The choice applies after a restart. Titles and artists in Cyrillic, Greek, Polish, Czech, Turkish, Romanian and Vietnamese letters draw too.
-- **Audiobooks and podcasts** on their own shelves, with a bookmark for each.
-- **Bluetooth headphones:** pairing, up to six remembered, reconnecting by itself.
-- **USB:** both drives as mass storage, or the player as a USB DAC.
-- **Everyday controls:** pause, volume and skip with the screen off, a sleep timer, auto off and a charge screen.
-- **Chinese, Japanese and Korean** names.
-- **Updates itself** from a file copy, and goes back to FiiO's firmware the same way.
+The firmware is **not** a stock replacement for the 8 GB player. Do not flash these images on
+an 8 GB unit.
 
-## Build and run the simulator (macOS)
+## Tested hardware
+
+| | |
+|---|---|
+| Device | Snowsky (FiiO) Echo Mini **512 MB** |
+| Hardware | 2.2.0 |
+| Storage | SD NAND, internal FAT32 user volume |
+| Tested | Earlier Lite builds on one 512 MB unit, 2026 |
+| Not tested | 8 GB Echo Mini, other hardware revisions |
+
+The dark/portrait build in this branch still needs a final device check.
+
+The stock FiiO updater and the MaskROM recovery path were both exercised during development.
+Keep the official firmware and a known recovery path before flashing.
+
+## What I changed
+
+- **512 MB port and Lite build:** `ECHO_LITE=ON`, no covers, Lite menus and layouts.
+- **Runtime Light / Dark:** Settings → Display → Theme. Light is the default.
+- **Runtime Landscape / Portrait:** Settings → Display → Orientation, 320×170 or 170×320.
+- **Lite Home:** three self-drawn colour badges, no text, no page dots.
+- **Lite Settings:** one category per screen; long Play switches category.
+- **Quick panel:** two icon-only cards for playback mode and sleep timer.
+- **Now Playing:** 18 px native mode/state icons, no cover frame.
+- **Boot and charging:** static 316×166 landscape boot still and a 166×316 portrait still;
+  charging keeps the 96×64 animation card.
+- **Controls:** volume single/double/long press in Now Playing; long Play opens the playback
+  panel; long Menu opens Settings; long Back in the panel goes Home.
+- **Space work:** Lite icon masks moved to a glyph face; Lite theme store/assets removed;
+  unused Lite paths dropped.
+- **Upstream:** current with EchoPod 0.13.2 when this README was written, including its playback,
+  USB, FAT and HE-AAC fixes.
+
+The boot chain, IDB, PMU firmware, fw2 and slot layout are not modified.
+
+## UI previews
+
+| Home | Now Playing |
+|---|---|
+| ![Home](docs/images/lite/home.png) | ![Now Playing](docs/images/lite/now-playing.png) |
+
+| Settings | Quick panel |
+|---|---|
+| ![Settings](docs/images/lite/settings.png) | ![Quick panel](docs/images/lite/quick-panel.png) |
+
+![Boot](docs/images/lite/boot.png)
+
+## Build
+
+Requirements: CMake, Python 3, SDL2 for the simulator, and an `arm-none-eabi-gcc` with newlib
+headers for the device build.
 
 ```sh
-brew install cmake sdl2 clang-format
-brew install --cask gcc-arm-embedded
-python3 -m venv .venv && .venv/bin/pip install -r tools/requirements.txt
+cmake --preset release-lite
+cmake --build --preset release-lite
+```
+
+This writes `build/release-lite/HIFIEC90.IMG`. The normal `release` preset still builds the
+upstream-style firmware.
+
+For development:
+
+```sh
 cmake --preset dev
 cmake --build --preset dev
 ctest --preset dev
-./build/dev/platform/sim/echo_sim
 ```
 
-`ctest` also builds the firmware, which needs an `arm-none-eabi-gcc` with newlib's headers. Homebrew's `arm-none-eabi-gcc` formula has none (`math.h: No such file or directory`); Arm's toolchain (`gcc-arm-embedded`) has them. Uninstall the formula first if it's there, so the two don't clash.
+## Install (512 MB only)
 
-## Build on Windows
+The 512 MB updater looks for `/ECHOMINI.IMG` or `/MINIV000.IMG`–`/MINIV999.IMG`; it does **not**
+look for `HIFIEC90.IMG`. Copy the image to the card root as, for example, `MINIV919.IMG`, then
+install it with the player's updater.
 
-Install [MSYS2](https://www.msys2.org) and, in its CLANG64 shell, the packages `mingw-w64-clang-x86_64-{clang,compiler-rt,cmake,ninja,SDL2}` and `mingw-w64-clang-x86_64-arm-none-eabi-{gcc,binutils,newlib}`, plus Python 3 with `pip install -r tools/requirements.txt`. With `C:\msys64\clang64\bin` first on the PATH (and not `C:\msys64\usr\bin`, whose git ignores this repo's line endings):
+- Keep a copy of the official 512 MB firmware and read `docs/device-install.md` first.
+- The 8 GB model is not supported.
+- Flashing custom firmware can brick the device or lose data.
 
-```sh
-CMAKE_GENERATOR=Ninja CC=clang cmake --preset dev
-cmake --build --preset dev
-ctest --preset dev
-```
+## Upstream and credit
 
-## Build the firmware
+This project is based on [EchoPod](https://github.com/BasilSkyWalk/echopod) by BasilSkyWalk and
+its contributors. Thank you to the upstream authors for the playback engine, hardware support
+and the GPL firmware base.
 
-```sh
-cmake --preset release
-cmake --build --preset release
-```
+- EchoPod upstream is **not** responsible for this fork and does not provide support for it.
+- Please do not report this fork's bugs or installation problems to the upstream project.
+- Hardware research also draws on the [ReChord](https://github.com/brnomt/ReChord) project.
+- The boot art is a crop of **Mountain Dusk** by ansimuz, CC0 1.0.
 
-This writes `build/release/HIFIEC90.IMG`. The `device` preset builds the same image with the developer Diagnostics rows. `docs/device-install.md` covers installing builds during development.
+## AI disclosure
 
-## Use your music library in the simulator
+The custom changes in this fork (the Lite UI, the 512 MB port/glue code, tests and documentation)
+were generated with **DeepSeek AI** under human direction. They were not reviewed line by line
+by a human. Verification was limited to automated tests and testing on one 512 MB unit; there
+was no formal security, licensing or provenance audit, and no 8 GB testing.
 
-```sh
-mkdir -p build/system
-./build/dev/platform/sim/echo_sim --card /path/to/music --system-dir build/system
-```
+The upstream EchoPod code and third-party components remain the work of their original authors
+and are covered by their licenses. The maintainer is responsible for publishing this fork, but
+gives no warranty and does not claim the code is error-free.
 
-The simulator behaves like the player: on the first start it creates `library.db`, `covers.bin` and the save files in the system folder, scans the music folder (every format stock lists, plus `.m3u`/`.m3u8` playlists) and finds the album covers. Settings → Rescan library scans again. The music folder is only ever read.
+See [AI_DISCLOSURE.md](AI_DISCLOSURE.md) for the full statement.
 
-The PC tools still work and write the same formats (`tools/library_index.py`, `tools/cover_export.py`), but the player doesn't need them. To skip the scan on the player, **echo-sync** builds the library, the covers and the music fingerprint (`scan.bin`) on a computer, straight into the card's `/.echo` folder, so the player's check after USB finds nothing to rescan (`docs/user-guide.md`, Build the library on a computer). Each release carries it as one file for Windows, macOS (Apple silicon) and Linux, with nothing to install, built by `.github/workflows/echo-sync.yml` with PyInstaller; from the source it's `tools/echo_sync.py E:`. To build the file yourself: `python -m pip install -r tools/requirements.txt -r tools/requirements-build.txt`, then `python -m PyInstaller --onefile --name echo-sync --paths tools tools/echo_sync.py`.
+## Disclaimer
 
-## Testing on a player
+This is an unofficial personal project. It is not affiliated with, endorsed by, or supported by
+FiiO, Snowsky, the EchoPod upstream, or their contributors. FiiO and Snowsky trademarks belong
+to their owners.
 
-1. Install the firmware (`docs/user-guide.md`, or `docs/device-install.md` for development builds).
-2. Put music on a microSD card (FAT32 or exFAT), in any folder layout, and insert it.
-3. Switch on. The player creates `/.echo` on the card, scans it ("Scanning library", then "Finding covers") and shows "Library: N tracks, M covers".
-4. After copying music over USB, eject both drives: the player rescans by itself. Settings → Rescan library does it on demand.
+Flashing custom firmware can brick the device, erase data, affect the manufacturer warranty, or
+have other consequences. Use it at your own risk. Keep a copy of the official firmware and a
+known recovery path. The maintainer accepts no liability for damage, data loss, or other
+consequences.
 
-Nothing else on the card needs a computer. Covers come from art embedded in one of each album's first four tracks (FLAC, MP3/WAV/DSF/DFF ID3, MP4, APE, WMA, Ogg Vorbis and Opus) or a `cover`/`folder`/`front`/`albumart` JPEG or PNG next to the tracks.
-
-### Simulator keys
-
-| Device button | Keyboard |
-|---|---|
-| Volume up (moves menus down) | Down arrow |
-| Volume down (moves menus up) | Up arrow |
-| Play | Return or Space |
-| Menu | M or Tab |
-| Back | Backspace or Escape |
-| Power | P |
-
-### Simulator options
-
-| Option | Effect |
-|---|---|
-| `--scale N` | Window scale (default 3) |
-| `--frames N` | Quit after N frames |
-| `--headless` | No window |
-| `--screenshot FILE.bmp` | Save the last frame on exit |
-| `--card DIR` | Use DIR as the card root (read only) |
-| `--system-dir DIR` | Read and write `/.echo/` (library database, resume, settings, favorites) in DIR |
-| `--battery N` | Report N % battery in the header (default 80) |
-| `--charging` | Report the battery as charging |
-| `--clock-date YYYY-MM-DD` | Start the clock chip on that date (at the host's time of day) |
-| `--keys LIST` | Play a key script, e.g. `down,down,play,back:long` (`up`, `down`, `play`, `menu`, `back`, `power`, each optionally `:long`) |
-
-Headless runs use a virtual clock, so scripted screenshots are deterministic.
-
-### Navigation
-
-| Button | In lists | On Now Playing | While seeking |
-|---|---|---|---|
-| Volume up / down | Next / previous item (wraps on a single press, not while held) | Tap for volume; hold Vol+ for the next track, Vol− for the previous one | Forward / back 5 s per tap, 15 s steps while held |
-| Play | Select (a song plays the list from that song); hold on an album to add or remove it from Favorites | Play / pause; hold to seek | Jump to the chosen time |
-| Menu | | | |
-| Back | Back; hold to go home | Back; hold to go home | Cancel |
-| Power | Screen off or on; hold 2 s to turn off | Same | Same |
-
-The screen turns off after the screen timeout or a tap of Power. With the screen off, Play pauses and resumes, a tap of vol± changes the volume and holding vol± skips tracks, all without waking the screen; Power turns it back on.
-
-Home also lists Audiobooks and Podcasts when the card has an `Audiobooks` or `Podcasts` folder: every book and episode remembers where you stopped, plays in order, and hold vol± jumps 30 s forward or 15 s back. Books and episodes stay out of the Music lists (`docs/user-guide.md`).
-
-Settings: Shuffle (Off / Songs / Albums), Repeat (Off / One / All), Sleep timer, Screen timeout, Brightness, Gain, Output and Start screen. They're saved in `/.echo/settings.bin`, and favorites in `/.echo/favorites.bin`. Without `--system-dir` the simulator can't save, and says so. Playback resumes, paused, where it left off.
-
-Music → Cover Flow shows your albums as covers, by album artist. Vol± move, Play opens the album, holding Play adds or removes it from Favorites, and Back leaves. Music → Playlists lists the M3U playlists the indexer found. Music → Favorites lists your favorite albums.
-
-## Layout
-
-See `docs/architecture.md`.
+This project is intended for personal, non-commercial use on hardware you own. It is tested only
+on the 512 MB Echo Mini; the 8 GB model is not supported. This is not legal advice.
 
 ## License
 
-GPL-3.0-or-later. See `LICENSE`. The bundled Inter font is under the SIL Open Font License 1.1 (`assets/fonts/inter/OFL.txt`), and so are the Chinese, Japanese and Korean glyph packs made from Noto Sans CJK SC (`assets/fonts/noto-cjk/OFL.txt`). The simulator's decoders (dr_flac, dr_mp3, dr_wav) are public domain or MIT-0 (`third_party/dr_libs/LICENSE`). The player's MP3 decoder is libmad, GPL-2.0-or-later (`third_party/libmad/COPYING`). The QOA decoder is Dominic Szablewski's reference implementation, MIT (`third_party/qoa/LICENSE`).
+GPL-3.0-or-later. See `LICENSE`. The bundled Inter font is under the SIL Open Font License 1.1,
+the Noto CJK glyph packs under the SIL Open Font License 1.1, and the other third-party
+components under their own licenses in `third_party/`.
+
+## Upstream sync
+
+This repository uses `origin` for this personal fork and `upstream` for EchoPod:
+
+```sh
+git fetch upstream
+git merge upstream/main
+```
