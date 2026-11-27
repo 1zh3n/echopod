@@ -35,10 +35,9 @@ cyan `#35C7E8`, amber `#F59E0B`, success `#22C55E`.
 
 ### Home status
 
-- Top-left 10×18 blue Bluetooth rune: connected; hidden when disconnected. Same visual height as the playback bars.
+- Top-left 12×20 blue Bluetooth rune: connected; hidden when disconnected. Native 4-bit alpha mask, not a scaled 5×9 bitmap, so diagonals antialias instead of 2×2 stair steps. Close to the playback bars in height.
 - Top-right four bars: playing indicator; hidden when paused or stopped. It is not a button.
 - The card shadow carries the battery/charging colour; the Bluetooth rune and bars do not.
-- The Bluetooth rune is drawn at 2× scale, so the shape stays readable at 1x. The old mockup drew a tiny boxed glyph and an unboxed white rune; both are replaced.
 
 ### Now Playing
 
@@ -63,8 +62,8 @@ cyan `#35C7E8`, amber `#F59E0B`, success `#22C55E`.
 
 ### Boot / charge
 
-- Boot landscape: 316×166 still in a 2 px frame.
-- Boot portrait: 166×316 still in a 2 px frame.
+- Boot landscape: 196×108 art in a 2 px frame -> 200×112 card at (60, 29), 5 px shadow, no card panel.
+- Boot portrait: 142×108 art in a 2 px frame -> 146×112 card at (12, 104), 5 px shadow, no card panel.
 - Charge: 200×112 landscape card, 146×112 portrait card, 96×64 animation inside.
 - Boot art: Mountain Dusk by ansimuz, CC0 1.0.
 

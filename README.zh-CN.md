@@ -8,7 +8,7 @@
 > 只在 **512 MB** Echo Mini 上测试过；**不支持 8 GB 型号**。
 
 <p align="center">
-  <img src="docs/images/lite/home-final-v3.png" alt="Home 的 Light/Dark、横屏/竖屏" width="100%">
+  <img src="docs/images/lite/home-final-v4.png" alt="Home 的 Light/Dark、横屏/竖屏" width="100%">
 </p>
 
 <p align="center"><em>Home、Now Playing、Settings、Quick panel 是设计稿（2×），不是实机截图；下方开机图是从真实固件素材渲染的。</em></p>
@@ -43,7 +43,7 @@
 - **Lite Settings：** 一屏一类；长按 Play 切换类别。
 - **Quick panel：** 两张 icon-only 卡片，播放模式和睡眠定时。
 - **Now Playing：** 18px 原生模式/状态图标，无封面框。
-- **启动和充电：** 316×166 横版静态开机图 + 166×316 竖版静态图；充电仍用 96×64 动画卡。
+- **启动和充电：** 开机图为 200×112 横版 / 146×112 竖版卡片大小，带 2px 框和 5px 阴影，没有外层卡片；充电仍用 96×64 动画卡。
 - **按键：** Now Playing 音量单击/双击/长按；长按 Play 打开播放面板；长按 Menu 打开 Settings；面板长按 Back 回 Home。
 - **空间清理：** Lite 图标 mask 移到 glyph face；移除 Lite theme store/assets；删掉未使用的 Lite 路径。
 - **上游：** 写这份说明时已合入 EchoPod 0.13.2，包括播放、USB、FAT 和 HE-AAC 修复。
@@ -59,15 +59,15 @@ Home 左上角蓝色蓝牙 rune 是连接状态，右上角四根竖条表示正
 
 | Home | Now Playing |
 |---|---|
-| ![Home](docs/images/lite/home-final-v3.png) | ![Now Playing](docs/images/lite/now-playing-final.png) |
+| ![Home](docs/images/lite/home-final-v4.png) | ![Now Playing](docs/images/lite/now-playing-final.png) |
 
 | Settings | Quick panel |
 |---|---|
 | ![Settings](docs/images/lite/settings-final.png) | ![Quick panel](docs/images/lite/quick-panel-final.png) |
 
-![Boot](docs/images/lite/boot-stills.png)
+![Boot](docs/images/lite/boot-cards.png)
 
-*真实开机素材渲染（2×），不是设备照片：横版 316×166，竖版 166×316。美术：ansimuz 的 Mountain Dusk，CC0 1.0。*
+*真实开机素材渲染（2×），不是设备照片：横版 200×112，竖版 146×112，2px 框 + 5px 阴影。美术：ansimuz 的 Mountain Dusk，CC0 1.0。*
 
 完整 mockup：[docs/lite/mockups/README.md](docs/lite/mockups/README.md) · [HTML](docs/lite/mockups/index.html)。
 
@@ -110,8 +110,7 @@ ctest --preset dev
 ## 美术来源
 
 - **开机图：** [ansimuz](https://ansimuz.itch.io/mountain-dusk-parallax-background) 的
-  *Mountain Dusk*，CC0 1.0。横版裁成 316×166；竖版从 320×240 预览裁成 126×240，
-  再缩放到 166×316，量化到 16 色。
+  *Mountain Dusk*，CC0 1.0。横版裁成 196×108；竖版裁成 142×108；都量化到 16 色。
 - **Lite UI 图标和 badge：** 本分支程序化自绘，没有使用第三方 icon set。
 - **Inter 字体：** SIL Open Font License 1.1。
 - **Noto Sans CJK SC 字库：** SIL Open Font License 1.1。

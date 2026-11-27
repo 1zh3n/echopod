@@ -58,6 +58,7 @@
 #include "ui/label.h"
 #ifdef ECHO_LITE
 #include "ui/lite_frame.h"
+#include "ui/lite_icons.h"
 #include "ui/lite_status.h"
 #endif
 #include "ui/marquee.h"
@@ -795,7 +796,7 @@ static void draw_lite_boot(Canvas *canvas, const Fade *fade)
     Color ink = theme->colors->text;
     bool portrait = theme_is_portrait(theme);
     canvas_fill_rect(canvas, whole_screen(), theme->colors->background);
-    if (lite_boot_draw(canvas, ink, portrait)) {
+    if (lite_boot_draw(canvas, ink, lite_card_shadow_color(theme), portrait)) {
         return;
     }
     Rect card = portrait ? (Rect){12, 104, 146, 112} : (Rect){60, 29, 200, 112};
@@ -905,10 +906,8 @@ static void draw_lite_bluetooth(Canvas *canvas)
         return;
     }
     const Theme *theme = current_theme();
-    icon_draw(canvas, theme,
-              (Icon){.id = THEME_ICON_STATUS_BLUETOOTH,
-                     .area = {2, 4, 10, 18},
-                     .color = theme->colors->selection_background});
+    lite_icon_draw_scaled(canvas, &LITE_ICON_BLUETOOTH, (Rect){3, 4, 12, 20},
+                          theme->colors->selection_background);
 }
 #endif
 

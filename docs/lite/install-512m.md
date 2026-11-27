@@ -21,7 +21,7 @@ The 512 MB updater scans the card root for:
 It does **not** scan `HIFIEC90.IMG`. Copy the build to the card root and rename it, for example:
 
 ```text
-build/release-lite/HIFIEC90.IMG  ->  /MINIV922.IMG
+build/release-lite/HIFIEC90.IMG  ->  /MINIV923.IMG
 ```
 
 Then use the player's updater.
@@ -36,11 +36,12 @@ cmake --build --preset release-lite
 ## Current build
 
 ```text
-image:  MINIV922.IMG
-sha256: 3c5df2a4d31dc09dbe4647050d493da51379dff4eed4551443ef806d5d55602c
+image:  MINIV923.IMG
+sha256: 4356ca9edf00117b1012a15627100a9b7b4bec45075eb9ade5d836587aed56e4
 ```
 
-`MINIV922` contains the runtime Light/Dark and landscape/portrait build. It still needs a final
+`MINIV923` contains the runtime Light/Dark and landscape/portrait build, the native 12×20
+antialiased Bluetooth rune, and card-sized boot stills with hard shadows. It still needs a final
 device check; earlier Lite builds were tested on one 512 MB unit.
 
 ## After flashing

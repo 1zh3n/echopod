@@ -7,7 +7,7 @@ actual `LBOO` / `LBO2` firmware assets.
 
 ## Home
 
-![Home](../../images/lite/home-final-v3.png)
+![Home](../../images/lite/home-final-v4.png)
 
 ## Now Playing
 
@@ -23,7 +23,7 @@ actual `LBOO` / `LBO2` firmware assets.
 
 ## Boot stills
 
-![Boot stills](../../images/lite/boot-stills.png)
+![Boot cards](../../images/lite/boot-cards.png)
 
 ## Dark palette
 

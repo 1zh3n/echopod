@@ -8,7 +8,7 @@
 > Tested only on the **512 MB** Echo Mini. The **8 GB** model is not supported.
 
 <p align="center">
-  <img src="docs/images/lite/home-final-v3.png" alt="Home screen in light and dark, landscape and portrait" width="100%">
+  <img src="docs/images/lite/home-final-v4.png" alt="Home screen in light and dark, landscape and portrait" width="100%">
 </p>
 
 <p align="center"><em>Home, Now Playing, Settings and Quick panel are design mockups (2×), not device screenshots. The boot sheet below is rendered from the actual firmware assets.</em></p>
@@ -46,8 +46,8 @@ Keep the official firmware and a known recovery path before flashing.
 - **Lite Settings:** one category per screen; long Play switches category.
 - **Quick panel:** two icon-only cards for playback mode and sleep timer.
 - **Now Playing:** 18 px native mode/state icons, no cover frame.
-- **Boot and charging:** static 316×166 landscape boot still and a 166×316 portrait still;
-  charging keeps the 96×64 animation card.
+- **Boot and charging:** boot uses 200×112 landscape / 146×112 portrait card-sized images with
+  a 2px frame and 5px shadow, no outer card; charging keeps the 96×64 animation card.
 - **Controls:** volume single/double/long press in Now Playing; long Play opens the playback
   panel; long Menu opens Settings; long Back in the panel goes Home.
 - **Space work:** Lite icon masks moved to a glyph face; Lite theme store/assets removed;
@@ -68,15 +68,15 @@ playback. The card shadow carries the battery/charging colour.
 
 | Home | Now Playing |
 |---|---|
-| ![Home](docs/images/lite/home-final-v3.png) | ![Now Playing](docs/images/lite/now-playing-final.png) |
+| ![Home](docs/images/lite/home-final-v4.png) | ![Now Playing](docs/images/lite/now-playing-final.png) |
 
 | Settings | Quick panel |
 |---|---|
 | ![Settings](docs/images/lite/settings-final.png) | ![Quick panel](docs/images/lite/quick-panel-final.png) |
 
-![Boot](docs/images/lite/boot-stills.png)
+![Boot](docs/images/lite/boot-cards.png)
 
-*Actual boot art (2×), not a device photo: landscape 316×166 and portrait 166×316. Art: Mountain Dusk by ansimuz, CC0 1.0.*
+*Actual boot art (2×), not a device photo: 200×112 landscape and 146×112 portrait cards, 2px frame and 5px shadow. Art: Mountain Dusk by ansimuz, CC0 1.0.*
 
 Full mockup sheet: [docs/lite/mockups/README.md](docs/lite/mockups/README.md) · [HTML](docs/lite/mockups/index.html).
 
@@ -123,8 +123,7 @@ and the GPL firmware base.
 ## Art credits
 
 - **Boot stills:** *Mountain Dusk* by [ansimuz](https://ansimuz.itch.io/mountain-dusk-parallax-background),
-  CC0 1.0. The landscape still is cropped to 316×166; the portrait still is cropped from the
-  320×240 preview to 126×240, resized to 166×316, and quantised to 16 colours.
+  CC0 1.0. Landscape crop 196×108; portrait crop 142×108; both quantised to 16 colours.
 - **Lite UI icons and badges:** drawn procedurally in this fork; no third-party icon set.
 - **Inter font:** SIL Open Font License 1.1.
 - **Noto Sans CJK SC glyph packs:** SIL Open Font License 1.1.

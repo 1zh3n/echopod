@@ -13,7 +13,7 @@ ORDER = [
     "shuffle_levels", "loop_levels", "loop_one_levels", "moon_levels",
     "shuffle18_levels", "loop18_levels", "loop_one18_levels", "play18_levels",
     "pause18_levels", "sound_levels", "display_levels", "library_levels",
-    "buttons_levels",
+    "buttons_levels", "bluetooth_levels",
 ]
 
 
@@ -59,7 +59,7 @@ def main():
                         help="fail if assets/lite_icons.bin differs from a fresh build")
     arguments = parser.parse_args()
     output, offsets = build()
-    pointers = code_offsets()
+    pointers = sorted(code_offsets())
     expected = [offset for _, offset, _ in offsets]
     if pointers != expected:
         raise SystemExit(f"UI icon offsets {pointers} do not match the face {expected}")
