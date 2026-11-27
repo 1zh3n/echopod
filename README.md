@@ -8,7 +8,7 @@
 > Tested only on the **512 MB** Echo Mini. The **8 GB** model is not supported.
 
 <p align="center">
-  <img src="docs/images/lite/home-final-v2.png" alt="Home screen in light and dark, landscape and portrait" width="100%">
+  <img src="docs/images/lite/home-final-v3.png" alt="Home screen in light and dark, landscape and portrait" width="100%">
 </p>
 
 <p align="center"><em>Home, Now Playing, Settings and Quick panel are design mockups (2×), not device screenshots. The boot sheet below is rendered from the actual firmware assets.</em></p>
@@ -63,12 +63,12 @@ The boot chain, IDB, PMU firmware, fw2 and slot layout are not modified.
 > palette; the real screen may differ in font rendering and final asset placement. The boot sheet
 > is rendered from the actual `LBOO` / `LBO2` assets, not a device photo.
 
-On Home, the top-left box is the Bluetooth indicator and the top-right bars mean playback. The
-card shadow carries the battery/charging colour.
+On Home, the top-left blue Bluetooth rune is the connection indicator and the top-right bars mean
+playback. The card shadow carries the battery/charging colour.
 
 | Home | Now Playing |
 |---|---|
-| ![Home](docs/images/lite/home-final-v2.png) | ![Now Playing](docs/images/lite/now-playing-final.png) |
+| ![Home](docs/images/lite/home-final-v3.png) | ![Now Playing](docs/images/lite/now-playing-final.png) |
 
 | Settings | Quick panel |
 |---|---|

@@ -105,12 +105,23 @@ static const uint8_t RUNE[RUNE_ROWS] = {0x04, 0x0C, 0x15, 0x0E, 0x04, 0x0E, 0x15
 
 void icon_draw_bluetooth(Canvas *canvas, Rect area, Color color)
 {
-    int left = area.x + (area.width - RUNE_COLUMNS) / 2;
-    int top = area.y + (area.height - RUNE_ROWS) / 2;
+    int scale_x = area.width / RUNE_COLUMNS;
+    int scale_y = area.height / RUNE_ROWS;
+    if (scale_x < 1) {
+        scale_x = 1;
+    }
+    if (scale_y < 1) {
+        scale_y = 1;
+    }
+    int width = RUNE_COLUMNS * scale_x;
+    int height = RUNE_ROWS * scale_y;
+    int left = area.x + (area.width - width) / 2;
+    int top = area.y + (area.height - height) / 2;
     for (int row = 0; row < RUNE_ROWS; row++) {
         for (int column = 0; column < RUNE_COLUMNS; column++) {
             if ((RUNE[row] >> column & 1) != 0) {
-                canvas_fill_rect(canvas, (Rect){left + column, top + row, 1, 1}, color);
+                canvas_fill_rect(canvas, (Rect){left + column * scale_x, top + row * scale_y,
+                                                scale_x, scale_y}, color);
             }
         }
     }

@@ -8,7 +8,7 @@
 > 只在 **512 MB** Echo Mini 上测试过；**不支持 8 GB 型号**。
 
 <p align="center">
-  <img src="docs/images/lite/home-final-v2.png" alt="Home 的 Light/Dark、横屏/竖屏" width="100%">
+  <img src="docs/images/lite/home-final-v3.png" alt="Home 的 Light/Dark、横屏/竖屏" width="100%">
 </p>
 
 <p align="center"><em>Home、Now Playing、Settings、Quick panel 是设计稿（2×），不是实机截图；下方开机图是从真实固件素材渲染的。</em></p>
@@ -55,11 +55,11 @@
 > **这些是设计稿，不是实机截图。** 它们展示预期布局和配色；实机字体渲染和最终素材位置可能略有不同。
 > 开机图是从真实 `LBOO` / `LBO2` 素材渲染的，不是设备照片。
 
-Home 左上角方框是蓝牙连接状态，右上角四根竖条表示正在播放；卡片阴影承担电量/充电颜色。
+Home 左上角蓝色蓝牙 rune 是连接状态，右上角四根竖条表示正在播放；卡片阴影承担电量/充电颜色。
 
 | Home | Now Playing |
 |---|---|
-| ![Home](docs/images/lite/home-final-v2.png) | ![Now Playing](docs/images/lite/now-playing-final.png) |
+| ![Home](docs/images/lite/home-final-v3.png) | ![Now Playing](docs/images/lite/now-playing-final.png) |
 
 | Settings | Quick panel |
 |---|---|

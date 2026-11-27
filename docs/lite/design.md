@@ -35,10 +35,10 @@ cyan `#35C7E8`, amber `#F59E0B`, success `#22C55E`.
 
 ### Home status
 
-- Top-left 12×12 box: Bluetooth connected; hidden when disconnected.
+- Top-left 10×18 blue Bluetooth rune: connected; hidden when disconnected. Same visual height as the playback bars.
 - Top-right four bars: playing indicator; hidden when paused or stopped. It is not a button.
-- The card shadow carries the battery/charging colour; the status box and bars do not.
-- The old mockup drew an unboxed white Bluetooth rune, which was invisible on the light page. The box is the real treatment.
+- The card shadow carries the battery/charging colour; the Bluetooth rune and bars do not.
+- The Bluetooth rune is drawn at 2× scale, so the shape stays readable at 1x. The old mockup drew a tiny boxed glyph and an unboxed white rune; both are replaced.
 
 ### Now Playing
 

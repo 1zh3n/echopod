@@ -905,18 +905,9 @@ static void draw_lite_bluetooth(Canvas *canvas)
         return;
     }
     const Theme *theme = current_theme();
-    Rect box = {2, 2, 12, 12};
-    canvas_fill_rect(canvas, (Rect){4, 4, 12, 12}, theme->colors->text);
-    canvas_fill_rect(canvas, box, theme->colors->header_background);
-    canvas_fill_rect(canvas, (Rect){box.x, box.y, box.width, 2}, theme->colors->text);
-    canvas_fill_rect(canvas, (Rect){box.x, box.y + box.height - 2, box.width, 2},
-                     theme->colors->text);
-    canvas_fill_rect(canvas, (Rect){box.x, box.y, 2, box.height}, theme->colors->text);
-    canvas_fill_rect(canvas, (Rect){box.x + box.width - 2, box.y, 2, box.height},
-                     theme->colors->text);
     icon_draw(canvas, theme,
               (Icon){.id = THEME_ICON_STATUS_BLUETOOTH,
-                     .area = {4, 3, 8, 9},
+                     .area = {2, 4, 10, 18},
                      .color = theme->colors->selection_background});
 }
 #endif
