@@ -1,6 +1,6 @@
 # Lite motion system
 
-Status: **layered direction approved, not implemented.** Recorded 2026-11-28.
+Status: **layered direction and first choices approved, not implemented.** Recorded 2026-11-28.
 
 ## Decision
 
@@ -12,6 +12,16 @@ Use layered motion, not one animation for everything:
 | Overlay | Now Playing, Settings, Quick Panel | short overlay transition, distinct from a page |
 | In-place | list selection, Quick Panel card, Settings category | immediate, or a short micro-slide |
 | Ambient | marquee, Now Playing faces, charging, status | independent loop |
+
+First choices, recorded 2026-11-28:
+
+- **Overlay: vertical sheet.** Now Playing, Settings and Quick Panel use the short sheet
+  transition, not a fade and not the page slide.
+- **No Off value.** The `Animations` setting stays Normal / Slower / Faster; all UI transitions
+  obey that scale, while ambient loops stay independent.
+- **Home: 240 ms first.** Use the same page duration and easing as the stack slide; 280 ms is
+  the device-check fallback if the three-card carousel feels rushed.
+- **Quick Panel: no group motion.** Selection stays immediate.
 
 The point is a consistent **grammar**, not the same duration everywhere. List selection should
 stay immediate; adding motion there would only make the player feel slower.
@@ -64,11 +74,11 @@ Other current details:
 
 - Give Now Playing, Settings and Quick Panel a transition that reads as a temporary layer, not
   another page.
-- Preferred: a short vertical sheet, about 160-180 ms, with the overlay moving up 12-20 px while
-  its content is revealed. The Lite card and shadow style can stay; no dimming scrim is needed
-  in the first pass.
-- Fallback if the vertical path is too much for this pass: a shorter horizontal slide
-  (160-180 ms) than a page, but the sheet is the better match for the singleton-overlay model.
+- Use a short vertical sheet, about 160-180 ms, with the overlay moving up 12-20 px while its
+  content is revealed. The Lite card and shadow style can stay; no dimming scrim is needed in
+  the first pass.
+- Do not use the page slide for these screens. A shorter horizontal slide is no longer the
+  chosen fallback; the sheet is the decision.
 - This should land with the layered navigation model, because that is when these screens stop
   being ordinary history entries.
 
@@ -144,8 +154,9 @@ rescan overlay     85,400 /  86,016      616 free
 
 ## Still open
 
-- Overlay transition: vertical sheet or short fade/slide. The sheet is preferred.
-- Whether the `Animations` setting gets an **Off** value, or stays Normal / Slower / Faster.
-- Home at 240 ms or 280 ms after the device check.
-- Whether the Quick Panel gets any group motion at all. Recommendation: no; selection is
-  already immediate and the panel has only two cards.
+- Home at 240 ms or 280 ms: 240 ms is the first build; move to 280 ms only if the device check
+  says the carousel is too rushed.
+- The exact sheet travel (12-20 px) and whether the sheet edges need a small shadow; check on
+  the device.
+- The animation setting name and documentation: it now scales every UI transition, so the
+  existing "screen slides and Cover Flow" wording is incomplete.

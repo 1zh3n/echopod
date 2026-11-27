@@ -211,12 +211,24 @@ smaller change and preserves the direct Long Play gesture. C adds delay without 
 - Lettered list: double Menu -> A-Z/# jump overlay.
 - Settings: double Menu -> next category; long Play no longer switches category.
 - Quick panel: volume selects the two cards; double Menu is not assigned.
-- Short Menu keeps Now Playing / Up Next (or Next when configured).
+- Short Menu keeps Now Playing / Up Next. In Lite it should always mean Up Next; the Menu-key
+  setting is redundant there because double-press volume already skips.
 - Long Menu keeps Settings; no action when already in Settings.
 
 Long Play is now only meaningful in lists that have a song-actions/context action. In Now
 Playing and Settings it is a no-op.
 
-Caveat: in Now Playing, short Menu waits for the double window. With the default Up Next that
-delays only Up Next; if Menu is configured as Next, it delays the track skip too. If that is
-unacceptable, the double gesture should be disabled while Menu is set to Next.
+## Menu key setting in Lite
+
+Recommendation: **remove the Menu key setting from Lite and always use Up Next**. Keep the
+shared `OPTION_MENU_KEY` slot and the non-Lite behavior, so the settings file stays compatible.
+In Lite:
+
+- double-press volume already does previous/next in Now Playing;
+- a short Menu should open Up Next, never skip;
+- `menu_is_media` is false, so Menu does not act as a background media key with the screen off;
+- no double-Menu caveat for Menu=Next remains.
+
+If the setting is kept instead, accepting the 200 ms delay for Menu=Next is consistent with the
+chosen double window; the trade-off is that Up Next becomes unreachable by Menu in that mode.
+The recommendation is to remove it from Lite, not from the shared settings format.

@@ -65,6 +65,8 @@ duplicated. Closing an overlay returns to what was underneath it.
 - Long Menu in Settings stays a no-op for this pass.
 - Double Menu is the group/navigation key: A-Z jump in lettered lists, next category in Settings,
   Quick Panel in Now Playing. It waits for the double-press window only where it is enabled.
+- Lite always uses Menu for Up Next. The Menu-key setting should be hidden there (keep the shared
+  settings slot for non-Lite); double-press volume already skips tracks.
 
 ## Sequences
 
