@@ -56,7 +56,9 @@ static const CardFile CARD_FILES[] = {
     {LISTEN_HISTORY_PATH, HISTORY_FILE_BYTES},
 #endif
     {UPDATE_RECORD_PATH, SMALL_FILE_BYTES},     {FOLDERS_STORE_PATH, SMALL_FILE_BYTES},
+#ifndef ECHO_LITE
     {THEME_STORE_PATH, SMALL_FILE_BYTES},
+#endif
 };
 
 static uint32_t slots_for(uint32_t albums)

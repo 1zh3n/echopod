@@ -78,10 +78,12 @@ typedef struct Line {
 
 static const char SEPARATOR[] = " \xC2\xB7 ";
 
+#ifndef ECHO_LITE
 static const StringId SHUFFLE_TEXT[SHUFFLE_MODE_COUNT - 1] = {STR_MENU_SHUFFLE_SONGS,
                                                               STR_MENU_SHUFFLE_ALBUMS};
 static const StringId REPEAT_TEXT[REPEAT_MODE_COUNT - 1] = {STR_MENU_REPEAT_ONE,
                                                             STR_MENU_REPEAT_ALL};
+#endif
 
 const char *now_playing_codec_name(HalAudioCodec codec)
 {
@@ -936,6 +938,7 @@ static void draw_times(const NowPlayingScreen *now_playing, Canvas *canvas, cons
     draw_right_aligned(canvas, style, area, remaining);
 #endif
 }
+#ifndef ECHO_LITE
 static void modes_text(const PlayerStatus *status, char *buffer, size_t capacity)
 {
     StringBuilder builder = string_builder_make(buffer, capacity);
@@ -949,6 +952,7 @@ static void modes_text(const PlayerStatus *status, char *buffer, size_t capacity
         string_builder_append(&builder, i18n_text(REPEAT_TEXT[status->repeat - 1]));
     }
 }
+#endif
 
 #ifndef ECHO_LITE
 static void draw_outline(Canvas *canvas, Rect area, Color color)
@@ -1107,6 +1111,7 @@ static void draw_nothing_playing(const Theme *theme, Canvas *canvas)
     label_draw(canvas, style, (Label){.area = area, .text = message});
 }
 
+#ifndef ECHO_LITE
 static const NowPlayingFaces *face_code(const NowPlayingScreen *now_playing)
 {
     if (!now_playing->status.has_track || !theme_store_has_scene(THEME_SCENE_NOW_PLAYING)) {
@@ -1131,7 +1136,9 @@ const ThemeColors *now_playing_face_colors(const NowPlayingScreen *now_playing)
     const ThemeColors *chrome = NULL;
     return scene_of(now_playing, &scene, &chrome) != NULL ? chrome : NULL;
 }
+#endif
 
+#ifndef ECHO_LITE
 static NowPlayingFeedback badge_of(const NowPlayingScreen *now_playing)
 {
     NowPlayingFeedback feedback = now_playing->feedback;
@@ -1219,12 +1226,14 @@ static void draw_face(const NowPlayingScreen *now_playing, const NowPlayingFaces
     request_tick(now_playing);
     faces->draw(&frame, canvas);
 }
+#endif
 
 void now_playing_follow(NowPlayingScreen *now_playing, uint32_t now_ms)
 {
     refresh(now_playing, now_ms);
 }
 
+#ifndef ECHO_LITE
 static const NowPlayingFaces *home_scene(SceneCode *scene, const ThemeColors **chrome)
 {
     const NowPlayingFaces *faces =
@@ -1252,6 +1261,7 @@ const ThemeColors *now_playing_home_colors(void)
     const ThemeColors *chrome;
     return home_scene(&scene, &chrome) != NULL ? chrome : NULL;
 }
+#endif
 
 #ifdef ECHO_LITE
 static void draw_lite_spectrum(const NowPlayingScreen *now_playing, Canvas *canvas,

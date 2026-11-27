@@ -257,11 +257,16 @@ static HalDisplayRotation rotation_for(Orientation orientation)
 
 static int theme_key(const Settings *settings)
 {
+#ifdef ECHO_LITE
+    return (int)settings->orientation;
+#else
     return (int)settings->orientation | settings->options[OPTION_ACCENT] << 2 |
            settings->options[OPTION_HIGHLIGHT] << 5 | settings->options[OPTION_STATUS_BAR] << 7 |
            settings->options[OPTION_THEME] << 8 | theme_store_revision() << 12;
+#endif
 }
 
+#ifndef ECHO_LITE
 static void wear_spacing(ThemeMetrics *metrics, const uint8_t *spacing)
 {
     for (int id = 0; id < THEME_SPACING_COUNT; id++) {
@@ -317,14 +322,22 @@ static void adopt_face_theme(void)
     options[OPTION_NOW_PLAYING_FACE] = NP_FACE_STANDARD;
     (void)settings_store_save(&app.settings);
 }
+#endif
 
 static void apply_orientation(void)
 {
     const Settings *settings = &app.settings.settings;
     Orientation orientation = settings->orientation;
+    bool portrait = orientation != ORIENTATION_LANDSCAPE;
+#ifdef ECHO_LITE
+    app.shown_theme = theme_key(settings);
+    app.theme = default_theme_for(portrait);
+    app.stage_theme = app.theme;
+    lite_theme_force(&app.theme);
+    lite_theme_force(&app.stage_theme);
+#else
     theme_store_follow(settings->options[OPTION_THEME]);
     app.shown_theme = theme_key(settings);
-    bool portrait = orientation != ORIENTATION_LANDSCAPE;
     ThemeChoice choice = {.accent = settings->options[OPTION_ACCENT],
                           .flat = settings->options[OPTION_HIGHLIGHT] != 0};
     const ThemePackage *package = theme_store_package();
@@ -337,9 +350,6 @@ static void apply_orientation(void)
         default_theme_enlarge_status(&app.stage_theme);
     }
     wear_theme_file(&app.theme, &app.stage_theme);
-#ifdef ECHO_LITE
-    lite_theme_force(&app.theme);
-    lite_theme_force(&app.stage_theme);
 #endif
     hal_display_set_rotation(rotation_for(orientation));
     frame_diff_init(&app.frame_diff, row_hashes, app.theme.metrics.screen_height);
@@ -351,9 +361,11 @@ static void follow_orientation(void)
         apply_orientation();
         app.frame_stable = false;
     }
+#ifndef ECHO_LITE
     if (theme_store_tend_assets()) {
         app.frame_stable = false;
     }
+#endif
     app.power.menu_is_media = app.settings.settings.options[OPTION_MENU_KEY] == MENU_KEY_NEXT;
 }
 
@@ -816,6 +828,7 @@ static void draw_shifted(Screen *screen, Canvas *canvas, int x, Rect area)
 __attribute__((noinline)) static Theme dressed_theme(const Screen *screen)
 {
     Theme theme = *current_theme();
+#ifndef ECHO_LITE
     const ThemeColors *face = screen == &app.screens.now_playing.screen
                                   ? now_playing_face_colors(&app.screens.now_playing)
                               : screen == &app.screens.home.screen ? now_playing_home_colors()
@@ -823,6 +836,9 @@ __attribute__((noinline)) static Theme dressed_theme(const Screen *screen)
     if (face != NULL) {
         theme.colors = face;
     }
+#else
+    (void)screen;
+#endif
     return theme;
 }
 
@@ -1007,7 +1023,9 @@ static void paint_backdrop(void *context, Canvas *canvas)
 
 static void render(FrameDrawer drawer, bool drawer_paints_everything, int strip_height)
 {
+#ifndef ECHO_LITE
     theme_store_watch_assets();
+#endif
     const Wallpaper *wallpaper = current_theme()->wallpaper;
     bool papered = wallpaper != NULL && wallpaper->ready;
     StripRenderer renderer = {
@@ -1202,10 +1220,9 @@ ECHO_STARTUP_CODE static void start_up(void)
 #ifdef ECHO_LITE
     app.settings.settings.orientation = ORIENTATION_LANDSCAPE;
 #endif
+#ifndef ECHO_LITE
     adopt_face_theme();
     theme_store_start(app.settings.settings.options[OPTION_THEME]);
-#ifdef ECHO_LITE
-    theme_store_choose_builtin(app.settings.settings.options[OPTION_THEME]);
 #endif
     hal_power_confirm_start(app.settings.settings.options[OPTION_POWER_ON] == POWER_ON_HOLD);
     clock_store_start(&app.clock, &app.settings.settings, now_ms);
