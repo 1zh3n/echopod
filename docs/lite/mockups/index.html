@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EchoNeubrutalism — final Lite mockups</title>
+<style>
+  :root {
+    --page: #efefea; --panel: #fff; --ink: #0a0a0a; --muted: #4b5563; --line: #d4d4d4;
+    --blue: #006fee;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--page); color: var(--ink);
+         font: 15px/1.65 Inter, ui-sans-serif, system-ui, -apple-system, "Noto Sans CJK SC", sans-serif; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 42px 26px 72px; }
+  h1 { margin: 0 0 8px; font-size: 32px; line-height: 1.1; letter-spacing: -.02em; }
+  h2 { margin: 44px 0 12px; font-size: 20px; }
+  p { margin: 0 0 12px; color: var(--muted); max-width: 900px; }
+  .eyebrow { color: var(--blue); font: 11px/1.4 ui-monospace, monospace; letter-spacing: .12em; }
+  .badges { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 0; }
+  .badge { border: 2px solid var(--ink); background: var(--panel); box-shadow: 3px 3px 0 var(--ink);
+           padding: 4px 8px; font-size: 12px; }
+  .sheet { display: block; width: 100%; height: auto; border: 2px solid var(--ink);
+           box-shadow: 5px 5px 0 var(--ink); background: var(--panel); margin-top: 12px; }
+  .note { border-left: 5px solid #ffd43b; background: #fffdf2; padding: 12px 16px; margin: 16px 0; }
+  .note p { margin: 0; }
+  .swatches { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
+  .swatch { width: 132px; border: 2px solid var(--ink); background: var(--panel); box-shadow: 3px 3px 0 var(--ink); }
+  .swatch i { display: block; height: 30px; }
+  .swatch span { display: block; padding: 4px 7px; font: 10px/1.4 ui-monospace, monospace; color: var(--muted); }
+  .foot { margin-top: 48px; padding-top: 16px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="eyebrow">ECHO NEUBRUTALISM / LITE UI / FINAL MOCKUPS</p>
+  <h1>Light / Dark × Landscape / Portrait</h1>
+  <p>Final design-reference sheets for the 512 MB Lite UI. The screen images are 2× previews.</p>
+  <div class="badges">
+    <span class="badge">320×170 + 170×320</span>
+    <span class="badge">Light / Dark</span>
+    <span class="badge">512 MB only</span>
+    <span class="badge">Design reference</span>
+  </div>
+
+  <div class="note">
+    <p><strong>These are design mockups, not screenshots of the device.</strong> They show the
+    intended layout and palette; real font rendering and final placement can differ slightly.
+    The boot sheet is rendered from the actual <code>LBOO</code> / <code>LBO2</code> assets.</p>
+  </div>
+
+  <h2>Home</h2>
+  <p>Three self-drawn badges; landscape keeps the horizontal carousel, portrait uses a vertical
+  carousel with a 136×136 selected card.</p>
+  <img class="sheet" src="../../images/lite/home.png" alt="Home: light and dark, landscape and portrait">
+
+  <h2>Now Playing</h2>
+  <p>Landscape keeps the title/spectrum/progress arrangement. Portrait moves the 18 px state
+  icons to the top right, puts the title below, and uses a taller spectrum/lyrics area.</p>
+  <img class="sheet" src="../../images/lite/now-playing.png" alt="Now Playing: light and dark, landscape and portrait">
+
+  <h2>Settings</h2>
+  <p>Landscape keeps the half badge. Portrait removes the large icon and uses a category colour
+  rule plus two-line rows, so long labels and values fit at 170 px wide.</p>
+  <img class="sheet" src="../../images/lite/settings.png" alt="Settings: light and dark, landscape and portrait">
+
+  <h2>Quick panel</h2>
+  <p>Landscape uses two side-by-side cards; portrait stacks two 146×118 cards.</p>
+  <img class="sheet" src="../../images/lite/quick-panel.png" alt="Quick panel: light and dark, landscape and portrait">
+
+  <h2>Boot stills</h2>
+  <p>Actual firmware art from the boot asset: 316×166 landscape and 166×316 portrait, each inside
+  a 2 px frame on the device. Mountain Dusk by ansimuz, CC0 1.0.</p>
+  <img class="sheet" src="../../images/lite/boot-stills.png" alt="Actual landscape and portrait boot stills">
+
+  <h2>Dark palette</h2>
+  <div class="swatches">
+    <div class="swatch"><i style="background:#0b0b0d"></i><span>page #0B0B0D</span></div>
+    <div class="swatch"><i style="background:#17171c"></i><span>card #17171C</span></div>
+    <div class="swatch"><i style="background:#f4f4f5"></i><span>text #F4F4F5</span></div>
+    <div class="swatch"><i style="background:#a1a1aa"></i><span>muted #A1A1AA</span></div>
+    <div class="swatch"><i style="background:#52525b"></i><span>border/shadow #52525B</span></div>
+    <div class="swatch"><i style="background:#006fee"></i><span>selection #006FEE</span></div>
+    <div class="swatch"><i style="background:#2fa8ff"></i><span>blue #2FA8FF</span></div>
+    <div class="swatch"><i style="background:#ff9f1c"></i><span>orange #FF9F1C</span></div>
+    <div class="swatch"><i style="background:#8b5cf6"></i><span>purple #8B5CF6</span></div>
+    <div class="swatch"><i style="background:#6366f1"></i><span>indigo #6366F1</span></div>
+  </div>
+
+  <p class="foot">EchoNeubrutalism · 512 MB Echo Mini · design reference · 2026</p>
+</div>
+</body>
+</html>

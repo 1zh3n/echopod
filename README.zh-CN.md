@@ -2,7 +2,7 @@
 
 **基于 EchoPod 的 512 MB Snowsky（FiiO）Echo Mini 固件，带个人 neo-brutalist Lite UI。**
 
-[English](README.md) · [AI 声明](AI_DISCLOSURE.md)
+[English](README.md) · [文档](docs/README.md) · [AI 声明](AI_DISCLOSURE.md)
 
 > **个人分支。** 不是 EchoPod 官方项目，也不隶属于 FiiO 或 Snowsky。
 > 只在 **512 MB** Echo Mini 上测试过；**不支持 8 GB 型号**。
@@ -67,6 +67,8 @@
 
 *真实开机素材渲染（2×），不是设备照片：横版 316×166，竖版 166×316。美术：ansimuz 的 Mountain Dusk，CC0 1.0。*
 
+完整 mockup 页面：[docs/lite/mockups/index.html](docs/lite/mockups/index.html)。
+
 ## 构建
 
 需要 CMake、Python 3、模拟器所需的 SDL2，以及带 newlib 头文件的 `arm-none-eabi-gcc`。
@@ -91,7 +93,7 @@ ctest --preset dev
 512 MB updater 只扫描 `/ECHOMINI.IMG` 或 `/MINIV000.IMG`–`/MINIV999.IMG`，**不扫描**
 `HIFIEC90.IMG`。把镜像复制到卡根目录并改名为例如 `MINIV919.IMG`，再用播放器的 updater 安装。
 
-- 先保留一份官方 512 MB 固件，并阅读 `docs/device-install.md`。
+- 先保留一份官方 512 MB 固件，并阅读 [docs/lite/install-512m.md](docs/lite/install-512m.md)。
 - 不支持 8 GB 型号。
 - 刷写自定义固件可能导致设备变砖或数据丢失。
 

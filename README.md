@@ -2,7 +2,7 @@
 
 **EchoPod-based firmware for the 512 MB Snowsky (FiiO) Echo Mini, with a personal neo-brutalist Lite UI.**
 
-[中文说明](README.zh-CN.md) · [AI disclosure](AI_DISCLOSURE.md)
+[中文说明](README.zh-CN.md) · [Docs](docs/README.md) · [AI disclosure](AI_DISCLOSURE.md)
 
 > **Personal fork.** Not the official EchoPod project, and not affiliated with FiiO or Snowsky.
 > Tested only on the **512 MB** Echo Mini. The **8 GB** model is not supported.
@@ -75,6 +75,8 @@ The boot chain, IDB, PMU firmware, fw2 and slot layout are not modified.
 
 *Actual boot art (2×), not a device photo: landscape 316×166 and portrait 166×316. Art: Mountain Dusk by ansimuz, CC0 1.0.*
 
+Full mockup sheet: [docs/lite/mockups/index.html](docs/lite/mockups/index.html).
+
 ## Build
 
 Requirements: CMake, Python 3, SDL2 for the simulator, and an `arm-none-eabi-gcc` with newlib
@@ -102,7 +104,7 @@ The 512 MB updater looks for `/ECHOMINI.IMG` or `/MINIV000.IMG`–`/MINIV999.IMG
 look for `HIFIEC90.IMG`. Copy the image to the card root as, for example, `MINIV919.IMG`, then
 install it with the player's updater.
 
-- Keep a copy of the official 512 MB firmware and read `docs/device-install.md` first.
+- Keep a copy of the official 512 MB firmware and read [docs/lite/install-512m.md](docs/lite/install-512m.md) first.
 - The 8 GB model is not supported.
 - Flashing custom firmware can brick the device or lose data.
 
