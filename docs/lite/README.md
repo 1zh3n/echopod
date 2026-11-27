@@ -4,7 +4,7 @@ Personal EchoPod-based firmware for the **512 MB** Snowsky (FiiO) Echo Mini.
 
 - **UI:** neo-brutalist Lite layout, Light/Dark, 320×170 and 170×320.
 - **Hardware:** tested on one 512 MB unit; the 8 GB model is not supported.
-- **Current build:** `release-lite` preset; image `MINIV931.IMG`, verified on the 512 MB unit.
+- **Current build:** `release-lite` preset; image `MINIV932.IMG`, verified on the 512 MB unit.
 - **Upstream:** EchoPod 0.13.2.
 - **Implemented:** Pinyin/romaji CJK sorting with A-Z interleaving and section jumps;
   sleep timer countdown and finish-track shutdown.

@@ -51,10 +51,10 @@ music count), or the scan may have skipped files whose tags/paths it could not r
 Current release-lite build:
 
 ```text
-code window       134,412 / 157,292   22,880 free
-loaded total      403,484 / 437,600   34,116 free
+code window       135,260 / 157,292   22,032 free
+loaded total      404,348 / 437,600   33,252 free
 resident tables    18,248 /  18,432      184 free
-rescan overlay     84,360 /  86,016    1,656 free
+rescan overlay     85,320 /  86,016      696 free
 scan scratch                393,216 B (borrowed core1 RAM during a rescan)
 20k-track target            about 360 KB of scan memory
 ```
