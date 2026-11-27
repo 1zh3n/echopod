@@ -62,22 +62,24 @@ key used for ordering. For the UI path this can be a small `sort_section` helper
 
 Add a test with `D`, `Ｄ`, and `Da`: the sections must be `D`, `D`, `D`, never `D, #, D`.
 
-### 2. Change the hold interaction
+### 2. One gesture must have one meaning
 
-Options:
+"Remove the fast-scroll phase and hold straight into section jump" is **not** a fix: the
+hold would still repeat rows and then change meaning mid-gesture. That is the same problem.
+A key may have different meanings on different screens; a single continuous gesture may not.
 
-- **A. Remove the 4-row fast-scroll phase and hold straight into section jump.** Keep row
-  repeat for normal presses; after a short hold, show the section and jump. This is the
-  smallest change and removes the two-phase feel.
-- **B. Separate the shortcut.** For example, double Menu opens an A-Z/# jump overlay; volume
-  selects the letter and Play jumps. This is more explicit but adds a new key mode and a
-  double-press delay to Menu.
-- **C. Keep long-hold for scrolling only and put section jump on a visible index or another
-  key.** Needs a new interaction and is the largest change.
+Options for the next pass:
 
-Recommendation for the next pass: **A first**, plus fixing the section labels. If long-hold
-still feels wrong after trying A, add the explicit A-Z overlay (B) and remove section jump
-from the hold.
+- **A. Keep hold for row scrolling; add a separate A-Z overlay.** Double Menu in a lettered
+  list opens the overlay; volume selects the letter, Play jumps, Back closes. The hold stays
+  row repeat only. Cost: double-press detection adds a short delay to Menu in lists.
+- **B. Make hold section jump only; taps/repeats move rows.** No new key, no mid-gesture
+  change, but holding no longer auto-scrolls.
+- **C. Use long Menu in lettered lists for the A-Z overlay.** Volume hold stays scrolling.
+  Cost: Settings is no longer reachable by long Menu from those lists.
+
+Recommendation: **A** if the double-Menu delay is acceptable; otherwise **B** is the
+cleanest no-new-key option. Do not keep section jump on the same hold as scrolling.
 
 ## Deferred
 
