@@ -137,6 +137,8 @@ void *hal_system_theme_assets(uint32_t *size);
 void *hal_system_lite_animation(uint32_t *size);
 uint32_t hal_system_lite_animation_size(void);
 bool hal_system_lite_animation_read(uint32_t offset, void *target, uint32_t length);
+uint32_t hal_system_lite_icons_size(void);
+bool hal_system_lite_icons_read(uint32_t offset, void *target, uint32_t length);
 void *hal_system_scene_memory(uint32_t *size);
 uint32_t hal_system_scene_wipes(void);
 uint32_t hal_system_theme_asset_wipes(void);

@@ -183,6 +183,7 @@ if(ECHO_LITE)
     target_compile_definitions(test_lite_panel PRIVATE
         ECHO_LITE
         ECHO_LITE_ANIMATION_ASSET="${PROJECT_SOURCE_DIR}/assets/lite_animation.bin"
+        ECHO_LITE_ICONS_ASSET="${PROJECT_SOURCE_DIR}/assets/lite_icons.bin"
     )
 endif()
 echo_add_unit_test(NAME test_release_diagnostics
@@ -462,6 +463,11 @@ if(ECHO_BUILD_SIM)
 endif()
 
 find_package(Python3 REQUIRED COMPONENTS Interpreter)
+if(ECHO_LITE)
+    add_test(NAME lite_icons_up_to_date
+        COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/lite_icon_asset.py --check
+    )
+endif()
 
 find_program(FSCK_MSDOS fsck_msdos)
 find_program(FSCK_EXFAT fsck_exfat)

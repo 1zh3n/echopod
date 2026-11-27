@@ -2,6 +2,7 @@
 
 #include <stdint.h>
 
+#ifndef ECHO_LITE
 static const uint8_t shuffle_levels[1152] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -378,4 +379,15 @@ const IconMask LITE_ICON_LOOP_18 = {loop18_levels, 18, 18};
 const IconMask LITE_ICON_LOOP_ONE_18 = {loop_one18_levels, 18, 18};
 const IconMask LITE_ICON_PLAY_18 = {play18_levels, 18, 18};
 const IconMask LITE_ICON_PAUSE_18 = {pause18_levels, 18, 18};
+#else
+const IconMask LITE_ICON_SHUFFLE = {LITE_ICON_POINTER(8192), 48, 48};
+const IconMask LITE_ICON_LOOP = {LITE_ICON_POINTER(9344), 48, 48};
+const IconMask LITE_ICON_LOOP_ONE = {LITE_ICON_POINTER(10496), 48, 48};
+const IconMask LITE_ICON_MOON = {LITE_ICON_POINTER(11648), 48, 48};
+const IconMask LITE_ICON_SHUFFLE_18 = {LITE_ICON_POINTER(12800), 18, 18};
+const IconMask LITE_ICON_LOOP_18 = {LITE_ICON_POINTER(12962), 18, 18};
+const IconMask LITE_ICON_LOOP_ONE_18 = {LITE_ICON_POINTER(13124), 18, 18};
+const IconMask LITE_ICON_PLAY_18 = {LITE_ICON_POINTER(13286), 18, 18};
+const IconMask LITE_ICON_PAUSE_18 = {LITE_ICON_POINTER(13448), 18, 18};
+#endif
 

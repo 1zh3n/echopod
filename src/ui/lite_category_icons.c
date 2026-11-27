@@ -3,6 +3,7 @@
 #include <stdint.h>
 
 
+#ifndef ECHO_LITE
 static const uint8_t sound_levels[800] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -218,8 +219,13 @@ static const uint8_t buttons_levels[800] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 };
 
-
 const IconMask LITE_ICON_CATEGORY_SOUND = {sound_levels, 40, 40};
 const IconMask LITE_ICON_CATEGORY_DISPLAY = {display_levels, 40, 40};
 const IconMask LITE_ICON_CATEGORY_LIBRARY = {library_levels, 40, 40};
 const IconMask LITE_ICON_CATEGORY_BUTTONS = {buttons_levels, 40, 40};
+#else
+const IconMask LITE_ICON_CATEGORY_SOUND = {LITE_ICON_POINTER(13610), 40, 40};
+const IconMask LITE_ICON_CATEGORY_DISPLAY = {LITE_ICON_POINTER(14410), 40, 40};
+const IconMask LITE_ICON_CATEGORY_LIBRARY = {LITE_ICON_POINTER(15210), 40, 40};
+const IconMask LITE_ICON_CATEGORY_BUTTONS = {LITE_ICON_POINTER(16010), 40, 40};
+#endif

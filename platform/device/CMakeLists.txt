@@ -321,7 +321,8 @@ foreach(face_file ${ECHO_GLYPH_FACE_FILES} ${ECHO_LANGUAGE_PACK_FILES} ${ECHO_BU
 endforeach()
 if(ECHO_LITE)
     list(APPEND ECHO_GLYPH_FACE_ARGUMENTS
-        --glyph-face ${PROJECT_SOURCE_DIR}/assets/lite_animation.bin)
+        --glyph-face ${PROJECT_SOURCE_DIR}/assets/lite_animation.bin
+        --glyph-face ${PROJECT_SOURCE_DIR}/assets/lite_icons.bin)
 endif()
 
 add_custom_target(echo_device_image ALL
@@ -343,6 +344,8 @@ add_custom_target(echo_device_image ALL
     DEPENDS echo_device echo_rescan_overlay echo_usb_overlay ${ECHO_CORE1_MP3_BINARY} ${ECHO_CORE1_BINARY}
         ${ECHO_CORE1_AAC_BINARY} ${ECHO_CORE1_OPUS_BINARY}
         ${PROJECT_SOURCE_DIR}/tools/make_image.py
+        ${PROJECT_SOURCE_DIR}/assets/lite_animation.bin
+        ${PROJECT_SOURCE_DIR}/assets/lite_icons.bin
     VERBATIM
 )
 

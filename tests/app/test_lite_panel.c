@@ -4,17 +4,17 @@
 
 #include "app/app.h"
 #include "check.h"
+#include "default_theme.h"
 #include "fake_hal.h"
 #include "fixture_library.h"
-#include "default_theme.h"
 #include "gfx/canvas.h"
 #include "gfx/color.h"
 #include "hal/system.h"
 #include "lite_animation.h"
 #include "screens/charge_screen.h"
-#include "ui/lite_icons.h"
 #include "ui/lite_badge.h"
 #include "ui/lite_color_icons.h"
+#include "ui/lite_icons.h"
 
 enum {
     START_MS = 1000,
@@ -140,6 +140,35 @@ static void badge_draws_flat_circle_and_half(void)
     CHECK(canvas_pixel_at(&canvas, 19, 80) == COLOR_RGB(250, 250, 249));
 }
 
+static void every_lite_icon_draws(void)
+{
+    static Color pixels[HAL_DISPLAY_WIDTH * HAL_DISPLAY_HEIGHT];
+    Canvas canvas = canvas_make(pixels, (Rect){0, 0, HAL_DISPLAY_WIDTH, HAL_DISPLAY_HEIGHT});
+    const IconMask *masks[] = {
+        &LITE_ICON_SHUFFLE,          &LITE_ICON_LOOP,
+        &LITE_ICON_LOOP_ONE,         &LITE_ICON_MOON,
+        &LITE_ICON_SHUFFLE_18,       &LITE_ICON_LOOP_18,
+        &LITE_ICON_LOOP_ONE_18,      &LITE_ICON_PLAY_18,
+        &LITE_ICON_PAUSE_18,         &LITE_ICON_CATEGORY_SOUND,
+        &LITE_ICON_CATEGORY_DISPLAY, &LITE_ICON_CATEGORY_LIBRARY,
+        &LITE_ICON_CATEGORY_BUTTONS,
+    };
+    const ColorIcon *colors[] = {&LITE_COLOR_ICON_ALL, &LITE_COLOR_ICON_LIST,
+                                 &LITE_COLOR_ICON_GEAR};
+    for (size_t index = 0; index < sizeof masks / sizeof masks[0]; index++) {
+        canvas_clear(&canvas, COLOR_RGB(1, 2, 3));
+        lite_icon_draw_scaled(&canvas, masks[index], (Rect){100, 40, 48, 48},
+                              COLOR_RGB(255, 255, 255));
+        CHECK(area_has_color(100, 40, 48, 48, COLOR_RGB(255, 255, 255)));
+    }
+    for (size_t index = 0; index < sizeof colors / sizeof colors[0]; index++) {
+        canvas_clear(&canvas, COLOR_RGB(1, 2, 3));
+        color_icon_draw_scaled(&canvas, colors[index], (Rect){100, 40, 64, 64});
+        CHECK(area_has_color(100, 40, 64, 64, COLOR_RGB(47, 168, 255)) ||
+              area_has_color(100, 40, 64, 64, COLOR_RGB(255, 105, 180)));
+    }
+}
+
 static void category_icons_are_40px(void)
 {
     CHECK_EQUAL(40, LITE_ICON_CATEGORY_SOUND.width);
@@ -166,6 +195,19 @@ static void lite_animation_arena_is_available(void)
 }
 
 static uint8_t animation_blob[400000];
+static uint8_t icons_blob[20000];
+
+static bool load_icon_asset(void)
+{
+    FILE *file = fopen(ECHO_LITE_ICONS_ASSET, "rb");
+    if (file == NULL) {
+        return false;
+    }
+    size_t size = fread(icons_blob, 1, sizeof icons_blob, file);
+    fclose(file);
+    fake_hal_set_lite_icons(icons_blob, (uint32_t)size);
+    return size > 0;
+}
 
 static bool load_animation_asset(void)
 {
@@ -428,6 +470,10 @@ static void long_menu_on_the_panel_opens_settings(void)
 
 int main(void)
 {
+    if (!load_icon_asset()) {
+        fprintf(stderr, "cannot read %s\n", ECHO_LITE_ICONS_ASSET);
+        return 1;
+    }
     TestCase cases[] = {
         TEST_CASE(now_playing_uses_native_18px_icons),
         TEST_CASE(quick_panel_is_icon_only),
@@ -437,6 +483,7 @@ int main(void)
         TEST_CASE(long_back_on_panel_goes_home),
         TEST_CASE(long_menu_on_the_panel_opens_settings),
         TEST_CASE(gear_glyph_draws_only_white_outline),
+        TEST_CASE(every_lite_icon_draws),
         TEST_CASE(badge_draws_flat_circle_and_half),
         TEST_CASE(category_icons_are_40px),
         TEST_CASE(compact_icons_are_native_18px),

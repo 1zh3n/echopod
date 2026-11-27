@@ -21,7 +21,8 @@ enum {
     FIRST_THEME_ENTRY = FONT_PACK_FACES + LANGUAGE_COUNT,
     BUILTIN_THEMES = THEME_COUNT,
 #ifdef ECHO_LITE
-    LITE_ANIMATION_ENTRY = FIRST_THEME_ENTRY + BUILTIN_THEMES
+    LITE_ANIMATION_ENTRY = FIRST_THEME_ENTRY + BUILTIN_THEMES,
+    LITE_ICONS_ENTRY = LITE_ANIMATION_ENTRY + 1
 #endif
 };
 
@@ -113,6 +114,18 @@ uint32_t hal_system_lite_animation_size(void)
 bool hal_system_lite_animation_read(uint32_t offset, void *target, uint32_t length)
 {
     return read_entry(LITE_ANIMATION_ENTRY, offset, target, length);
+}
+
+uint32_t hal_system_lite_icons_size(void)
+{
+    uint32_t offset;
+    uint32_t size;
+    return board_glyphs_entry(LITE_ICONS_ENTRY, &offset, &size) ? size : 0;
+}
+
+bool hal_system_lite_icons_read(uint32_t offset, void *target, uint32_t length)
+{
+    return read_entry(LITE_ICONS_ENTRY, offset, target, length);
 }
 #endif
 

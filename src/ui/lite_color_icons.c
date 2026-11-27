@@ -4,7 +4,9 @@
 #include <stdint.h>
 
 #include "gfx/canvas.h"
+#include "ui/lite_icons.h"
 
+#ifndef ECHO_LITE
 static const uint8_t ALL_LEVELS[2048] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -528,6 +530,7 @@ static const uint8_t SHADOW_LEVELS[2048] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 };
+#endif
 
 static const Color ALL_PALETTE[16] = {
     COLOR_RGB(0, 0, 0), COLOR_RGB(10, 10, 10), COLOR_RGB(47, 168, 255), COLOR_RGB(139, 215, 255), COLOR_RGB(22, 119, 200), COLOR_RGB(255, 255, 255), COLOR_RGB(0, 0, 0), COLOR_RGB(0, 0, 0),
@@ -544,15 +547,31 @@ static const Color GEAR_PALETTE[16] = {
     COLOR_RGB(0, 0, 0), COLOR_RGB(0, 0, 0), COLOR_RGB(0, 0, 0), COLOR_RGB(0, 0, 0), COLOR_RGB(0, 0, 0), COLOR_RGB(0, 0, 0), COLOR_RGB(0, 0, 0), COLOR_RGB(0, 0, 0),
 };
 
+#ifdef ECHO_LITE
+const ColorIcon LITE_COLOR_ICON_ALL = {LITE_ICON_POINTER(0), ALL_PALETTE, 64, 64};
+const ColorIcon LITE_COLOR_ICON_LIST = {LITE_ICON_POINTER(2048), LIST_PALETTE, 64, 64};
+const ColorIcon LITE_COLOR_ICON_GEAR = {LITE_ICON_POINTER(4096), GEAR_PALETTE, 64, 64};
+const IconMask LITE_MASK_SHADOW = {LITE_ICON_POINTER(6144), 64, 64};
+#else
 const ColorIcon LITE_COLOR_ICON_ALL = {ALL_LEVELS, ALL_PALETTE, 64, 64};
 const ColorIcon LITE_COLOR_ICON_LIST = {LIST_LEVELS, LIST_PALETTE, 64, 64};
 const ColorIcon LITE_COLOR_ICON_GEAR = {GEAR_LEVELS, GEAR_PALETTE, 64, 64};
 const IconMask LITE_MASK_SHADOW = {SHADOW_LEVELS, 64, 64};
+#endif
 
-static uint8_t icon_level(const ColorIcon *icon, int x, int y)
+static uint8_t icon_level(const ColorIcon *icon, const uint8_t *levels, int x, int y)
 {
-    uint8_t pair = icon->levels[y * ((icon->width + 1) / 2) + x / 2];
+    uint8_t pair = levels[y * ((icon->width + 1) / 2) + x / 2];
     return (x & 1) != 0 ? pair & 0x0F : pair >> 4;
+}
+
+static const uint8_t *icon_levels(const ColorIcon *icon)
+{
+#ifdef ECHO_LITE
+    return lite_icon_levels(icon->levels, (uint32_t)icon->width * icon->height / 2);
+#else
+    return icon->levels;
+#endif
 }
 
 void color_icon_draw_scaled(Canvas *canvas, const ColorIcon *icon, Rect area)
@@ -560,11 +579,15 @@ void color_icon_draw_scaled(Canvas *canvas, const ColorIcon *icon, Rect area)
     if (icon == NULL || area.width <= 0 || area.height <= 0) {
         return;
     }
+    const uint8_t *levels = icon_levels(icon);
+    if (levels == NULL) {
+        return;
+    }
     for (int y = 0; y < area.height; y++) {
         int source_y = y * icon->height / area.height;
         for (int x = 0; x < area.width; x++) {
             int source_x = x * icon->width / area.width;
-            uint8_t level = icon_level(icon, source_x, source_y);
+            uint8_t level = icon_level(icon, levels, source_x, source_y);
             if (level != 0) {
                 canvas_blend_pixel(canvas, (Point){area.x + x, area.y + y}, icon->palette[level],
                                    15);
@@ -579,6 +602,10 @@ void color_icon_draw_glyph_scaled(Canvas *canvas, const ColorIcon *icon, Rect ar
         source.height <= 0) {
         return;
     }
+    const uint8_t *levels = icon_levels(icon);
+    if (levels == NULL) {
+        return;
+    }
     for (int y = 0; y < area.height; y++) {
         int source_y = source.y + y * source.height / area.height;
         if (source_y < 0 || source_y >= icon->height) {
@@ -589,7 +616,7 @@ void color_icon_draw_glyph_scaled(Canvas *canvas, const ColorIcon *icon, Rect ar
             if (source_x < 0 || source_x >= icon->width) {
                 continue;
             }
-            uint8_t level = icon_level(icon, source_x, source_y);
+            uint8_t level = icon_level(icon, levels, source_x, source_y);
             if (level == 5) {
                 canvas_blend_pixel(canvas, (Point){area.x + x, area.y + y}, icon->palette[level],
                                    15);
