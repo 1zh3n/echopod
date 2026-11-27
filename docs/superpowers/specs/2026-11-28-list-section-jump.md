@@ -81,6 +81,27 @@ Options for the next pass:
 Recommendation: **A** if the double-Menu delay is acceptable; otherwise **B** is the
 cleanest no-new-key option. Do not keep section jump on the same hold as scrolling.
 
+### Long Play is not a free gesture
+
+Long Play was proposed for the A-Z overlay. It does not slow short Play: with
+`TAP_OR_HOLD`, a short press is emitted on release and the long action only at the 600 ms
+threshold. The problem is that Long Play already has a meaning in track lists:
+
+- All Songs / playlist tracks / folder tracks: opens the song-actions menu
+  (Play next, Add to Up Next);
+- Up Next: currently unused, but it is a track list;
+- Albums / Artists: usually unused in Lite.
+
+Using Long Play for the jump would either remove song actions from All Songs or make the same
+gesture mean different things in different lists. That is the interaction inconsistency this
+design is trying to avoid. Long Play is therefore rejected unless the song-actions menu moves
+to another gesture, which is a separate change.
+
+Double Menu or Long Menu in lettered lists are the realistic alternatives:
+- Double Menu keeps Long Play for song actions, at the cost of a double-press window;
+- Long Menu keeps no delay and no Play conflict, at the cost of Settings being unreachable by
+  Long Menu from those lists.
+
 ## Deferred
 
 - A visible permanent A-Z strip.
