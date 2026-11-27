@@ -106,3 +106,33 @@ Double Menu or Long Menu in lettered lists are the realistic alternatives:
 
 - A visible permanent A-Z strip.
 - A section byte in `library.db` (the other way to make the section and sort order agree).
+
+## Menu as the general key
+
+Menu is the better general-purpose key: it already carries the two global playback shortcuts,
+and it has no per-row action in the lists.
+
+Proposed map for lettered lists:
+
+| Gesture | Meaning |
+|---|---|
+| short Menu | Now Playing |
+| long Menu | Settings |
+| double Menu | open the A-Z/# jump overlay |
+| Back | close the overlay |
+| volume | move between letters while the overlay is open |
+| Play | jump to the selected letter |
+
+This is three gestures, but each gesture has one meaning. It does not change what a continuous
+hold does, and it does not collide with the Play song-actions menu.
+
+The cost is double-press detection: a single Menu in a lettered list has to wait for the double
+window (about 220-280 ms) before opening Now Playing. If that delay is unacceptable, the fallback
+is:
+
+- long Menu = A-Z jump in lettered lists;
+- Settings remains available by long Menu from Home/Now Playing, but not from those lists.
+
+Recommendation: **double Menu**, limited to lettered lists. Keep the window as short as the key
+tracker can reliably detect, and keep the overlay explicit: it opens only on the double gesture,
+never as an automatic phase of a hold.
