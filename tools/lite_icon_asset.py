@@ -45,12 +45,24 @@ def build():
     return bytes(output), offsets
 
 
+def code_offsets():
+    pointers = []
+    for path in FILES:
+        pointers.extend(int(value) for value in
+                        re.findall(r"LITE_ICON_POINTER\((\d+)\)", path.read_text()))
+    return pointers
+
+
 def main():
     parser = argparse.ArgumentParser(description="Pack the Lite icon masks into one glyph face")
     parser.add_argument("--check", action="store_true",
                         help="fail if assets/lite_icons.bin differs from a fresh build")
     arguments = parser.parse_args()
     output, offsets = build()
+    pointers = code_offsets()
+    expected = [offset for _, offset, _ in offsets]
+    if pointers != expected:
+        raise SystemExit(f"UI icon offsets {pointers} do not match the face {expected}")
     target = ROOT / "assets/lite_icons.bin"
     if arguments.check:
         if not target.exists() or target.read_bytes() != output:
