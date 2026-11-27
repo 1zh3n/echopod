@@ -6,7 +6,7 @@
 #include "ui/screen.h"
 
 enum {
-    SCREEN_STACK_CAPACITY = 8
+    SCREEN_STACK_CAPACITY = 12
 };
 
 typedef struct ScreenStack {
