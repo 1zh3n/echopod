@@ -51,8 +51,8 @@ Keep the official firmware and a known recovery path before flashing.
 - **Now Playing:** 18 px native mode/state icons, no cover frame; a 14×8 Bluetooth-only
   chip sits next to the shuffle/play controls. Short volume changes volume, double skips,
   long press seeks; the progress/time display is the seek feedback.
-- **Boot and charging:** boot uses 200×112 landscape / 146×112 portrait card-sized images with
-  a 2px frame and 5px shadow, no outer card; charging keeps the 96×64 animation card.
+- **Boot and charging:** boot uses 200×112 landscape / 146×112 portrait stills with a 5px hard
+  shadow, no card or frame; charging keeps the 96×64 animation card.
 - **Controls:** volume single/double/long press in Now Playing; long Play opens the playback
   panel; long Menu opens Settings; long Back in the panel goes Home.
 - **Space work:** Lite icon masks moved to a glyph face; Lite theme store/assets removed;
@@ -80,9 +80,9 @@ play/pause icon already shows playback. The card shadow carries the battery/char
 |---|---|
 | ![Settings](docs/images/lite/settings-final-v4.png) | ![Quick panel](docs/images/lite/quick-panel-final-v3.png) |
 
-![Boot](docs/images/lite/boot-cards.png)
+![Boot](docs/images/lite/boot-shadow.png)
 
-*Actual boot art (2×), not a device photo: 200×112 landscape and 146×112 portrait cards, 2px frame and 5px shadow. Art: Mountain Dusk by ansimuz, CC0 1.0.*
+*Actual boot art (2×), not a device photo: 200×112 landscape and 146×112 portrait stills with a 5px hard shadow, no card or frame. Art: Mountain Dusk by ansimuz, CC0 1.0.*
 
 Design images (PNG): [docs/lite/mockups/README.md](docs/lite/mockups/README.md).
 
@@ -129,7 +129,7 @@ and the GPL firmware base.
 ## Art credits
 
 - **Boot stills:** *Mountain Dusk* by [ansimuz](https://ansimuz.itch.io/mountain-dusk-parallax-background),
-  CC0 1.0. Landscape crop 196×108; portrait crop 142×108; both quantised to 16 colours.
+  CC0 1.0. Landscape crop 200×112; portrait crop 146×112; both quantised to 16 colours.
 - **Lite UI icons and badges:** drawn procedurally in this fork; no third-party icon set.
 - **Inter font:** SIL Open Font License 1.1.
 - **Noto Sans CJK SC glyph packs:** SIL Open Font License 1.1.

@@ -6,8 +6,8 @@ from pathlib import Path
 
 HEADER_BYTES = 48
 PALETTE_COLORS = 16
-LANDSCAPE = ("LBOO", 196, 108, "196x108+62+0")
-PORTRAIT = ("LBO2", 142, 108, "142x108+89+0")
+LANDSCAPE = ("LBOO", 200, 112, "200x112+60+0", None)
+PORTRAIT = ("LBO2", 146, 112, "146x112+87+0", None)
 
 
 def rgb565(red, green, blue):
@@ -15,11 +15,12 @@ def rgb565(red, green, blue):
            ((blue * 31 + 127) // 255)
 
 
-def still(source, width, height, crop):
-    raw = subprocess.run(
-        ["magick", str(source), "-crop", crop, "+repage", "-colors", str(PALETTE_COLORS),
-         "-depth", "8", "rgb:-"],
-        check=True, capture_output=True).stdout
+def still(source, width, height, crop, resize):
+    command = ["magick", str(source), "-crop", crop, "+repage"]
+    if resize is not None:
+        command += ["-resize", f"{resize[0]}x{resize[1]}!"]
+    command += ["-colors", str(PALETTE_COLORS), "-depth", "8", "rgb:-"]
+    raw = subprocess.run(command, check=True, capture_output=True).stdout
     if len(raw) != width * height * 3:
         raise SystemExit(f"expected {width * height * 3} RGB bytes, got {len(raw)}")
     pixels = [tuple(raw[index:index + 3]) for index in range(0, len(raw), 3)]
@@ -68,8 +69,10 @@ def main():
     args = parser.parse_args()
     asset = args.asset.read_bytes()
     prefix = asset[:animation_end(asset)]
-    land_palette, land_data = still(args.source, LANDSCAPE[1], LANDSCAPE[2], LANDSCAPE[3])
-    port_palette, port_data = still(args.source, PORTRAIT[1], PORTRAIT[2], PORTRAIT[3])
+    land_palette, land_data = still(args.source, LANDSCAPE[1], LANDSCAPE[2], LANDSCAPE[3],
+                                    LANDSCAPE[4])
+    port_palette, port_data = still(args.source, PORTRAIT[1], PORTRAIT[2], PORTRAIT[3],
+                                    PORTRAIT[4])
     out = prefix + section(b"LBOO", LANDSCAPE[1], LANDSCAPE[2], land_palette, land_data)
     out += section(b"LBO2", PORTRAIT[1], PORTRAIT[2], port_palette, port_data)
     args.asset.write_bytes(out)

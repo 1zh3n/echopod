@@ -236,10 +236,10 @@ static void lite_animation_streams_all_frames(void)
 static bool draw_boot_image(Canvas *canvas)
 {
     canvas_clear(canvas, COLOR_RGB(250, 250, 249));
-    return lite_boot_draw(canvas, COLOR_RGB(10, 10, 10), COLOR_RGB(10, 10, 10), false);
+    return lite_boot_draw(canvas, COLOR_RGB(10, 10, 10), false);
 }
 
-static void boot_screen_has_large_frame(void)
+static void boot_screen_is_a_shadowed_image(void)
 {
     fake_hal_reset();
     CHECK(load_animation_asset());
@@ -248,13 +248,14 @@ static void boot_screen_has_large_frame(void)
     Canvas canvas = canvas_make(pixels, (Rect){0, 0, HAL_DISPLAY_WIDTH, HAL_DISPLAY_HEIGHT});
     CHECK(draw_boot_image(&canvas));
     CHECK(canvas_pixel_at(&canvas, 1, 1) == COLOR_RGB(250, 250, 249));
-    CHECK(canvas_pixel_at(&canvas, 60, 29) == COLOR_RGB(10, 10, 10));
-    CHECK(canvas_pixel_at(&canvas, 62, 31) != COLOR_RGB(250, 250, 249));
+    CHECK(canvas_pixel_at(&canvas, 59, 29) == COLOR_RGB(250, 250, 249));
+    CHECK(canvas_pixel_at(&canvas, 60, 29) != COLOR_RGB(250, 250, 249));
+    CHECK(canvas_pixel_at(&canvas, 259, 140) != COLOR_RGB(250, 250, 249));
     CHECK(canvas_pixel_at(&canvas, 264, 145) == COLOR_RGB(10, 10, 10));
-    CHECK(canvas_pixel_at(&canvas, 266, 147) == COLOR_RGB(250, 250, 249));
+    CHECK(canvas_pixel_at(&canvas, 265, 146) == COLOR_RGB(250, 250, 249));
 }
 
-static void boot_screen_draws_only_the_animation(void)
+static void boot_screen_draws_the_still(void)
 {
     fake_hal_reset();
     CHECK(load_animation_asset());
@@ -719,11 +720,13 @@ static void boot_has_portrait_still(void)
     static Color pixels[HAL_DISPLAY_WIDTH * HAL_DISPLAY_LONG_SIDE];
     Canvas canvas = canvas_make(pixels, (Rect){0, 0, 170, 320});
     canvas_clear(&canvas, COLOR_RGB(250, 250, 249));
-    CHECK(lite_boot_draw(&canvas, COLOR_RGB(10, 10, 10), COLOR_RGB(10, 10, 10), true));
+    CHECK(lite_boot_draw(&canvas, COLOR_RGB(10, 10, 10), true));
     CHECK(canvas_pixel_at(&canvas, 1, 1) == COLOR_RGB(250, 250, 249));
-    CHECK(canvas_pixel_at(&canvas, 12, 104) == COLOR_RGB(10, 10, 10));
-    CHECK(canvas_pixel_at(&canvas, 14, 106) != COLOR_RGB(250, 250, 249));
+    CHECK(canvas_pixel_at(&canvas, 11, 104) == COLOR_RGB(250, 250, 249));
+    CHECK(canvas_pixel_at(&canvas, 12, 104) != COLOR_RGB(250, 250, 249));
+    CHECK(canvas_pixel_at(&canvas, 157, 215) != COLOR_RGB(250, 250, 249));
     CHECK(canvas_pixel_at(&canvas, 162, 220) == COLOR_RGB(10, 10, 10));
+    CHECK(canvas_pixel_at(&canvas, 163, 221) == COLOR_RGB(250, 250, 249));
 }
 
 static void charge_card_is_portrait(void)
@@ -775,8 +778,8 @@ int main(void)
         TEST_CASE(settings_subpage_opens),
         TEST_CASE(lite_animation_arena_is_available),
         TEST_CASE(lite_animation_streams_all_frames),
-        TEST_CASE(boot_screen_has_large_frame),
-        TEST_CASE(boot_screen_draws_only_the_animation),
+        TEST_CASE(boot_screen_is_a_shadowed_image),
+        TEST_CASE(boot_screen_draws_the_still),
         TEST_CASE(boot_screen_is_static),
         TEST_CASE(colorful_home_has_no_text),
         TEST_CASE(home_card_is_rounded),

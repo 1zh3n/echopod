@@ -47,7 +47,9 @@ waiting for the current track, then the player shuts down. No pause mode.
 
 ## Boot stills
 
-![Boot cards](../../images/lite/boot-cards.png)
+200×112 landscape / 146×112 portrait stills with a 5px hard shadow, no card or frame.
+
+![Boot stills](../../images/lite/boot-shadow.png)
 
 ## Dark palette
 

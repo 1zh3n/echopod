@@ -21,7 +21,7 @@ front end. The list below is the useful summary; the git history has the exact c
   category. Portrait keeps the category name.
 - Quick panel with two icon-only cards: playback mode and sleep timer.
 - Now Playing uses native 18 px mode/state icons, no cover frame, and a Bluetooth-only chip.
-- Boot uses 200×112 landscape / 146×112 portrait card-sized images with a 2px frame and 5px shadow, no outer card.
+- Boot uses 200×112 landscape / 146×112 portrait stills with a 5px hard shadow, no card or frame.
 - Charging keeps the 96×64 animation card.
 - Runtime Light/Dark and Landscape/Portrait in Settings → Display.
 - Dark borders: large surfaces 1 px `#52525B`, badges 2 px light, selection blue; shadows are

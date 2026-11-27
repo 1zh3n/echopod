@@ -820,7 +820,7 @@ static void draw_lite_boot(Canvas *canvas, const Fade *fade)
     Color ink = theme->colors->text;
     bool portrait = theme_is_portrait(theme);
     canvas_fill_rect(canvas, whole_screen(), theme->colors->background);
-    if (lite_boot_draw(canvas, ink, lite_card_shadow_color(theme), portrait)) {
+    if (lite_boot_draw(canvas, lite_card_shadow_color(theme), portrait)) {
         return;
     }
     Rect card = portrait ? (Rect){12, 104, 146, 112} : (Rect){60, 29, 200, 112};

@@ -13,7 +13,6 @@
 enum {
     HEADER_BYTES = 40,
     BOOT_HEADER_BYTES = 48,
-    BOOT_FRAME = 2,
     BOOT_SHADOW = 5,
     PALETTE_BYTES = 32,
     FRAME_MS = 100,
@@ -136,7 +135,7 @@ static void advance(uint32_t now_ms)
     }
 }
 
-bool lite_boot_draw(Canvas *canvas, Color frame, Color shadow, bool portrait)
+bool lite_boot_draw(Canvas *canvas, Color shadow, bool portrait)
 {
     if (canvas == NULL || !load()) {
         return false;
@@ -174,16 +173,14 @@ bool lite_boot_draw(Canvas *canvas, Color frame, Color shadow, bool portrait)
     }
     int width = header[6] | (header[7] << 8);
     int height = header[8] | (header[9] << 8);
-    if (width <= 0 || height <= 0 || width + 2 * BOOT_FRAME > canvas->bounds.width ||
-        height + 2 * BOOT_FRAME > canvas->bounds.height || (width & 1) != 0) {
+    if (width <= 0 || height <= 0 || width > canvas->bounds.width ||
+        height > canvas->bounds.height || (width & 1) != 0) {
         return false;
     }
-    int card_width = width + 2 * BOOT_FRAME;
-    int card_height = height + 2 * BOOT_FRAME;
-    Rect card = {(canvas->bounds.width - card_width) / 2,
-                 (canvas->bounds.height - card_height) / 2, card_width, card_height};
-    canvas_fill_rect(canvas, (Rect){card.x + BOOT_SHADOW, card.y + BOOT_SHADOW, card.width,
-                                    card.height},
+    Rect image = {(canvas->bounds.width - width) / 2, (canvas->bounds.height - height) / 2,
+                  width, height};
+    canvas_fill_rect(canvas, (Rect){image.x + BOOT_SHADOW, image.y + BOOT_SHADOW, image.width,
+                                    image.height},
                      shadow);
     uint16_t palette[PALETTE_COLORS];
     for (int index = 0; index < PALETTE_COLORS; index++) {
@@ -214,20 +211,11 @@ bool lite_boot_draw(Canvas *canvas, Color frame, Color shadow, bool portrait)
                 }
                 run++;
             }
-            canvas_fill_rect(canvas, (Rect){card.x + BOOT_FRAME + x, card.y + BOOT_FRAME + y, run,
-                                            1},
+            canvas_fill_rect(canvas, (Rect){image.x + x, image.y + y, run, 1},
                              palette[index & (PALETTE_COLORS - 1)]);
             x += run;
         }
     }
-    canvas_fill_rect(canvas, (Rect){card.x, card.y, card.width, BOOT_FRAME}, frame);
-    canvas_fill_rect(canvas, (Rect){card.x, card.y + card.height - BOOT_FRAME, card.width,
-                                    BOOT_FRAME},
-                     frame);
-    canvas_fill_rect(canvas, (Rect){card.x, card.y, BOOT_FRAME, card.height}, frame);
-    canvas_fill_rect(canvas, (Rect){card.x + card.width - BOOT_FRAME, card.y, BOOT_FRAME,
-                                    card.height},
-                     frame);
     return true;
 }
 

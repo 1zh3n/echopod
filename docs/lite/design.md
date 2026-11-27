@@ -107,8 +107,8 @@ The sleep timer remains a **shutdown** timer; this pass does not add a pause mod
 
 ### Boot / charge
 
-- Boot landscape: 196×108 art in a 2 px frame -> 200×112 card at (60, 29), 5 px shadow, no card panel.
-- Boot portrait: 142×108 art in a 2 px frame -> 146×112 card at (12, 104), 5 px shadow, no card panel.
+- Boot landscape: 200×112 still at (60, 29) with a 5 px hard shadow; no card panel, no frame.
+- Boot portrait: 146×112 still at (12, 104) with a 5 px hard shadow; no card panel, no frame.
 - Charge: 200×112 landscape card, 146×112 portrait card, 96×64 animation inside.
 - Boot art: Mountain Dusk by ansimuz, CC0 1.0.
 
