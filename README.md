@@ -8,7 +8,7 @@
 > Tested only on the **512 MB** Echo Mini. The **8 GB** model is not supported.
 
 <p align="center">
-  <img src="docs/images/lite/home-final-v5.png" alt="Home screen in light and dark, landscape and portrait" width="100%">
+  <img src="docs/images/lite/home-final-v6.png" alt="Home screen in light and dark, landscape and portrait" width="100%">
 </p>
 
 <p align="center"><em>Home, Now Playing, Settings and Quick panel are design mockups (2×), not device screenshots. The boot sheet below is rendered from the actual firmware assets.</em></p>
@@ -72,11 +72,11 @@ play/pause icon already shows playback. The card shadow carries the battery/char
 
 | Home | Now Playing |
 |---|---|
-| ![Home](docs/images/lite/home-final-v5.png) | ![Now Playing](docs/images/lite/now-playing-final-v2.png) |
+| ![Home](docs/images/lite/home-final-v6.png) | ![Now Playing](docs/images/lite/now-playing-final-v3.png) |
 
 | Settings | Quick panel |
 |---|---|
-| ![Settings](docs/images/lite/settings-final-v3.png) | ![Quick panel](docs/images/lite/quick-panel-final-v2.png) |
+| ![Settings](docs/images/lite/settings-final-v4.png) | ![Quick panel](docs/images/lite/quick-panel-final-v3.png) |
 
 ![Boot](docs/images/lite/boot-cards.png)
 

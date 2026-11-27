@@ -25,6 +25,20 @@ The mockup sheet is [mockups/index.html](mockups/index.html).
 Badge colours: blue `#2FA8FF`, orange `#FF9F1C`, purple `#8B5CF6`, indigo `#6366F1`,
 cyan `#35C7E8`, amber `#F59E0B`, success `#22C55E`.
 
+## Spacing
+
+- Base unit: 4 px. Outer gutter: 8 px left/right/bottom on panel screens
+  (Settings, Lists, Now Playing).
+- Landscape header band: 28 px. The status meter is 28×8 at `(8, 4)`; its 2 px
+  border/shadow are included in the header, not the content gutter.
+- Portrait headers stay editorial: Settings card starts at y=58, Lists at y=40.
+  Their cards end 8 px above the bottom edge.
+- Now Playing uses 8 px top/sides/bottom. Content width is 304 px landscape and
+  154 px portrait; the time row ends 8 px above the bottom edge.
+- Quick panel is an intentional two-card exception: 12 px horizontal gutter and
+  30/35 px vertical margins.
+- Home is a centred composition; it has no outer panel gutter.
+
 ## Layout
 
 ### Home
@@ -35,7 +49,7 @@ cyan `#35C7E8`, amber `#F59E0B`, success `#22C55E`.
 
 ### Home status
 
-- Top-left 28×8 status meter at (2, 2): 2 px border, 2 px hard shadow, two 12×4 cells.
+- Top-left 28×8 status meter at (8, 4): 2 px border, 2 px hard shadow, two 12×4 cells.
   Left cell blue `#006FEE` when Bluetooth is connected; right cell cyan `#35C7E8` when
   playing. Inactive cells use the divider colour.
 - Light border is ink; dark border is `#52525B`; the shadow is black in both themes.
@@ -45,18 +59,19 @@ cyan `#35C7E8`, amber `#F59E0B`, success `#22C55E`.
 
 ### Now Playing
 
-- Landscape: title at (16, 8), Bluetooth chip at x=236, state icons at x=262/288, spectrum 288×75.
-- Portrait: Bluetooth chip at x=96, state icons at x=122/147, title below, spectrum 146×158,
-  progress at y=262.
+- Landscape: title at (8, 8), Bluetooth chip at x=243, state icons at x=269/294,
+  spectrum 304×70, progress at y=138, times at y=144.
+- Portrait: Bluetooth chip at x=93, state icons at x=119/144, title at (8, 24), spectrum
+  154×194 at y=86, progress at y=288, times at y=294. The time row ends 8 px above the bottom.
 
 ### Settings
 
 - Landscape: no text header; the half-badge, category dots and rows carry the category. The
-  status meter and the category dots share the top band at y=6; the card stays at y=28;
+  status meter is at (8, 4) and the category dots centre on y=8; the card stays at y=28;
   five 26 px rows.
 - Portrait: no large icon; category title, colour rule, two-line rows.
-  Sound 6×38 px, System 7×34 px in a 154×244 card at y=58. The category title stays because
-  portrait has no half-badge.
+  Sound 6×38 px, System 7×34 px in a 154×254 card at (8, 58). The card ends 8 px above
+  the bottom edge. The category title stays because portrait has no half-badge.
 
 ### Quick panel
 
@@ -66,7 +81,8 @@ cyan `#35C7E8`, amber `#F59E0B`, success `#22C55E`.
 ### Lists
 
 - Landscape: five rows.
-- Portrait: nine rows of 28 px.
+- Portrait: nine rows of 28 px in a 154×272 card at (8, 40); the card ends 8 px above the
+  bottom edge.
 
 ### Boot / charge
 

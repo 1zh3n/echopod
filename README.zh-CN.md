@@ -8,7 +8,7 @@
 > 只在 **512 MB** Echo Mini 上测试过；**不支持 8 GB 型号**。
 
 <p align="center">
-  <img src="docs/images/lite/home-final-v5.png" alt="Home 的 Light/Dark、横屏/竖屏" width="100%">
+  <img src="docs/images/lite/home-final-v6.png" alt="Home 的 Light/Dark、横屏/竖屏" width="100%">
 </p>
 
 <p align="center"><em>Home、Now Playing、Settings、Quick panel 是设计稿（2×），不是实机截图；下方开机图是从真实固件素材渲染的。</em></p>
@@ -60,11 +60,11 @@ Home 左上角 28×8 状态 meter：左段是蓝牙，右段是播放。Now Play
 
 | Home | Now Playing |
 |---|---|
-| ![Home](docs/images/lite/home-final-v5.png) | ![Now Playing](docs/images/lite/now-playing-final-v2.png) |
+| ![Home](docs/images/lite/home-final-v6.png) | ![Now Playing](docs/images/lite/now-playing-final-v3.png) |
 
 | Settings | Quick panel |
 |---|---|
-| ![Settings](docs/images/lite/settings-final-v3.png) | ![Quick panel](docs/images/lite/quick-panel-final-v2.png) |
+| ![Settings](docs/images/lite/settings-final-v4.png) | ![Quick panel](docs/images/lite/quick-panel-final-v3.png) |
 
 ![Boot](docs/images/lite/boot-cards.png)
 
