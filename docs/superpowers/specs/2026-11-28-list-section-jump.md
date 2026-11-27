@@ -142,3 +142,38 @@ double gesture, never as an automatic phase of a hold.
 - Long Play keeps the song-actions menu where it exists.
 - Volume hold keeps scrolling rows only; section jump is removed from the hold.
 - The hold thresholds and the 4-row fast-scroll phase are no longer part of section jump.
+
+## Settings and the Quick panel
+
+The same "double Menu changes group" gesture can cover the screens with groups:
+
+| Screen | Double Menu |
+|---|---|
+| Lettered list | open the A-Z/# jump overlay |
+| Settings | go to the next category (or open a category chooser) |
+| Quick panel | switch between the playback and sleep cards (optional) |
+
+Settings currently switches category with **long Play**. The proposal is to remove that
+long-Play function and use double Menu instead:
+
+- short Menu: Now Playing;
+- long Menu: Settings (no action when already in Settings);
+- double Menu: next Settings category;
+- long Play in Settings: no action;
+- short Play still changes the selected value/opens the subpage;
+- volume still moves rows.
+
+Why double Menu is preferred over long Menu for the category switch: it keeps long Menu as the
+single global "go to Settings" gesture. Long Menu would otherwise mean "open Settings" outside
+Settings and "next category" inside it. Double Menu is already the group-navigation gesture in
+lettered lists, so the same concept applies in Settings. The cost is the double-press window
+before short Menu opens Now Playing; accepted.
+
+The Quick panel has only two cards and volume already selects between them. Double Menu there
+would duplicate volume. Recommendation: **do not add double Menu to the Quick panel** unless
+symmetry turns out to matter on the device. Long Menu there still opens Settings; long Play
+stays no-op.
+
+A category chooser overlay (double Menu opens the five categories, volume selects, Play
+switches) is a larger alternative. It is more explicit but not needed for five categories;
+cycling one category per double press is the smaller change.
