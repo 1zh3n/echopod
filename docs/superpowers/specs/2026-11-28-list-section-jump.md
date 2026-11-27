@@ -127,7 +127,8 @@ This is three gestures, but each gesture has one meaning. It does not change wha
 hold does, and it does not collide with the Play song-actions menu.
 
 The cost is double-press detection: a single Menu in a lettered list has to wait for the double
-window (about 220-280 ms) before opening Now Playing. If that delay is unacceptable, the fallback
+window (280 ms in `KEY_TRACKER_DOUBLE_PRESS_MS`) before opening Now Playing. If that delay is
+unacceptable, the fallback
 is:
 
 - long Menu = A-Z jump in lettered lists;
