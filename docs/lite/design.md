@@ -64,6 +64,22 @@ cyan `#35C7E8`, amber `#F59E0B`, success `#22C55E`.
 - Portrait: Bluetooth chip at x=93, state icons at x=119/144, title at (8, 24), spectrum
   154×194 at y=86, progress at y=288, times at y=294. The time row ends 8 px above the bottom.
 
+### Now Playing hold feedback (planned)
+
+This is a planned temporary state; it is **not in MINIV926** yet.
+
+- Idle: the 14×8 Bluetooth chip at the top right.
+- Volume key down: the chip expands left to 28×8, keeping its right edge. The
+  whole 24×4 inner area becomes a progress bar; the Bluetooth cell is hidden for
+  the duration.
+- Fill: cyan, 4 px blocks, over the 1000 ms volume long-press threshold.
+- At 1000 ms: the bar fills and the 2 px border turns amber; seek is ready.
+- Release: shrink back to the 14×8 Bluetooth chip.
+- Playback state remains the pause/play icon; double-press pending is not shown
+  because the 280 ms window is too short for a useful blink.
+
+![Now Playing hold feedback](../images/lite/now-playing-hold-feedback.png)
+
 ### Settings
 
 - Landscape: no text header; the half-badge, category dots and rows carry the category. The

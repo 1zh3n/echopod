@@ -30,6 +30,13 @@ a screenshot source.
 
 ![Now Playing](../../images/lite/now-playing-final-v3.png)
 
+## Now Playing hold feedback (planned)
+
+This is a design target, **not in MINIV926**. A volume long-press temporarily replaces the
+14×8 Bluetooth chip with a 28×8 progress bar; at 1000 ms it turns amber and seek begins.
+
+![Now Playing hold feedback](../../images/lite/now-playing-hold-feedback.png)
+
 ## Settings
 
 ![Settings](../../images/lite/settings-final-v4.png)
