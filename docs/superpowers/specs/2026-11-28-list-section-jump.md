@@ -126,10 +126,12 @@ Proposed map for lettered lists:
 This is three gestures, but each gesture has one meaning. It does not change what a continuous
 hold does, and it does not collide with the Play song-actions menu.
 
-The cost is double-press detection: a single Menu in a lettered list has to wait for the double
-window (280 ms in `KEY_TRACKER_DOUBLE_PRESS_MS`) before opening Now Playing. If that delay is
-unacceptable, the fallback
-is:
+The cost is double-press detection: a single Menu in a lettered list has to wait for the 280 ms
+`KEY_TRACKER_DOUBLE_PRESS_MS` window before opening Now Playing. The window is measured from the
+first release to the second press down; a single action is emitted at the deadline, while a
+second press inside the window is recognised on its key-down. The key scan is 5 ms, so the
+theoretical fastest double is about one scan after the release. If that delay is unacceptable,
+the fallback is:
 
 - long Menu = A-Z jump in lettered lists;
 - Settings remains available by long Menu from Home/Now Playing, but not from those lists.
