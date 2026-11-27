@@ -71,7 +71,8 @@ Implemented in MINIV928.
 - Idle: the 14×8 Bluetooth chip at the top right.
 - Volume key down: the chip expands left to 28×8, keeping its right edge. The
   whole 24×4 inner area becomes a progress bar; the Bluetooth cell is hidden for
-  the duration.
+  the duration. It appears after the 280 ms double-press window, so a normal
+  volume tap does not flash it.
 - Fill: cyan, 4 px blocks, over the 1000 ms volume long-press threshold.
 - At 1000 ms: the bar fills and the 2 px border turns amber; seek is ready.
 - Release: shrink back to the 14×8 Bluetooth chip.
