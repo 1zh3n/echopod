@@ -194,6 +194,9 @@ void settings_sleep_apply(SettingsContext *context, int option, uint32_t now_ms)
         option = 0;
     }
     uint32_t minutes = settings_sleep_option_minutes(option);
+    if (context->power->sleep_pending) {
+        player_restore_next(context->player);
+    }
     context->sleep_option = option;
     if (minutes == 0) {
         power_policy_cancel_sleep_timer(context->power);

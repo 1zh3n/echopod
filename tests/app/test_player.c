@@ -131,6 +131,16 @@ static void the_end_of_the_queue_stops_playback(void)
     CHECK_EQUAL(PLAYER_IDLE, player_status(started).state);
 }
 
+static void the_queued_track_can_be_held_and_restored(void)
+{
+    Player *started = playing(0);
+    CHECK(path_is(fake_hal_audio_queued_path(), SHOOT_TO_THRILL_PATH));
+    player_cancel_next(started);
+    CHECK(fake_hal_audio_queued_path() == NULL);
+    player_restore_next(started);
+    CHECK(path_is(fake_hal_audio_queued_path(), SHOOT_TO_THRILL_PATH));
+}
+
 static void repeat_one_queues_the_same_track(void)
 {
     Player *started = playing(0);
@@ -610,6 +620,7 @@ int main(void)
         TEST_CASE(a_finished_track_moves_the_queue_on),
         TEST_CASE(a_finished_track_increments_the_end_count),
         TEST_CASE(the_end_of_the_queue_stops_playback),
+        TEST_CASE(the_queued_track_can_be_held_and_restored),
         TEST_CASE(repeat_one_queues_the_same_track),
         TEST_CASE(repeat_all_wraps_back_to_the_first_track),
         TEST_CASE(skipping_forward_plays_the_next_track),

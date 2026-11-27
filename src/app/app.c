@@ -747,6 +747,7 @@ static void update_power(uint32_t now_ms)
             app.sleep_track = status.track;
             app.sleep_end_count = status.end_count;
             power_policy_sleep_wait(&app.power);
+            player_cancel_next(&app.player);
         }
     }
     if (app.power.sleep_pending) {

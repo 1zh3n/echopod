@@ -91,6 +91,8 @@ bool player_play_from(Player *player, PlayerListStart start);
 void player_set_resume(Player *player, PlayerResume resume);
 void player_jump(Player *player, int32_t delta_ms);
 void player_toggle_pause(Player *player);
+void player_cancel_next(Player *player);
+void player_restore_next(Player *player);
 void player_skip(Player *player, int direction);
 void player_seek(Player *player, uint32_t position_ms);
 void player_change_volume(Player *player, int delta);

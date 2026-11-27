@@ -603,6 +603,20 @@ void player_update(Player *player, uint32_t now_ms)
     save_periodically(player, now_ms);
 }
 
+void player_cancel_next(Player *player)
+{
+    if (player->has_next && hal_audio_queue_next(NULL, 0)) {
+        player->has_next = false;
+    }
+}
+
+void player_restore_next(Player *player)
+{
+    if (player->loaded && player->state == PLAYER_PLAYING && !player->has_next) {
+        queue_upcoming(player);
+    }
+}
+
 void player_flush_save(Player *player)
 {
     if (player->save_pending) {
