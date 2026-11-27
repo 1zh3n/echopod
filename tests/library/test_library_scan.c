@@ -215,7 +215,7 @@ static void cjk_scanning_matches_the_pc_indexer(void)
     Progress progress = {.calls = 0};
     ScanStats stats;
     CHECK_EQUAL(SCAN_OK, scan_folder(ECHO_FIXTURE_DIR "/cjk_music", &output, &progress, &stats));
-    CHECK_EQUAL(4u, stats.tracks);
+    CHECK_EQUAL(6u, stats.tracks);
     uint32_t expected_size = 0;
     uint8_t *expected = read_fixture("cjk_music.db", &expected_size);
     CHECK_EQUAL(stats.length, output.length);
@@ -223,6 +223,37 @@ static void cjk_scanning_matches_the_pc_indexer(void)
     free(expected);
     host_pinyin = NULL;
     host_pinyin_size = 0;
+}
+
+static void a_corrupt_pinyin_asset_falls_back(void)
+{
+    static uint8_t pinyin[128];
+    FILE *file = fopen(ECHO_PINYIN_ASSET, "rb");
+    CHECK(file != NULL);
+    host_pinyin_size = (uint32_t)fread(pinyin, 1, sizeof pinyin, file);
+    fclose(file);
+    host_pinyin = pinyin;
+    static Output output;
+    Progress progress = {.calls = 0};
+    ScanStats stats;
+    CHECK_EQUAL(SCAN_OK, scan_folder(ECHO_FIXTURE_DIR "/scan_music", &output, &progress, &stats));
+    uint32_t expected_size = 0;
+    uint8_t *expected = read_fixture("scan_music.db", &expected_size);
+    CHECK(library_compare(expected, expected_size, output.bytes, output.length));
+    free(expected);
+    host_pinyin = NULL;
+    host_pinyin_size = 0;
+}
+
+static void cjk_scanning_without_the_asset_still_scans(void)
+{
+    host_pinyin = NULL;
+    host_pinyin_size = 0;
+    static Output output;
+    Progress progress = {.calls = 0};
+    ScanStats stats;
+    CHECK_EQUAL(SCAN_OK, scan_folder(ECHO_FIXTURE_DIR "/cjk_music", &output, &progress, &stats));
+    CHECK_EQUAL(6u, stats.tracks);
 }
 
 static void a_pinyin_asset_leaves_the_builder_memory(void)
@@ -629,6 +660,8 @@ int main(void)
         TEST_CASE(a_missing_music_root_says_so),
         TEST_CASE(internal_storage_scans_as_one_more_root_folder_like_the_pc_indexer),
         TEST_CASE(a_separate_listing_leaves_the_memory_to_the_builder),
+        TEST_CASE(a_corrupt_pinyin_asset_falls_back),
+        TEST_CASE(cjk_scanning_without_the_asset_still_scans),
         TEST_CASE(a_pinyin_asset_leaves_the_builder_memory),
         TEST_CASE(cjk_scanning_matches_the_pc_indexer),
         TEST_CASE(a_folder_bigger_than_the_listing_is_read_in_batches),

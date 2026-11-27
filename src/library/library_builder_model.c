@@ -971,7 +971,11 @@ static int by_title_then_artist(const uint8_t *left, const uint8_t *right, const
 {
     (void)context;
     int title = compare_u16(left, right, 2);
-    return title != 0 ? title : compare_u16(left, right, 4);
+    if (title != 0) {
+        return title;
+    }
+    int artist = compare_u16(left, right, 4);
+    return artist != 0 ? artist : compare_u16(left, right, 6);
 }
 
 static bool build_title_order(BuilderState *state, Prepared *prepared, const uint16_t *final_tracks)

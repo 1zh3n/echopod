@@ -15,7 +15,8 @@ target_link_libraries(echo_sim_decoder PUBLIC echo_hal echo_codec echo_faad2 ech
 string(REPLACE ";" "|" ECHO_GLYPH_FACE_PATHS "${ECHO_GLYPH_FACE_FILES}")
 add_library(echo_sim_glyphs STATIC sim_glyphs.c)
 target_include_directories(echo_sim_glyphs PUBLIC .)
-target_compile_definitions(echo_sim_glyphs PRIVATE ECHO_GLYPH_FACE_PATHS="${ECHO_GLYPH_FACE_PATHS}")
+target_compile_definitions(echo_sim_glyphs PRIVATE ECHO_GLYPH_FACE_PATHS="${ECHO_GLYPH_FACE_PATHS}"
+    ECHO_PINYIN_ASSET="${PROJECT_SOURCE_DIR}/assets/pinyin.bin")
 target_link_libraries(echo_sim_glyphs PUBLIC echo_gfx PRIVATE echo_options)
 
 string(REPLACE ";" "|" ECHO_LANGUAGE_PACK_PATHS "${ECHO_LANGUAGE_PACK_FILES}")

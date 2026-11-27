@@ -8,7 +8,7 @@ Status: **implemented in MINIV932.**
   its primary pinyin syllable and each kana by its romaji syllable. Latin and mapped CJK
   therefore share one A-Z order.
 - The table is `assets/pinyin.bin`: 6,940 records (6,763 GB2312 Hanzi plus 177 kana),
-  426 syllables, 17,799 bytes. It is lossless and checksum-pinned.
+  428 syllables, 17,822 bytes. It is lossless and checksum-pinned.
 - A rescan copies the table into the borrowed core1 scratch before sorting. Normal
   browsing reads the already-sorted `library.db` and does no sorting.
 - `sort_key_initial` returns the first pinyin/romaji letter for mapped CJK; the list maps
@@ -74,9 +74,10 @@ Table estimates:
 
 ## Where the table goes
 
-The device already borrows 384 KB (0x60000) of core1 RAM for a rescan. A 17 KB table
-leaves about 367 KB for the builder, above the 360 KB target. A 60 KB table leaves about
-324 KB, below the target, so a full table does not fit the 20k-track budget.
+The device already borrows 384 KB (0x60000) of core1 RAM for a rescan. The 17,822-byte
+asset plus the 1,052-byte table leaves 364,760 bytes (356.2 KiB) for the builder; a
+20,000-track builder test also passes with 340 KiB. A 60 KB table would leave about
+324 KB, below that tested margin, so a full table does not fit the 20k-track budget.
 
 `code window` is not the right place even when a small table fits: it competes with code
 and the 22 KB GB2312 table would leave almost no margin. The table belongs in the rescan
@@ -111,7 +112,9 @@ block cache and would be much slower.
 - **Scope:** GB2312 6,763 Hanzi plus kana, compressed to about 17 KB. The compressed asset
   lives in the rescan scratch during sorting; there is no decoded working table.
 - **Sort order:** interleave CJK under A-Z by pinyin/romaji.
-- **Japanese:** kana romaji only; kanji falls back to `#`.
+- **Japanese:** kana uses per-character romaji (no digraph/sokuon/long-vowel contraction);
+  kanji that is not in GB2312 falls back to `#`. Shared Hanzi uses its Chinese pinyin
+  reading (日本 is `riben` under R, 大阪 is `daban` under D).
 - **Jump UI:** keep the existing long volume press for this pass. A visible A-Z index is
   follow-up work.
 - **Section source:** an on-demand flash lookup from the compressed table; no daily table.
@@ -130,11 +133,13 @@ not on compression.
 - The generated table has 6,940 records: all 6,763 GB2312 Hanzi have a `kMandarin`
   reading, plus 177 kana. There are 426 distinct plain-pinyin/romaji syllables; 100
   characters have more than one Unihan reading and the generator takes the first. The
-  asset is 17,799 bytes.
+  asset is 17,822 bytes.
 - One primary reading per character. Polyphonic characters can sort under the wrong reading
   (for example 重庆 as `zhong` rather than `chong`); this is a known limitation.
-- Characters missing from the table, and Japanese kanji, fall back to `#` and are never
-  guessed.
+- Characters missing from the table fall back to `#` and are never guessed. Kana is
+  romanized character by character (`あいみょん` -> `aimiyon`, `がっこう` -> `gatsukou`);
+  Japanese kanji outside GB2312 stays under `#`, while shared Hanzi uses its Chinese
+  reading.
 - Tests cover the decompressed checksum, known characters, the PC/device sort-key
   agreement, mixed Latin/CJK order, kana, unknown fallback, and the byte-for-byte library
   comparison on a CJK fixture.

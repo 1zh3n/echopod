@@ -55,9 +55,18 @@ class SortKeyTest(unittest.TestCase):
     def test_unknown_kanji_falls_after_mapped_text(self):
         self.assertGreater(library_index.sort_key("\ufa19"), library_index.sort_key("zzz"))
         self.assertEqual("#", library_index.sort_initial("\ufa19"))
+        self.assertEqual("#", library_index.sort_initial("漢"))
+        self.assertEqual("riben", library_index.sort_key("日本"))
+        self.assertEqual("r", library_index.sort_initial("日本"))
 
     def test_polyphonic_uses_primary_reading(self):
         self.assertEqual("zhongqing", library_index.sort_key("重庆"))
+        self.assertEqual("nv", library_index.sort_key("女"))
+        self.assertEqual("lv", library_index.sort_key("绿"))
+
+    def test_kana_is_character_level(self):
+        self.assertEqual("gatsukou", library_index.sort_key("がっこう"))
+        self.assertEqual("kiyou", library_index.sort_key("きょう"))
 
     def test_section_initials(self):
         self.assertEqual("z", library_index.sort_initial("周"))

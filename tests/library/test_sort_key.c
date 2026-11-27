@@ -82,6 +82,10 @@ static void cjk_keys_match_the_pc_indexer(void)
     CHECK_EQUAL(0, strcmp("aimiyon", key));
     sort_key_make("\xE9\x87\x8D\xE5\xBA\x86", key, sizeof key);
     CHECK_EQUAL(0, strcmp("zhongqing", key));
+    sort_key_make("\xE6\x97\xA5\xE6\x9C\xAC", key, sizeof key);
+    CHECK_EQUAL(0, strcmp("riben", key));
+    sort_key_make("\xE3\x81\x8C\xE3\x81\xA3\xE3\x81\x93\xE3\x81\x86", key, sizeof key);
+    CHECK_EQUAL(0, strcmp("gatsukou", key));
     pinyin_table_set(NULL);
 }
 

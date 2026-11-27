@@ -285,7 +285,8 @@ static void cjk_section_initials_follow_pinyin(void)
     CHECK(load_pinyin_asset());
     CHECK_EQUAL('z', sort_key_initial("周"));
     CHECK_EQUAL('a', sort_key_initial("あ"));
-    CHECK_EQUAL((char)0x80, sort_key_initial("\xEF\xA8\x99"));
+    CHECK_EQUAL((char)0x80, sort_key_initial("\xE6\xBC\xA2"));
+    CHECK_EQUAL('r', sort_key_initial("日本"));
     CHECK_EQUAL('1', sort_key_initial("123"));
 }
 

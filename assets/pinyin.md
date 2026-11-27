@@ -4,11 +4,11 @@
 - License: Unicode License v3
 - Hanzi: 6,763
 - Kana: 177
-- Syllables: 426
-- Asset bytes: 17,799
-- Source SHA-256: 5d570402708b896eef69c2c0ebdae78a2019771c2e1a163bdb2d74254412c062
-- Asset SHA-256: 8196ccb39c7946892f22cc2c22d38cebb9265afdc2cac12aeea235103ca0e4ed
-- Decoded CRC32: bbc44d6d
+- Syllables: 428
+- Asset bytes: 17,822
+- Source SHA-256: 46d934ac44d983df2f357e7a5e97ba48eabce82fe44f3252d0f1a3f573cae33d
+- Asset SHA-256: 72e762ec03e817130b5b96bc40e15ae8ab78f725cd69efbe8ec08d400b837129
+- Decoded CRC32: 1b61bcf9
 
 The table is generated from the pinned Unihan extract and is redistributed
 under the Unicode License v3.

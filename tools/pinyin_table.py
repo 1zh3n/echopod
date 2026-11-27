@@ -83,8 +83,9 @@ def gb2312_hanzi():
 
 def plain_reading(reading):
     decomposed = unicodedata.normalize("NFD", reading)
+    decomposed = decomposed.replace("u\u0308", "v").replace("U\u0308", "V")
     stripped = "".join(part for part in decomposed if not unicodedata.combining(part))
-    return stripped.replace("ü", "v").replace("Ü", "V").lower()
+    return stripped.lower()
 
 
 def unihan_readings(path):
@@ -172,12 +173,17 @@ def build_bytes(entries):
     for syllable in syllables:
         encoded = syllable.encode("ascii")
         syllable_data += bytes((len(encoded),)) + encoded
-    return bytes(header) + bytes(index) + bytes(data) + bytes(syllable_data)
+    payload = bytes(header) + bytes(index) + bytes(data) + bytes(syllable_data)
+    return payload + struct.pack("<I", zlib.crc32(payload))
 
 
 def decode(data):
-    if len(data) < HEADER.size:
+    if len(data) < HEADER.size + 4:
         raise ValueError("truncated pinyin header")
+    payload_size = len(data) - 4
+    expected_asset_crc = struct.unpack_from("<I", data, payload_size)[0]
+    if zlib.crc32(data[:payload_size]) != expected_asset_crc:
+        raise ValueError("pinyin asset checksum mismatch")
     magic, version, block_shift, count, expected_crc = HEADER.unpack_from(data)
     if magic != MAGIC or version != VERSION or block_shift != BLOCK_SHIFT:
         raise ValueError("bad pinyin header")
@@ -187,7 +193,7 @@ def decode(data):
     blocks = (count + block_size - 1) // block_size
     index_size = blocks * INDEX.size
     data_start = HEADER.size + index_size
-    if data_start > len(data):
+    if data_start > payload_size:
         raise ValueError("truncated pinyin index")
     offsets = []
     for block in range(blocks):
@@ -203,12 +209,12 @@ def decode(data):
             record_index = block * block_size + position_in_block
             if record_index >= count:
                 break
-            if position >= len(data):
+            if position >= payload_size:
                 raise ValueError("truncated pinyin records")
             delta = data[position]
             position += 1
             if delta == 0xFF:
-                if position + 2 > len(data):
+                if position + 2 > payload_size:
                     raise ValueError("truncated pinyin delta")
                 delta = struct.unpack_from("<H", data, position)[0]
                 position += 2
@@ -216,12 +222,12 @@ def decode(data):
             if position_in_block == 0:
                 code = first
             previous = code
-            if position >= len(data):
+            if position >= payload_size:
                 raise ValueError("truncated pinyin syllable code")
             syllable_code = data[position]
             position += 1
             if syllable_code == 0xFF:
-                if position >= len(data):
+                if position >= payload_size:
                     raise ValueError("truncated pinyin syllable escape")
                 syllable_code = 0xFF + data[position]
                 position += 1
@@ -234,17 +240,17 @@ def decode(data):
         raise ValueError("pinyin record count mismatch")
     if zlib.crc32(decoded) != expected_crc:
         raise ValueError("pinyin decoded checksum mismatch")
-    if data_end + 2 > len(data):
+    if data_end + 2 > payload_size:
         raise ValueError("truncated pinyin syllable table")
     syllable_count = struct.unpack_from("<H", data, data_end)[0]
     position = data_end + 2
     syllables = []
     for _ in range(syllable_count):
-        if position >= len(data):
+        if position >= payload_size:
             raise ValueError("truncated pinyin syllable")
         length = data[position]
         position += 1
-        if position + length > len(data):
+        if position + length > payload_size:
             raise ValueError("truncated pinyin syllable text")
         syllables.append(data[position:position + length].decode("ascii"))
         position += length

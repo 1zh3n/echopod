@@ -81,15 +81,36 @@ uint32_t sim_glyphs_face_count(void)
     return loaded;
 }
 
+static uint8_t pinyin_asset[20000];
+static uint32_t pinyin_asset_size;
+static bool pinyin_loaded;
+
+static void load_pinyin_asset(void)
+{
+    if (pinyin_loaded) {
+        return;
+    }
+    pinyin_loaded = true;
+    FILE *file = fopen(ECHO_PINYIN_ASSET, "rb");
+    if (file == NULL) {
+        return;
+    }
+    pinyin_asset_size = (uint32_t)fread(pinyin_asset, 1, sizeof pinyin_asset, file);
+    fclose(file);
+}
+
 uint32_t hal_system_pinyin_size(void)
 {
-    return 0;
+    load_pinyin_asset();
+    return pinyin_asset_size;
 }
 
 bool hal_system_pinyin_read(uint32_t offset, void *target, uint32_t length)
 {
-    (void)offset;
-    (void)target;
-    (void)length;
-    return false;
+    load_pinyin_asset();
+    if (offset > pinyin_asset_size || length > pinyin_asset_size - offset) {
+        return false;
+    }
+    memcpy(target, pinyin_asset + offset, length);
+    return true;
 }

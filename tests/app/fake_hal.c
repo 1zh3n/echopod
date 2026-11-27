@@ -180,6 +180,7 @@ void fake_hal_reset(void)
     memset(theme_memory, 0, sizeof theme_memory);
     fake.audio.jack = HAL_AUDIO_JACK_SINGLE_ENDED;
     fake.audio.status.idle = true;
+    fake_hal_set_pinyin(NULL, 0);
     hal_system_set_power_savings(HAL_SAVINGS_DEFAULT);
 }
 

@@ -14,6 +14,23 @@ static uint16_t get16(const uint8_t *bytes)
     return (uint16_t)(bytes[0] | (uint16_t)bytes[1] << 8);
 }
 
+static uint32_t get32(const uint8_t *bytes)
+{
+    return (uint32_t)bytes[0] | (uint32_t)bytes[1] << 8 | (uint32_t)bytes[2] << 16 |
+           (uint32_t)bytes[3] << 24;
+}
+
+static uint32_t crc32_update(uint32_t crc, const uint8_t *bytes, uint32_t length)
+{
+    for (uint32_t index = 0; index < length; index++) {
+        crc ^= bytes[index];
+        for (int bit = 0; bit < 8; bit++) {
+            crc = (crc >> 1) ^ (0xEDB88320u & (0u - (crc & 1u)));
+        }
+    }
+    return crc;
+}
+
 static bool table_header_ok(const uint8_t *data, uint32_t size)
 {
     return data != NULL && size >= HEADER_BYTES && data[0] == 'E' && data[1] == 'P' &&
@@ -22,17 +39,22 @@ static bool table_header_ok(const uint8_t *data, uint32_t size)
 
 bool pinyin_table_open(PinyinTable *table, const uint8_t *data, uint32_t size)
 {
-    if (table == NULL || !table_header_ok(data, size)) {
+    if (table == NULL || !table_header_ok(data, size) || size < HEADER_BYTES + 4) {
+        return false;
+    }
+    uint32_t payload_size = size - 4;
+    if ((crc32_update(0xFFFFFFFFu, data, payload_size) ^ 0xFFFFFFFFu) !=
+        get32(data + payload_size)) {
         return false;
     }
     uint32_t count = get16(data + 6);
     uint32_t blocks = (count + BLOCK_SIZE - 1) / BLOCK_SIZE;
     uint32_t index_size = blocks * 4u;
-    if (count == 0 || HEADER_BYTES + index_size > size) {
+    if (count == 0 || HEADER_BYTES + index_size > payload_size) {
         return false;
     }
     table->data = data;
-    table->size = size;
+    table->size = payload_size;
     table->index = data + HEADER_BYTES;
     table->records = data + HEADER_BYTES + index_size;
     table->count = (uint16_t)count;
@@ -40,12 +62,13 @@ bool pinyin_table_open(PinyinTable *table, const uint8_t *data, uint32_t size)
     uint32_t records_start = HEADER_BYTES + index_size;
     uint32_t record_end = records_start;
     uint32_t largest_syllable = 0;
+    uint32_t decoded_crc = 0xFFFFFFFFu;
     for (uint32_t block = 0; block < blocks; block++) {
         uint32_t first = get16(table->index + block * 4u);
         uint32_t offset = get16(table->index + block * 4u + 2u);
         uint32_t position = records_start + offset;
         uint32_t previous = 0;
-        if (position > size) {
+        if (position > payload_size) {
             return false;
         }
         uint32_t in_block = count - block * BLOCK_SIZE;
@@ -53,12 +76,12 @@ bool pinyin_table_open(PinyinTable *table, const uint8_t *data, uint32_t size)
             in_block = BLOCK_SIZE;
         }
         for (uint32_t index = 0; index < in_block; index++) {
-            if (position >= size) {
+            if (position >= payload_size) {
                 return false;
             }
             uint32_t delta = data[position++];
             if (delta == 0xFF) {
-                if (position + 2 > size) {
+                if (position + 2 > payload_size) {
                     return false;
                 }
                 delta = get16(data + position);
@@ -69,12 +92,12 @@ bool pinyin_table_open(PinyinTable *table, const uint8_t *data, uint32_t size)
                 return false;
             }
             previous = codepoint;
-            if (position >= size) {
+            if (position >= payload_size) {
                 return false;
             }
             uint32_t syllable = data[position++];
             if (syllable == 0xFF) {
-                if (position >= size) {
+                if (position >= payload_size) {
                     return false;
                 }
                 syllable = 0xFFu + data[position++];
@@ -82,12 +105,15 @@ bool pinyin_table_open(PinyinTable *table, const uint8_t *data, uint32_t size)
             if (syllable > largest_syllable) {
                 largest_syllable = syllable;
             }
+            uint8_t decoded[4] = {(uint8_t)codepoint, (uint8_t)(codepoint >> 8),
+                                  (uint8_t)syllable, (uint8_t)(syllable >> 8)};
+            decoded_crc = crc32_update(decoded_crc, decoded, sizeof decoded);
         }
         if (position > record_end) {
             record_end = position;
         }
     }
-    if (record_end + 2 > size) {
+    if (record_end + 2 > payload_size || (decoded_crc ^ 0xFFFFFFFFu) != get32(data + 8)) {
         return false;
     }
     uint32_t syllable_count = get16(data + record_end);
@@ -98,7 +124,7 @@ bool pinyin_table_open(PinyinTable *table, const uint8_t *data, uint32_t size)
     table->syllables = data + record_end + 2;
     uint32_t position = record_end + 2;
     for (uint32_t index = 0; index < syllable_count; index++) {
-        if (position >= size) {
+        if (position >= payload_size) {
             return false;
         }
         uint32_t length = data[position++];

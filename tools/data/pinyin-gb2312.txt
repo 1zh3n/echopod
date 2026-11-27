@@ -407,7 +407,7 @@ U+4F97	dong
 U+4F9B	gong
 U+4F9D	yi
 U+4FA0	xia
-U+4FA3	lu
+U+4FA3	lv
 U+4FA5	jiao
 U+4FA6	zhen
 U+4FA7	ce
@@ -850,7 +850,7 @@ U+5410	tu
 U+5411	xiang
 U+5412	zha
 U+5413	xia
-U+5415	lu
+U+5415	lv
 U+5416	a
 U+5417	ma
 U+541B	jun
@@ -1364,7 +1364,7 @@ U+595A	xi
 U+5960	dian
 U+5962	she
 U+5965	ao
-U+5973	nu
+U+5973	nv
 U+5974	nu
 U+5976	nai
 U+5978	jian
@@ -1624,9 +1624,9 @@ U+5C55	zhan
 U+5C59	e
 U+5C5E	shu
 U+5C60	tu
-U+5C61	lu
+U+5C61	lv
 U+5C63	xi
-U+5C65	lu
+U+5C65	lv
 U+5C66	ju
 U+5C6E	che
 U+5C6F	tun
@@ -1888,7 +1888,7 @@ U+5F87	xun
 U+5F88	hen
 U+5F89	yang
 U+5F8A	huai
-U+5F8B	lu
+U+5F8B	lv
 U+5F8C	hou
 U+5F90	xu
 U+5F92	tu
@@ -1984,7 +1984,7 @@ U+605D	jia
 U+6062	hui
 U+6063	zi
 U+6064	xu
-U+6067	nu
+U+6067	nv
 U+6068	hen
 U+6069	en
 U+606A	ke
@@ -2274,7 +2274,7 @@ U+6343	jun
 U+6345	tong
 U+6346	kun
 U+6349	zhuo
-U+634B	lu
+U+634B	lv
 U+634C	ba
 U+634D	han
 U+634E	shao
@@ -2308,7 +2308,7 @@ U+6390	qia
 U+6392	pai
 U+6396	ye
 U+6398	jue
-U+63A0	lue
+U+63A0	lve
 U+63A2	tan
 U+63A3	che
 U+63A5	jie
@@ -2486,7 +2486,7 @@ U+65BD	shi
 U+65C1	pang
 U+65C3	zhan
 U+65C4	mao
-U+65C5	lu
+U+65C5	lv
 U+65C6	pei
 U+65CB	xuan
 U+65CC	jing
@@ -2831,7 +2831,7 @@ U+6982	gai
 U+6984	lan
 U+6986	yu
 U+6987	chen
-U+6988	lu
+U+6988	lv
 U+6989	ju
 U+698D	xie
 U+6994	lang
@@ -2989,7 +2989,7 @@ U+6C28	an
 U+6C29	ya
 U+6C2A	ke
 U+6C2E	dan
-U+6C2F	lu
+U+6C2F	lv
 U+6C30	qing
 U+6C32	yun
 U+6C34	shui
@@ -3285,7 +3285,7 @@ U+6EDF	yan
 U+6EE0	she
 U+6EE1	man
 U+6EE2	ying
-U+6EE4	lu
+U+6EE4	lv
 U+6EE5	lan
 U+6EE6	luan
 U+6EE8	bin
@@ -3590,7 +3590,7 @@ U+736D	ta
 U+736F	xun
 U+737E	huan
 U+7384	xuan
-U+7387	lu
+U+7387	lv
 U+7389	yu
 U+738B	wang
 U+738E	ding
@@ -3728,7 +3728,7 @@ U+7559	liu
 U+755A	ben
 U+755B	zhen
 U+755C	chu
-U+7565	lue
+U+7565	lve
 U+7566	qi
 U+756A	fan
 U+7572	she
@@ -3748,7 +3748,7 @@ U+7597	liao
 U+7599	ge
 U+759A	jiu
 U+759D	shan
-U+759F	nue
+U+759F	nve
 U+75A0	li
 U+75A1	yang
 U+75A3	you
@@ -4136,7 +4136,7 @@ U+79FD	hui
 U+7A00	xi
 U+7A02	lang
 U+7A03	fu
-U+7A06	lu
+U+7A06	lv
 U+7A0B	cheng
 U+7A0D	shao
 U+7A0E	shui
@@ -4458,7 +4458,7 @@ U+7EFB	quan
 U+7EFC	zong
 U+7EFD	zhan
 U+7EFE	wan
-U+7EFF	lu
+U+7EFF	lv
 U+7F00	zhui
 U+7F01	zi
 U+7F02	ke
@@ -4478,7 +4478,7 @@ U+7F11	gou
 U+7F12	zhui
 U+7F13	huan
 U+7F14	di
-U+7F15	lu
+U+7F15	lv
 U+7F16	bian
 U+7F17	min
 U+7F18	yuan
@@ -4751,7 +4751,7 @@ U+817D	wa
 U+817E	teng
 U+817F	tui
 U+8180	bang
-U+8182	lu
+U+8182	lv
 U+8188	ge
 U+818A	bo
 U+818F	gao
@@ -5175,8 +5175,8 @@ U+863C	mi
 U+864D	hu
 U+864E	hu
 U+864F	lu
-U+8650	nue
-U+8651	lu
+U+8650	nve
+U+8651	lv
 U+8654	qian
 U+865A	xu
 U+865E	yu
@@ -5338,7 +5338,7 @@ U+8832	juan
 U+8839	du
 U+883C	qu
 U+8840	xue
-U+8844	nu
+U+8844	nv
 U+8845	xin
 U+884C	xing
 U+884D	yan
@@ -5410,7 +5410,7 @@ U+8912	bao
 U+8913	bao
 U+8919	bei
 U+891A	chu
-U+891B	lu
+U+891B	lv
 U+8921	da
 U+8925	ru
 U+892A	tui
@@ -6130,7 +6130,7 @@ U+9490	shan
 U+9492	fan
 U+9493	diao
 U+9494	men
-U+9495	nu
+U+9495	nv
 U+9497	chai
 U+9499	gai
 U+949A	bu
@@ -6195,7 +6195,7 @@ U+94D8	ye
 U+94D9	nao
 U+94DB	dang
 U+94DC	tong
-U+94DD	lu
+U+94DD	lv
 U+94DE	diao
 U+94DF	yin
 U+94E0	kai
@@ -6238,7 +6238,7 @@ U+9506	gao
 U+9507	e
 U+9508	xiu
 U+9509	cuo
-U+950A	lue
+U+950A	lve
 U+950B	feng
 U+950C	xin
 U+950D	liu
@@ -6355,7 +6355,7 @@ U+95FA	gui
 U+95FB	wen
 U+95FC	ta
 U+95FD	min
-U+95FE	lu
+U+95FE	lv
 U+9600	fa
 U+9601	ge
 U+9602	he
@@ -6643,7 +6643,7 @@ U+9A6F	xun
 U+9A70	chi
 U+9A71	qu
 U+9A73	bo
-U+9A74	lu
+U+9A74	lv
 U+9A75	zang
 U+9A76	shi
 U+9A77	si

@@ -100,7 +100,8 @@ echo_add_unit_test(NAME test_library_builder
     LIBRARIES echo_library_fixtures echo_library_checks echo_reference_builder
 )
 set_tests_properties(test_library_builder PROPERTIES TIMEOUT 600)
-target_compile_definitions(test_library_builder PRIVATE ECHO_FIXTURE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/fixtures")
+target_compile_definitions(test_library_builder PRIVATE ECHO_FIXTURE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/fixtures"
+    ECHO_PINYIN_ASSET="${PROJECT_SOURCE_DIR}/assets/pinyin.bin")
 echo_add_unit_test(NAME test_track_tags
     SOURCES library/test_track_tags.c
     LIBRARIES echo_library_fixtures

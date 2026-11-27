@@ -10,7 +10,7 @@ enum {
     BLOCK_SHIFT = 5,
     BLOCK_SIZE = 32,
     BLOCK_BYTES = 256,
-    TEXT_BYTES = 1800
+    TEXT_BYTES = 2048
 };
 
 static uint16_t blocks;
@@ -39,6 +39,11 @@ static bool load_meta(void)
         return false;
     }
     uint32_t size = hal_system_pinyin_size();
+    if (size < 4) {
+        failed = true;
+        return false;
+    }
+    size -= 4;
     if (size < HEADER_BYTES) {
         failed = true;
         return false;
@@ -135,6 +140,10 @@ char pinyin_initial_from_image(uint32_t codepoint)
         return 0;
     }
     uint32_t size = hal_system_pinyin_size();
+    if (size < 4) {
+        return 0;
+    }
+    size -= 4;
     uint32_t index_size = (uint32_t)blocks * 4u;
     uint32_t data_start = HEADER_BYTES + index_size;
     uint32_t low = 0;

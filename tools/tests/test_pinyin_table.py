@@ -38,11 +38,15 @@ class PinyinAssetTest(unittest.TestCase):
         self.assertEqual("ni", table.syllable(ord("你")))
         self.assertEqual("zhou", table.syllable(ord("周")))
         self.assertEqual("ai", table.syllable(ord("爱")))
+        self.assertEqual("nv", table.syllable(ord("女")))
+        self.assertEqual("lv", table.syllable(ord("绿")))
         self.assertEqual("a", table.syllable(ord("あ")))
         self.assertIsNone(table.syllable(ord("\ufa19")))
 
     def test_kana_maps_to_romaji(self):
         table = pinyin_table.load(ASSET)
+        self.assertEqual("nv", table.syllable(ord("女")))
+        self.assertEqual("lv", table.syllable(ord("绿")))
         self.assertEqual("a", table.syllable(ord("あ")))
         self.assertEqual("ka", table.syllable(ord("か")))
         self.assertEqual("ga", table.syllable(ord("が")))

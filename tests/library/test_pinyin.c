@@ -25,7 +25,7 @@ static void asset_has_the_expected_counts(void)
     CHECK(pinyin_table_open(&table, asset, (uint32_t)length));
     CHECK_EQUAL(6940, table.count);
     CHECK_EQUAL(217, table.blocks);
-    CHECK_EQUAL(426, table.syllable_count);
+    CHECK_EQUAL(428, table.syllable_count);
 }
 
 static void known_syllables_are_read(void)
@@ -42,6 +42,10 @@ static void known_syllables_are_read(void)
     CHECK_EQUAL(0, strcmp("a", text));
     CHECK(pinyin_table_syllable(&table, 0x4E2D, text, sizeof text));
     CHECK_EQUAL(0, strcmp("zhong", text));
+    CHECK(pinyin_table_syllable(&table, 0x5973, text, sizeof text));
+    CHECK_EQUAL(0, strcmp("nv", text));
+    CHECK(pinyin_table_syllable(&table, 0x7EFF, text, sizeof text));
+    CHECK_EQUAL(0, strcmp("lv", text));
     CHECK(!pinyin_table_syllable(&table, 0xFA19, text, sizeof text));
 }
 
@@ -63,6 +67,13 @@ static void malformed_tables_are_refused(void)
     size_t length = load_asset();
     CHECK(length > 16);
     CHECK(!pinyin_table_open(&table, asset, (uint32_t)length - 8));
+    static unsigned char corrupt[32768];
+    memcpy(corrupt, asset, length);
+    corrupt[length / 2] ^= 0x01;
+    CHECK(!pinyin_table_open(&table, corrupt, (uint32_t)length));
+    memcpy(corrupt, asset, length);
+    corrupt[length - 1] ^= 0x01;
+    CHECK(!pinyin_table_open(&table, corrupt, (uint32_t)length));
 }
 
 int main(void)

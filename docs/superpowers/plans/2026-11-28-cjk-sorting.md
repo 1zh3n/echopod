@@ -416,3 +416,20 @@ git add docs README.md README.zh-CN.md
 git commit -m "docs: record CJK pinyin sorting"
 git push origin main
 ```
+
+---
+
+## Post-review amendments (2026-11-28)
+
+- Kana is romanized per character, not by Hepburn digraphs/sokuon/long vowels:
+  `あいみょん` is `aimiyon`, `がっこう` is `gatsukou`, `きょう` is `kiyou`. This limitation is
+  documented in the spec and pinned by tests instead of changing the one-record-per-codepoint
+  asset.
+- Section initials use the existing lowercase/`0x80` contract: `sort_key_initial` returns
+  `z`/`a`/`0x80`/`1`; `list_section_of_key` maps them to the visible A-Z/`#` labels.
+- The final asset grew a 4-byte whole-asset CRC trailer and now has 428 syllables / 17,822
+  bytes. The C reader verifies both the whole-asset CRC and the decoded-record CRC.
+- The CJK fixture now includes a `周杰伦` / `ZhouJielun` pinyin tie; PC and device both order
+  equal keys by final track position.
+- The rescan builder test covers 20,000 tracks with 340 KiB after the pinyin reservation;
+  the actual post-reservation builder size is 364,760 bytes.

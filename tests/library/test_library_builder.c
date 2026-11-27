@@ -6,6 +6,7 @@
 #include "library/library.h"
 #include "library/library_browse.h"
 #include "library/library_builder.h"
+#include "library/pinyin.h"
 #include "library_compare.h"
 #include "memory_source.h"
 #include "random_library.h"
@@ -391,6 +392,21 @@ static void a_20000_track_library_builds_in_the_players_memory(void)
     check_matches_reference(20000, 30, 5);
 }
 
+static void a_20000_track_library_fits_with_the_pinyin_reservation(void)
+{
+    RandomLibrary library;
+    random_library_make(&library, 20000, 30, 8);
+    LibraryBuilder builder;
+    library_builder_init(&builder, player_memory(), PLAYER_MEMORY - 20 * 1024,
+                         scratch_io(scratch_of_size(SCRATCH_SIZE)));
+    CHECK_EQUAL(BUILDER_OK, add_library(&builder, &library));
+    Built built;
+    finish(&builder, &built);
+    CHECK_EQUAL(BUILDER_OK, built.result);
+    free(built.output.bytes);
+    random_library_free(&library);
+}
+
 static void the_builder_stays_inside_its_memory(void)
 {
     static uint8_t block[PLAYER_MEMORY + 2 * GUARD_BYTES];
@@ -730,6 +746,14 @@ static void single_album_folders_follow_track_numbers_before_file_names(void)
 
 int main(void)
 {
+    static uint8_t pinyin_asset[20000];
+    static PinyinTable pinyin;
+    FILE *pinyin_file = fopen(ECHO_PINYIN_ASSET, "rb");
+    CHECK(pinyin_file != NULL);
+    size_t pinyin_size = fread(pinyin_asset, 1, sizeof pinyin_asset, pinyin_file);
+    fclose(pinyin_file);
+    CHECK(pinyin_table_open(&pinyin, pinyin_asset, (uint32_t)pinyin_size));
+    pinyin_table_set(&pinyin);
     static const TestCase cases[] = {
         TEST_CASE(the_fixture_tracks_mean_the_same_as_the_pc_indexer),
         TEST_CASE(random_tracks_mean_the_same_as_the_pc_indexer),
@@ -737,6 +761,7 @@ int main(void)
         TEST_CASE(random_playlists_resolve_like_the_pc_indexer),
         TEST_CASE(random_libraries_match_the_reference_builder),
         TEST_CASE(a_20000_track_library_builds_in_the_players_memory),
+        TEST_CASE(a_20000_track_library_fits_with_the_pinyin_reservation),
         TEST_CASE(the_builder_stays_inside_its_memory),
         TEST_CASE(a_scratch_file_too_small_says_there_is_no_room),
         TEST_CASE(too_little_memory_says_so),
