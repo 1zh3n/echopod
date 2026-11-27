@@ -47,7 +47,8 @@ portrait Home card, the landscape Settings screen without a text header, black d
 shadows, and 200×112 / 146×112 boot stills with 5 px hard shadows and no card or frame.
 CJK titles are sorted by pinyin (GB2312) and kana by romaji, interleaved with Latin under
 A-Z; the boot still is drawn across the display strips, and the Settings category dots use
-round masks instead of the old one-pixel caps. Verified on one 512 MB unit; the 8 GB model is not supported.
+round masks instead of the old one-pixel caps. It still needs a final device check; earlier
+Lite builds were tested on one 512 MB unit. The 8 GB model is not supported.
 
 ## After flashing
 
