@@ -1,7 +1,7 @@
 # CJK sorting and section jump
 
-Status: **proposal, not implemented.** MINIV931 still uses the sort described under
-[What happens now](#what-happens-now).
+Status: **approved for implementation (2026-11-28).** MINIV931 still uses the sort described
+under [What happens now](#what-happens-now).
 
 ## What happens now
 
@@ -72,10 +72,9 @@ Table estimates:
 
 ## Where the table goes
 
-The device already borrows 384 KB (0x60000) of core1 RAM for a rescan. A 12 KB table
-leaves about 372 KB for the builder, above the 360 KB target. A 22 KB table leaves about
-362 KB, at the edge. A 60 KB table leaves about 324 KB, below the target, so a full table
-does not fit the 20k-track budget.
+The device already borrows 384 KB (0x60000) of core1 RAM for a rescan. A 17 KB table
+leaves about 367 KB for the builder, above the 360 KB target. A 60 KB table leaves about
+324 KB, below the target, so a full table does not fit the 20k-track budget.
 
 `code window` is not the right place even when a small table fits: it competes with code
 and the 22 KB GB2312 table would leave almost no margin. The table belongs in the rescan
@@ -105,13 +104,34 @@ Host microbenchmarks of the current `sort_key_make`: 4M CJK characters take abou
 A table in RAM or scratch avoids per-character eMMC reads; a table in flash would need a
 block cache and would be much slower.
 
-## Open decisions
+## Decisions
 
-- **Sort order:** interleave CJK under A-Z by pinyin/romaji, or keep English first and put
-  the CJK group after it, sorted within the group. Both need the same table; the choice is
-  presentation, not cost.
-- **Scope:** 3,500 common characters first, or GB2312 6,763; whether a compressed table is
-  wanted to keep more of the scan budget.
-- **Japanese:** kana romaji only (recommended), or an attempt at kanji readings.
-- **Jump UI:** keep the long volume press, or add a visible A-Z/# index.
-- **Section source:** a section byte in `library.db`, or an on-demand flash lookup.
+- **Scope:** GB2312 6,763 Hanzi plus kana, compressed to about 17 KB. The compressed asset
+  lives in the rescan scratch during sorting; there is no decoded working table.
+- **Sort order:** interleave CJK under A-Z by pinyin/romaji.
+- **Japanese:** kana romaji only; kanji falls back to `#`.
+- **Jump UI:** keep the existing long volume press for this pass. A visible A-Z index is
+  follow-up work.
+- **Section source:** an on-demand flash lookup from the compressed table; no daily RAM
+  table. If the lookup cost is noticeable, a section byte in `library.db` is the follow-up.
+
+## Data quality
+
+Compression is lossless: the decompressed table is byte-identical to the generated source
+table, and a checksum test pins that. The quality of the order depends on the reading data,
+not on compression.
+
+- The source is a pinned Unicode Unihan `kMandarin` extract (Unicode 16.0.0, Unicode License
+  v3), with the license and source version kept beside the generated asset. A generated
+  manifest records the source version and checksum.
+- A prototype over the 6,763 GB2312 Hanzi covers every character: 6,763/6,763 have a
+  `kMandarin` reading. There are 401 distinct plain-pinyin syllables; 100 characters have
+  more than one Unihan reading, and the generator takes the first. The compressed prototype
+  is about 17.2 KB (header 12 B, block index 848 B, records 14,686 B, syllables 1,701 B).
+- One primary reading per character. Polyphonic characters can sort under the wrong reading
+  (for example 重庆 as `zhong` rather than `chong`); this is a known limitation.
+- Characters missing from the table, and Japanese kanji, fall back to `#` and are never
+  guessed.
+- Tests cover the decompressed checksum, known characters, the PC/device sort-key
+  agreement, mixed Latin/CJK order, kana, unknown fallback, and the byte-for-byte library
+  comparison on a CJK fixture.
