@@ -11,7 +11,7 @@
   <img src="docs/images/lite/home.png" alt="Home screen in light and dark, landscape and portrait" width="100%">
 </p>
 
-<p align="center"><em>Home, Now Playing, Settings and Quick panel are design previews (2×). The boot stills below are actual firmware assets.</em></p>
+<p align="center"><em>Home, Now Playing, Settings and Quick panel are design mockups (2×), not device screenshots. The boot sheet below is rendered from the actual firmware assets.</em></p>
 
 ## What this is
 
@@ -59,6 +59,10 @@ The boot chain, IDB, PMU firmware, fw2 and slot layout are not modified.
 
 ## UI previews
 
+> **These are design mockups, not screenshots of the device.** They show the intended layout and
+> palette; the real screen may differ in font rendering and final asset placement. The boot sheet
+> is rendered from the actual `LBOO` / `LBO2` assets, not a device photo.
+
 | Home | Now Playing |
 |---|---|
 | ![Home](docs/images/lite/home.png) | ![Now Playing](docs/images/lite/now-playing.png) |
@@ -67,9 +71,9 @@ The boot chain, IDB, PMU firmware, fw2 and slot layout are not modified.
 |---|---|
 | ![Settings](docs/images/lite/settings.png) | ![Quick panel](docs/images/lite/quick-panel.png) |
 
-![Boot](docs/images/lite/boot.png)
+![Boot](docs/images/lite/boot-stills.png)
 
-*Actual boot stills (2×): landscape 316×166 and portrait 166×316. Art: Mountain Dusk by ansimuz, CC0 1.0.*
+*Actual boot art (2×), not a device photo: landscape 316×166 and portrait 166×316. Art: Mountain Dusk by ansimuz, CC0 1.0.*
 
 ## Build
 

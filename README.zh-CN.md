@@ -11,7 +11,7 @@
   <img src="docs/images/lite/home.png" alt="Home 的 Light/Dark、横屏/竖屏" width="100%">
 </p>
 
-<p align="center"><em>Home、Now Playing、Settings、Quick panel 是设计预览（2×）；下方开机图是真实固件素材。</em></p>
+<p align="center"><em>Home、Now Playing、Settings、Quick panel 是设计稿（2×），不是实机截图；下方开机图是从真实固件素材渲染的。</em></p>
 
 ## 这是什么
 
@@ -52,6 +52,9 @@
 
 ## 界面预览
 
+> **这些是设计稿，不是实机截图。** 它们展示预期布局和配色；实机字体渲染和最终素材位置可能略有不同。
+> 开机图是从真实 `LBOO` / `LBO2` 素材渲染的，不是设备照片。
+
 | Home | Now Playing |
 |---|---|
 | ![Home](docs/images/lite/home.png) | ![Now Playing](docs/images/lite/now-playing.png) |
@@ -60,9 +63,9 @@
 |---|---|
 | ![Settings](docs/images/lite/settings.png) | ![Quick panel](docs/images/lite/quick-panel.png) |
 
-![Boot](docs/images/lite/boot.png)
+![Boot](docs/images/lite/boot-stills.png)
 
-*真实开机图（2×）：横版 316×166，竖版 166×316。美术：ansimuz 的 Mountain Dusk，CC0 1.0。*
+*真实开机素材渲染（2×），不是设备照片：横版 316×166，竖版 166×316。美术：ansimuz 的 Mountain Dusk，CC0 1.0。*
 
 ## 构建
 
