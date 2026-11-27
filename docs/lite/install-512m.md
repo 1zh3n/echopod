@@ -21,7 +21,7 @@ The 512 MB updater scans the card root for:
 It does **not** scan `HIFIEC90.IMG`. Copy the build to the card root and rename it, for example:
 
 ```text
-build/release-lite/HIFIEC90.IMG  ->  /MINIV932.IMG
+build/release-lite/HIFIEC90.IMG  ->  /MINIV933.IMG
 ```
 
 Then use the player's updater.
@@ -36,11 +36,11 @@ cmake --build --preset release-lite
 ## Current build
 
 ```text
-image:  MINIV932.IMG
-sha256: 4cad0142b501fd6e10f1749f7d335cb9d62fdd176fd4dda4906afc084b4a336b
+image:  MINIV933.IMG
+sha256: 1e8c134d5ed9fecbb04f2f39ec196f3b9c1761b83a85d2de845c2a51754ef58a
 ```
 
-`MINIV932` contains the runtime Light/Dark and landscape/portrait build, the 8 px padding system,
+`MINIV933` contains the runtime Light/Dark and landscape/portrait build, the 8 px padding system,
 the 28×8 global status meter, the sleep timer countdown and
 finish-track shutdown (the queued next track is held until the player powers off), the 112×112
 portrait Home card, the landscape Settings screen without a text header, black dark-mode
