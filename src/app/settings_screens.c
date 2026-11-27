@@ -41,7 +41,10 @@ ECHO_RESIDENT static const StringId TIMEOUT_OPTIONS[SCREEN_TIMEOUT_OPTION_COUNT]
     STR_SETTINGS_NEVER};
 ECHO_RESIDENT static const char *const BRIGHTNESS_OPTIONS[BRIGHTNESS_LEVEL_COUNT] = {
     "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"};
-#ifndef ECHO_LITE
+#ifdef ECHO_LITE
+ECHO_RESIDENT static const StringId LITE_ORIENTATION_OPTIONS[2] = {
+    STR_SETTINGS_LANDSCAPE, STR_SETTINGS_PORTRAIT};
+#else
 ECHO_RESIDENT static const StringId ORIENTATION_OPTIONS[ORIENTATION_COUNT] = {
     STR_SETTINGS_LANDSCAPE, STR_SETTINGS_PORTRAIT, STR_SETTINGS_PORTRAIT_FLIPPED};
 #endif
@@ -93,7 +96,10 @@ ECHO_RESIDENT static const StringId COVER_COUNT_OPTIONS[2] = {STR_SETTINGS_FIVE_
 #endif
 ECHO_RESIDENT static const StringId ANIMATION_OPTIONS[ANIMATION_SPEED_COUNT] = {
     STR_SETTINGS_NORMAL, STR_SETTINGS_SLOWER, STR_SETTINGS_FASTER};
-#ifndef ECHO_LITE
+#ifdef ECHO_LITE
+ECHO_RESIDENT static const StringId LITE_THEME_OPTIONS[2] = {
+    STR_SETTINGS_LIGHT, STR_SETTINGS_DARK};
+#else
 ECHO_RESIDENT static const StringId THEME_OPTIONS[THEME_COUNT] = {
     STR_SETTINGS_DARK,     STR_SETTINGS_LIGHT,     STR_SETTINGS_FJORD,
     STR_SETTINGS_DUSK,     STR_SETTINGS_NEON,      STR_SETTINGS_PHOSPHOR,
@@ -253,7 +259,6 @@ static void choose_brightness(void *context, int index)
     apply_and_save(context);
 }
 
-#ifndef ECHO_LITE
 static int current_orientation(const void *context)
 {
     return (int)settings_of(context)->orientation;
@@ -264,7 +269,6 @@ static void choose_orientation(void *context, int index)
     editable_settings(context)->orientation = (Orientation)index;
     save(context);
 }
-#endif
 
 static int current_gain(const void *context)
 {
@@ -415,7 +419,8 @@ ECHO_RESIDENT static const SettingChoice CHOICES[SETTINGS_CHOICE_COUNT] = {
     {STR_SETTINGS_BRIGHTNESS, NULL, BRIGHTNESS_OPTIONS, BRIGHTNESS_LEVEL_COUNT, current_brightness,
      choose_brightness, NULL, 0},
 #ifdef ECHO_LITE
-    {0},
+    {STR_SETTINGS_ORIENTATION, LITE_ORIENTATION_OPTIONS, NULL, 2, current_orientation,
+     choose_orientation, NULL, 0},
 #else
     {STR_SETTINGS_ORIENTATION, ORIENTATION_OPTIONS, NULL, ORIENTATION_COUNT, current_orientation,
      choose_orientation, NULL, 0},
@@ -480,7 +485,7 @@ ECHO_RESIDENT static const SettingChoice CHOICES[SETTINGS_CHOICE_COUNT] = {
 #endif
     OPTION_CHOICE(STR_SETTINGS_ANIMATIONS, ANIMATION_OPTIONS, OPTION_ANIMATION_SPEED),
 #ifdef ECHO_LITE
-    {0},
+    OPTION_CHOICE(STR_SETTINGS_THEME, LITE_THEME_OPTIONS, OPTION_THEME),
 #else
     OPTION_CHOICE(STR_SETTINGS_THEME, THEME_OPTIONS, OPTION_THEME),
 #endif
@@ -731,18 +736,18 @@ ECHO_RESIDENT static const uint8_t ROWS[] = {
     ROW_GROUP,          ROW_GROUP + 1,      ROW_GROUP + 2,
     ROW_GROUP + 3,      ROW_GROUP + 4,      CHOICE_GAIN,
     CHOICE_OUTPUT,      CHOICE_FILTER,      CHOICE_BALANCE,
-    CHOICE_BLUETOOTH_LEVEL, ROW_EQUALIZER,  CHOICE_BRIGHTNESS,
-    CHOICE_TIMEOUT,     CHOICE_ANIMATIONS,  ROW_FOLDERS,
-    ROW_RESCAN,         CHOICE_LYRICS,      CHOICE_SWAP,
-    CHOICE_MENU_KEY,    CHOICE_POWER_ON,
-    CHOICE_LANGUAGE,    ROW_DATE_TIME,      CHOICE_AUTO_OFF,
-    CHOICE_SLEEP,       ROW_BLUETOOTH,      CHOICE_USB_MODE,
-    CHOICE_USB_PROMPT};
+    CHOICE_BLUETOOTH_LEVEL, ROW_EQUALIZER,  CHOICE_THEME,
+    CHOICE_ORIENTATION, CHOICE_BRIGHTNESS,  CHOICE_TIMEOUT,
+    CHOICE_ANIMATIONS,  ROW_FOLDERS,        ROW_RESCAN,
+    CHOICE_LYRICS,      CHOICE_SWAP,        CHOICE_MENU_KEY,
+    CHOICE_POWER_ON,    CHOICE_LANGUAGE,    ROW_DATE_TIME,
+    CHOICE_AUTO_OFF,    CHOICE_SLEEP,       ROW_BLUETOOTH,
+    CHOICE_USB_MODE,    CHOICE_USB_PROMPT};
 
 enum {
     SOUND_ROWS = 6,
     DISPLAY_FIRST = SETTINGS_TOP_COUNT + SOUND_ROWS,
-    DISPLAY_ROWS = 3,
+    DISPLAY_ROWS = 5,
     LIBRARY_FIRST = DISPLAY_FIRST + DISPLAY_ROWS,
     LIBRARY_ROWS = 3,
     BUTTONS_FIRST = LIBRARY_FIRST + LIBRARY_ROWS,
@@ -896,7 +901,8 @@ static void settings_show_category(SettingsScreens *screens, int group, int sele
     screens->menu.config.item_count = rows->count;
     screens->menu.list.top = 0;
     list_view_select(&screens->menu.list, selected, 0);
-    screens->menu.list.visible_rows = SETTINGS_TOP_COUNT;
+    screens->menu.list.visible_rows =
+        theme_is_portrait(screens->theme) ? 7 : SETTINGS_TOP_COUNT;
 }
 
 static ScreenAction next_category(void *context, int index)

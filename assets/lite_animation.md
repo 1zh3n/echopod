@@ -1,7 +1,7 @@
 # Lite boot still + charging animation asset
 
-`lite_animation.bin` is a 321,228-byte blob included in the Lite image as an extra glyph-table entry.
-It starts with the charging animation and ends with the large static boot picture.
+`lite_animation.bin` is a 347,504-byte blob included in the Lite image as an extra glyph-table entry.
+It starts with the charging animation, then the landscape boot still, then the portrait boot still.
 
 ## Charging animation
 
@@ -34,6 +34,24 @@ offset  size  field
 295000  26228 316x166 x 4-bit (high nibble first)
 ```
 
-The boot still is drawn at (2, 2) inside a 2px ink frame, filling the 320x170 screen. It is
-static; the charging screen continues to use the 96x64 animation card. Source and license:
-Mountain Dusk by ansimuz, CC0 1.0; crop 316x166 from the 320x240 preview, quantized to 16 colors.
+The landscape boot still is drawn at (2, 2) inside a 2px frame, filling the 320x170 screen. It is
+static; the charging screen continues to use the 96x64 animation card.
+
+## Portrait static boot picture
+
+```text
+offset 321228  size  field
+321228  4     "LBO2"
+321232  1     version = 1
+321233  1     reserved
+321234  2     width = 166 (little-endian)
+321236  2     height = 316 (little-endian)
+321238  2     reserved
+321240  32    16 x RGB565 palette, little-endian
+321272  4     reserved
+321276  26228 166x316 x 4-bit (high nibble first)
+```
+
+The portrait still is appended after the landscape still. `tools/lite_boot_portrait.py` regenerates
+it from the Mountain Dusk preview; the crop is 126x240, resized to 166x316 and quantized to 16
+colors. Source and license: Mountain Dusk by ansimuz, CC0 1.0.

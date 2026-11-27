@@ -647,19 +647,29 @@ static void landscape_layout(const NowPlayingScreen *now_playing, Layout *layout
 #endif
 
 #ifdef ECHO_LITE
-static void lite_layout(Layout *layout)
+static void lite_layout(Layout *layout, bool portrait)
 {
-    layout->boxes[THEME_LAYOUT_TITLE] = (Rect){16, 8, 200, 22};
-    layout->boxes[THEME_LAYOUT_ARTIST] = (Rect){16, 32, 288, 18};
-    layout->boxes[THEME_LAYOUT_ALBUM] = (Rect){16, 46, 288, 18};
-    layout->boxes[THEME_LAYOUT_FORMAT] = (Rect){216, 8, 88, 18};
-    layout->boxes[THEME_LAYOUT_LYRICS] = (Rect){16, 62, 288, 75};
-    layout->boxes[THEME_LAYOUT_PROGRESS] = (Rect){16, 144, 288, 3};
-    layout->boxes[THEME_LAYOUT_TIMES] = (Rect){16, 150, 288, 18};
+    if (portrait) {
+        layout->boxes[THEME_LAYOUT_TITLE] = (Rect){12, 24, 104, 22};
+        layout->boxes[THEME_LAYOUT_ARTIST] = (Rect){12, 46, 146, 18};
+        layout->boxes[THEME_LAYOUT_ALBUM] = (Rect){12, 62, 146, 18};
+        layout->boxes[THEME_LAYOUT_FORMAT] = (Rect){0, 0, 0, 0};
+        layout->boxes[THEME_LAYOUT_LYRICS] = (Rect){12, 86, 146, 158};
+        layout->boxes[THEME_LAYOUT_PROGRESS] = (Rect){12, 262, 146, 4};
+        layout->boxes[THEME_LAYOUT_TIMES] = (Rect){12, 270, 146, 18};
+    } else {
+        layout->boxes[THEME_LAYOUT_TITLE] = (Rect){16, 8, 200, 22};
+        layout->boxes[THEME_LAYOUT_ARTIST] = (Rect){16, 32, 288, 18};
+        layout->boxes[THEME_LAYOUT_ALBUM] = (Rect){16, 46, 288, 18};
+        layout->boxes[THEME_LAYOUT_FORMAT] = (Rect){216, 8, 88, 18};
+        layout->boxes[THEME_LAYOUT_LYRICS] = (Rect){16, 62, 288, 75};
+        layout->boxes[THEME_LAYOUT_PROGRESS] = (Rect){16, 144, 288, 3};
+        layout->boxes[THEME_LAYOUT_TIMES] = (Rect){16, 150, 288, 18};
+        layout->aligns[THEME_LAYOUT_FORMAT] = THEME_ALIGN_RIGHT;
+    }
     layout->boxes[THEME_LAYOUT_COVER] = (Rect){0, 0, 0, 0};
     layout->boxes[THEME_LAYOUT_DETAIL] = (Rect){0, 0, 0, 0};
     layout->boxes[THEME_LAYOUT_MODES] = (Rect){0, 0, 0, 0};
-    layout->aligns[THEME_LAYOUT_FORMAT] = THEME_ALIGN_RIGHT;
 }
 #endif
 
@@ -710,7 +720,7 @@ static void layout_of(const NowPlayingScreen *now_playing, Layout *layout)
     *layout = (Layout){.lyrics = lyrics_shown(now_playing)};
 #ifdef ECHO_LITE
     (void)theme;
-    lite_layout(layout);
+    lite_layout(layout, theme_is_portrait(theme));
 #else
     if (theme_is_portrait(theme)) {
         portrait_layout(now_playing, layout);
@@ -803,12 +813,18 @@ static void draw_lyrics(const NowPlayingScreen *now_playing, Canvas *canvas, con
     bool synced = lyrics->lyrics.synced;
     int rows = area.height / LYRICS_ROW_HEIGHT < LYRICS_ROWS ? area.height / LYRICS_ROW_HEIGHT
                                                              : LYRICS_ROWS;
+    int top = area.y;
+#ifdef ECHO_LITE
+    if (theme_is_portrait(theme) && rows * LYRICS_ROW_HEIGHT < area.height) {
+        top += (area.height - rows * LYRICS_ROW_HEIGHT) / 2;
+    }
+#endif
     for (int row = 0; row < rows && area.width > 0; row++) {
         int index = lyrics->current - rows / 2 + row;
         if (index < 0 || index >= lyrics->lyrics.count) {
             continue;
         }
-        Label label = {{area.x, area.y + row * LYRICS_ROW_HEIGHT, area.width, LYRICS_ROW_HEIGHT},
+        Label label = {{area.x, top + row * LYRICS_ROW_HEIGHT, area.width, LYRICS_ROW_HEIGHT},
                        lyrics_line(&lyrics->lyrics, index)};
         if (synced && index == lyrics->current) {
 #ifdef ECHO_LITE
@@ -987,11 +1003,13 @@ static void draw_lite_state(const NowPlayingScreen *now_playing, Canvas *canvas)
     }
     const Theme *theme = now_playing->config.theme;
     PlaybackMode mode = player_playback_mode(now_playing->config.player);
-    lite_icon_draw_scaled(canvas, lite_mode_icon_18(mode), (Rect){262, 8, 18, 18},
+    int mode_x = theme_is_portrait(theme) ? 122 : 262;
+    int state_x = theme_is_portrait(theme) ? 147 : 288;
+    lite_icon_draw_scaled(canvas, lite_mode_icon_18(mode), (Rect){mode_x, 8, 18, 18},
                           theme->colors->selection_background);
     const IconMask *state = now_playing->status.state == PLAYER_PLAYING ? &LITE_ICON_PAUSE_18
                                                                         : &LITE_ICON_PLAY_18;
-    lite_icon_draw_scaled(canvas, state, (Rect){288, 8, 18, 18}, theme->colors->text);
+    lite_icon_draw_scaled(canvas, state, (Rect){state_x, 8, 18, 18}, theme->colors->text);
 }
 #endif
 
@@ -1274,19 +1292,22 @@ static void draw_lite_spectrum(const NowPlayingScreen *now_playing, Canvas *canv
     static const uint8_t heights[] = {
         18, 30, 14, 42, 26, 54, 34, 20, 46, 60, 28, 38, 16,
         50, 32, 22, 44, 58, 30, 18, 40, 52, 24, 36, 14, 46};
-    static const uint8_t yellow[] = {5, 12, 19};
     const Theme *theme = now_playing->config.theme;
     int baseline = area.y + area.height - 4;
     int phase = now_playing->status.state == PLAYER_PLAYING ? (int)(now_playing->now_ms / 120) : 0;
-    for (int index = 0; index < 26; index++) {
+    int bars = area.width < 200 ? 14 : 26;
+    int grow = area.height > 100 ? 2 : 1;
+    for (int index = 0; index < bars; index++) {
         int height = heights[index];
         if (now_playing->status.state == PLAYER_PLAYING) {
             height = 10 + ((height + phase * 3 + index * 7) % 42);
         }
+        height *= grow;
         int x = area.x + 6 + index * 10;
-        Color color = yellow[0] == index || yellow[1] == index || yellow[2] == index
-                          ? COLOR_RGB(255, 212, 59)
-                          : theme->colors->selection_background;
+        bool yellow_bar = bars == 14 ? index == 2 || index == 6 || index == 10
+                                     : index == 5 || index == 12 || index == 19;
+        Color color = yellow_bar ? COLOR_RGB(255, 212, 59)
+                                 : theme->colors->selection_background;
         canvas_fill_rect(canvas, (Rect){x, baseline - height, 6, height}, color);
     }
     canvas_fill_rect(canvas, (Rect){area.x, baseline, area.width, 2}, theme->colors->text);

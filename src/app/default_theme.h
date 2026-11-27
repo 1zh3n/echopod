@@ -10,7 +10,7 @@ extern const Theme DEFAULT_THEME;
 
 Theme default_theme_for(bool portrait);
 #ifdef ECHO_LITE
-void lite_theme_force(Theme *theme);
+void lite_theme_force(Theme *theme, bool dark);
 #endif
 
 typedef struct ThemeChoice {

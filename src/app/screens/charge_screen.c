@@ -6,6 +6,7 @@
 #include "ui/label.h"
 #ifdef ECHO_LITE
 #include "lite_animation.h"
+#include "ui/lite_frame.h"
 #endif
 
 enum {
@@ -87,7 +88,10 @@ void charge_screen_draw(Canvas *canvas, const Theme *theme, HalBattery battery, 
     canvas_fill_rect(canvas, (Rect){0, 0, width, height}, theme->colors->background);
 #ifdef ECHO_LITE
     (void)battery;
-    lite_animation_draw_card(canvas, (Rect){60, 29, 200, 112}, theme->colors->success,
+    Rect card = theme_is_portrait(theme) ? (Rect){12, 104, 146, 112}
+                                         : (Rect){60, 29, 200, 112};
+    lite_animation_draw_card(canvas, card, theme->colors->success,
+                             lite_card_border_color(theme), lite_card_border_width(theme),
                              theme->colors->text, theme->colors->header_background, now_ms, true);
 #else
     (void)now_ms;

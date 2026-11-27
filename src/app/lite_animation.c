@@ -135,7 +135,7 @@ static void advance(uint32_t now_ms)
     }
 }
 
-bool lite_boot_draw(Canvas *canvas, Color frame)
+bool lite_boot_draw(Canvas *canvas, Color frame, bool portrait)
 {
     if (canvas == NULL || !load()) {
         return false;
@@ -153,6 +153,24 @@ bool lite_boot_draw(Canvas *canvas, Color frame)
         header[4] != 1) {
         return false;
     }
+    uint32_t header_offset = boot_offset;
+    if (portrait) {
+        int landscape_width = header[6] | (header[7] << 8);
+        int landscape_height = header[8] | (header[9] << 8);
+        if (landscape_width <= 0 || landscape_height <= 0 || (landscape_width & 1) != 0) {
+            return false;
+        }
+        header_offset += BOOT_HEADER_BYTES +
+                         (uint32_t)landscape_width * (uint32_t)landscape_height / 2;
+        if (size < header_offset + BOOT_HEADER_BYTES ||
+            !hal_system_lite_animation_read(header_offset, header, sizeof header)) {
+            return false;
+        }
+        if (header[0] != 'L' || header[1] != 'B' || header[2] != 'O' || header[3] != '2' ||
+            header[4] != 1) {
+            return false;
+        }
+    }
     int width = header[6] | (header[7] << 8);
     int height = header[8] | (header[9] << 8);
     if (width <= 0 || height <= 0 || width + 2 * BOOT_FRAME > canvas->bounds.width ||
@@ -168,7 +186,7 @@ bool lite_boot_draw(Canvas *canvas, Color frame)
     if (row_bytes > (int)sizeof row) {
         return false;
     }
-    uint32_t data_offset = boot_offset + BOOT_HEADER_BYTES;
+    uint32_t data_offset = header_offset + BOOT_HEADER_BYTES;
     for (int y = 0; y < height; y++) {
         if (!hal_system_lite_animation_read(data_offset + (uint32_t)y * (uint32_t)row_bytes, row,
                                             (uint32_t)row_bytes)) {
@@ -246,19 +264,18 @@ static void draw_frame(Canvas *canvas, Rect area)
     }
 }
 
-static void draw_box(Canvas *canvas, Rect area, Color ink)
+static void draw_box(Canvas *canvas, Rect area, int width, Color ink)
 {
-    canvas_fill_rect(canvas, (Rect){area.x, area.y, area.width, CARD_BORDER}, ink);
-    canvas_fill_rect(canvas, (Rect){area.x, area.y + area.height - CARD_BORDER, area.width,
-                                    CARD_BORDER},
+    canvas_fill_rect(canvas, (Rect){area.x, area.y, area.width, width}, ink);
+    canvas_fill_rect(canvas, (Rect){area.x, area.y + area.height - width, area.width, width},
                      ink);
-    canvas_fill_rect(canvas, (Rect){area.x, area.y, CARD_BORDER, area.height}, ink);
-    canvas_fill_rect(canvas, (Rect){area.x + area.width - CARD_BORDER, area.y, CARD_BORDER,
-                                    area.height},
+    canvas_fill_rect(canvas, (Rect){area.x, area.y, width, area.height}, ink);
+    canvas_fill_rect(canvas, (Rect){area.x + area.width - width, area.y, width, area.height},
                      ink);
 }
 
-void lite_animation_draw_card(Canvas *canvas, Rect card, Color shadow, Color ink, Color panel,
+void lite_animation_draw_card(Canvas *canvas, Rect card, Color shadow, Color card_border,
+                              int card_border_width, Color frame_ink, Color panel,
                               uint32_t now_ms, bool animate)
 {
     Rect frame = {card.x + (card.width - FRAME_WIDTH) / 2,
@@ -267,12 +284,12 @@ void lite_animation_draw_card(Canvas *canvas, Rect card, Color shadow, Color ink
                      (Rect){card.x + CARD_SHADOW, card.y + CARD_SHADOW, card.width, card.height},
                      shadow);
     canvas_fill_rect(canvas, card, panel);
-    draw_box(canvas, card, ink);
+    draw_box(canvas, card, card_border_width, card_border);
     canvas_fill_rect(
         canvas, (Rect){frame.x + FRAME_SHADOW, frame.y + FRAME_SHADOW, frame.width, frame.height},
-        ink);
+        frame_ink);
     canvas_fill_rect(canvas, frame, panel);
-    draw_box(canvas, frame, ink);
+    draw_box(canvas, frame, CARD_BORDER, frame_ink);
     if (load()) {
         if (animate) {
             advance(now_ms);

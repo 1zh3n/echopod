@@ -59,8 +59,9 @@ static const char CHEVRON[] = ">";
 
 static bool settings_scene_update(void *context, uint32_t now_ms)
 {
-    (void)context;
+    SettingsScreens *screens = context;
     (void)now_ms;
+    screens->menu.list.visible_rows = theme_is_portrait(screens->theme) ? 7 : 5;
     return true;
 }
 
@@ -75,10 +76,10 @@ static void draw_category_title(Canvas *canvas, const Theme *theme, int group)
                (Label){.area = {x, 8, 180, 20}, .text = settings_category_title(group)});
 }
 
-static void draw_category_dots(Canvas *canvas, const Theme *theme, int group)
+static void draw_category_dots(Canvas *canvas, const Theme *theme, int group, int x, int y)
 {
     for (int index = 0; index < SETTINGS_GROUP_COUNT; index++) {
-        Point center = {SETTINGS_DOT_X + index * SETTINGS_DOT_GAP, SETTINGS_DOT_Y};
+        Point center = {x + index * SETTINGS_DOT_GAP, y};
         if (index == group) {
             lite_shape_fill_circle(canvas, center, 4, theme->colors->text);
             lite_shape_fill_circle(canvas, center, 2, CATEGORIES[index].base);
@@ -114,44 +115,73 @@ static bool settings_scene_draw(void *context, Canvas *canvas, MenuScreen *menu)
         group = SETTINGS_SOUND;
     }
     const CategoryVisual *visual = &CATEGORIES[group];
-    Rect rows = lite_list_frame(canvas, theme, menu->config.title);
     int count = menu->model.count(menu->model.context);
     int selected = menu->list.selected;
-    int row_height = theme->metrics.row_height;
     int top = menu->list.top;
-    int visible = menu->list.visible_rows;
-    if (visible <= 0) {
-        visible = SETTINGS_TOP_COUNT;
-    }
+    bool portrait = theme_is_portrait(theme);
+    Rect rows;
+    int row_height;
+    int visible;
+    int fill_x;
+    int fill_width;
+    int divider_x;
+    int divider_width;
+    int border = lite_card_border_width(theme);
+    Color border_color = lite_card_border_color(theme);
 
-    draw_category_title(canvas, theme, group);
-    draw_category_dots(canvas, theme, group);
+    if (portrait) {
+        canvas_fill_rect(canvas, theme_content_area(theme), colors->background);
+        TextStyle title_style = {.font = theme->fonts.title, .color = colors->text};
+        label_draw(canvas, title_style,
+                   (Label){.area = {12, 8, 146, 20}, .text = settings_category_title(group)});
+        draw_category_dots(canvas, theme, group, 112, 18);
+        canvas_fill_rect(canvas, (Rect){12, 34, 36, 4}, visual->base);
+        rows = lite_card(canvas, theme, (Rect){8, 58, 154, 244}, 4);
+        row_height = count > 6 ? 34 : 38;
+        visible = count < 7 ? count : 7;
+        fill_x = 10;
+        fill_width = 150;
+        divider_x = 20;
+        divider_width = 130;
+    } else {
+        rows = lite_list_frame(canvas, theme, menu->config.title);
+        draw_category_title(canvas, theme, group);
+        draw_category_dots(canvas, theme, group, SETTINGS_DOT_X, SETTINGS_DOT_Y);
+        row_height = theme->metrics.row_height;
+        visible = menu->list.visible_rows;
+        if (visible <= 0) {
+            visible = SETTINGS_TOP_COUNT;
+        }
+        fill_x = SETTINGS_CARD_X;
+        fill_width = SETTINGS_CARD_WIDTH;
+        divider_x = SETTINGS_DIVIDER_X;
+        divider_width = SETTINGS_DIVIDER_WIDTH;
+    }
 
     int selected_position = selected - top;
     if (selected_position >= 0 && selected_position < visible) {
         int selected_y = rows.y + selected_position * row_height;
-        canvas_fill_rect(canvas,
-                         (Rect){SETTINGS_CARD_X, selected_y, SETTINGS_CARD_WIDTH, row_height},
+        canvas_fill_rect(canvas, (Rect){fill_x, selected_y, fill_width, row_height},
                          colors->selection_background);
     }
 
     for (int position = 1; position < visible; position++) {
         int y = rows.y + position * row_height;
-        canvas_fill_rect(canvas,
-                         (Rect){SETTINGS_DIVIDER_X, y, SETTINGS_DIVIDER_WIDTH, 1},
-                         colors->divider);
+        canvas_fill_rect(canvas, (Rect){divider_x, y, divider_width, 1}, colors->divider);
     }
 
-    LiteBadgeStyle badge = {
-        .base = visual->base,
-        .light = visual->light,
-        .dark = visual->dark,
-        .ink = colors->text,
-        .shadow = colors->text,
-    };
-    lite_badge_draw_half(canvas, (Point){SETTINGS_ICON_X, SETTINGS_ICON_Y},
-                         SETTINGS_ICON_RADIUS, &badge);
-    draw_category_glyph(canvas, group);
+    if (!portrait) {
+        LiteBadgeStyle badge = {
+            .base = visual->base,
+            .light = visual->light,
+            .dark = visual->dark,
+            .ink = colors->text,
+            .shadow = colors->text,
+        };
+        lite_badge_draw_half(canvas, (Point){SETTINGS_ICON_X, SETTINGS_ICON_Y},
+                             SETTINGS_ICON_RADIUS, &badge);
+        draw_category_glyph(canvas, group);
+    }
 
     TextStyle label_style = {.font = theme->fonts.body};
     TextStyle value_style = {.font = theme->fonts.small};
@@ -164,9 +194,23 @@ static bool settings_scene_draw(void *context, Canvas *canvas, MenuScreen *menu)
         }
         int y = rows.y + position * row_height;
         bool is_selected = index == selected;
-        bool opens = menu->model.opens != NULL && menu->model.opens(menu->model.context, index);
         const char *value =
             menu->model.detail != NULL ? menu->model.detail(menu->model.context, index) : NULL;
+        label_style.color = is_selected ? colors->selection_text : colors->text;
+        if (portrait) {
+            int half = row_height / 2;
+            label_draw(canvas, label_style,
+                       (Label){.area = {20, y, 130, half},
+                               .text = menu->model.label(menu->model.context, index)});
+            if (value != NULL) {
+                value_style.color = is_selected ? colors->selection_text : colors->text_secondary;
+                int width = text_width(value_style.font, value);
+                label_draw(canvas, value_style,
+                           (Label){.area = {150 - width, y + half, width, half}, .text = value});
+            }
+            continue;
+        }
+        bool opens = menu->model.opens != NULL && menu->model.opens(menu->model.context, index);
         int right = SETTINGS_CHEVRON_RIGHT;
         if (opens) {
             right -= chevron_width + theme->metrics.detail_gap;
@@ -177,7 +221,6 @@ static bool settings_scene_draw(void *context, Canvas *canvas, MenuScreen *menu)
         if (label_width < 0) {
             label_width = 0;
         }
-        label_style.color = is_selected ? colors->selection_text : colors->text;
         label_draw(canvas, label_style,
                    (Label){.area = {SETTINGS_TEXT_X, y, label_width, row_height},
                            .text = menu->model.label(menu->model.context, index)});
@@ -197,7 +240,7 @@ static bool settings_scene_draw(void *context, Canvas *canvas, MenuScreen *menu)
     }
 
     if (count > visible) {
-        int track_x = SETTINGS_CARD_X + SETTINGS_CARD_WIDTH - 6;
+        int track_x = portrait ? 156 : SETTINGS_CARD_X + SETTINGS_CARD_WIDTH - 6;
         int track_height = rows.height;
         int thumb_height = track_height * visible / count;
         if (thumb_height < 8) {
@@ -209,14 +252,15 @@ static bool settings_scene_draw(void *context, Canvas *canvas, MenuScreen *menu)
                          colors->scrollbar_thumb);
     }
 
-    canvas_fill_rect(canvas,
-                     (Rect){SETTINGS_CARD_X, SETTINGS_CARD_TOP, SETTINGS_CARD_BORDER,
-                            SETTINGS_CARD_HEIGHT},
-                     colors->text);
-    canvas_fill_rect(canvas,
-                     (Rect){SETTINGS_CARD_X + SETTINGS_CARD_WIDTH - SETTINGS_CARD_BORDER,
-                            SETTINGS_CARD_TOP, SETTINGS_CARD_BORDER, SETTINGS_CARD_HEIGHT},
-                     colors->text);
+    if (!portrait) {
+        canvas_fill_rect(canvas,
+                         (Rect){SETTINGS_CARD_X, SETTINGS_CARD_TOP, border, SETTINGS_CARD_HEIGHT},
+                         border_color);
+        canvas_fill_rect(canvas,
+                         (Rect){SETTINGS_CARD_X + SETTINGS_CARD_WIDTH - border, SETTINGS_CARD_TOP,
+                                border, SETTINGS_CARD_HEIGHT},
+                         border_color);
+    }
     return true;
 }
 

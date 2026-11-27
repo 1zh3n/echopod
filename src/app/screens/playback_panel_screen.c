@@ -9,6 +9,7 @@
 #include "settings_screens.h"
 #include "ui/label.h"
 #include "ui/lite_badge.h"
+#include "ui/lite_frame.h"
 #include "ui/lite_icons.h"
 
 enum {
@@ -19,12 +20,9 @@ enum {
     CARD_GAP = 16,
     CARD_SHADOW = 5,
     CARD_BORDER = 2,
-    BADGE_CENTER_Y = 86,
     BADGE_RADIUS = 32,
     MODE_GLYPH = 38,
     MOON_GLYPH = 30,
-    MOON_TOP = 64,
-    SLEEP_PILL_TOP = 100,
     SLEEP_PILL_HEIGHT = 16,
     SLEEP_PILL_PAD = 10
 };
@@ -52,32 +50,23 @@ static const IconMask *mode_icon(PlaybackMode mode)
     return &LITE_ICON_LOOP;
 }
 
-static void draw_card(Canvas *canvas, const Theme *theme, Rect area, Color border)
+static void draw_selected_border(Canvas *canvas, Rect card, Color color)
 {
-    Color ink = theme->colors->text;
-    canvas_fill_rect(canvas,
-                     (Rect){area.x + CARD_SHADOW, area.y + CARD_SHADOW, area.width, area.height},
-                     ink);
-    canvas_fill_rect(canvas, area, theme->colors->header_background);
-    canvas_fill_rect(canvas, (Rect){area.x, area.y, area.width, CARD_BORDER}, border);
-    canvas_fill_rect(canvas,
-                     (Rect){area.x, area.y + area.height - CARD_BORDER, area.width, CARD_BORDER},
-                     border);
-    canvas_fill_rect(canvas, (Rect){area.x, area.y, CARD_BORDER, area.height}, border);
-    canvas_fill_rect(canvas,
-                     (Rect){area.x + area.width - CARD_BORDER, area.y, CARD_BORDER, area.height},
-                     border);
+    canvas_fill_rect(canvas, (Rect){card.x, card.y, card.width, 2}, color);
+    canvas_fill_rect(canvas, (Rect){card.x, card.y + card.height - 2, card.width, 2}, color);
+    canvas_fill_rect(canvas, (Rect){card.x, card.y, 2, card.height}, color);
+    canvas_fill_rect(canvas, (Rect){card.x + card.width - 2, card.y, 2, card.height}, color);
 }
 
 static void draw_mode_badge(Canvas *canvas, const Theme *theme, Rect card, PlaybackMode mode)
 {
-    Point center = {card.x + card.width / 2, BADGE_CENTER_Y};
+    Point center = {card.x + card.width / 2, card.y + 56};
     LiteBadgeStyle style = {
         .base = MODE_BASE,
         .light = MODE_LIGHT,
         .dark = MODE_DARK,
         .ink = theme->colors->text,
-        .shadow = theme->colors->text,
+        .shadow = lite_card_shadow_color(theme),
     };
     lite_badge_draw_circle(canvas, center, BADGE_RADIUS, &style);
     lite_icon_draw_scaled(
@@ -88,28 +77,28 @@ static void draw_mode_badge(Canvas *canvas, const Theme *theme, Rect card, Playb
 
 static void draw_sleep_badge(Canvas *canvas, const Theme *theme, Rect card, int sleep)
 {
-    Point center = {card.x + card.width / 2, BADGE_CENTER_Y};
+    Point center = {card.x + card.width / 2, card.y + 56};
     LiteBadgeStyle style = {
         .base = SLEEP_BASE,
         .light = SLEEP_LIGHT,
         .dark = SLEEP_DARK,
         .ink = theme->colors->text,
-        .shadow = theme->colors->text,
+        .shadow = lite_card_shadow_color(theme),
     };
     lite_badge_draw_circle(canvas, center, BADGE_RADIUS, &style);
     lite_icon_draw_scaled(
         canvas, &LITE_ICON_MOON,
-        (Rect){center.x - MOON_GLYPH / 2, MOON_TOP, MOON_GLYPH, MOON_GLYPH},
+        (Rect){center.x - MOON_GLYPH / 2, card.y + 34, MOON_GLYPH, MOON_GLYPH},
         COLOR_RGB(255, 255, 255));
 
     TextStyle text = {.font = theme->fonts.small, .color = COLOR_RGB(255, 255, 255)};
     const char *value = sleep >= 0 && sleep < SLEEP_TIMER_OPTION_COUNT ? SLEEP_VALUES[sleep] : "";
     int width = value[0] == '\0' ? 20 : text_width(text.font, value) + SLEEP_PILL_PAD;
-    Rect pill = {center.x - width / 2, SLEEP_PILL_TOP, width, SLEEP_PILL_HEIGHT};
+    Rect pill = {center.x - width / 2, card.y + 70, width, SLEEP_PILL_HEIGHT};
     canvas_fill_rect(canvas, pill, SLEEP_DARK);
     if (value[0] == '\0') {
         canvas_fill_rect(canvas,
-                         (Rect){center.x - 5, SLEEP_PILL_TOP + SLEEP_PILL_HEIGHT / 2 - 1, 10, 2},
+                         (Rect){center.x - 5, card.y + 70 + SLEEP_PILL_HEIGHT / 2 - 1, 10, 2},
                          COLOR_RGB(255, 255, 255));
     } else {
         label_draw(canvas, text,
@@ -127,12 +116,22 @@ static void draw(void *context, Canvas *canvas)
 
     PlaybackMode mode = player_playback_mode(panel->settings->player);
     int sleep = settings_sleep_current(panel->settings);
-    Rect first = {CARD_X, CARD_Y, CARD_WIDTH, CARD_HEIGHT};
-    Rect second = {CARD_X + CARD_WIDTH + CARD_GAP, CARD_Y, CARD_WIDTH, CARD_HEIGHT};
-    draw_card(canvas, theme, first,
-              panel->selected == 0 ? theme->colors->selection_background : theme->colors->text);
-    draw_card(canvas, theme, second,
-              panel->selected == 1 ? SLEEP_BASE : theme->colors->text);
+    Rect first;
+    Rect second;
+    if (theme_is_portrait(theme)) {
+        first = (Rect){12, 35, 146, 118};
+        second = (Rect){12, 167, 146, 118};
+    } else {
+        first = (Rect){CARD_X, CARD_Y, CARD_WIDTH, CARD_HEIGHT};
+        second = (Rect){CARD_X + CARD_WIDTH + CARD_GAP, CARD_Y, CARD_WIDTH, CARD_HEIGHT};
+    }
+    lite_card(canvas, theme, first, 5);
+    lite_card(canvas, theme, second, 5);
+    if (panel->selected == 0) {
+        draw_selected_border(canvas, first, theme->colors->selection_background);
+    } else {
+        draw_selected_border(canvas, second, SLEEP_BASE);
+    }
 
     draw_mode_badge(canvas, theme, first, mode);
     draw_sleep_badge(canvas, theme, second, sleep);

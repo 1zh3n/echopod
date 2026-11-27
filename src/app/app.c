@@ -57,6 +57,7 @@
 #include "ui/icons.h"
 #include "ui/label.h"
 #ifdef ECHO_LITE
+#include "ui/lite_frame.h"
 #include "ui/lite_status.h"
 #endif
 #include "ui/marquee.h"
@@ -258,7 +259,7 @@ static HalDisplayRotation rotation_for(Orientation orientation)
 static int theme_key(const Settings *settings)
 {
 #ifdef ECHO_LITE
-    return (int)settings->orientation;
+    return (int)settings->orientation | (settings->options[OPTION_THEME] == 1 ? 1 : 0) << 2;
 #else
     return (int)settings->orientation | settings->options[OPTION_ACCENT] << 2 |
            settings->options[OPTION_HIGHLIGHT] << 5 | settings->options[OPTION_STATUS_BAR] << 7 |
@@ -330,11 +331,12 @@ static void apply_orientation(void)
     Orientation orientation = settings->orientation;
     bool portrait = orientation != ORIENTATION_LANDSCAPE;
 #ifdef ECHO_LITE
+    bool dark = settings->options[OPTION_THEME] == 1;
     app.shown_theme = theme_key(settings);
     app.theme = default_theme_for(portrait);
     app.stage_theme = app.theme;
-    lite_theme_force(&app.theme);
-    lite_theme_force(&app.stage_theme);
+    lite_theme_force(&app.theme, dark);
+    lite_theme_force(&app.stage_theme, dark);
 #else
     theme_store_follow(settings->options[OPTION_THEME]);
     app.shown_theme = theme_key(settings);
@@ -791,11 +793,14 @@ static void draw_lite_boot(Canvas *canvas, const Fade *fade)
     (void)fade;
     const Theme *theme = current_theme();
     Color ink = theme->colors->text;
+    bool portrait = theme_is_portrait(theme);
     canvas_fill_rect(canvas, whole_screen(), theme->colors->background);
-    if (lite_boot_draw(canvas, ink)) {
+    if (lite_boot_draw(canvas, ink, portrait)) {
         return;
     }
-    lite_animation_draw_card(canvas, (Rect){60, 29, 200, 112}, ink, ink,
+    Rect card = portrait ? (Rect){12, 104, 146, 112} : (Rect){60, 29, 200, 112};
+    lite_animation_draw_card(canvas, card, lite_card_shadow_color(theme),
+                             lite_card_border_color(theme), lite_card_border_width(theme), ink,
                              theme->colors->header_background, app.now_ms, false);
 }
 #endif
@@ -868,21 +873,27 @@ static void draw_slide(Canvas *canvas, Screen *arriving)
 static void refresh_lite_status(void)
 {
     const ThemeColors *colors = current_theme()->colors;
-    Color shadow = colors->text;
+    Color shadow = lite_card_shadow_color(current_theme());
     Color progress = colors->selection_background;
+    bool status_color = false;
     HalBattery battery = hal_power_battery();
     if (battery.charging) {
         shadow = COLOR_RGB(34, 197, 94);
-        progress = shadow;
+        status_color = true;
     } else if (battery.known) {
         if (battery.percent <= 5) {
             shadow = COLOR_RGB(239, 68, 68);
+            status_color = true;
         } else if (battery.percent <= 10) {
             shadow = COLOR_RGB(139, 92, 246);
+            status_color = true;
         } else if (battery.percent <= 20) {
             shadow = COLOR_RGB(255, 212, 59);
+            status_color = true;
         }
-        progress = shadow == colors->text ? progress : shadow;
+    }
+    if (status_color) {
+        progress = shadow;
     }
     bool bluetooth = hal_bluetooth_status()->state == HAL_BLUETOOTH_CONNECTED;
     lite_status_set(shadow, progress, bluetooth);
@@ -1217,9 +1228,6 @@ ECHO_STARTUP_CODE static void start_up(void)
     app.now_ms = now_ms;
     CardFilesReport files = card_files_prepare(show_card_setup);
     settings_store_load(&app.settings);
-#ifdef ECHO_LITE
-    app.settings.settings.orientation = ORIENTATION_LANDSCAPE;
-#endif
 #ifndef ECHO_LITE
     adopt_face_theme();
     theme_store_start(app.settings.settings.options[OPTION_THEME]);

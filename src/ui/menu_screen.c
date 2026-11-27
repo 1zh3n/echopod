@@ -93,7 +93,7 @@ static void fit_list(MenuScreen *menu)
 {
 #ifdef ECHO_LITE
     if (!scene_on(menu)) {
-        menu->list.visible_rows = 5;
+        menu->list.visible_rows = lite_list_rows(menu->config.theme);
     }
 #else
     if (!scene_on(menu)) {
@@ -139,7 +139,7 @@ static void update(void *context, uint32_t now_ms)
 static void draw_lite_menu(MenuScreen *menu, Canvas *canvas)
 {
     Rect rows = lite_list_frame(canvas, menu->config.theme, menu->config.title);
-    menu->list.visible_rows = 5;
+    menu->list.visible_rows = lite_list_rows(menu->config.theme);
     list_view_draw_over(&menu->list, canvas, rows, menu->now_ms);
 }
 #endif

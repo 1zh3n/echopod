@@ -7,7 +7,6 @@ if(NOT ECHO_LITE)
         screens/test_pattern_screen.c
     )
 endif()
-# Lite forces its own theme; the theme store and its asset loader would be dead code.
 set(ECHO_THEME_SOURCES theme_assets.c theme_store.c)
 if(ECHO_LITE)
     set(ECHO_THEME_SOURCES)

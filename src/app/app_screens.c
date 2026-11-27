@@ -17,6 +17,7 @@
 #include "ui/icons.h"
 #include "ui/label.h"
 #include "ui/lite_color_icons.h"
+#include "ui/lite_frame.h"
 #include "ui/lite_icons.h"
 #include "ui/lite_status.h"
 #include "ui/navigation.h"
@@ -338,20 +339,9 @@ static bool home_scene_update(void *context, uint32_t now_ms)
     return true;
 }
 
-static void draw_home_card_base(Canvas *canvas, const Theme *theme, int x)
+static void draw_home_card(Canvas *canvas, const Theme *theme, Rect card)
 {
-    canvas_fill_rect(canvas, (Rect){x + 5, 29, 104, 104}, lite_status_shadow());
-    canvas_fill_rect(canvas, (Rect){x, 24, 104, 104}, theme->colors->header_background);
-}
-
-static void draw_home_card_border(Canvas *canvas, const Theme *theme, int x)
-{
-    Color ink = theme->colors->text;
-    Rect card = {x, 24, 104, 104};
-    canvas_fill_rect(canvas, (Rect){card.x, card.y, card.width, 2}, ink);
-    canvas_fill_rect(canvas, (Rect){card.x, card.y + card.height - 2, card.width, 2}, ink);
-    canvas_fill_rect(canvas, (Rect){card.x, card.y, 2, card.height}, ink);
-    canvas_fill_rect(canvas, (Rect){card.x + card.width - 2, card.y, 2, card.height}, ink);
+    lite_card(canvas, theme, card, 5);
 }
 
 static bool home_scene_draw(void *context, Canvas *canvas, MenuScreen *menu)
@@ -362,34 +352,51 @@ static bool home_scene_draw(void *context, Canvas *canvas, MenuScreen *menu)
     int height = theme->metrics.screen_height;
     canvas_fill_rect(canvas, (Rect){0, 0, width, height}, theme->colors->background);
 
+    bool portrait = theme_is_portrait(theme);
     int32_t base = floor_division(home_position);
     int center = width / 2;
     int spacing = 96;
-    draw_home_card_base(canvas, theme, center - 52);
+    Rect card = portrait ? (Rect){17, 72, 136, 136} : (Rect){center - 52, 24, 104, 104};
+    draw_home_card(canvas, theme, card);
+    Color shadow_color = lite_card_shadow_color(theme);
 
     for (int32_t slot = base - 1; slot <= base + 2; slot++) {
         int item = (int)positive_mod(slot, HOME_ITEM_COUNT);
         int32_t offset = slot * HOME_STEPS - home_position;
         uint32_t distance = (uint32_t)absolute32(offset);
         uint32_t closeness = distance > HOME_STEPS ? HOME_STEPS : distance;
-        int size = 64 - (int)(closeness * 24 / HOME_STEPS);
-        int y = 44 + (int)(closeness * 21 / HOME_STEPS);
-        int x = center + (int)(offset * spacing / HOME_STEPS);
+        if (portrait && distance > HOME_STEPS) {
+            continue;
+        }
+        int size;
+        int x;
+        int y;
+        if (portrait) {
+            size = 80 - (int)(closeness * 40 / HOME_STEPS);
+            x = center;
+            y = 140 + (int)(offset * spacing / HOME_STEPS);
+        } else {
+            size = 64 - (int)(closeness * 24 / HOME_STEPS);
+            x = center + (int)(offset * spacing / HOME_STEPS);
+            y = 44 + (int)(closeness * 21 / HOME_STEPS);
+        }
         bool selected = item == screens->home.list.selected;
         int left = x - size / 2;
+        int top = portrait ? y - size / 2 : y;
         int shadow = selected ? 4 : 3;
         lite_icon_draw_scaled(canvas, &LITE_MASK_SHADOW,
-                              (Rect){left + shadow, y + shadow, size, size}, theme->colors->text);
-        color_icon_draw_scaled(canvas, HOME_ICONS[item], (Rect){left, y, size, size});
+                              (Rect){left + shadow, top + shadow, size, size}, shadow_color);
+        color_icon_draw_scaled(canvas, HOME_ICONS[item], (Rect){left, top, size, size});
     }
-    draw_home_card_border(canvas, theme, center - 52);
 
     if (screens->player != NULL && player_status(screens->player).state == PLAYER_PLAYING) {
         Color accent = theme->colors->selection_background;
         static const uint8_t bars[] = {9, 14, 11, 17};
+        int x = portrait ? 132 : 284;
+        int bottom = portrait ? 300 : 160;
         for (int index = 0; index < 4; index++) {
-            canvas_fill_rect(canvas,
-                             (Rect){284 + index * 6, 160 - bars[index], 4, bars[index]}, accent);
+            canvas_fill_rect(canvas, (Rect){x + index * 6, bottom - bars[index], 4, bars[index]},
+                             accent);
         }
     }
     return true;

@@ -24,6 +24,25 @@ ECHO_RESIDENT const ThemeColors DEFAULT_THEME_DARK_COLORS = {
     .success = COLOR_RGB(34, 197, 94),
     .chevron = COLOR_RGB(10, 10, 10),
 };
+ECHO_RESIDENT const ThemeColors LITE_DARK_COLORS = {
+    .background = COLOR_RGB(11, 11, 13),
+    .text = COLOR_RGB(244, 244, 245),
+    .text_secondary = COLOR_RGB(161, 161, 170),
+    .text_tertiary = COLOR_RGB(113, 113, 122),
+    .selection_background = COLOR_RGB(0, 111, 238),
+    .selection_top = COLOR_RGB(0, 111, 238),
+    .selection_shine = COLOR_RGB(0, 111, 238),
+    .selection_text = COLOR_RGB(255, 255, 255),
+    .header_background = COLOR_RGB(23, 23, 28),
+    .header_top = COLOR_RGB(31, 31, 38),
+    .header_text = COLOR_RGB(244, 244, 245),
+    .divider = COLOR_RGB(63, 63, 70),
+    .scrollbar_thumb = COLOR_RGB(113, 113, 122),
+    .danger = COLOR_RGB(239, 68, 68),
+    .success = COLOR_RGB(34, 197, 94),
+    .chevron = COLOR_RGB(161, 161, 170),
+};
+
 #else
 ECHO_RESIDENT const ThemeColors DEFAULT_THEME_DARK_COLORS = {
     .background = COLOR_RGB(16, 17, 20),
@@ -89,9 +108,9 @@ enum {
 };
 
 #ifdef ECHO_LITE
-void lite_theme_force(Theme *theme)
+void lite_theme_force(Theme *theme, bool dark)
 {
-    theme->colors = &DEFAULT_THEME_DARK_COLORS;
+    theme->colors = dark ? &LITE_DARK_COLORS : &DEFAULT_THEME_DARK_COLORS;
     theme->boxes = &THEME_STANDARD_BOXES;
     theme->icons = NULL;
     theme->wallpaper = NULL;
@@ -102,7 +121,7 @@ void lite_theme_force(Theme *theme)
     theme->no_menu_panel = true;
     theme->metrics.header_height = 0;
     theme->metrics.header_inset = 12;
-    theme->metrics.row_height = 26;
+    theme->metrics.row_height = theme_is_portrait(theme) ? 28 : 26;
     theme->metrics.padding = 12;
     theme->metrics.scrollbar_width = 2;
     theme->metrics.scrollbar_inset = 2;

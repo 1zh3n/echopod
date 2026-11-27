@@ -14,6 +14,7 @@
 #include "screens/charge_screen.h"
 #include "ui/lite_badge.h"
 #include "ui/lite_color_icons.h"
+#include "ui/lite_frame.h"
 #include "ui/lite_icons.h"
 
 enum {
@@ -233,7 +234,7 @@ static void lite_animation_streams_all_frames(void)
 static bool draw_boot_image(Canvas *canvas)
 {
     canvas_clear(canvas, COLOR_RGB(250, 250, 249));
-    return lite_boot_draw(canvas, COLOR_RGB(10, 10, 10));
+    return lite_boot_draw(canvas, COLOR_RGB(10, 10, 10), false);
 }
 
 static void boot_screen_has_large_frame(void)
@@ -468,6 +469,153 @@ static void long_menu_on_the_panel_opens_settings(void)
     CHECK(title_is("Now Playing"));
 }
 
+static void open_settings_display(void)
+{
+    start_app_with_library();
+    move_down(2);
+    tap(KEY_PLAY);
+    wait_ms(300);
+    hold(KEY_PLAY);
+    wait_ms(100);
+}
+
+static void switch_orientation_to_portrait(void)
+{
+    open_settings_display();
+    move_down(1);
+    tap(KEY_PLAY);
+    wait_ms(300);
+    tap(KEY_BACK);
+    wait_ms(300);
+}
+
+static void switch_theme_to_dark(void)
+{
+    open_settings_display();
+    tap(KEY_PLAY);
+    wait_ms(300);
+    tap(KEY_BACK);
+    wait_ms(300);
+}
+
+static void dark_palette_and_borders(void)
+{
+    Theme dark = default_theme_for(false);
+    lite_theme_force(&dark, true);
+    CHECK(dark.colors->background == COLOR_RGB(11, 11, 13));
+    CHECK(dark.colors->header_background == COLOR_RGB(23, 23, 28));
+    CHECK(lite_theme_is_dark(&dark));
+    CHECK(lite_card_border_color(&dark) == COLOR_RGB(82, 82, 91));
+    CHECK_EQUAL(1, lite_card_border_width(&dark));
+    CHECK(lite_card_shadow_color(&dark) == COLOR_RGB(82, 82, 91));
+    CHECK_EQUAL(5, lite_list_rows(&dark));
+
+    Theme light = default_theme_for(false);
+    lite_theme_force(&light, false);
+    CHECK(light.colors->background == COLOR_RGB(250, 250, 249));
+    CHECK(!lite_theme_is_dark(&light));
+    CHECK_EQUAL(2, lite_card_border_width(&light));
+    CHECK(lite_card_border_color(&light) == light.colors->text);
+
+    Theme portrait = default_theme_for(true);
+    lite_theme_force(&portrait, true);
+    CHECK_EQUAL(170, portrait.metrics.screen_width);
+    CHECK_EQUAL(320, portrait.metrics.screen_height);
+    CHECK_EQUAL(28, portrait.metrics.row_height);
+    CHECK_EQUAL(9, lite_list_rows(&portrait));
+}
+
+static void settings_can_switch_to_portrait(void)
+{
+    switch_orientation_to_portrait();
+    CHECK(fake_hal_pixel(85, 140) == COLOR_RGB(139, 92, 246));
+    CHECK(fake_hal_pixel(160, 76) != COLOR_RGB(139, 92, 246));
+
+    tap(KEY_PLAY);
+    wait_ms(300);
+    CHECK(fake_hal_pixel(20, 50) == COLOR_RGB(250, 250, 249));
+    CHECK(fake_hal_pixel(12, 34) == COLOR_RGB(53, 199, 232));
+    CHECK(fake_hal_pixel(20, 100) == COLOR_RGB(0, 111, 238));
+}
+
+static void settings_can_switch_to_dark(void)
+{
+    switch_theme_to_dark();
+    CHECK(fake_hal_pixel(10, 10) == COLOR_RGB(11, 11, 13));
+    CHECK(fake_hal_pixel(120, 30) == COLOR_RGB(23, 23, 28));
+    CHECK(fake_hal_pixel(108, 24) == COLOR_RGB(82, 82, 91));
+}
+
+static void switch_dark_portrait(void)
+{
+    open_settings_display();
+    tap(KEY_PLAY);
+    wait_ms(300);
+    move_down(1);
+    tap(KEY_PLAY);
+    wait_ms(300);
+    tap(KEY_BACK);
+    wait_ms(300);
+}
+
+static void dark_portrait_home_and_settings(void)
+{
+    switch_dark_portrait();
+    CHECK(fake_hal_pixel(10, 10) == COLOR_RGB(11, 11, 13));
+    CHECK(fake_hal_pixel(85, 90) == COLOR_RGB(23, 23, 28));
+    CHECK(fake_hal_pixel(17, 72) == COLOR_RGB(82, 82, 91));
+    CHECK(fake_hal_pixel(85, 140) == COLOR_RGB(139, 92, 246));
+
+    tap(KEY_PLAY);
+    wait_ms(300);
+    CHECK(fake_hal_pixel(20, 50) == COLOR_RGB(11, 11, 13));
+    CHECK(fake_hal_pixel(12, 34) == COLOR_RGB(53, 199, 232));
+    CHECK(fake_hal_pixel(20, 100) == COLOR_RGB(0, 111, 238));
+}
+
+static void portrait_now_playing_and_panel(void)
+{
+    switch_orientation_to_portrait();
+    move_down(2);
+    open_all_songs_and_play();
+    wait_ms(300);
+    CHECK(area_has_color(122, 8, 18, 18, COLOR_RGB(0, 111, 238)));
+    CHECK(area_has_color(147, 8, 18, 18, COLOR_RGB(10, 10, 10)));
+
+    hold(KEY_PLAY);
+    wait_ms(300);
+    CHECK(fake_hal_pixel(55, 91) == COLOR_RGB(47, 168, 255));
+    CHECK(fake_hal_pixel(55, 223) == COLOR_RGB(99, 102, 241));
+    CHECK(fake_hal_pixel(12, 35) == COLOR_RGB(0, 111, 238));
+}
+
+static void boot_has_portrait_still(void)
+{
+    CHECK(load_animation_asset());
+    lite_animation_reset();
+    static Color pixels[HAL_DISPLAY_WIDTH * HAL_DISPLAY_LONG_SIDE];
+    Canvas canvas = canvas_make(pixels, (Rect){0, 0, 170, 320});
+    canvas_clear(&canvas, COLOR_RGB(250, 250, 249));
+    CHECK(lite_boot_draw(&canvas, COLOR_RGB(10, 10, 10), true));
+    CHECK(canvas_pixel_at(&canvas, 1, 1) == COLOR_RGB(10, 10, 10));
+    CHECK(canvas_pixel_at(&canvas, 3, 3) != COLOR_RGB(250, 250, 249));
+}
+
+static void charge_card_is_portrait(void)
+{
+    CHECK(load_animation_asset());
+    lite_animation_reset();
+    Theme theme = default_theme_for(true);
+    lite_theme_force(&theme, false);
+    static Color pixels[HAL_DISPLAY_WIDTH * HAL_DISPLAY_LONG_SIDE];
+    Canvas canvas = canvas_make(pixels, (Rect){0, 0, 170, 320});
+    HalBattery battery = {
+        .known = true, .percent = 64, .millivolts = 3900, .usb_power = true, .charging = true};
+    charge_screen_draw(&canvas, &theme, battery, 1000);
+    CHECK(canvas_pixel_at(&canvas, 20, 110) == theme.colors->header_background);
+    CHECK(canvas_pixel_at(&canvas, 160, 110) == theme.colors->success);
+}
+
 int main(void)
 {
     if (!load_icon_asset()) {
@@ -485,6 +633,13 @@ int main(void)
         TEST_CASE(gear_glyph_draws_only_white_outline),
         TEST_CASE(every_lite_icon_draws),
         TEST_CASE(badge_draws_flat_circle_and_half),
+        TEST_CASE(dark_palette_and_borders),
+        TEST_CASE(settings_can_switch_to_portrait),
+        TEST_CASE(settings_can_switch_to_dark),
+        TEST_CASE(dark_portrait_home_and_settings),
+        TEST_CASE(portrait_now_playing_and_panel),
+        TEST_CASE(boot_has_portrait_still),
+        TEST_CASE(charge_card_is_portrait),
         TEST_CASE(category_icons_are_40px),
         TEST_CASE(compact_icons_are_native_18px),
         TEST_CASE(settings_starts_on_sound),
