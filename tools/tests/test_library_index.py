@@ -60,9 +60,9 @@ class SortKeyTest(unittest.TestCase):
         self.assertEqual("zhongqing", library_index.sort_key("重庆"))
 
     def test_section_initials(self):
-        self.assertEqual("Z", library_index.sort_initial("周"))
-        self.assertEqual("A", library_index.sort_initial("あ"))
-        self.assertEqual("#", library_index.sort_initial("123"))
+        self.assertEqual("z", library_index.sort_initial("周"))
+        self.assertEqual("a", library_index.sort_initial("あ"))
+        self.assertEqual("1", library_index.sort_initial("123"))
 
 
 class NaturalSortKeyTest(unittest.TestCase):

@@ -173,7 +173,9 @@ def sort_initial(text):
             first = syllable[0]
     decomposed = unicodedata.normalize("NFKD", first)
     stripped = "".join(character for character in decomposed if not unicodedata.combining(character))
-    return stripped.upper() if len(stripped) == 1 and "a" <= stripped <= "z" else "#"
+    if len(stripped) == 1 and ord(stripped) < 0x80:
+        return stripped.lower()
+    return "#"
 
 
 NATURAL_RUNS = re.compile(r"[0-9]+|[^0-9]+")

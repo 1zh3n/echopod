@@ -1,27 +1,29 @@
 # CJK sorting and section jump
 
-Status: **approved for implementation (2026-11-28).** MINIV931 still uses the sort described
-under [What happens now](#what-happens-now).
+Status: **implemented in MINIV932.**
 
-## What happens now
+## What is implemented
 
-- The sort key is Unicode NFKD, combining marks removed, case-folded, and a leading
-  `The ` is ignored. Latin names sort A-Z; other scripts keep their code points and sort
-  after all Latin text.
-- `sort_key_initial` maps ASCII and Latin-1/Extended-A letters to `A`-`Z`. Every other
-  script returns the final `#` section. Chinese and Japanese entries therefore all share
-  the last section.
+- Before the existing NFKD/casefold/article pipeline, each GB2312 Hanzi is replaced by
+  its primary pinyin syllable and each kana by its romaji syllable. Latin and mapped CJK
+  therefore share one A-Z order.
+- The table is `assets/pinyin.bin`: 6,940 records (6,763 GB2312 Hanzi plus 177 kana),
+  426 syllables, 17,799 bytes. It is lossless and checksum-pinned.
+- A rescan copies the table into the borrowed core1 scratch before sorting. Normal
+  browsing reads the already-sorted `library.db` and does no sorting.
+- `sort_key_initial` returns the first pinyin/romaji letter for mapped CJK; the list maps
+  `0x80` to the final `#` section. Digits and punctuation keep their ASCII initial and
+  land in the leading `#` section.
 - All Songs uses `LIBRARY_TITLE_ORDER`: every track that is not in a top-level
-  `Audiobooks` / `Podcasts` folder. Chinese tracks are in the list. They sit after the
-  Latin titles, under `#`; the first screen can look English-only.
+  `Audiobooks` / `Podcasts` folder. Chinese and kana tracks now interleave with Latin.
 - Long-press volume up/down for about 3 seconds in a lettered list to jump sections. The
   list shows one letter in a box while jumping. There is no visible A-Z index.
 
 ## Why All Songs can look like it has no Chinese songs
 
-The tracks are present. The current order puts every non-Latin title after `A`-`Z`, so a
-mixed library shows the English titles first and the Chinese/Japanese titles at the very
-bottom under `#`. Jump to `#` with the long volume press to see them.
+Before MINIV932 the order put every non-Latin title after `A`-`Z`, so a mixed library
+showed the English titles first and the Chinese/Japanese titles at the bottom under `#`.
+MINIV932 interleaves mapped CJK, so they appear under their pinyin/romaji letters.
 
 If they are still absent after jumping to `#`, that is a different problem: the files may
 be in a top-level `Audiobooks` / `Podcasts` folder (marked spoken and excluded from the
@@ -112,8 +114,9 @@ block cache and would be much slower.
 - **Japanese:** kana romaji only; kanji falls back to `#`.
 - **Jump UI:** keep the existing long volume press for this pass. A visible A-Z index is
   follow-up work.
-- **Section source:** an on-demand flash lookup from the compressed table; no daily RAM
-  table. If the lookup cost is noticeable, a section byte in `library.db` is the follow-up.
+- **Section source:** an on-demand flash lookup from the compressed table; no daily table.
+  The lookup reads the block index and syllable table only when the selected row changes.
+  If that cost is noticeable, a section byte in `library.db` is the follow-up.
 
 ## Data quality
 
@@ -124,10 +127,10 @@ not on compression.
 - The source is a pinned Unicode Unihan `kMandarin` extract (Unicode 16.0.0, Unicode License
   v3), with the license and source version kept beside the generated asset. A generated
   manifest records the source version and checksum.
-- A prototype over the 6,763 GB2312 Hanzi covers every character: 6,763/6,763 have a
-  `kMandarin` reading. There are 401 distinct plain-pinyin syllables; 100 characters have
-  more than one Unihan reading, and the generator takes the first. The compressed prototype
-  is about 17.2 KB (header 12 B, block index 848 B, records 14,686 B, syllables 1,701 B).
+- The generated table has 6,940 records: all 6,763 GB2312 Hanzi have a `kMandarin`
+  reading, plus 177 kana. There are 426 distinct plain-pinyin/romaji syllables; 100
+  characters have more than one Unihan reading and the generator takes the first. The
+  asset is 17,799 bytes.
 - One primary reading per character. Polyphonic characters can sort under the wrong reading
   (for example 重庆 as `zhong` rather than `chong`); this is a known limitation.
 - Characters missing from the table, and Japanese kanji, fall back to `#` and are never

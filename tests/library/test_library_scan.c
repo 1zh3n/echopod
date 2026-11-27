@@ -203,6 +203,28 @@ static void scanning_folders_and_playlists_matches_the_pc_indexer(void)
     free(expected);
 }
 
+static void cjk_scanning_matches_the_pc_indexer(void)
+{
+    static uint8_t pinyin[20000];
+    FILE *file = fopen(ECHO_PINYIN_ASSET, "rb");
+    CHECK(file != NULL);
+    host_pinyin_size = (uint32_t)fread(pinyin, 1, sizeof pinyin, file);
+    fclose(file);
+    host_pinyin = pinyin;
+    static Output output;
+    Progress progress = {.calls = 0};
+    ScanStats stats;
+    CHECK_EQUAL(SCAN_OK, scan_folder(ECHO_FIXTURE_DIR "/cjk_music", &output, &progress, &stats));
+    CHECK_EQUAL(4u, stats.tracks);
+    uint32_t expected_size = 0;
+    uint8_t *expected = read_fixture("cjk_music.db", &expected_size);
+    CHECK_EQUAL(stats.length, output.length);
+    CHECK(library_compare(expected, expected_size, output.bytes, output.length));
+    free(expected);
+    host_pinyin = NULL;
+    host_pinyin_size = 0;
+}
+
 static void a_pinyin_asset_leaves_the_builder_memory(void)
 {
     static uint8_t pinyin[20000];
@@ -608,6 +630,7 @@ int main(void)
         TEST_CASE(internal_storage_scans_as_one_more_root_folder_like_the_pc_indexer),
         TEST_CASE(a_separate_listing_leaves_the_memory_to_the_builder),
         TEST_CASE(a_pinyin_asset_leaves_the_builder_memory),
+        TEST_CASE(cjk_scanning_matches_the_pc_indexer),
         TEST_CASE(a_folder_bigger_than_the_listing_is_read_in_batches),
         TEST_CASE(many_sibling_folders_fit_a_small_listing),
         TEST_CASE(a_big_folder_nested_in_big_folders_is_read_in_batches),

@@ -53,6 +53,8 @@ Keep the official firmware and a known recovery path before flashing.
   long press seeks; the progress/time display is the seek feedback.
 - **Boot and charging:** boot uses 200×112 landscape / 146×112 portrait stills with a 5px hard
   shadow, no card or frame; charging keeps the 96×64 animation card.
+- **Sorting:** GB2312 Chinese sorts by pinyin and kana by romaji, interleaved with Latin
+  under A-Z; unknown kanji falls under `#`. Hold volume in a lettered list to jump sections.
 - **Controls:** volume single/double/long press in Now Playing; long Play opens the playback
   panel; long Menu opens Settings; long Back in the panel goes Home.
 - **Space work:** Lite icon masks moved to a glyph face; Lite theme store/assets removed;

@@ -64,6 +64,14 @@ cyan `#35C7E8`, amber `#F59E0B`, success `#22C55E`.
 - Portrait: Bluetooth chip at x=93, state icons at x=119/144, title at (8, 24), spectrum
   154×194 at y=86, progress at y=288, times at y=294. The time row ends 8 px above the bottom.
 
+### Sorting
+
+- GB2312 Chinese sorts by primary pinyin and kana by romaji, interleaved with Latin under
+  A-Z. Unknown Hanzi/kanji keep their code point and fall under the final `#`.
+- The asset is `assets/pinyin.bin`; sorting uses the rescan scratch, not daily RAM. The
+  selected row's section is read from the image on demand.
+- Hold volume up/down for about 3 seconds in a lettered list to jump sections.
+
 ### Now Playing seek feedback
 
 Seek uses the progress and time display; there is no separate hold gauge. A 28×8 hold gauge
