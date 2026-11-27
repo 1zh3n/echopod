@@ -23,6 +23,7 @@ bool pinyin_table_syllable(const PinyinTable *table, uint32_t codepoint, char *t
 char pinyin_table_initial(const PinyinTable *table, uint32_t codepoint);
 extern const PinyinTable *volatile pinyin_current;
 void pinyin_state_keep(void);
+char pinyin_initial_from_image(uint32_t codepoint);
 
 static inline void pinyin_table_set(const PinyinTable *table)
 {

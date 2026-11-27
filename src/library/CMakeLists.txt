@@ -18,6 +18,11 @@ target_link_libraries(echo_library
     PUBLIC echo_core
     PRIVATE echo_options echo_compact
 )
+if(ECHO_LITE)
+    target_compile_definitions(echo_library PRIVATE ECHO_LITE)
+    target_sources(echo_library PRIVATE pinyin_flash.c)
+    target_include_directories(echo_library PRIVATE ${PROJECT_SOURCE_DIR}/src/hal/include)
+endif()
 
 add_library(echo_library_scan STATIC
     builder_sort.c

@@ -3,6 +3,9 @@
 
 #include "core/resident.h"
 #include "core/utf8.h"
+#ifdef ECHO_LITE
+#include "library/pinyin.h"
+#endif
 #include "library/sort_key.h"
 
 enum {
@@ -65,6 +68,12 @@ char sort_key_initial(const char *text)
     if (code_point < OTHER_SCRIPT) {
         return (char)code_point;
     }
+#ifdef ECHO_LITE
+    char pinyin = pinyin_initial_from_image(code_point);
+    if (pinyin != 0) {
+        return pinyin;
+    }
+#endif
     if (code_point >= LATIN_FIRST && code_point <= LATIN_LAST) {
         char initial = LATIN_INITIALS[code_point - LATIN_FIRST];
         return initial == UNMAPPED ? (char)OTHER_SCRIPT : initial;

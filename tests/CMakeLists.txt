@@ -189,6 +189,7 @@ if(ECHO_LITE)
         ECHO_LITE
         ECHO_LITE_ANIMATION_ASSET="${PROJECT_SOURCE_DIR}/assets/lite_animation.bin"
         ECHO_LITE_ICONS_ASSET="${PROJECT_SOURCE_DIR}/assets/lite_icons.bin"
+        ECHO_PINYIN_ASSET="${PROJECT_SOURCE_DIR}/assets/pinyin.bin"
     )
 endif()
 echo_add_unit_test(NAME test_release_diagnostics

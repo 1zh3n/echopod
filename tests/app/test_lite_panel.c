@@ -10,6 +10,8 @@
 #include "gfx/canvas.h"
 #include "gfx/color.h"
 #include "hal/system.h"
+#include "library/pinyin.h"
+#include "library/sort_key.h"
 #include "lite_animation.h"
 #include "screens/charge_screen.h"
 #include "ui/lite_badge.h"
@@ -236,6 +238,20 @@ static bool load_icon_asset(void)
     return size > 0;
 }
 
+static uint8_t pinyin_blob[20000];
+
+static bool load_pinyin_asset(void)
+{
+    FILE *file = fopen(ECHO_PINYIN_ASSET, "rb");
+    if (file == NULL) {
+        return false;
+    }
+    size_t size = fread(pinyin_blob, 1, sizeof pinyin_blob, file);
+    fclose(file);
+    fake_hal_set_pinyin(pinyin_blob, (uint32_t)size);
+    return size > 0;
+}
+
 static bool load_animation_asset(void)
 {
     FILE *file = fopen(ECHO_LITE_ANIMATION_ASSET, "rb");
@@ -262,6 +278,15 @@ static bool draw_boot_image(Canvas *canvas)
     canvas_clear(canvas, COLOR_RGB(250, 250, 249));
     return lite_boot_draw(canvas, (Rect){0, 0, HAL_DISPLAY_WIDTH, HAL_DISPLAY_HEIGHT},
                           COLOR_RGB(10, 10, 10), false);
+}
+
+static void cjk_section_initials_follow_pinyin(void)
+{
+    CHECK(load_pinyin_asset());
+    CHECK_EQUAL('z', sort_key_initial("周"));
+    CHECK_EQUAL('a', sort_key_initial("あ"));
+    CHECK_EQUAL((char)0x80, sort_key_initial("\xEF\xA8\x99"));
+    CHECK_EQUAL('1', sort_key_initial("123"));
 }
 
 static void boot_screen_is_a_shadowed_image(void)
@@ -833,6 +858,7 @@ int main(void)
         TEST_CASE(settings_subpage_opens),
         TEST_CASE(lite_animation_arena_is_available),
         TEST_CASE(lite_animation_streams_all_frames),
+        TEST_CASE(cjk_section_initials_follow_pinyin),
         TEST_CASE(boot_screen_is_a_shadowed_image),
         TEST_CASE(boot_screen_draws_the_still),
         TEST_CASE(boot_screen_is_static),
