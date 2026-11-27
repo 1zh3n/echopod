@@ -11,7 +11,7 @@
   <img src="docs/images/lite/home.png" alt="Home screen in light and dark, landscape and portrait" width="100%">
 </p>
 
-<p align="center"><em>Design previews of the Lite UI (2×). Actual firmware uses the same layout and palette.</em></p>
+<p align="center"><em>Home, Now Playing, Settings and Quick panel are design previews (2×). The boot stills below are actual firmware assets.</em></p>
 
 ## What this is
 
@@ -69,6 +69,8 @@ The boot chain, IDB, PMU firmware, fw2 and slot layout are not modified.
 
 ![Boot](docs/images/lite/boot.png)
 
+*Actual boot stills (2×): landscape 316×166 and portrait 166×316. Art: Mountain Dusk by ansimuz, CC0 1.0.*
+
 ## Build
 
 Requirements: CMake, Python 3, SDL2 for the simulator, and an `arm-none-eabi-gcc` with newlib
@@ -109,7 +111,15 @@ and the GPL firmware base.
 - EchoPod upstream is **not** responsible for this fork and does not provide support for it.
 - Please do not report this fork's bugs or installation problems to the upstream project.
 - Hardware research also draws on the [ReChord](https://github.com/brnomt/ReChord) project.
-- The boot art is a crop of **Mountain Dusk** by ansimuz, CC0 1.0.
+## Art credits
+
+- **Boot stills:** *Mountain Dusk* by [ansimuz](https://ansimuz.itch.io/mountain-dusk-parallax-background),
+  CC0 1.0. The landscape still is cropped to 316×166; the portrait still is cropped from the
+  320×240 preview to 126×240, resized to 166×316, and quantised to 16 colours.
+- **Lite UI icons and badges:** drawn procedurally in this fork; no third-party icon set.
+- **Inter font:** SIL Open Font License 1.1.
+- **Noto Sans CJK SC glyph packs:** SIL Open Font License 1.1.
+- **Other third-party components:** see `third_party/` and `LICENSE`.
 
 ## AI disclosure
 

@@ -11,7 +11,7 @@
   <img src="docs/images/lite/home.png" alt="Home 的 Light/Dark、横屏/竖屏" width="100%">
 </p>
 
-<p align="center"><em>Lite UI 设计预览（2×）。实机使用相同布局和配色。</em></p>
+<p align="center"><em>Home、Now Playing、Settings、Quick panel 是设计预览（2×）；下方开机图是真实固件素材。</em></p>
 
 ## 这是什么
 
@@ -62,6 +62,8 @@
 
 ![Boot](docs/images/lite/boot.png)
 
+*真实开机图（2×）：横版 316×166，竖版 166×316。美术：ansimuz 的 Mountain Dusk，CC0 1.0。*
+
 ## 构建
 
 需要 CMake、Python 3、模拟器所需的 SDL2，以及带 newlib 头文件的 `arm-none-eabi-gcc`。
@@ -98,7 +100,15 @@ ctest --preset dev
 - EchoPod 上游**不负责**这个分支，也不为本分支提供支持。
 - 请不要把本分支的 bug 或安装问题报到上游。
 - 硬件研究也参考了 [ReChord](https://github.com/brnomt/ReChord) 项目。
-- 开机图来自 ansimuz 的 **Mountain Dusk**，CC0 1.0。
+## 美术来源
+
+- **开机图：** [ansimuz](https://ansimuz.itch.io/mountain-dusk-parallax-background) 的
+  *Mountain Dusk*，CC0 1.0。横版裁成 316×166；竖版从 320×240 预览裁成 126×240，
+  再缩放到 166×316，量化到 16 色。
+- **Lite UI 图标和 badge：** 本分支程序化自绘，没有使用第三方 icon set。
+- **Inter 字体：** SIL Open Font License 1.1。
+- **Noto Sans CJK SC 字库：** SIL Open Font License 1.1。
+- **其他第三方组件：** 见 `third_party/` 和 `LICENSE`。
 
 ## AI 声明
 
