@@ -41,11 +41,12 @@ Keep the official firmware and a known recovery path before flashing.
 
 - **512 MB port and Lite build:** `ECHO_LITE=ON`, no covers, Lite menus and layouts.
 - **Runtime Light / Dark:** Settings → Display → Theme. Light is the default.
-- **Runtime Landscape / Portrait:** Settings → Display → Orientation, 320×170 or 170×320.
+- **Runtime Landscape / Portrait / Portrait-flipped:** Settings → Display → Orientation,
+  320×170 or 170×320 (portrait can also be turned 180°).
 - **Lite Home:** three self-drawn colour badges, no text, no page dots; a 28×8 status meter
   at top-left shows Bluetooth and playback.
-- **Lite Settings:** one category per screen; long Play switches category. Landscape drops the text
-  header, leaving the half-badge, category dots and rows; portrait keeps the category name.
+- **Lite Settings:** one category per screen; double Menu switches category. Landscape drops the
+  text header, leaving the half-badge, category dots and rows; portrait keeps the category name.
 - **Quick panel:** two icon-only cards for playback mode and sleep timer; the timer shows a
   second-by-second countdown and can wait for the current track before powering off.
 - **Now Playing:** 18 px native mode/state icons, no cover frame; a 14×8 Bluetooth-only
@@ -54,8 +55,8 @@ Keep the official firmware and a known recovery path before flashing.
 - **Boot and charging:** boot uses 200×112 landscape / 146×112 portrait stills with a 5px hard
   shadow, no card or frame; charging keeps the 96×64 animation card.
 - **Sorting:** GB2312 Chinese sorts by pinyin and kana by romaji, interleaved with Latin
-  under A-Z; unknown kanji falls under `#`. Hold volume in a lettered list to jump sections.
-- **Controls:** volume single/double/long press in Now Playing; long Play opens the playback
+  under A-Z; unknown kanji falls under `#`. Double Menu in a lettered list opens the A-Z/# jump.
+- **Controls:** volume single/double/long press in Now Playing; double Menu opens the playback
   panel; long Menu opens Settings; long Back in the panel goes Home.
 - **Space work:** Lite icon masks moved to a glyph face; Lite theme store/assets removed;
   unused Lite paths dropped.

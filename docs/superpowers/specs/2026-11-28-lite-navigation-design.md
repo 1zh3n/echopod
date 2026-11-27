@@ -1,6 +1,6 @@
 # Lite navigation interaction design
 
-Status: **approved interaction model, not implemented.** Recorded 2026-11-28.
+Status: **implemented in MINIV935; final check in MINIV938.** Recorded 2026-11-28.
 
 ## Why this exists
 
@@ -50,7 +50,7 @@ duplicated. Closing an overlay returns to what was underneath it.
 |---|---|---|---|---|---|---|
 | Home | Now Playing | Settings | no action | no action | up one browse level | Home |
 | Lettered list | Now Playing | Settings | A-Z/# jump overlay | existing list action | up one browse level | Home |
-| Now Playing | Up Next, or next track when configured | Settings | Quick Panel | no action | list | Home |
+| Now Playing | Up Next | Settings | Quick Panel | no action | list | Home |
 | Playback panel | Now Playing | Settings | no action | no action | Now Playing | Home |
 | Settings | Now Playing, closing the overlay | no action | next Settings category | no action | the screen that opened Settings | Home |
 | Up Next | Now Playing | Settings | no action | no action | Now Playing | Home |

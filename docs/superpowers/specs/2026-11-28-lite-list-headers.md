@@ -1,6 +1,6 @@
 # Lite list headers and the status meter
 
-Status: **proposed, not implemented.** Recorded 2026-11-28.
+Status: **implemented in MINIV936; final check in MINIV938.** Recorded 2026-11-28.
 
 ## What Up Next is
 

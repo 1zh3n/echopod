@@ -1,6 +1,6 @@
 # List section jump: duplicate letters and key feel
 
-Status: **interaction approved: double Menu, not implemented.** 2026-11-28.
+Status: **implemented in MINIV936; final check in MINIV938.** 2026-11-28.
 
 ## Current behaviour
 

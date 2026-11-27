@@ -1,5 +1,8 @@
 # Lite UI Increment Implementation Plan
 
+Status: **M1–M4 code and incremental images built; final device check pending.** The rescan
+performance item remains separate and is not part of this pass.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Implement the approved Lite navigation, list, motion, orientation and Menu-key changes in four flashable increments.

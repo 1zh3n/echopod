@@ -21,7 +21,7 @@ The 512 MB updater scans the card root for:
 It does **not** scan `HIFIEC90.IMG`. Copy the build to the card root and rename it, for example:
 
 ```text
-build/release-lite/HIFIEC90.IMG  ->  /MINIV933.IMG
+build/release-lite/HIFIEC90.IMG  ->  /MINIV938.IMG
 ```
 
 Then use the player's updater.
@@ -36,19 +36,41 @@ cmake --build --preset release-lite
 ## Current build
 
 ```text
-image:  MINIV933.IMG
-sha256: 1e8c134d5ed9fecbb04f2f39ec196f3b9c1761b83a85d2de845c2a51754ef58a
+image:  MINIV938.IMG
+sha256: ebf7c3c2c97a6fb78933fbe3c595ba35be9b34ee5bf28afb8d8926623f105fee
 ```
 
-`MINIV933` contains the runtime Light/Dark and landscape/portrait build, the 8 px padding system,
-the 28×8 global status meter, the sleep timer countdown and
-finish-track shutdown (the queued next track is held until the player powers off), the 112×112
-portrait Home card, the landscape Settings screen without a text header, black dark-mode
-shadows, and 200×112 / 146×112 boot stills with 5 px hard shadows and no card or frame.
-CJK titles are sorted by pinyin (GB2312) and kana by romaji, interleaved with Latin under
-A-Z; the boot still is drawn across the display strips, and the Settings category dots use
-round masks instead of the old one-pixel caps. It still needs a final device check; earlier
-Lite builds were tested on one 512 MB unit. The 8 GB model is not supported.
+`MINIV938` is the final incremental UI build for this pass. It contains the runtime Light/Dark
+and landscape/portrait/portrait-flipped modes, the 8 px padding system, the 28×8 global status
+meter, the 112×112 portrait Home card, the landscape Settings screen without a text header,
+black dark-mode shadows, and 200×112 / 146×112 boot stills with 5 px hard shadows and no card
+or frame. The navigation is the singleton-overlay model: Back returns to the opener, Now
+Playing / Quick Panel / Settings are not duplicated, and long Play no longer opens the panel.
+Menu is always Up Next in Lite; double Menu opens the Quick Panel in Now Playing, the next
+category in Settings, and the A-Z/# overlay in lettered lists. All Songs has no title, Up Next
+uses the inset card in landscape, and page / overlay / category motion follows the layered
+motion design. CJK titles are sorted by pinyin (GB2312) and kana by romaji, interleaved with
+Latin under A-Z; the boot still is drawn across the display strips.
+
+It still needs a final device check; earlier Lite builds were tested on one 512 MB unit.
+The incremental images for this pass are:
+
+| Image | Contents | SHA-256 |
+|---|---|---|
+| `MINIV935` | singleton-overlay navigation, Menu behavior, double-Menu infrastructure | `d5614b05560c26578e8486f008b8693dfaca339d237b93751457c1aab84b3ba2` |
+| `MINIV936` | section initial fix, A-Z/# overlay, volume-hold cleanup, All Songs / Up Next headers | `5a2dbdf7f0ea4a8920019a398b818297597bf723f214944e5ac0ccd94c2b6d47` |
+| `MINIV937` | page/overlay motion, Settings category transition, portrait-flipped | `4e4600bec521765a5b32986db06447a9bede7b2e582ccc40f03671499dcc3f4c` |
+| `MINIV938` | final fixes: Menu closes the A-Z overlay, Up Next row sizing, compatibility initials and docs | `ebf7c3c2c97a6fb78933fbe3c595ba35be9b34ee5bf28afb8d8926623f105fee` |
+
+The 8 GB model is not supported.
+
+## Verification
+
+- Host tests: 168/168 passed (`ctest --preset dev -E "^format$"`).
+- Lite panel tests: 51/51 passed.
+- `release-lite` build and updater check valid.
+- Still pending: the final 512 MB device pass over sorting, boot, dots, headers, navigation,
+  motion and portrait-flipped.
 
 ## After flashing
 

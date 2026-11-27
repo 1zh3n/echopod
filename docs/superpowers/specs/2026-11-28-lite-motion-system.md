@@ -1,6 +1,6 @@
 # Lite motion system
 
-Status: **layered direction and first choices approved, not implemented.** Recorded 2026-11-28.
+Status: **implemented in MINIV937/938; final device check pending.** Recorded 2026-11-28.
 
 ## Decision
 

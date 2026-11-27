@@ -16,8 +16,8 @@ Status: **implemented in MINIV932.**
   land in the leading `#` section.
 - All Songs uses `LIBRARY_TITLE_ORDER`: every track that is not in a top-level
   `Audiobooks` / `Podcasts` folder. Chinese and kana tracks now interleave with Latin.
-- Long-press volume up/down for about 3 seconds in a lettered list to jump sections. The
-  list shows one letter in a box while jumping. There is no visible A-Z index.
+- Double Menu in a lettered list opens the A-Z/# overlay; volume selects a letter, Play jumps,
+  and Back closes it. Volume hold only scrolls; there is no visible permanent A-Z index.
 
 ## Why All Songs can look like it has no Chinese songs
 

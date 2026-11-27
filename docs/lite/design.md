@@ -70,7 +70,8 @@ cyan `#35C7E8`, amber `#F59E0B`, success `#22C55E`.
   A-Z. Unknown Hanzi/kanji keep their code point and fall under the final `#`.
 - The asset is `assets/pinyin.bin`; sorting uses the rescan scratch, not daily RAM. The
   selected row's section is read from the image on demand.
-- Hold volume up/down for about 3 seconds in a lettered list to jump sections.
+- Double Menu in a lettered list opens the A-Z/# jump overlay; volume selects, Play jumps.
+  Volume hold only scrolls rows.
 
 ### Now Playing seek feedback
 
