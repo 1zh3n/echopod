@@ -30,7 +30,7 @@ cyan `#35C7E8`, amber `#F59E0B`, success `#22C55E`.
 ### Home
 
 - Landscape: 104×104 card, 64 px selected icon, 40 px side icons.
-- Portrait: 136×136 card at (17, 72), 80 px selected icon, 40 px side icons above/below.
+- Portrait: 128×128 card at (21, 78), 80 px selected icon, 40 px side icons above/below; 16 px gap to the card.
 - No text, no page dots. Equalizer appears only while playing.
 
 ### Now Playing

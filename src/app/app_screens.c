@@ -355,8 +355,8 @@ static bool home_scene_draw(void *context, Canvas *canvas, MenuScreen *menu)
     bool portrait = theme_is_portrait(theme);
     int32_t base = floor_division(home_position);
     int center = width / 2;
-    int spacing = 96;
-    Rect card = portrait ? (Rect){17, 72, 136, 136} : (Rect){center - 52, 24, 104, 104};
+    int spacing = portrait ? 100 : 96;
+    Rect card = portrait ? (Rect){21, 78, 128, 128} : (Rect){center - 52, 24, 104, 104};
     draw_home_card(canvas, theme, card);
     Color shadow_color = lite_card_shadow_color(theme);
 
@@ -374,7 +374,7 @@ static bool home_scene_draw(void *context, Canvas *canvas, MenuScreen *menu)
         if (portrait) {
             size = 80 - (int)(closeness * 40 / HOME_STEPS);
             x = center;
-            y = 140 + (int)(offset * spacing / HOME_STEPS);
+            y = 142 + (int)(offset * spacing / HOME_STEPS);
         } else {
             size = 64 - (int)(closeness * 24 / HOME_STEPS);
             x = center + (int)(offset * spacing / HOME_STEPS);
