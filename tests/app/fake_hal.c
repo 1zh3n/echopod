@@ -1324,6 +1324,30 @@ bool hal_system_lite_icons_read(uint32_t offset, void *target, uint32_t length)
     return true;
 }
 
+static const uint8_t *pinyin_blob;
+static uint32_t pinyin_blob_size;
+
+void fake_hal_set_pinyin(const uint8_t *data, uint32_t size)
+{
+    pinyin_blob = data;
+    pinyin_blob_size = size;
+}
+
+uint32_t hal_system_pinyin_size(void)
+{
+    return pinyin_blob_size;
+}
+
+bool hal_system_pinyin_read(uint32_t offset, void *target, uint32_t length)
+{
+    if (pinyin_blob == NULL || offset > pinyin_blob_size ||
+        length > pinyin_blob_size - offset) {
+        return false;
+    }
+    memcpy(target, pinyin_blob + offset, length);
+    return true;
+}
+
 uint32_t hal_system_theme_asset_wipes(void)
 {
     return asset_wipes;

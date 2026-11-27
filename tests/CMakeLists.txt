@@ -448,6 +448,7 @@ if(ECHO_BUILD_SIM)
     )
     target_compile_definitions(test_library_scan PRIVATE
         ECHO_FIXTURE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/fixtures"
+        ECHO_PINYIN_ASSET="${PROJECT_SOURCE_DIR}/assets/pinyin.bin"
     )
     add_executable(cover_build_tool library/cover_build_tool.c
         ${PROJECT_SOURCE_DIR}/src/library/pinyin_state.c)

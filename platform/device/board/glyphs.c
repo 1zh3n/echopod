@@ -22,7 +22,8 @@ enum {
     BUILTIN_THEMES = THEME_COUNT,
 #ifdef ECHO_LITE
     LITE_ANIMATION_ENTRY = FIRST_THEME_ENTRY + BUILTIN_THEMES,
-    LITE_ICONS_ENTRY = LITE_ANIMATION_ENTRY + 1
+    LITE_ICONS_ENTRY = LITE_ANIMATION_ENTRY + 1,
+    PINYIN_ENTRY = LITE_ICONS_ENTRY + 1
 #endif
 };
 
@@ -128,6 +129,29 @@ bool hal_system_lite_icons_read(uint32_t offset, void *target, uint32_t length)
     return read_entry(LITE_ICONS_ENTRY, offset, target, length);
 }
 #endif
+
+uint32_t hal_system_pinyin_size(void)
+{
+#ifdef ECHO_LITE
+    uint32_t offset;
+    uint32_t size;
+    return board_glyphs_entry(PINYIN_ENTRY, &offset, &size) ? size : 0;
+#else
+    return 0;
+#endif
+}
+
+bool hal_system_pinyin_read(uint32_t offset, void *target, uint32_t length)
+{
+#ifdef ECHO_LITE
+    return read_entry(PINYIN_ENTRY, offset, target, length);
+#else
+    (void)offset;
+    (void)target;
+    (void)length;
+    return false;
+#endif
+}
 
 void board_glyphs_start(void)
 {

@@ -291,12 +291,19 @@ RescanOutcome library_rescan_run(RescanProgress progress)
     void *memory = hal_system_borrow_scratch(&size);
     uint32_t listing_size = 0;
     void *listing = memory != NULL ? hal_system_borrow_listing(&listing_size) : NULL;
+    uint32_t pinyin_size = memory != NULL ? hal_system_pinyin_size() : 0;
+    if (pinyin_size == 0 || pinyin_size > size ||
+        !hal_system_pinyin_read(0, memory, pinyin_size)) {
+        pinyin_size = 0;
+    }
     ScanJob job = {
         .files = {open_dir, next_entry, close_dir, open_file, close_file, &files},
         .memory = memory,
         .size = size,
         .listing = listing,
         .listing_size = listing_size,
+        .pinyin = pinyin_size > 0 ? memory : NULL,
+        .pinyin_size = pinyin_size,
         .scratch = {read_handle, write_scratch, &files.scratch, files.scratch.size},
         .sink = {write_library, NULL},
         .capacity = capacity,

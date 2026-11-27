@@ -24,6 +24,8 @@ typedef struct HostFiles {
 } HostFiles;
 
 static const MusicFolders *host_skip;
+static const uint8_t *host_pinyin;
+static uint32_t host_pinyin_size;
 
 typedef struct Output {
     uint8_t bytes[OUTPUT_CAPACITY];
@@ -162,6 +164,8 @@ static ScanResult scan_folder(const char *folder, Output *output, Progress *prog
         .files = {open_dir, next_entry, close_dir, open_file, close_file, &files},
         .memory = memory,
         .size = sizeof memory,
+        .pinyin = host_pinyin,
+        .pinyin_size = host_pinyin_size,
         .scratch = SCRATCH,
         .sink = {write_output, output},
         .progress = {report, progress},
@@ -197,6 +201,28 @@ static void scanning_folders_and_playlists_matches_the_pc_indexer(void)
     uint8_t *expected = read_fixture("scan_music.db", &expected_size);
     CHECK(library_compare(expected, expected_size, output.bytes, stats.length));
     free(expected);
+}
+
+static void a_pinyin_asset_leaves_the_builder_memory(void)
+{
+    static uint8_t pinyin[20000];
+    FILE *file = fopen(ECHO_PINYIN_ASSET, "rb");
+    CHECK(file != NULL);
+    host_pinyin_size = (uint32_t)fread(pinyin, 1, sizeof pinyin, file);
+    fclose(file);
+    host_pinyin = pinyin;
+    static Output output;
+    Progress progress = {.calls = 0};
+    ScanStats stats;
+    CHECK_EQUAL(SCAN_OK, scan_folder(ECHO_FIXTURE_DIR "/scan_music", &output, &progress, &stats));
+    CHECK_EQUAL(8u, stats.tracks);
+    uint32_t expected_size = 0;
+    uint8_t *expected = read_fixture("scan_music.db", &expected_size);
+    CHECK_EQUAL(stats.length, output.length);
+    CHECK(library_compare(expected, expected_size, output.bytes, output.length));
+    free(expected);
+    host_pinyin = NULL;
+    host_pinyin_size = 0;
 }
 
 static void internal_storage_scans_as_one_more_root_folder_like_the_pc_indexer(void)
@@ -581,6 +607,7 @@ int main(void)
         TEST_CASE(a_missing_music_root_says_so),
         TEST_CASE(internal_storage_scans_as_one_more_root_folder_like_the_pc_indexer),
         TEST_CASE(a_separate_listing_leaves_the_memory_to_the_builder),
+        TEST_CASE(a_pinyin_asset_leaves_the_builder_memory),
         TEST_CASE(a_folder_bigger_than_the_listing_is_read_in_batches),
         TEST_CASE(many_sibling_folders_fit_a_small_listing),
         TEST_CASE(a_big_folder_nested_in_big_folders_is_read_in_batches),

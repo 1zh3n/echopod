@@ -60,6 +60,8 @@ typedef struct ScanJob {
     uint32_t size;
     void *listing;
     uint32_t listing_size;
+    const uint8_t *pinyin;
+    uint32_t pinyin_size;
     BuilderScratch scratch;
     ByteSink sink;
     uint32_t capacity;

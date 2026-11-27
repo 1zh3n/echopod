@@ -6,6 +6,9 @@
 
 #include "gfx/font_pack.h"
 
+uint32_t hal_system_pinyin_size(void);
+bool hal_system_pinyin_read(uint32_t offset, void *target, uint32_t length);
+
 enum {
     PATH_CAPACITY = 1024
 };
@@ -76,4 +79,17 @@ uint32_t sim_glyphs_attach(void)
 uint32_t sim_glyphs_face_count(void)
 {
     return loaded;
+}
+
+uint32_t hal_system_pinyin_size(void)
+{
+    return 0;
+}
+
+bool hal_system_pinyin_read(uint32_t offset, void *target, uint32_t length)
+{
+    (void)offset;
+    (void)target;
+    (void)length;
+    return false;
 }

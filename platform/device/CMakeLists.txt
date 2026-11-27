@@ -323,7 +323,8 @@ endforeach()
 if(ECHO_LITE)
     list(APPEND ECHO_GLYPH_FACE_ARGUMENTS
         --glyph-face ${PROJECT_SOURCE_DIR}/assets/lite_animation.bin
-        --glyph-face ${PROJECT_SOURCE_DIR}/assets/lite_icons.bin)
+        --glyph-face ${PROJECT_SOURCE_DIR}/assets/lite_icons.bin
+        --glyph-face ${PROJECT_SOURCE_DIR}/assets/pinyin.bin)
 endif()
 
 add_custom_target(echo_device_image ALL
@@ -347,6 +348,7 @@ add_custom_target(echo_device_image ALL
         ${PROJECT_SOURCE_DIR}/tools/make_image.py
         ${PROJECT_SOURCE_DIR}/assets/lite_animation.bin
         ${PROJECT_SOURCE_DIR}/assets/lite_icons.bin
+        ${PROJECT_SOURCE_DIR}/assets/pinyin.bin
     VERBATIM
 )
 

@@ -1,5 +1,7 @@
 #include "library/library_scan.h"
 
+#include "library/pinyin.h"
+
 #include <stddef.h>
 #include <stdint.h>
 
@@ -485,21 +487,30 @@ static ScanResult walk(ScanState *state, const ScanJob *job, ScanStats *stats)
 
 static bool split_memory(ScanState **state, const ScanJob *job)
 {
-    uintptr_t start = (uintptr_t)job->memory;
+    uint32_t reserved = (job->pinyin_size + ALIGNMENT - 1) & ~(uint32_t)(ALIGNMENT - 1);
+    if (job->pinyin_size > 0) {
+        reserved += (uint32_t)((sizeof(PinyinTable) + ALIGNMENT - 1) &
+                               ~(size_t)(ALIGNMENT - 1));
+    }
+    if (reserved > job->size) {
+        return false;
+    }
+    uintptr_t start = (uintptr_t)job->memory + reserved;
     uint32_t skip = (uint32_t)((ALIGNMENT - start % ALIGNMENT) % ALIGNMENT);
     uint32_t header = (uint32_t)((sizeof(ScanState) + ALIGNMENT - 1) & ~(size_t)(ALIGNMENT - 1));
     uintptr_t listing_start = (uintptr_t)job->listing;
     uint32_t listing_skip = (uint32_t)((ALIGNMENT - listing_start % ALIGNMENT) % ALIGNMENT);
     bool separate = job->listing != NULL && job->listing_size >= listing_skip + MINIMUM_LISTING;
-    if (job->size < skip + header + MINIMUM_LISTING * (separate ? 1u : 2u)) {
+    uint32_t available = job->size - reserved;
+    if (available < skip + header + MINIMUM_LISTING * (separate ? 1u : 2u)) {
         return false;
     }
-    uint32_t size = job->size - skip;
+    uint32_t size = available - skip;
     uint32_t listing = separate ? job->listing_size - listing_skip : size / LISTING_SHARE;
     listing = listing < MINIMUM_LISTING ? MINIMUM_LISTING : listing;
     listing = listing > MAXIMUM_LISTING ? MAXIMUM_LISTING : listing;
     listing &= ~(uint32_t)(ALIGNMENT - 1);
-    uint8_t *memory = (uint8_t *)job->memory + skip;
+    uint8_t *memory = (uint8_t *)job->memory + reserved + skip;
     uint32_t taken = separate ? 0 : listing;
     *state = (ScanState *)(void *)memory;
     (*state)->listing = separate ? (uint8_t *)job->listing + listing_skip : memory + header;
@@ -580,8 +591,19 @@ static ScanResult read_playlists(ScanState *state, const ScanJob *job)
 ScanResult library_scan(const ScanJob *job, ScanStats *stats)
 {
     *stats = (ScanStats){.files = 0, .tracks = 0, .skipped = 0, .length = 0};
+    uint32_t pinyin_bytes = (job->pinyin_size + ALIGNMENT - 1) & ~(uint32_t)(ALIGNMENT - 1);
+    PinyinTable *table = (PinyinTable *)((uint8_t *)job->memory + pinyin_bytes);
+    bool pinyin = job->pinyin != NULL && job->pinyin_size > 0 &&
+                  pinyin_bytes + sizeof(PinyinTable) <= job->size &&
+                  pinyin_table_open(table, job->pinyin, job->pinyin_size);
+    if (pinyin) {
+        pinyin_table_set(table);
+    }
     ScanState *state = NULL;
     if (!split_memory(&state, job)) {
+        if (pinyin) {
+            pinyin_table_set(NULL);
+        }
         return SCAN_OUT_OF_MEMORY;
     }
     state->path[0] = '/';
@@ -594,8 +616,15 @@ ScanResult library_scan(const ScanJob *job, ScanStats *stats)
         result = read_playlists(state, job);
     }
     if (result != SCAN_OK) {
+        if (pinyin) {
+            pinyin_table_set(NULL);
+        }
         return result;
     }
-    return builder_result(
+    result = builder_result(
         library_builder_finish(&state->builder, job->sink, job->capacity, &stats->length));
+    if (pinyin) {
+        pinyin_table_set(NULL);
+    }
+    return result;
 }
