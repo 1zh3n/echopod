@@ -12,6 +12,8 @@
 
 enum {
     HEADER_BYTES = 40,
+    BOOT_HEADER_BYTES = 48,
+    BOOT_FRAME = 2,
     PALETTE_BYTES = 32,
     FRAME_MS = 100,
     PALETTE_COLORS = 16,
@@ -131,6 +133,75 @@ static void advance(uint32_t now_ms)
     if ((int32_t)(now_ms - animation.next_ms) >= 0) {
         animation.next_ms = now_ms + FRAME_MS;
     }
+}
+
+bool lite_boot_draw(Canvas *canvas, Color frame)
+{
+    if (canvas == NULL || !load()) {
+        return false;
+    }
+    uint32_t boot_offset = HEADER_BYTES + (uint32_t)animation.frame_count * animation.frame_bytes;
+    uint32_t size = hal_system_lite_animation_size();
+    if (size < boot_offset + BOOT_HEADER_BYTES) {
+        return false;
+    }
+    uint8_t header[BOOT_HEADER_BYTES];
+    if (!hal_system_lite_animation_read(boot_offset, header, sizeof header)) {
+        return false;
+    }
+    if (header[0] != 'L' || header[1] != 'B' || header[2] != 'O' || header[3] != 'O' ||
+        header[4] != 1) {
+        return false;
+    }
+    int width = header[6] | (header[7] << 8);
+    int height = header[8] | (header[9] << 8);
+    if (width <= 0 || height <= 0 || width + 2 * BOOT_FRAME > canvas->bounds.width ||
+        height + 2 * BOOT_FRAME > canvas->bounds.height || (width & 1) != 0) {
+        return false;
+    }
+    uint16_t palette[PALETTE_COLORS];
+    for (int index = 0; index < PALETTE_COLORS; index++) {
+        palette[index] = (uint16_t)(header[12 + index * 2] | (header[13 + index * 2] << 8));
+    }
+    uint8_t row[160];
+    int row_bytes = width / 2;
+    if (row_bytes > (int)sizeof row) {
+        return false;
+    }
+    uint32_t data_offset = boot_offset + BOOT_HEADER_BYTES;
+    for (int y = 0; y < height; y++) {
+        if (!hal_system_lite_animation_read(data_offset + (uint32_t)y * (uint32_t)row_bytes, row,
+                                            (uint32_t)row_bytes)) {
+            return false;
+        }
+        int x = 0;
+        while (x < width) {
+            uint8_t byte = row[x >> 1];
+            uint8_t index = (x & 1) != 0 ? (byte & 0x0F) : (byte >> 4);
+            int run = 1;
+            while (x + run < width) {
+                int next_x = x + run;
+                uint8_t next_byte = row[next_x >> 1];
+                uint8_t next = (next_x & 1) != 0 ? (next_byte & 0x0F) : (next_byte >> 4);
+                if (next != index) {
+                    break;
+                }
+                run++;
+            }
+            canvas_fill_rect(canvas, (Rect){BOOT_FRAME + x, BOOT_FRAME + y, run, 1},
+                             palette[index & (PALETTE_COLORS - 1)]);
+            x += run;
+        }
+    }
+    int screen_width = width + 2 * BOOT_FRAME;
+    int screen_height = height + 2 * BOOT_FRAME;
+    canvas_fill_rect(canvas, (Rect){0, 0, screen_width, BOOT_FRAME}, frame);
+    canvas_fill_rect(canvas, (Rect){0, screen_height - BOOT_FRAME, screen_width, BOOT_FRAME},
+                     frame);
+    canvas_fill_rect(canvas, (Rect){0, 0, BOOT_FRAME, screen_height}, frame);
+    canvas_fill_rect(canvas,
+                     (Rect){screen_width - BOOT_FRAME, 0, BOOT_FRAME, screen_height}, frame);
+    return true;
 }
 
 static Color pixel(const uint8_t *frame, int x, int y)

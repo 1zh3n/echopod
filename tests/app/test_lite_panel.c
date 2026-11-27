@@ -165,7 +165,7 @@ static void lite_animation_arena_is_available(void)
     CHECK_EQUAL(HAL_LITE_ANIMATION_BYTES, size);
 }
 
-static uint8_t animation_blob[300000];
+static uint8_t animation_blob[400000];
 
 static bool load_animation_asset(void)
 {
@@ -188,23 +188,47 @@ static void lite_animation_streams_all_frames(void)
     CHECK_EQUAL(96, lite_animation_frames());
 }
 
+static bool draw_boot_image(Canvas *canvas)
+{
+    canvas_clear(canvas, COLOR_RGB(250, 250, 249));
+    return lite_boot_draw(canvas, COLOR_RGB(10, 10, 10));
+}
+
+static void boot_screen_has_large_frame(void)
+{
+    fake_hal_reset();
+    CHECK(load_animation_asset());
+    lite_animation_reset();
+    static Color pixels[HAL_DISPLAY_WIDTH * HAL_DISPLAY_HEIGHT];
+    Canvas canvas = canvas_make(pixels, (Rect){0, 0, HAL_DISPLAY_WIDTH, HAL_DISPLAY_HEIGHT});
+    CHECK(draw_boot_image(&canvas));
+    CHECK(canvas_pixel_at(&canvas, 1, 1) == COLOR_RGB(10, 10, 10));
+    CHECK(canvas_pixel_at(&canvas, 3, 3) != COLOR_RGB(250, 250, 249));
+}
+
 static void boot_screen_draws_only_the_animation(void)
 {
-    start_app_with_library();
+    fake_hal_reset();
     CHECK(load_animation_asset());
-    step();
-    CHECK(fake_hal_pixel(160, 85) != COLOR_RGB(250, 250, 249));
+    lite_animation_reset();
+    static Color pixels[HAL_DISPLAY_WIDTH * HAL_DISPLAY_HEIGHT];
+    Canvas canvas = canvas_make(pixels, (Rect){0, 0, HAL_DISPLAY_WIDTH, HAL_DISPLAY_HEIGHT});
+    CHECK(draw_boot_image(&canvas));
+    CHECK(canvas_pixel_at(&canvas, 160, 85) != COLOR_RGB(250, 250, 249));
 }
 
 static void boot_screen_is_static(void)
 {
-    start_app_with_library();
+    fake_hal_reset();
     CHECK(load_animation_asset());
-    step();
-    Color first = fake_hal_pixel(160, 85);
-    now_ms += 500;
-    step();
-    CHECK(fake_hal_pixel(160, 85) == first);
+    lite_animation_reset();
+    static Color first[HAL_DISPLAY_WIDTH * HAL_DISPLAY_HEIGHT];
+    static Color second[HAL_DISPLAY_WIDTH * HAL_DISPLAY_HEIGHT];
+    Canvas one = canvas_make(first, (Rect){0, 0, HAL_DISPLAY_WIDTH, HAL_DISPLAY_HEIGHT});
+    Canvas two = canvas_make(second, (Rect){0, 0, HAL_DISPLAY_WIDTH, HAL_DISPLAY_HEIGHT});
+    CHECK(draw_boot_image(&one));
+    CHECK(draw_boot_image(&two));
+    CHECK(memcmp(first, second, sizeof first) == 0);
 }
 
 static void colorful_home_has_no_text(void)
@@ -398,6 +422,7 @@ int main(void)
         TEST_CASE(settings_subpage_opens),
         TEST_CASE(lite_animation_arena_is_available),
         TEST_CASE(lite_animation_streams_all_frames),
+        TEST_CASE(boot_screen_has_large_frame),
         TEST_CASE(boot_screen_draws_only_the_animation),
         TEST_CASE(boot_screen_is_static),
         TEST_CASE(colorful_home_has_no_text),

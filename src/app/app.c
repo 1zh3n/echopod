@@ -769,12 +769,15 @@ static void draw_fade(Canvas *canvas, const Fade *fade, const char *text)
 #ifdef ECHO_LITE
 static void draw_lite_boot(Canvas *canvas, const Fade *fade)
 {
+    (void)fade;
     const Theme *theme = current_theme();
-    uint8_t alpha = fade_alpha(fade, app.now_ms);
-    Color background = theme->colors->background;
-    Color ink = color_blend(background, theme->colors->text, alpha);
-    Color panel = color_blend(background, theme->colors->header_background, alpha);
-    lite_animation_draw_card(canvas, (Rect){60, 29, 200, 112}, ink, ink, panel, app.now_ms, false);
+    Color ink = theme->colors->text;
+    canvas_fill_rect(canvas, whole_screen(), theme->colors->background);
+    if (lite_boot_draw(canvas, ink)) {
+        return;
+    }
+    lite_animation_draw_card(canvas, (Rect){60, 29, 200, 112}, ink, ink,
+                             theme->colors->header_background, app.now_ms, false);
 }
 #endif
 
