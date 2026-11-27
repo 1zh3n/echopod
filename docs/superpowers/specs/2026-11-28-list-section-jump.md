@@ -129,8 +129,10 @@ hold does, and it does not collide with the Play song-actions menu.
 The cost is double-press detection: a single Menu in a lettered list has to wait for the 200 ms trial
 `KEY_TRACKER_DOUBLE_PRESS_MS` window before opening Now Playing. The window is measured from the
 first release to the second press down; a single action is emitted at the deadline, while a
-second press inside the window is recognised on its key-down. The key scan is 5 ms, so the
-theoretical fastest double is about one scan after the release. If that delay is unacceptable,
+second press inside the window is recognised on its key-down. The key scan is 5 ms and the
+scanner needs two identical samples, so the firmware debounce is about 10 ms. The window is
+therefore human-timing limited, not switch-rebound limited; 180 ms is still well above the
+hardware floor, while 160 ms starts to demand a precise double tap. If that delay is unacceptable,
 the fallback is:
 
 - long Menu = A-Z jump in lettered lists;
