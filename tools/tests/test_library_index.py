@@ -43,6 +43,28 @@ class SortKeyTest(unittest.TestCase):
         self.assertEqual("bjork", library_index.sort_key("Björk"))
 
 
+    def test_cjk_sorts_by_pinyin(self):
+        self.assertEqual("zhoujielun", library_index.sort_key("周杰伦"))
+        self.assertEqual("aimiyon", library_index.sort_key("あいみょん"))
+
+    def test_scripts_interleave(self):
+        names = ["周杰伦", "Adele", "あいみょん", "Zara"]
+        self.assertEqual(["Adele", "あいみょん", "Zara", "周杰伦"],
+                         sorted(names, key=library_index.sort_key))
+
+    def test_unknown_kanji_falls_after_mapped_text(self):
+        self.assertGreater(library_index.sort_key("\ufa19"), library_index.sort_key("zzz"))
+        self.assertEqual("#", library_index.sort_initial("\ufa19"))
+
+    def test_polyphonic_uses_primary_reading(self):
+        self.assertEqual("zhongqing", library_index.sort_key("重庆"))
+
+    def test_section_initials(self):
+        self.assertEqual("Z", library_index.sort_initial("周"))
+        self.assertEqual("A", library_index.sort_initial("あ"))
+        self.assertEqual("#", library_index.sort_initial("123"))
+
+
 class NaturalSortKeyTest(unittest.TestCase):
     def test_digit_runs_compare_as_numbers(self):
         names = ["10 - Ten.flac", "2 - Two.flac", "1 - One.flac"]

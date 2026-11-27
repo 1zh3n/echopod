@@ -8,6 +8,8 @@ from collections import Counter
 from dataclasses import dataclass, field, replace
 from pathlib import Path, PurePosixPath
 
+import pinyin_table
+
 MAGIC = b"EMDB"
 VERSION = 3
 HEADER_SIZE = 128
@@ -129,10 +131,49 @@ class LibraryModel:
     music_genres: int = 0
 
 
+_PINYIN = None
+_PINYIN_LOADED = False
+_PINYIN_PATH = Path(__file__).resolve().parent.parent / "assets" / "pinyin.bin"
+
+
+def pinyin_data():
+    global _PINYIN, _PINYIN_LOADED
+    if not _PINYIN_LOADED:
+        _PINYIN_LOADED = True
+        try:
+            _PINYIN = pinyin_table.load(_PINYIN_PATH)
+        except (OSError, ValueError):
+            _PINYIN = None
+    return _PINYIN
+
+
+def pinyin_text(text):
+    table = pinyin_data()
+    if table is None:
+        return text
+    return "".join(table.syllable(ord(character)) or character for character in text)
+
+
 def sort_key(text):
+    text = pinyin_text(text)
     decomposed = unicodedata.normalize("NFKD", text)
     stripped = "".join(character for character in decomposed if not unicodedata.combining(character))
     return LEADING_ARTICLE.sub("", stripped.casefold().strip())
+
+
+def sort_initial(text):
+    table = pinyin_data()
+    folded = LEADING_ARTICLE.sub("", text.strip().casefold())
+    if not folded:
+        return "#"
+    first = folded[0]
+    if table is not None:
+        syllable = table.syllable(ord(first))
+        if syllable:
+            first = syllable[0]
+    decomposed = unicodedata.normalize("NFKD", first)
+    stripped = "".join(character for character in decomposed if not unicodedata.combining(character))
+    return stripped.upper() if len(stripped) == 1 and "a" <= stripped <= "z" else "#"
 
 
 NATURAL_RUNS = re.compile(r"[0-9]+|[^0-9]+")
