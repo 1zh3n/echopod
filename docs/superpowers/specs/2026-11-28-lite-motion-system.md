@@ -152,6 +152,33 @@ rescan overlay     85,400 /  86,016      616 free
   - overlay opens/closes in the overlay direction and page transitions do not;
   - landscape and portrait both keep the status meter and card geometry intact.
 
+## Fast setting
+
+The `Faster` setting is 60 percent of the normal duration. It does not raise the frame rate; it
+removes frames:
+
+```text
+page     240 -> 144 ms
+overlay  160 ->  96 ms
+Settings 140 ->  84 ms
+Home     240 -> 144 ms
+```
+
+If the panel loop takes about 20-30 ms per full changed frame, the fast Settings transition has
+only 3-4 frames and the fast page slide 5-6. The cubic ease-out also puts a large part of the
+distance into the first frame, which makes the short versions look sharper than the normal ones.
+This is a frame-count/easing limitation, not a missing render optimization.
+
+Options, not implemented:
+
+- raise `Faster` from 60 to 75 percent (180 / 120 / 105 ms), the smallest change;
+- enforce minimum durations, for example page 180 ms, overlay 120 ms, Settings 120 ms;
+- reduce the amount of motion: drop the Settings category micro-slide or the overlay sheet
+  first, then keep page slides for real navigation.
+
+Complex rendering work (pre-rendering screens, a second framebuffer) does not fit the Lite RAM
+and code budget and would not create frames when the panel is the limit.
+
 ## Still open
 
 - Home at 240 ms or 280 ms: 240 ms is the first build; move to 280 ms only if the device check
