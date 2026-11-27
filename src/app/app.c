@@ -905,11 +905,11 @@ static void draw_lite_status_meter(Canvas *canvas)
     bool bluetooth = lite_status_bluetooth();
     bool playing = player_status(&app.player).state == PLAYER_PLAYING;
     if (top_screen() == &app.screens.now_playing.screen) {
-        Point origin = {theme_is_portrait(theme) ? 96 : 236, 13};
+        Point origin = {theme_is_portrait(theme) ? 93 : 243, 13};
         lite_status_bt_chip_draw(canvas, theme, origin, bluetooth);
         return;
     }
-    lite_status_meter_draw(canvas, theme, (Point){2, 2}, bluetooth, playing);
+    lite_status_meter_draw(canvas, theme, (Point){8, 4}, bluetooth, playing);
 }
 #endif
 

@@ -32,7 +32,7 @@ enum {
     SETTINGS_DIVIDER_X = 24,
     SETTINGS_DIVIDER_WIDTH = 280,
     SETTINGS_DOT_X = 254,
-    SETTINGS_DOT_Y = 6,
+    SETTINGS_DOT_Y = 8,
     SETTINGS_DOT_GAP = 12
 };
 
@@ -125,7 +125,7 @@ static bool settings_scene_draw(void *context, Canvas *canvas, MenuScreen *menu)
                    (Label){.area = {12, 8, 146, 20}, .text = settings_category_title(group)});
         draw_category_dots(canvas, theme, group, 112, 18);
         canvas_fill_rect(canvas, (Rect){12, 34, 36, 4}, visual->base);
-        rows = lite_card(canvas, theme, (Rect){8, 58, 154, 244}, 4);
+        rows = lite_card(canvas, theme, (Rect){8, 58, 154, 254}, 4);
         row_height = count > 6 ? 34 : 38;
         visible = count < 7 ? count : 7;
         fill_x = 10;

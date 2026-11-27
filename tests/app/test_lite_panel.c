@@ -300,14 +300,14 @@ static void home_status_meter_tracks_bluetooth(void)
 {
     start_app_with_library();
     wait_ms(300);
-    CHECK(fake_hal_pixel(8, 6) == DEFAULT_THEME.colors->divider);
+    CHECK(fake_hal_pixel(14, 8) == DEFAULT_THEME.colors->divider);
     fake_hal_bluetooth()->state = HAL_BLUETOOTH_CONNECTED;
     wait_ms(300);
-    CHECK(fake_hal_pixel(8, 6) == COLOR_RGB(0, 111, 238));
-    CHECK(fake_hal_pixel(20, 6) == DEFAULT_THEME.colors->divider);
+    CHECK(fake_hal_pixel(14, 8) == COLOR_RGB(0, 111, 238));
+    CHECK(fake_hal_pixel(26, 8) == DEFAULT_THEME.colors->divider);
     fake_hal_bluetooth()->state = HAL_BLUETOOTH_OFF;
     wait_ms(300);
-    CHECK(fake_hal_pixel(8, 6) == DEFAULT_THEME.colors->divider);
+    CHECK(fake_hal_pixel(14, 8) == DEFAULT_THEME.colors->divider);
 }
 
 static void status_meter_and_chip_draw_native_segments(void)
@@ -328,7 +328,7 @@ static void now_playing_uses_bt_chip_with_controls(void)
     open_all_songs_and_play();
     fake_hal_bluetooth()->state = HAL_BLUETOOTH_CONNECTED;
     wait_ms(300);
-    CHECK(fake_hal_pixel(240, 16) == COLOR_RGB(0, 111, 238));
+    CHECK(fake_hal_pixel(248, 16) == COLOR_RGB(0, 111, 238));
     CHECK(fake_hal_pixel(8, 6) != COLOR_RGB(0, 111, 238));
 }
 
@@ -371,8 +371,8 @@ static void landscape_settings_has_no_title(void)
     tap(KEY_PLAY);
     wait_ms(300);
     CHECK(title_is("Settings"));
-    CHECK(fake_hal_pixel(20, 12) == COLOR_RGB(250, 250, 249));
-    CHECK(fake_hal_pixel(302, 6) == COLOR_RGB(139, 92, 246));
+    CHECK(fake_hal_pixel(20, 16) == COLOR_RGB(250, 250, 249));
+    CHECK(fake_hal_pixel(302, 8) == COLOR_RGB(139, 92, 246));
 }
 
 static void settings_long_press_switches_category(void)
@@ -396,7 +396,7 @@ static void settings_long_press_switches_category(void)
     CHECK(fake_hal_pixel(20, 50) == COLOR_RGB(139, 92, 246));
     CHECK(fake_hal_pixel(39, 95) == COLOR_RGB(139, 92, 246));
     CHECK(fake_hal_pixel(51, 95) == COLOR_RGB(255, 255, 255));
-    CHECK(fake_hal_pixel(302, 6) == COLOR_RGB(139, 92, 246));
+    CHECK(fake_hal_pixel(302, 8) == COLOR_RGB(139, 92, 246));
 }
 
 static void settings_short_press_cycles_value(void)
@@ -441,8 +441,9 @@ static void now_playing_uses_native_18px_icons(void)
     start_app_with_library();
     open_all_songs_and_play();
     wait_ms(300);
-    CHECK(area_has_color(262, 8, 18, 18, COLOR_RGB(0, 111, 238)));
-    CHECK(area_has_color(288, 8, 18, 18, COLOR_RGB(10, 10, 10)));
+    CHECK(area_has_color(269, 8, 18, 18, COLOR_RGB(0, 111, 238)));
+    CHECK(area_has_color(294, 8, 18, 18, COLOR_RGB(10, 10, 10)));
+    CHECK(fake_hal_pixel(40, 139) == DEFAULT_THEME.colors->divider);
 }
 
 static void quick_panel_is_icon_only(void)
@@ -640,8 +641,9 @@ static void portrait_now_playing_and_panel(void)
     move_down(2);
     open_all_songs_and_play();
     wait_ms(300);
-    CHECK(area_has_color(122, 8, 18, 18, COLOR_RGB(0, 111, 238)));
-    CHECK(area_has_color(147, 8, 18, 18, COLOR_RGB(10, 10, 10)));
+    CHECK(area_has_color(119, 8, 18, 18, COLOR_RGB(0, 111, 238)));
+    CHECK(area_has_color(144, 8, 18, 18, COLOR_RGB(10, 10, 10)));
+    CHECK(fake_hal_pixel(40, 289) == DEFAULT_THEME.colors->divider);
 
     hold(KEY_PLAY);
     wait_ms(300);

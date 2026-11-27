@@ -151,8 +151,8 @@ Rect lite_list_frame(Canvas *canvas, const Theme *theme, const char *title)
         label_draw(canvas, style, (Label){.area = {12, 8, content.width - 24, 20}, .text = title});
         canvas_fill_rect(canvas, (Rect){12, 30, content.width - 24, lite_card_border_width(theme)},
                          lite_card_border_color(theme));
-        lite_card(canvas, theme, (Rect){8, 40, content.width - 16, 266}, 4);
-        return (Rect){12, 44, content.width - 24, 258};
+        lite_card(canvas, theme, (Rect){8, 40, content.width - 16, 272}, 4);
+        return (Rect){12, 44, content.width - 24, 264};
     }
     label_draw(canvas, style,
                (Label){.area = {16, 8, content.width - 32, 20}, .text = title});

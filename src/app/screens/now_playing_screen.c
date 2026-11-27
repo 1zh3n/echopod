@@ -650,21 +650,21 @@ static void landscape_layout(const NowPlayingScreen *now_playing, Layout *layout
 static void lite_layout(Layout *layout, bool portrait)
 {
     if (portrait) {
-        layout->boxes[THEME_LAYOUT_TITLE] = (Rect){12, 24, 104, 22};
-        layout->boxes[THEME_LAYOUT_ARTIST] = (Rect){12, 46, 146, 18};
-        layout->boxes[THEME_LAYOUT_ALBUM] = (Rect){12, 62, 146, 18};
+        layout->boxes[THEME_LAYOUT_TITLE] = (Rect){8, 24, 154, 22};
+        layout->boxes[THEME_LAYOUT_ARTIST] = (Rect){8, 46, 154, 18};
+        layout->boxes[THEME_LAYOUT_ALBUM] = (Rect){8, 62, 154, 18};
         layout->boxes[THEME_LAYOUT_FORMAT] = (Rect){0, 0, 0, 0};
-        layout->boxes[THEME_LAYOUT_LYRICS] = (Rect){12, 86, 146, 158};
-        layout->boxes[THEME_LAYOUT_PROGRESS] = (Rect){12, 262, 146, 4};
-        layout->boxes[THEME_LAYOUT_TIMES] = (Rect){12, 270, 146, 18};
+        layout->boxes[THEME_LAYOUT_LYRICS] = (Rect){8, 86, 154, 194};
+        layout->boxes[THEME_LAYOUT_PROGRESS] = (Rect){8, 288, 154, 4};
+        layout->boxes[THEME_LAYOUT_TIMES] = (Rect){8, 294, 154, 18};
     } else {
-        layout->boxes[THEME_LAYOUT_TITLE] = (Rect){16, 8, 200, 22};
-        layout->boxes[THEME_LAYOUT_ARTIST] = (Rect){16, 32, 288, 18};
-        layout->boxes[THEME_LAYOUT_ALBUM] = (Rect){16, 46, 288, 18};
-        layout->boxes[THEME_LAYOUT_FORMAT] = (Rect){216, 8, 88, 18};
-        layout->boxes[THEME_LAYOUT_LYRICS] = (Rect){16, 62, 288, 75};
-        layout->boxes[THEME_LAYOUT_PROGRESS] = (Rect){16, 144, 288, 3};
-        layout->boxes[THEME_LAYOUT_TIMES] = (Rect){16, 150, 288, 18};
+        layout->boxes[THEME_LAYOUT_TITLE] = (Rect){8, 8, 200, 22};
+        layout->boxes[THEME_LAYOUT_ARTIST] = (Rect){8, 32, 304, 18};
+        layout->boxes[THEME_LAYOUT_ALBUM] = (Rect){8, 46, 304, 18};
+        layout->boxes[THEME_LAYOUT_FORMAT] = (Rect){224, 8, 88, 18};
+        layout->boxes[THEME_LAYOUT_LYRICS] = (Rect){8, 62, 304, 70};
+        layout->boxes[THEME_LAYOUT_PROGRESS] = (Rect){8, 138, 304, 3};
+        layout->boxes[THEME_LAYOUT_TIMES] = (Rect){8, 144, 304, 18};
         layout->aligns[THEME_LAYOUT_FORMAT] = THEME_ALIGN_RIGHT;
     }
     layout->boxes[THEME_LAYOUT_COVER] = (Rect){0, 0, 0, 0};
@@ -1003,8 +1003,8 @@ static void draw_lite_state(const NowPlayingScreen *now_playing, Canvas *canvas)
     }
     const Theme *theme = now_playing->config.theme;
     PlaybackMode mode = player_playback_mode(now_playing->config.player);
-    int mode_x = theme_is_portrait(theme) ? 122 : 262;
-    int state_x = theme_is_portrait(theme) ? 147 : 288;
+    int mode_x = theme_is_portrait(theme) ? 119 : 269;
+    int state_x = theme_is_portrait(theme) ? 144 : 294;
     lite_icon_draw_scaled(canvas, lite_mode_icon_18(mode), (Rect){mode_x, 8, 18, 18},
                           theme->colors->selection_background);
     const IconMask *state = now_playing->status.state == PLAYER_PLAYING ? &LITE_ICON_PAUSE_18
