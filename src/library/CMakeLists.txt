@@ -34,6 +34,7 @@ add_library(echo_library_scan STATIC
     playlist_reader.c
     sort_fold_table.c
     sort_key.c
+    pinyin.c
     tags_ape.c
     tags_asf.c
     tags_genres.c

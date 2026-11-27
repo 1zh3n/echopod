@@ -4,6 +4,7 @@
 #include <stdint.h>
 
 #include "core/utf8.h"
+#include "library/pinyin.h"
 #include "sort_fold_table.h"
 
 enum {
@@ -207,7 +208,17 @@ size_t sort_key_make(const char *text, char *key, size_t capacity)
     KeyBuilder builder = {.key = key, .capacity = capacity, .length = 0, .full = false};
     const char *cursor = text;
     while (*cursor != '\0' && !builder.full) {
-        append_folded(&builder, utf8_next(&cursor));
+        uint32_t codepoint = utf8_next(&cursor);
+        char syllable[16];
+        if (pinyin_table_syllable(pinyin_table_get(), codepoint, syllable, sizeof syllable)) {
+            size_t length = 0;
+            while (syllable[length] != '\0') {
+                length++;
+            }
+            append_bytes(&builder, syllable, length);
+        } else {
+            append_folded(&builder, codepoint);
+        }
     }
     size_t end = content_end(key, builder.length);
     size_t start = without_article(key, skip_spaces(key, 0, end), end);

@@ -2,6 +2,7 @@
 
 #include "app/app.h"
 #include "board.h"
+#include "library/pinyin.h"
 #include "core/i18n.h"
 #include "device/battery_gauge.h"
 #include "device/sleep_meter.h"
@@ -290,6 +291,7 @@ uint8_t board_dark_sleep_percent(void)
 void board_main(void)
 {
     board_start_record_boot();
+    pinyin_state_keep();
     board_stack_paint();
     board_power_hold();
     board_bluetooth_off();

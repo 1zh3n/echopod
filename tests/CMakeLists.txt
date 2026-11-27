@@ -8,6 +8,7 @@ function(echo_add_unit_test)
     if(WIN32)
         target_sources(${TEST_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/cmake/windows_utf8.rc)
     endif()
+    target_sources(${TEST_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/src/library/pinyin_state.c)
     target_link_libraries(${TEST_NAME} PRIVATE echo_check echo_options echo_builtin_themes
         ${TEST_LIBRARIES})
     target_include_directories(${TEST_NAME} PRIVATE ${TEST_PRIVATE_INCLUDES})
@@ -77,6 +78,10 @@ foreach(library_test block_cache library library_browse favorites covers sort_ke
         LIBRARIES echo_library_fixtures
     )
 endforeach()
+target_compile_definitions(test_sort_key PRIVATE
+    ECHO_PINYIN_ASSET="${PROJECT_SOURCE_DIR}/assets/pinyin.bin")
+echo_add_unit_test(NAME test_pinyin SOURCES library/test_pinyin.c LIBRARIES echo_library_fixtures)
+target_compile_definitions(test_pinyin PRIVATE ECHO_PINYIN_ASSET="${PROJECT_SOURCE_DIR}/assets/pinyin.bin")
 add_library(echo_reference_builder STATIC
     library/reference/reference_builder.c
     library/reference/reference_builder_encode.c
@@ -444,7 +449,8 @@ if(ECHO_BUILD_SIM)
     target_compile_definitions(test_library_scan PRIVATE
         ECHO_FIXTURE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/fixtures"
     )
-    add_executable(cover_build_tool library/cover_build_tool.c)
+    add_executable(cover_build_tool library/cover_build_tool.c
+        ${PROJECT_SOURCE_DIR}/src/library/pinyin_state.c)
     target_link_libraries(cover_build_tool PRIVATE echo_library_scan echo_sim_storage
         echo_options)
     if(EXISTS ${PROJECT_SOURCE_DIR}/.venv/bin/python)

@@ -28,6 +28,7 @@ target_include_directories(echo_sim_storage PUBLIC .)
 target_link_libraries(echo_sim_storage PUBLIC echo_hal PRIVATE echo_core echo_options)
 
 add_executable(echo_sim
+    ${PROJECT_SOURCE_DIR}/src/library/pinyin_state.c
     main.c
     sim_audio.c
     sim_bluetooth.c

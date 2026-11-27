@@ -1,4 +1,5 @@
 add_executable(echo_device
+    ${PROJECT_SOURCE_DIR}/src/library/pinyin_state.c
     board/audio.c
     board/bluetooth.c
     board/clock.c

@@ -1,6 +1,8 @@
+#include <stdio.h>
 #include <string.h>
 
 #include "check.h"
+#include "library/pinyin.h"
 #include "library/sort_key.h"
 
 typedef struct KeyCase {
@@ -60,6 +62,27 @@ static void keys_match_the_pc_indexer(void)
         sort_key_make(CASES[index].text, key, sizeof key);
         CHECK_EQUAL(0, strcmp(CASES[index].key, key));
     }
+}
+
+static void cjk_keys_match_the_pc_indexer(void)
+{
+    static unsigned char asset[32768];
+    FILE *file = fopen(ECHO_PINYIN_ASSET, "rb");
+    CHECK(file != NULL);
+    size_t length = fread(asset, 1, sizeof asset, file);
+    fclose(file);
+    PinyinTable table;
+    CHECK(pinyin_table_open(&table, asset, (uint32_t)length));
+    pinyin_table_set(&table);
+    char key[SORT_KEY_CAPACITY];
+    sort_key_make("\xE5\x91\xA8\xE6\x9D\xB0\xE4\xBC\xA6", key, sizeof key);
+    CHECK_EQUAL(0, strcmp("zhoujielun", key));
+    sort_key_make("\xE3\x81\x82\xE3\x81\x84\xE3\x81\xBF\xE3\x82\x87\xE3\x82\x93",
+                  key, sizeof key);
+    CHECK_EQUAL(0, strcmp("aimiyon", key));
+    sort_key_make("\xE9\x87\x8D\xE5\xBA\x86", key, sizeof key);
+    CHECK_EQUAL(0, strcmp("zhongqing", key));
+    pinyin_table_set(NULL);
 }
 
 static void comparison_follows_the_keys(void)
@@ -184,6 +207,7 @@ int main(void)
     static const TestCase cases[] = {
         TEST_CASE(the_initial_matches_the_first_byte_of_the_key),
         TEST_CASE(keys_match_the_pc_indexer),
+        TEST_CASE(cjk_keys_match_the_pc_indexer),
         TEST_CASE(comparison_follows_the_keys),
         TEST_CASE(natural_keys_compare_digit_runs_as_numbers),
         TEST_CASE(natural_keys_fold_case_and_accents),
