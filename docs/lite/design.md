@@ -78,6 +78,11 @@ This is a planned temporary state; it is **not in MINIV926** yet.
 - Playback state remains the pause/play icon; double-press pending is not shown
   because the 280 ms window is too short for a useful blink.
 
+Scope: this is only the **volume long-press seek** feedback. It is not a general
+long-press gauge; Play/Menu/Back (600 ms) and Power (2000 ms) are out of scope for
+now. The hold gauge can be implemented as a reusable primitive without wiring it to
+other keys.
+
 ![Now Playing hold feedback](../images/lite/now-playing-hold-feedback.png)
 
 ### Settings

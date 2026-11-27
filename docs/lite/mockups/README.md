@@ -35,6 +35,9 @@ a screenshot source.
 This is a design target, **not in MINIV926**. A volume long-press temporarily replaces the
 14×8 Bluetooth chip with a 28×8 progress bar; at 1000 ms it turns amber and seek begins.
 
+Scope: volume long-press seek only; not a general long-press gauge. Play/Menu/Back and Power
+are out of scope for now.
+
 ![Now Playing hold feedback](../../images/lite/now-playing-hold-feedback.png)
 
 ## Settings

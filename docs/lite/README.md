@@ -6,7 +6,7 @@ Personal EchoPod-based firmware for the **512 MB** Snowsky (FiiO) Echo Mini.
 - **Hardware:** tested on one 512 MB unit; the 8 GB model is not supported.
 - **Current build:** `release-lite` preset; image `MINIV926.IMG` pending a final device check.
 - **Upstream:** EchoPod 0.13.2.
-- **Planned:** Now Playing volume hold feedback (amber seek-ready bar); not in `MINIV926`.
+- **Planned:** Now Playing volume hold feedback (amber seek-ready bar), seek only; not in `MINIV926`.
 
 ## Start here
 
