@@ -6,7 +6,11 @@
 #include "playback/play_queue.h"
 
 enum {
+#ifdef ECHO_LITE
+    RESUME_STATE_SIZE = 1070
+#else
     RESUME_STATE_SIZE = 558
+#endif
 };
 
 typedef struct ResumeState {

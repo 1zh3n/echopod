@@ -22,7 +22,11 @@ typedef enum RepeatMode {
 enum {
     SHUFFLE_MODE_COUNT = SHUFFLE_ALBUMS + 1,
     REPEAT_MODE_COUNT = REPEAT_ALL + 1,
-    PLAY_QUEUE_TRACK_LIST_MAX = 256
+#ifdef ECHO_LITE
+    PLAY_QUEUE_TRACK_LIST_MAX = 512,
+#else
+    PLAY_QUEUE_TRACK_LIST_MAX = 256,
+#endif
 };
 
 typedef struct PlayQueuePlan {

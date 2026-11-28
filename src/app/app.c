@@ -164,7 +164,9 @@ typedef struct AppState {
 #endif
     ClockStore clock;
     bool usb_written;
+#ifndef ECHO_LITE
     CoverCache covers;
+#endif
     PowerPolicy power;
     LowBattery low_battery;
     uint32_t battery_check_ms;
@@ -1250,7 +1252,9 @@ static void draw_notice(void *context, Canvas *canvas)
 
 static void start_playback(void)
 {
+#ifndef ECHO_LITE
     cover_cache_close(&app.covers);
+#endif
     library_store_open(&app.library);
     player_init(&app.player, &app.library.library);
     settings_store_restore_playback(&app.settings, &app.player, hal_clock_microseconds());
@@ -1268,7 +1272,9 @@ static void start_playback(void)
     spoken_store_load(&app.spoken, &app.library.library);
     player_set_resume(&app.player, spoken_store_resume(&app.spoken));
 #endif
+#ifndef ECHO_LITE
     cover_cache_open(&app.covers, &app.library.library);
+#endif
 }
 
 static void start_hardware(uint32_t now_ms)
@@ -1306,7 +1312,11 @@ static void start_screens(uint32_t now_ms)
         .favorites = &app.favorites,
         .power = &app.power,
         .toast = &app.toast,
+#ifdef ECHO_LITE
+        .covers = NULL,
+#else
         .covers = &app.covers,
+#endif
         .rescan_requested = &app.rescan_requested,
         .bluetooth = &app.bluetooth,
         .equalizer = &app.equalizer,

@@ -6,7 +6,11 @@
 #include "library/library.h"
 
 enum {
+#ifdef ECHO_LITE
+    FAVORITES_CAPACITY = 512,
+#else
     FAVORITES_CAPACITY = 256,
+#endif
     FAVORITES_FILE_CAPACITY = 12 + FAVORITES_CAPACITY * 4,
     FAVORITES_ALBUMS_PER_PAUSE = 8
 };

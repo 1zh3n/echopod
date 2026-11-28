@@ -11,3 +11,6 @@ target_link_libraries(echo_playback
     PUBLIC echo_core echo_library echo_hal
     PRIVATE echo_options echo_compact echo_lto
 )
+if(ECHO_LITE)
+    target_compile_definitions(echo_playback PRIVATE ECHO_LITE)
+endif()

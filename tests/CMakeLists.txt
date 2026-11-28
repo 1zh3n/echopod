@@ -209,6 +209,9 @@ echo_add_unit_test(NAME test_player
     LIBRARIES echo_app echo_library_fixtures
     PRIVATE_INCLUDES ${PROJECT_SOURCE_DIR}/src/app
 )
+if(ECHO_LITE)
+    target_compile_definitions(test_player PRIVATE ECHO_LITE)
+endif()
 echo_add_unit_test(NAME test_listen_history
     SOURCES app/test_listen_history.c app/fake_hal.c
     LIBRARIES echo_app echo_library_fixtures

@@ -19,6 +19,7 @@
 #include "favorites_store.h"
 #include "lite_animation.h"
 #include "player.h"
+#include "playback/resume_state.h"
 #include "screens/charge_screen.h"
 #include "favorite_track_source.h"
 #include "screens/track_list_screen.h"
@@ -726,6 +727,13 @@ static void two_song_favorites(void)
 {
     favorites_store_toggle_track(&favorite_store, 0);
     favorites_store_toggle_track(&favorite_store, 1);
+}
+
+static void lite_favorites_use_the_larger_capacity(void)
+{
+    CHECK_EQUAL(512, FAVORITES_CAPACITY);
+    CHECK_EQUAL(512, PLAY_QUEUE_TRACK_LIST_MAX);
+    CHECK_EQUAL(1070, RESUME_STATE_SIZE);
 }
 
 static void favorite_tracks_lists_nothing_when_empty(void)
@@ -1537,6 +1545,7 @@ int main(void)
         TEST_CASE(charge_card_is_portrait),
         TEST_CASE(category_icons_are_40px),
         TEST_CASE(compact_icons_are_native_18px),
+        TEST_CASE(lite_favorites_use_the_larger_capacity),
         TEST_CASE(favorite_tracks_lists_nothing_when_empty),
         TEST_CASE(favorite_tracks_lists_two_favorites_in_title_order),
         TEST_CASE(favorite_tracks_az_works_for_one_track),
