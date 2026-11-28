@@ -54,8 +54,9 @@ cyan `#35C7E8`, amber `#F59E0B`, success `#22C55E`.
 - Status uses 10×10 blocks with a 1 px hard shadow at y=8.
 - Right side: Bluetooth `#0F8ADB` and playing `#F59E0B`, 3 px apart, 8 px from the right edge;
   inactive blocks are `text_tertiary` gray, so colour always means the state is on.
-- While playing, a purple `#8B5CF6` mode block sits immediately right of the playback block and
-  shows a white `L` (loop), `1` (loop one) or `S` (shuffle); it is hidden while paused.
+- The mode block sits immediately right of the playback block and is always shown.
+  Random is purple `#8B5CF6` with no glyph, Loop is `text_tertiary` gray with no glyph, and
+  Loop One is gray with a centered white `1`.
   The group is `[Bluetooth] [play] [mode]` at x=276/289/302 landscape and 126/139/152 portrait.
 - Root lists use the original 28×10 segmented meter on the left: 2 px border/shadow, two 12×6
   cells; All Songs `#2FA8FF`, Favorites `#EC4899`, with the inactive half divider gray.
@@ -88,11 +89,12 @@ was prototyped and deferred because it duplicated that feedback and hid the Blue
 
 ### Settings
 
-- Settings home: five cards with 24/32 px colour icons — Random mode, Sleep timer, Sound,
-  Display, System. Landscape cards are 304×50 at y=29 with 4 px gaps; portrait cards are
-  154×96 at y=58 with 4 px gaps. The list scrolls two cards at a time with the next card peeking.
-  Selected cards get the selection fill, border and white icons; the label uses the 16 px title
-  font and the value uses the small font.
+- Settings home: five cards with 24/28 px colour icons — Random mode, Sleep timer, Sound,
+  Display, System. Landscape cards are 304×44 at y=29 with 4 px gaps; portrait cards are
+  154×72 at y=58 with 4 px gaps. The list scrolls three cards at a time with the next card
+  peeking. Direct values are right-aligned (landscape on the same line, portrait on the second
+  line). Selected cards get the selection fill, border and white icons; the label uses the 16 px
+  title font and the value uses the small font.
 - Random and Sleep are direct items; Sound/Display/System open category pages.
 - Category pages: no text header landscape; the half-badge and glyph identify the category.
   Portrait keeps the category title and colour rule. Category dots are removed.

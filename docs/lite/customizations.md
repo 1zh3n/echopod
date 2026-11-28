@@ -19,14 +19,15 @@ front end. The list below is the useful summary; the git history has the exact c
   A-Z jump), played as its own queue, with Add/Remove in the song actions menu and direct removal
   from the Favorites list. The list is built through a reusable TrackListScreen for future
   explicit track collections.
-- 10×10 status blocks with 1 px shadows: Bluetooth `#0F8ADB` and playing `#F59E0B` on the
-  right, `text_tertiary` gray when off. While playing, a purple mode block shows `L`, `1` or `S`
-  and is hidden when paused. Root lists use the original 28×10 segmented meter on the left;
-  the active half is bright, the other divider gray. Now Playing uses the same top row with no
-  separate mode icon.
-- Settings opens on five double-height cards: Random mode, Sleep timer, Sound, Display, System.
-  Random and Sleep are direct items; the other three open category pages. The home scrolls two
-  cards at a time with the next card peeking. Category dots are removed.
+- 10×10 status blocks with 1 px shadows: Bluetooth `#0F8ADB`, playing `#F59E0B`, then the mode
+  block, all on the right; `text_tertiary` gray when off. The mode block is always shown: random
+  is purple with no glyph, loop is gray with no glyph, loop one is gray with a white `1`. Root
+  lists use the original 28×10 segmented meter on the left; the active half is bright, the other
+  divider gray. Now Playing uses the same top row with no separate mode icon.
+- Settings opens on five taller cards: Random mode, Sleep timer, Sound, Display, System.
+  Random and Sleep are direct items with their values right-aligned; the other three open
+  category pages. The home scrolls three cards at a time with the next card peeking. Category
+  dots are removed.
 - Settings is reached by Long Back; Long Menu is the screen's function key and never opens
   Settings. Inside Settings, Long Back returns to the current root.
 - Landscape Settings has no text header; the half-badge, glyph and rows carry the
@@ -34,7 +35,7 @@ front end. The list below is the useful summary; the git history has the exact c
 - Settings category pages keep the half-badge, glyph and colour; rows stay static. Page slides
   keep their existing motion.
 - Now Playing has no separate playback-mode icon or persistent play/pause icon: the amber status
-  block carries the playing state and the purple `L`/`1`/`S` block carries the mode. The spectrum
+  block carries the playing state and the mode block carries random/loop/loop-one. The spectrum
   and progress bar sit lower, clear of the album line.
   The current/total time row and progress thumb are removed; only the volume number appears
   temporarily while changing volume.

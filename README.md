@@ -45,17 +45,17 @@ Keep the official firmware and a known recovery path before flashing.
   320×170 or 170×320 (portrait can also be turned 180°).
 - **Lite roots:** All Songs and Favorites, no Home screen; Short Back at the root switches
   them, Short Menu opens Now Playing and Long Back opens Settings. Flat 10×10 status blocks show
-  Bluetooth/playback on the right, the playback mode while playing, and a segmented root meter
-  on the left. The large root icons are deferred.
+  Bluetooth/playback and the playback mode on the right, with a segmented root meter on the left.
+  The large root icons are deferred.
 - **Lite Settings:** a five-card home — Random mode, Sleep timer, Sound, Display, System.
-  The cards are double-height and scroll two at a time with the next card peeking. Random/Sleep
-  are direct; Sound/Display/System open category pages. Category dots are gone; landscape keeps
-  the half-badge and glyph. The sleep card shows a live countdown. Settings is reached by Long
-  Back.
+  The cards are taller and scroll three at a time with the next card peeking; direct values sit
+  on the right. Random/Sleep are direct; Sound/Display/System open category pages. Category dots
+  are gone; landscape keeps the half-badge and glyph. The sleep card shows a live countdown.
+  Settings is reached by Long Back.
 - **Favorites:** a song list of up to 256 path-hashed tracks, shown like All Songs (title +
   duration, A-Z jump), played as its own queue and restored after a restart; long Play on any
   track offers Add/Remove Favorites.
-- **Now Playing:** no cover frame or separate mode icon; Bluetooth, playback and the `L`/`1`/`S`
+- **Now Playing:** no cover frame or separate mode icon; Bluetooth, playback and the playback
   mode are shown by the top-right status blocks. Short volume changes volume, double skips, long
   press seeks; the flat progress bar is the seek feedback, with no time row or thumb.
 - **Boot and charging:** boot uses 200×112 landscape / 146×112 portrait stills with a 5px hard
@@ -80,8 +80,9 @@ The boot chain, IDB, PMU firmware, fw2 and slot layout are not modified.
 > is rendered from the actual `LBOO` / `LBO2` assets, not a device photo.
 
 On the root lists, the left 28×10 segmented meter shows the active root; Bluetooth and playback
-use 10×10 blocks at the top right, with a purple `L`/`1`/`S` mode block while playing. Now Playing
-uses the same top row. The card shadow carries the battery/charging colour.
+use 10×10 blocks at the top right, with the mode block right of playback: random is purple with
+no glyph, loop is gray with no glyph, and Loop One is gray with a `1`. Now Playing uses the same
+top row. The card shadow carries the battery/charging colour.
 
 | Home (historical) | Now Playing |
 |---|---|

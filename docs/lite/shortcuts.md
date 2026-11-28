@@ -55,14 +55,15 @@ Display      >
 System       >
 ```
 
-The cards are double-height and scroll two at a time; the next card peeks at the bottom.
-Random and Sleep are direct items. Sound, Display and System open category pages. Category dots
-are gone; the half-badge, glyph and colour identify the category. The sleep card shows a live
-countdown.
+The cards are taller and scroll three at a time; the next card peeks at the bottom. Random and
+Sleep are direct items with their values right-aligned. Sound, Display and System open category
+pages. Category dots are gone; the half-badge, glyph and colour identify the category. The sleep
+card shows a live countdown.
 
 ## Now Playing
 
 Now Playing has no current/total time row and no progress thumb. The progress bar is a flat line;
 seek is shown only by the bar length. Changing volume still shows the volume number temporarily.
-The top-right status blocks show Bluetooth, playback, and a purple `L`/`1`/`S` mode block while
-playing; there is no separate mode icon on the page.
+The top-right status blocks show Bluetooth, playback, then the always-visible mode block:
+random is purple with no glyph, loop is gray with no glyph, and loop one is gray with a `1`.
+There is no separate mode icon on the page.
