@@ -70,14 +70,15 @@ orange `#FF9F1C`, green `#22C55E`.
 ### Now Playing
 
 - Landscape: title at (8, 24), artist at (8, 48), album at (8, 64), lyric/bounce area 304×57 at
-  y=88, progress 304×3 at y=149, transient volume number at y=154.
+  y=88, progress 304×3 at y=149.
 - Portrait: title at (8, 44), artist at (8, 66), album at (8, 82), lyric/bounce area 154×188 at
-  y=106, progress 154×4 at y=298, transient volume number at y=304.
+  y=106, progress 154×4 at y=298.
 - With no synced lyrics, one flat 9×9 ball bounces inside that area, inset 2 px. It changes to
   the next palette colour at each edge and freezes when playback is paused. It is clipped to
   its area so it never touches the album line.
 - The time row and progress thumb are removed. The progress bar ends 18 px above the bottom;
-  the transient volume number sits in that gap.
+  that bottom band is empty. Changing volume reuses the bar as a yellow volume meter and draws
+  no number.
 
 ### Sorting
 

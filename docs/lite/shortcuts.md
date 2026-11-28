@@ -70,7 +70,8 @@ the screen; Long Back saves and returns to the current root.
 ## Now Playing
 
 Now Playing has no current/total time row and no progress thumb. The progress bar is a flat line;
-seek is shown only by the bar length. Changing volume still shows the volume number temporarily.
+seek is shown only by the bar length. Changing volume turns the same bar yellow and follows the
+volume; no separate volume number is drawn.
 The top-right status blocks show Bluetooth, playback, then the always-visible mode block:
 random is purple with no glyph, loop is gray with no glyph, and loop one is gray with a `1`.
 There is no separate mode icon on the page.

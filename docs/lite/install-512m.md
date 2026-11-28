@@ -36,9 +36,12 @@ cmake --build --preset release-lite
 ## Current build
 
 ```text
-image:  MINIV962.IMG
-sha256: e213f084daf813344217f143d6942ce530b3125fa5ed26120938c3ffe5a3ecdd
+image:  MINIV963.IMG
+sha256: 6a6cdbaa2e7d24c2affaa698a97867c45ca8fcfbeb4fa9f33609b60672b70e9b
 ```
+
+`MINIV963` removes the last volume number from Now Playing. Changing volume only turns the
+progress bar yellow and follows the level; the 18 px bottom gap is otherwise empty.
 
 `MINIV962` moves the progress bar down so it ends 18 px above the bottom, matching the top
 status band (8 px margin plus the 10 px block), and grows the no-lyrics bounce area to 57 px
@@ -164,6 +167,7 @@ The incremental images for this pass are:
 | `MINIV960` | read old 558-byte Lite resume files | `9ebc29a3cd3f620794bdc8847c906c555ecb37c3e8002fddb6b93c9ec3de75fd` |
 | `MINIV961` | bouncing colour-changing Now Playing square, no fake spectrum | `137c474806aed0fde513dbc5d9c2f722a1523f8b796aa215a6e6bf050a037936` |
 | `MINIV962` | 18 px bottom gap, taller collision area, 9×9 flat ball | `e213f084daf813344217f143d6942ce530b3125fa5ed26120938c3ffe5a3ecdd` |
+| `MINIV963` | volume shown only by the yellow progress bar | `6a6cdbaa2e7d24c2affaa698a97867c45ca8fcfbeb4fa9f33609b60672b70e9b` |
 
 The 8 GB model is not supported.
 
@@ -175,8 +179,8 @@ The 8 GB model is not supported.
 - Lite app static RAM: 69,586 / 131,072 bytes (61,486 free), via
   `tools/lite_ram_audit.py` and the `release-lite` compile commands.
 - `release-lite` build and updater check valid.
-- Headroom: code 136,884 / 157,292 bytes (20,408 free); loaded total 342,252 / 437,600 bytes
-  (95,348 free); resident tables 18,236 / 18,432 (196 free); rescan overlay 85,328 / 86,016
+- Headroom: code 136,688 / 157,292 bytes (20,604 free); loaded total 342,056 / 437,600 bytes
+  (95,544 free); resident tables 18,236 / 18,432 (196 free); rescan overlay 85,328 / 86,016
   (688 free).
 - Still pending: the final 512 MB device pass over sorting, boot, dots, headers, navigation,
   local motion, the bouncing ball, root switching, Settings cards, favorites and

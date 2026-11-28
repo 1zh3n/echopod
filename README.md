@@ -78,7 +78,8 @@ Full key table and A-Z geometry: [docs/lite/shortcuts.md](docs/lite/shortcuts.md
   queue and resume, Add/Remove in the song actions.
 - **Now Playing:** no time row, progress thumb or separate mode icon; when a track has no synced
   lyrics, a small ball bounces in the lyric area and changes colour at each edge, with a flat
-  progress bar, transient volume number, and the same top status row as every screen.
+  progress bar that doubles as the temporary volume meter and the same top status row as every
+  screen.
 - **Sorting:** GB2312 Chinese by pinyin and kana by romaji, interleaved with Latin under A-Z.
   Leading articles are literal: "The End of the World" sorts under T, not E.
 - **Review fixes:** category selection is remembered; Date/Time keeps unsaved edits across the

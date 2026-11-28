@@ -72,7 +72,8 @@ Full details and the A-Z grid geometry: [shortcuts.md](shortcuts.md).
   matching the 8 px top margin plus the 10 px status block.
 - When the track has no synced lyrics, a small 9×9 ball bounces inside the lyric area. It
   changes colour at each edge and freezes when paused.
-- The transient volume number sits below the progress bar, inside that bottom gap.
+- While changing volume, the progress bar temporarily turns yellow and follows the volume;
+  there is no separate volume number.
 - Volume short press changes volume, double press skips, long press seeks.
 - Bluetooth, playback and the mode block share the top status row.
 - There is no separate playback-mode icon on the page.
