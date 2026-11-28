@@ -137,39 +137,39 @@ Assessed risks: the group actions are slower than double tap, Settings from a le
 needs Long Back -> Home -> Settings, and long press is less discoverable. The proposal is
 recorded, not implemented.
 
-## Home simplification proposal
+## Home decision
 
-**Update 2026-11-28: the two-card Home was rejected after discussion. Both the carousel and a
-static two-card Home feel like a menu with no purpose once Playlists and Settings are gone. The
-candidate is to remove Home entirely after Favorites exists; see "Removing Home entirely"
-below.**
+**Final direction 2026-11-28: keep the three-card Home.** The two-card Home and the no-Home
+model were both rejected. The Home carousel is the Lite visual identity; a two-card version
+loses the composition and removing it loses the screen entirely. The redundancy of a visible
+Settings card is accepted because it is the price of keeping the design.
 
-Home is currently a three-card carousel: All Songs, Playlists, Settings. With song Favorites
-replacing Playlists and Settings opening from Long Menu, only two cards still need to be there:
+Final Home:
 
-| Card | Reason |
+| Card | Behavior |
 |---|---|
-| All Songs | no other shortcut |
-| Favorites | no other shortcut |
-| Settings | remove from Home; Long Menu is the shortcut |
+| All Songs | open All Songs |
+| Favorites | open song Favorites (M7); replaces Playlists |
+| Settings | open Settings at Quick; Long Menu is the shortcut |
 
-Proposed:
+- Keep the three-card carousel and the existing animation.
+- Short Menu on Home: Now Playing.
+- Long Menu on Home: Settings / Quick.
+- Settings card is both a visual anchor and a discoverable fallback; the Long Menu shortcut
+  remains.
+- Playlists is removed from the Lite Home; the non-Lite menu keeps it.
+- Do not add a fourth card or turn Home into a grid.
 
-- keep the two-card carousel and the same visual identity;
-- remove the Settings card from Home;
-- short Menu on Home: Now Playing;
-- Long Menu on Home: Settings / Quick;
-- do not add more cards or turn Home into a grid; two cards do not justify a 2D key layout;
-- keep the empty-state/no-track behavior.
+A separate productivity option remains a Lite Start screen setting (Home / All Songs /
+Favorites / Now Playing), for people who want to skip Home at boot. It is not part of M5-M7.
 
-The trade-off is discoverability: Settings loses its visible Home icon. If that feels wrong on the
-device, keep the Settings card as a third entry; it is not a functional requirement.
+### Rejected: two-card Home
 
-A separate productivity option is a Lite Start screen setting (Home / All Songs / Favorites /
-Now Playing). That would skip Home for people who always use one list, but it is a separate
-feature and not part of this proposal.
+A static two-card layout was considered and rejected: with only All Songs and Favorites it
+still reads as a menu with no purpose, and it loses the three-card composition. Do not revive it
+unless the Home concept is redesigned.
 
-### Removing Home entirely
+### Rejected: removing Home entirely
 
 Removing Home is possible only if there is a replacement root switch between All Songs and
 Favorites. The candidates are:
@@ -200,9 +200,31 @@ Trade-offs:
 - The Home visual identity and its visible Settings card disappear.
 - Boot must choose All Songs or Favorites, or remember the last root.
 
-Recommendation: remove Home only after Favorites exists (M7), as its own increment; keep the
-existing Home until then so the tree is not half-finished. Add a Start screen option if boot
-should skip directly to a chosen root.
+Recommendation: **do not remove Home.** It was rejected because the visual identity matters more
+than the small redundancy. A Start screen option can still skip Home at boot without deleting
+the screen.
+
+### Rejected: visual continuity without Home
+
+The large three-card carousel cannot survive Home's removal; that composition is Home. The rest
+of the Lite language can stay: hard shadows, dark card borders, color badges, the status meter,
+the Settings category badge and the Now Playing icons.
+
+To keep a visual anchor at the root, draw a **compact two-icon switcher** in the top-right of
+All Songs and Favorites:
+
+- All Songs icon and Favorites icon, about 24x24, same color-icon style;
+- the active list has a selection outline;
+- the status meter stays at top-left;
+- rows still start at the existing card y=28;
+- Short Back at the root toggles the active icon/list.
+
+This is not a Home screen: it is a small root chrome element. It preserves the two-color icon
+identity and makes the Back-to-switch behavior visible. If it feels too much like a tab bar, a
+single active icon is the fallback; the list change still happens on Back.
+
+If the big Home composition is the part that matters visually, then Home cannot be removed;
+the two options are mutually exclusive.
 
 ## Up Next stays a queue
 

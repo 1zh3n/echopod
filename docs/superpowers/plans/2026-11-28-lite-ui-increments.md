@@ -323,7 +323,8 @@ performance item remains separate and is not part of this pass.
 ### M7: Song favorites
 
 - Add the path-hash song-favorites store and card file.
-- Replace the Home Playlists card with Favorites.
+- Replace the Home Playlists card with Favorites; keep Settings as the third Home card.
+- Do not remove Home; the three-card carousel is the chosen visual identity.
 - Add a favorite-song list and Add/Remove Favorites in the song actions menu.
 - Decide and implement the queue: a real favorites queue is preferred; starting All Songs is
   only the fallback.
