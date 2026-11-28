@@ -230,34 +230,34 @@ invisible to the normal library.
 Two implementation shapes were considered:
 
 1. **Separate private library (preferred for isolation).** The device builds a small private
-   index from `/.private/`, for example `/.echo/private.db`, and the third root uses its own
+   index from `/.private/`, for example `/.echo/private.db`, and the private list uses its own
    `LibraryStore`, track list, queue and resume file. The normal library and Favorites never see
-   the private tracks. A second `LibraryStore` and its block cache cost roughly 2.5–3 KB of
-   static RAM; the list screen and switching the active player/queue add more code. The current
-   image has about 20.5 KB of code and 95.5 KB of loaded RAM free, so this is likely to fit, but
-   it has to be measured. Entering private should pause and save normal playback, then restore
-   it on exit; normal and private queues must not mix.
+   the private tracks. The device index can reuse the existing rescan overlay with a private scan
+   root and a second output; the overlay has about 688 bytes free, so that root change must be
+   compiled and measured. A second `LibraryStore` and cache cost roughly 2.5–3 KB of static RAM.
 2. **A private section in the normal library.** One player and queue are simpler at runtime, but
    the library format and both indexers need a new section, and every normal query must exclude
    it. The private names remain in `library.db`. This touches the main data format and is more
    invasive than the separate private library.
 
-A third root would be called `Private` (or `Recordings`) and appear only when the folder exists.
-Short Back would cycle All Songs → Favorites → Private; the root status meter needs a third
-state, or can be hidden on Private. The design does not touch the boot chain, partitions or slot
-layout.
+The private list is **not a third root**. A third root would be reachable by Short Back, and if
+private playback continued after leaving it, Short Menu and Up Next would reveal private titles.
+Instead it is a **session** opened from a Settings → System → Private audio row, with a
+confirmation question. Leaving the list, opening Settings, screen-off/power-off or a timeout
+locks and stops the private session and restores normal playback. Normal boot never
+auto-resumes the private session.
 
 This is **UI isolation, not encryption**: the files and the private index are still readable over
 USB.
 
-**Assessment:** feasible as a medium feature. The separate-private-library shape avoids changing
-the normal library format and keeps normal operations isolated; the main open item is the
-player/queue switch and its RAM/code measurement. It is not scheduled.
+**Assessment:** feasible as a medium feature. Device-built scanning is the target and can reuse
+the rescan overlay; the open items are the 688-byte overlay margin, the player/library switch and
+their RAM/code measurement. It is not scheduled.
 
 ### Secret entry and encryption
 
-A game-style key sequence is feasible for hiding or revealing the private root. It can be a
-simultaneous hold or a sequence detected before normal key dispatch, but it must avoid the
+A game-style key sequence is feasible for hiding or revealing the private session entry. It can
+be a simultaneous hold or a sequence detected before normal key dispatch, but it must avoid the
 existing long-press meanings (Long Back is Settings, Long Menu is A-Z, volume hold is seek or
 scroll). The code cost is small and no storage is needed. It is a convenience, not a secret: the
 sequence is in the firmware and is visible to anyone watching or reading the source.
@@ -275,7 +275,7 @@ For a personal player, the practical boundary is: a hidden private folder and an
 entry for casual separation; no claim of cryptographic privacy. A true encrypted vault remains
 out of scope.
 
-**Assessment:** a secret key sequence for the private root is feasible and cheap; a fixed
+**Assessment:** a secret key sequence for the private session is feasible and cheap; a fixed
 sequence is not encryption. A genuine encrypted vault would need a separate security/audio
 project, not a hidden-key trick.
 
