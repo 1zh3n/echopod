@@ -97,6 +97,28 @@ D is rejected.
   duplicate Settings overlay.
 - The code and RAM cost is modest; the UI design and edge cases are the work.
 
+## Splitting Settings onto Home
+
+Assessed 2026-11-28.
+
+"Put Settings on Home" can mean two different things:
+
+1. **Put the four Settings categories on Home as cards.** Home would become All Songs,
+   Favorites, Quick, Sound, Display, System. The user would still have to open a category to see
+   its rows, so this adds a Home step rather than removing one. Volume-card cycling over six
+   cards is slower than Long Menu -> Settings.
+2. **Put every Settings row on Home.** That is about 24 rows, including folders, Bluetooth,
+   rescan, equalizer and language. It destroys the category grouping, turns Home into a settings
+   dashboard and makes the music cards compete with settings for the same carousel.
+
+Neither fits the current one-row Home carousel. Settings has subpages and stateful values that
+do not fit a card. The only sensible Home-level settings are the two Quick cards, and those
+already have a better home as the first Settings category.
+
+Recommendation: keep Settings as one overlay with Quick first; keep Home as the two-card music
+launcher. Do not split the Settings tree onto Home. If a visible entry is wanted, keep a third
+Settings card, but do not turn its categories or rows into Home cards.
+
 ## Still open
 
 - C or A.
