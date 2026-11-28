@@ -41,7 +41,7 @@
 - **运行时 Landscape / Portrait / Portrait-flipped：** Settings → Display → Orientation，
   320×170 或 170×320（竖屏可翻转 180°）。
 - **Lite 根页面：** All Songs 和 Favorites，没有 Home；根层短按 Back 切换两者，短按 Menu 打开 Now Playing，长按 Back 打开 Settings。右上角 10×10 状态方块显示蓝牙、播放和播放模式；根列表左侧另有 All Songs/Favorites 方块。
-- **Lite Settings：** 五张加高卡片首页——Random mode、Sleep timer、Sound、Display、System；一次显示三张并滚动，下一张露出一部分，直接项的值靠右。前两项直接操作，后三项进入分类页；类别圆点已移除，横屏保留半圆 icon 和 glyph。睡眠卡片显示实时倒计时。Settings 通过长按 Back 进入。
+- **Lite Settings：** 五行紧凑首页——Random mode、Sleep timer、Sound、Display、System；左侧彩色小圆点，一次显示四行并滚动，下一行露出一部分，直接项的值靠右。前两项直接操作，后三项进入分类页；分类页的类别圆点已移除，横屏保留半圆 icon 和 glyph。睡眠行显示实时倒计时。Settings 通过长按 Back 进入。
 - **Favorites：** 最多 256 首歌曲，按路径哈希保存；和 All Songs 一样显示歌名+时长并支持 A-Z；作为独立队列播放，重启后恢复；任意歌曲长按 Play 可 Add/Remove Favorites。
 - **Now Playing：** 无封面框和独立模式图标；蓝牙、播放和播放模式都由右上角状态方块表达。音量短按调音量、双击切歌、长按 seek；只保留平进度条作为 seek 反馈，不显示时间行和 thumb。
 - **启动和充电：** 开机图为 200×112 横版 / 146×112 竖版图片，带 5px 硬阴影，没有卡片和边框；充电仍用 96×64 动画卡。

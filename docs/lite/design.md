@@ -89,11 +89,11 @@ was prototyped and deferred because it duplicated that feedback and hid the Blue
 
 ### Settings
 
-- Settings home: five cards with 24/28 px colour icons — Random mode, Sleep timer, Sound,
-  Display, System. Landscape cards are 304×44 at y=29 with 4 px gaps; portrait cards are
-  154×72 at y=58 with 4 px gaps. The list scrolls three cards at a time with the next card
+- Settings home: five compact rows with a 10 px colour dot on the left — Random mode, Sleep
+  timer, Sound, Display, System. Landscape rows are 304×30 at y=29 with 2 px gaps; portrait
+  rows are 154×56 at y=58 with 3 px gaps. The list scrolls four rows at a time with the next row
   peeking. Direct values are right-aligned (landscape on the same line, portrait on the second
-  line). Selected cards get the selection fill, border and white icons; the label uses the 16 px
+  line). Selected rows get the selection fill, border and white dot; the label uses the 16 px
   title font and the value uses the small font.
 - Random and Sleep are direct items; Sound/Display/System open category pages.
 - Category pages: no text header landscape; the half-badge and glyph identify the category.

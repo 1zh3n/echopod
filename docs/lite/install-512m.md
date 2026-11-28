@@ -21,7 +21,7 @@ The 512 MB updater scans the card root for:
 It does **not** scan `HIFIEC90.IMG`. Copy the build to the card root and rename it, for example:
 
 ```text
-build/release-lite/HIFIEC90.IMG  ->  /MINIV952.IMG
+build/release-lite/HIFIEC90.IMG  ->  /MINIV953.IMG
 ```
 
 Then use the player's updater.
@@ -36,14 +36,16 @@ cmake --build --preset release-lite
 ## Current build
 
 ```text
-image:  MINIV952.IMG
-sha256: 4cb75dc860ea517d95f0d0362ebdad6fc77ebd302f05d58672027af768faff16
+image:  MINIV953.IMG
+sha256: 01e4401a6e9c54420ce687676bc33582b2bbd43cd42cc660c1e9e1f90c94ad37
 ```
 
+`MINIV953` makes the Settings home compact: 304×30 landscape / 154×56 portrait rows with a
+10 px colour dot on the left, four rows visible plus the next peeking, and direct values right-
+aligned. The last System row no longer clips.
+
 `MINIV952` keeps the mode block right of playback and always visible: random is purple with no
-character, loop is gray with no character, and loop one is gray with a centered `1`. Settings
-cards come down to 304×44 landscape / 154×72 portrait, show three at a time, and direct values
-are right-aligned.
+character, loop is gray with no character, and loop one is gray with a centered `1`.
 
 `MINIV951` puts the mode block immediately right of the playback block, so the top-right group
 is `[Bluetooth] [play] [mode]`.
@@ -109,7 +111,7 @@ The incremental images for this pass are:
 | `MINIV945` | flat 10×10 status blocks, root markers, cleaner repeat icon | `0f6ee445ae536dc581bf88b4702e1d142666427e5332f7f78b0256164dc65f67` |
 | `MINIV946` | coloured shadowed blocks, global Now Playing status row, Favorites A-Z threshold removed | `e5bc90b5270c36686b2dc977196708abee84cd26cfac281ccf1d0abaeac313c5` |
 | `MINIV947` | original rounded segmented root meter on the left | `0736cf5f1c8956c8403ccac23786fbd020606609662744a1620eabada67903e0` |
-| `MINIV948` | larger Settings cards with icons, Bluetooth blue / playing amber | `4cb75dc860ea517d95f0d0362ebdad6fc77ebd302f05d58672027af768faff16` |
+| `MINIV948` | larger Settings cards with icons, Bluetooth blue / playing amber | `01e4401a6e9c54420ce687676bc33582b2bbd43cd42cc660c1e9e1f90c94ad37` |
 
 The 8 GB model is not supported.
 
@@ -118,8 +120,8 @@ The 8 GB model is not supported.
 - Host tests: 168/168 passed (`ctest --preset dev -E "^format$"`).
 - Lite panel tests: 77/77 passed.
 - `release-lite` build and updater check valid.
-- Headroom: code 136,964 / 157,292 bytes (20,328 free); loaded total 409,644 / 437,600 bytes
-  (27,956 free); resident tables 18,236 / 18,432 (196 free); rescan overlay 85,400 / 86,016
+- Headroom: code 136,484 / 157,292 bytes (20,808 free); loaded total 409,164 / 437,600 bytes
+  (28,436 free); resident tables 18,236 / 18,432 (196 free); rescan overlay 85,400 / 86,016
   (616 free).
 - Still pending: the final 512 MB device pass over sorting, boot, dots, headers, navigation,
   local motion, root switching, Settings cards, favorites and portrait-flipped.

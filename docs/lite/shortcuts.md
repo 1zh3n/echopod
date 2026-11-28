@@ -55,10 +55,10 @@ Display      >
 System       >
 ```
 
-The cards are taller and scroll three at a time; the next card peeks at the bottom. Random and
-Sleep are direct items with their values right-aligned. Sound, Display and System open category
-pages. Category dots are gone; the half-badge, glyph and colour identify the category. The sleep
-card shows a live countdown.
+The compact rows have a colour dot on the left and scroll four at a time; the next row peeks at
+the bottom. Random and Sleep are direct items with their values right-aligned. Sound, Display and
+System open category pages. Category dots in the category pages are gone; the half-badge, glyph
+and colour identify the category. The sleep row shows a live countdown.
 
 ## Now Playing
 
