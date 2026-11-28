@@ -21,7 +21,7 @@ The 512 MB updater scans the card root for:
 It does **not** scan `HIFIEC90.IMG`. Copy the build to the card root and rename it, for example:
 
 ```text
-build/release-lite/HIFIEC90.IMG  ->  /MINIV948.IMG
+build/release-lite/HIFIEC90.IMG  ->  /MINIV949.IMG
 ```
 
 Then use the player's updater.
@@ -36,9 +36,13 @@ cmake --build --preset release-lite
 ## Current build
 
 ```text
-image:  MINIV948.IMG
-sha256: 4914db5e1ea1f4205f962939d05cfdf305e8efbb0e137c81032abcffb207101b
+image:  MINIV949.IMG
+sha256: 0a48f8ac5b9c67d44a8c464fb2ae41cdf51729a2e3dbcd6795252f90847cb434
 ```
+
+`MINIV949` makes the right status blocks neutral gray when Bluetooth/playback are off, so
+colour only appears for an active state, and removes Now Playing's persistent play/pause icon;
+only the right-aligned playback-mode icon remains.
 
 `MINIV948` enlarges the Settings home cards with 18/20 px colour icons and title-weight labels,
 and separates the right status colours: Bluetooth `#0F8ADB`, playing `#F59E0B`.
@@ -93,7 +97,7 @@ The incremental images for this pass are:
 | `MINIV945` | flat 10×10 status blocks, root markers, cleaner repeat icon | `0f6ee445ae536dc581bf88b4702e1d142666427e5332f7f78b0256164dc65f67` |
 | `MINIV946` | coloured shadowed blocks, global Now Playing status row, Favorites A-Z threshold removed | `e5bc90b5270c36686b2dc977196708abee84cd26cfac281ccf1d0abaeac313c5` |
 | `MINIV947` | original rounded segmented root meter on the left | `0736cf5f1c8956c8403ccac23786fbd020606609662744a1620eabada67903e0` |
-| `MINIV948` | larger Settings cards with icons, Bluetooth blue / playing amber | `4914db5e1ea1f4205f962939d05cfdf305e8efbb0e137c81032abcffb207101b` |
+| `MINIV948` | larger Settings cards with icons, Bluetooth blue / playing amber | `0a48f8ac5b9c67d44a8c464fb2ae41cdf51729a2e3dbcd6795252f90847cb434` |
 
 The 8 GB model is not supported.
 
@@ -102,8 +106,8 @@ The 8 GB model is not supported.
 - Host tests: 168/168 passed (`ctest --preset dev -E "^format$"`).
 - Lite panel tests: 75/75 passed.
 - `release-lite` build and updater check valid.
-- Headroom: code 136,948 / 157,292 bytes (20,344 free); loaded total 409,628 / 437,600 bytes
-  (27,972 free); resident tables 18,236 / 18,432 (196 free); rescan overlay 85,400 / 86,016
+- Headroom: code 136,832 / 157,292 bytes (20,460 free); loaded total 409,512 / 437,600 bytes
+  (28,088 free); resident tables 18,236 / 18,432 (196 free); rescan overlay 85,400 / 86,016
   (616 free).
 - Still pending: the final 512 MB device pass over sorting, boot, dots, headers, navigation,
   local motion, root switching, Settings cards, favorites and portrait-flipped.

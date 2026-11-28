@@ -53,10 +53,11 @@ cyan `#35C7E8`, amber `#F59E0B`, success `#22C55E`.
 
 - Status uses 10×10 blocks with a 1 px hard shadow at y=8.
 - Right side: Bluetooth `#0F8ADB` and playing `#F59E0B`, 3 px apart, 8 px from the right edge;
-  inactive blocks are muted versions of their colours.
+  inactive blocks are `text_tertiary` gray, so colour always means the state is on.
 - Root lists use the original 28×10 segmented meter on the left: 2 px border/shadow, two 12×6
   cells; All Songs `#2FA8FF`, Favorites `#EC4899`, with the inactive half divider gray.
-- Now Playing uses the same top status row; its 18 px mode/play icons sit below at y=24.
+- Now Playing uses the same top status row and keeps only its 18 px playback-mode icon at y=24;
+  the play/pause state is carried by the amber status block.
 - The card shadow carries the battery/charging colour; the status markers do not.
 
 ### Now Playing

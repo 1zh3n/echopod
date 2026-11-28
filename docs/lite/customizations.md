@@ -20,9 +20,9 @@ front end. The list below is the useful summary; the git history has the exact c
   from the Favorites list. The list is built through a reusable TrackListScreen for future
   explicit track collections.
 - 10×10 status blocks with 1 px shadows: Bluetooth `#0F8ADB` and playing `#F59E0B` on the
-  right, muted when inactive. Root lists use the original 28×10 segmented meter on the left;
-  the active half is bright, the other divider gray. Now Playing uses the same top row with its
-  18 px mode/play icons below.
+  right, `text_tertiary` gray when off. Root lists use the original 28×10 segmented meter on the left;
+  the active half is bright, the other divider gray. Now Playing uses the same top row with only
+  its 18 px playback-mode icon below.
 - Settings opens on five cards: Random mode, Sleep timer, Sound, Display, System. Random and
   Sleep are direct items; the other three open category pages. Category dots are removed.
 - Settings is reached by Long Back; Long Menu is the screen's function key and never opens
@@ -31,7 +31,8 @@ front end. The list below is the useful summary; the git history has the exact c
   category. Portrait keeps the category name.
 - Settings category pages keep the half-badge, glyph and colour; rows stay static. Page slides
   keep their existing motion.
-- Now Playing uses native 18 px mode/state icons, no cover frame, and a 10×10 Bluetooth block.
+- Now Playing uses a native 18 px playback-mode icon, no cover frame, and no persistent
+  play/pause icon: the amber status block carries the playing state.
   The current/total time row and progress thumb are removed; only the volume number appears
   temporarily while changing volume.
 - Boot uses 200×112 landscape / 146×112 portrait stills with a 5px hard shadow, no card or frame.

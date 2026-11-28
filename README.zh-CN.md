@@ -43,7 +43,7 @@
 - **Lite 根页面：** All Songs 和 Favorites，没有 Home；根层短按 Back 切换两者，短按 Menu 打开 Now Playing，长按 Back 打开 Settings。右上角 10×10 状态方块显示蓝牙和播放；根列表左侧另有 All Songs/Favorites 方块。
 - **Lite Settings：** 五张卡片首页——Random mode、Sleep timer、Sound、Display、System。前两项直接操作，后三项进入分类页；类别圆点已移除，横屏保留半圆 icon 和 glyph。睡眠卡片显示实时倒计时。Settings 通过长按 Back 进入。
 - **Favorites：** 最多 256 首歌曲，按路径哈希保存；和 All Songs 一样显示歌名+时长并支持 A-Z；作为独立队列播放，重启后恢复；任意歌曲长按 Play 可 Add/Remove Favorites。
-- **Now Playing：** 18px 原生模式/状态图标，无封面框；shuffle/play 旁是 10×10 的蓝牙状态方块。音量短按调音量、双击切歌、长按 seek；只保留平进度条作为 seek 反馈，不显示时间行和 thumb。
+- **Now Playing：** 18px 原生播放模式图标，无封面框；蓝牙和播放状态由右上角状态方块表达。音量短按调音量、双击切歌、长按 seek；只保留平进度条作为 seek 反馈，不显示时间行和 thumb。
 - **启动和充电：** 开机图为 200×112 横版 / 146×112 竖版图片，带 5px 硬阴影，没有卡片和边框；充电仍用 96×64 动画卡。
 - **排序：** GB2312 中文按拼音、日文假名按罗马字，和英文一起按 A-Z 混排；未收录汉字落到 `#`。在可按字母分区的列表里长按 Menu 打开 A-Z/# 跳转。
 - **按键：** Now Playing 音量单击/双击/长按；短按 Menu 打开 Now Playing（已在 Now Playing 时打开 Up Next）；长按 Menu 是功能键——All Songs/Favorites 的 A-Z、A-Z 层的下一行、Now Playing 的当前歌曲操作；长按 Back 打开 Settings，在 Settings 内回根。没有双击 Menu，也没有独立播放面板。
@@ -57,7 +57,7 @@
 > **这些是设计稿，不是实机截图。** 它们展示预期布局和配色；实机字体渲染和最终素材位置可能略有不同。
 > 开机图是从真实 `LBOO` / `LBO2` 素材渲染的，不是设备照片。
 
-状态是 10×10 方块：右侧蓝牙/播放，根列表左侧 All Songs/Favorites；未激活灰色，激活彩色。Now Playing 的 shuffle/play 旁保留一个 10×10 蓝牙方块；播放状态由 play/pause 图标表达。卡片阴影承担电量/充电颜色。
+状态是 10×10 方块：右侧蓝牙/播放，根列表左侧 All Songs/Favorites；未激活灰色，激活彩色。Now Playing 使用同一行状态方块，只保留一个 18px 播放模式图标；播放状态由黄色方块表达。卡片阴影承担电量/充电颜色。
 
 | Home（旧版） | Now Playing |
 |---|---|

@@ -53,9 +53,9 @@ Keep the official firmware and a known recovery path before flashing.
 - **Favorites:** a song list of up to 256 path-hashed tracks, shown like All Songs (title +
   duration, A-Z jump), played as its own queue and restored after a restart; long Play on any
   track offers Add/Remove Favorites.
-- **Now Playing:** 18 px native mode/state icons, no cover frame; a 10×10 Bluetooth-only
-  block sits next to the shuffle/play controls. Short volume changes volume, double skips,
-  long press seeks; the flat progress bar is the seek feedback, with no time row or thumb.
+- **Now Playing:** an 18 px native playback-mode icon, no cover frame; Bluetooth and playback
+  are shown by the top-right status blocks. Short volume changes volume, double skips, long
+  press seeks; the flat progress bar is the seek feedback, with no time row or thumb.
 - **Boot and charging:** boot uses 200×112 landscape / 146×112 portrait stills with a 5px hard
   shadow, no card or frame; charging keeps the 96×64 animation card.
 - **Sorting:** GB2312 Chinese sorts by pinyin and kana by romaji, interleaved with Latin
@@ -78,8 +78,8 @@ The boot chain, IDB, PMU firmware, fw2 and slot layout are not modified.
 > is rendered from the actual `LBOO` / `LBO2` assets, not a device photo.
 
 On the root lists, the left 28×10 segmented meter shows the active root; Bluetooth and playback
-use 10×10 blocks at the top right. Now Playing uses the same top row and keeps its 18 px mode/play
-icons below it. The card shadow carries the battery/charging colour.
+use 10×10 blocks at the top right. Now Playing uses the same top row and keeps only its 18 px
+playback-mode icon below it. The card shadow carries the battery/charging colour.
 
 | Home (historical) | Now Playing |
 |---|---|
