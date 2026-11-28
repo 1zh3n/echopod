@@ -216,6 +216,68 @@ If this is picked up later:
 This is a moderate feature, not a hardware or format risk. It was left out because there is no
 current need.
 
+### Private audio as a third list
+
+Goal: leave normal All Songs and Favorites untouched, copy recordings into a hidden folder, and
+browse and play them only from a third list. This is not implemented.
+
+A folder or an M3U file alone is not enough. The main library indexes every supported audio file,
+and an M3U entry has to resolve to a library track. The main scanner already skips dot-prefixed
+entries, and the PC indexer skips hidden path parts, so a folder such as `/.private/` is naturally
+invisible to the normal library.
+
+Two implementation shapes were considered:
+
+1. **Separate private library (preferred for isolation).** The device builds a small private
+   index from `/.private/`, for example `/.echo/private.db`, and the third root uses its own
+   `LibraryStore`, track list, queue and resume file. The normal library and Favorites never see
+   the private tracks. A second `LibraryStore` and its block cache cost roughly 2.5–3 KB of
+   static RAM; the list screen and switching the active player/queue add more code. The current
+   image has about 20.5 KB of code and 95.5 KB of loaded RAM free, so this is likely to fit, but
+   it has to be measured. Entering private should pause and save normal playback, then restore
+   it on exit; normal and private queues must not mix.
+2. **A private section in the normal library.** One player and queue are simpler at runtime, but
+   the library format and both indexers need a new section, and every normal query must exclude
+   it. The private names remain in `library.db`. This touches the main data format and is more
+   invasive than the separate private library.
+
+A third root would be called `Private` (or `Recordings`) and appear only when the folder exists.
+Short Back would cycle All Songs → Favorites → Private; the root status meter needs a third
+state, or can be hidden on Private. The design does not touch the boot chain, partitions or slot
+layout.
+
+This is **UI isolation, not encryption**: the files and the private index are still readable over
+USB.
+
+**Assessment:** feasible as a medium feature. The separate-private-library shape avoids changing
+the normal library format and keeps normal operations isolated; the main open item is the
+player/queue switch and its RAM/code measurement. It is not scheduled.
+
+### Secret entry and encryption
+
+A game-style key sequence is feasible for hiding or revealing the private root. It can be a
+simultaneous hold or a sequence detected before normal key dispatch, but it must avoid the
+existing long-press meanings (Long Back is Settings, Long Menu is A-Z, volume hold is seek or
+scroll). The code cost is small and no storage is needed. It is a convenience, not a secret: the
+sequence is in the firmware and is visible to anyone watching or reading the source.
+
+Real encryption is a different project:
+
+- A fixed key sequence has little entropy and is a weak password; a longer sequence is awkward
+  with five keys and can still be shoulder-surfed or brute-forced.
+- The player has no secure element. A key stored in internal flash or RAM can be extracted, and
+  encrypted files can still be copied off the card.
+- Decrypting every codec's file stream on the Cortex-M3 adds audio-path work, code and a key-entry
+  UI; it needs its own performance and flash/security review.
+
+For a personal player, the practical boundary is: a hidden private folder and an optional secret
+entry for casual separation; no claim of cryptographic privacy. A true encrypted vault remains
+out of scope.
+
+**Assessment:** a secret key sequence for the private root is feasible and cheap; a fixed
+sequence is not encryption. A genuine encrypted vault would need a separate security/audio
+project, not a hidden-key trick.
+
 ## Scope and caution
 
 - **512 MB only.** The 8 GB model is not supported.
