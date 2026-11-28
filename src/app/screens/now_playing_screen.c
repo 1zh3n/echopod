@@ -667,11 +667,11 @@ static void lite_layout(Layout *layout, bool portrait)
     } else {
         layout->boxes[THEME_LAYOUT_TITLE] = (Rect){8, 24, 200, 22};
         layout->boxes[THEME_LAYOUT_ARTIST] = (Rect){8, 48, 304, 18};
-        layout->boxes[THEME_LAYOUT_ALBUM] = (Rect){8, 62, 304, 18};
+        layout->boxes[THEME_LAYOUT_ALBUM] = (Rect){8, 64, 304, 18};
         layout->boxes[THEME_LAYOUT_FORMAT] = (Rect){224, 8, 88, 18};
-        layout->boxes[THEME_LAYOUT_LYRICS] = (Rect){8, 78, 304, 54};
-        layout->boxes[THEME_LAYOUT_PROGRESS] = (Rect){8, 138, 304, 3};
-        layout->boxes[THEME_LAYOUT_TIMES] = (Rect){8, 144, 304, 18};
+        layout->boxes[THEME_LAYOUT_LYRICS] = (Rect){8, 88, 304, 52};
+        layout->boxes[THEME_LAYOUT_PROGRESS] = (Rect){8, 144, 304, 3};
+        layout->boxes[THEME_LAYOUT_TIMES] = (Rect){8, 148, 304, 14};
         layout->aligns[THEME_LAYOUT_FORMAT] = THEME_ALIGN_RIGHT;
     }
     layout->boxes[THEME_LAYOUT_COVER] = (Rect){0, 0, 0, 0};
@@ -978,33 +978,6 @@ static void draw_outline(Canvas *canvas, Rect area, Color color)
 }
 #endif
 
-#ifdef ECHO_LITE
-static const IconMask *lite_mode_icon_18(PlaybackMode mode)
-{
-    switch (mode) {
-    case PLAYBACK_RANDOM:
-        return &LITE_ICON_SHUFFLE_18;
-    case PLAYBACK_LOOP:
-        return &LITE_ICON_LOOP_18;
-    case PLAYBACK_ONE:
-        return &LITE_ICON_LOOP_ONE_18;
-    }
-    return &LITE_ICON_LOOP_18;
-}
-
-static void draw_lite_mode(const NowPlayingScreen *now_playing, Canvas *canvas)
-{
-    if (!now_playing->status.has_track) {
-        return;
-    }
-    const Theme *theme = now_playing->config.theme;
-    PlaybackMode mode = player_playback_mode(now_playing->config.player);
-    int mode_x = theme_is_portrait(theme) ? 144 : 294;
-    lite_icon_draw_scaled(canvas, lite_mode_icon_18(mode), (Rect){mode_x, 24, 18, 18},
-                          theme->colors->selection_background);
-}
-#endif
-
 #ifndef ECHO_LITE
 static void draw_format(const NowPlayingScreen *now_playing, Canvas *canvas, const Layout *layout)
 {
@@ -1286,23 +1259,29 @@ static void draw_lite_spectrum(const NowPlayingScreen *now_playing, Canvas *canv
         50, 32, 22, 44, 58, 30, 18, 40, 52, 24, 36, 14, 46};
     const Theme *theme = now_playing->config.theme;
     int baseline = area.y + area.height - 4;
+    int max_height = area.height - 6;
     int phase = now_playing->status.state == PLAYER_PLAYING ? (int)(now_playing->now_ms / 120) : 0;
     int bars = area.width < 200 ? 14 : 26;
     int grow = area.height > 100 ? 2 : 1;
+    Canvas bars_canvas = canvas_clipped(canvas, area);
     for (int index = 0; index < bars; index++) {
         int height = heights[index];
         if (now_playing->status.state == PLAYER_PLAYING) {
             height = 10 + ((height + phase * 3 + index * 7) % 42);
         }
         height *= grow;
+        if (height > max_height) {
+            height = max_height;
+        }
         int x = area.x + 6 + index * 10;
         bool yellow_bar = bars == 14 ? index == 2 || index == 6 || index == 10
                                      : index == 5 || index == 12 || index == 19;
         Color color = yellow_bar ? COLOR_RGB(255, 212, 59)
                                  : theme->colors->selection_background;
-        canvas_fill_rect(canvas, (Rect){x, baseline - height, 6, height}, color);
+        canvas_fill_rect(&bars_canvas, (Rect){x, baseline - height, 6, height}, color);
     }
-    canvas_fill_rect(canvas, (Rect){area.x, baseline, area.width, 2}, theme->colors->text);
+    canvas_fill_rect(&bars_canvas, (Rect){area.x, baseline, area.width, 2},
+                     theme->colors->text);
 }
 #endif
 
@@ -1334,9 +1313,6 @@ static void draw(void *context, Canvas *canvas)
     draw_cover(now_playing, canvas, &layout);
     draw_badge(now_playing, canvas, &layout);
     draw_track_text(now_playing, canvas, &layout);
-#ifdef ECHO_LITE
-    draw_lite_mode(now_playing, canvas);
-#endif
     draw_progress(now_playing, canvas, &layout);
     draw_times(now_playing, canvas, &layout);
 #ifdef ECHO_LITE

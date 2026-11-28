@@ -1046,6 +1046,7 @@ static void draw_lite_status_meter(Canvas *canvas, const Screen *screen)
     Color all_color = COLOR_RGB(47, 168, 255);
     Color bluetooth_color = COLOR_RGB(15, 138, 219);
     Color playing_color = COLOR_RGB(245, 158, 11);
+    Color mode_color = COLOR_RGB(139, 92, 246);
     Color pink = COLOR_RGB(236, 72, 153);
     if (screen == app.screens.root_all_songs || screen == app.screens.root_favorites) {
         bool favorite = screen == app.screens.root_favorites;
@@ -1055,6 +1056,11 @@ static void draw_lite_status_meter(Canvas *canvas, const Screen *screen)
     }
     int width = theme->metrics.screen_width;
     Point right = {width - 31, 8};
+    if (playing) {
+        PlaybackMode mode = player_playback_mode(&app.player);
+        char glyph = mode == PLAYBACK_ONE ? '1' : mode == PLAYBACK_RANDOM ? 'S' : 'L';
+        lite_status_mode_draw(canvas, (Point){right.x - 13, 8}, mode_color, glyph);
+    }
     lite_status_block_draw(canvas, right, status_color(theme, bluetooth_color, bluetooth));
     lite_status_block_draw(canvas, (Point){right.x + 13, 8},
                            status_color(theme, playing_color, playing));

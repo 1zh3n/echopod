@@ -104,6 +104,24 @@ void lite_status_block_draw(Canvas *canvas, Point origin, Color color)
     canvas_fill_rect(canvas, (Rect){origin.x, origin.y, 10, 10}, color);
 }
 
+void lite_status_mode_draw(Canvas *canvas, Point origin, Color color, char mode)
+{
+    static const uint8_t LOOP[7] = {0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x1F};
+    static const uint8_t LOOP_ONE[7] = {0x04, 0x0C, 0x04, 0x04, 0x04, 0x04, 0x0E};
+    static const uint8_t SHUFFLE[7] = {0x0E, 0x11, 0x10, 0x0E, 0x01, 0x11, 0x0E};
+    const uint8_t *glyph = mode == '1' ? LOOP_ONE : mode == 'S' ? SHUFFLE : LOOP;
+    lite_status_block_draw(canvas, origin, color);
+    for (int row = 0; row < 7; row++) {
+        for (int column = 0; column < 5; column++) {
+            if ((glyph[row] & (0x10 >> column)) != 0) {
+                canvas_fill_rect(canvas,
+                                 (Rect){origin.x + 2 + column, origin.y + 2 + row, 1, 1},
+                                 COLOR_RGB(255, 255, 255));
+            }
+        }
+    }
+}
+
 void lite_status_root_draw(Canvas *canvas, const Theme *theme, Point origin, Color all,
                             Color favorites)
 {
