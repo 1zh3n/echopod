@@ -704,6 +704,18 @@ static void favorite_tracks_support_az_jump(void)
     ScreenAction opened = screen->long_menu(screen->long_menu_context, START_MS + 10);
     CHECK_EQUAL(SCREEN_ACTION_PUSH, opened.type);
     CHECK(strcmp("A-Z", opened.target->title) == 0);
+    SectionJumpScreen *jump = opened.target->context;
+    int before = jump->selected;
+    ScreenAction moved = opened.target->handle_key(
+        opened.target->context, (KeyEvent){.key = KEY_MENU, .gesture = KEY_GESTURE_LONG_PRESS},
+        START_MS + 15);
+    CHECK_EQUAL(SCREEN_ACTION_NONE, moved.type);
+    CHECK_EQUAL((before + 7) % (LIST_SECTION_AFTER_LETTERS + 1), jump->selected);
+    jump->selected = 21;
+    opened.target->handle_key(opened.target->context,
+                              (KeyEvent){.key = KEY_MENU, .gesture = KEY_GESTURE_LONG_PRESS},
+                              START_MS + 18);
+    CHECK_EQUAL(0, jump->selected);
     ScreenAction chosen = opened.target->handle_key(
         opened.target->context, (KeyEvent){.key = KEY_PLAY, .gesture = KEY_GESTURE_PRESS},
         START_MS + 20);
