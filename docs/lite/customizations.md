@@ -20,19 +20,22 @@ front end. The list below is the useful summary; the git history has the exact c
   from the Favorites list. The list is built through a reusable TrackListScreen for future
   explicit track collections.
 - 10×10 status blocks with 1 px shadows: Bluetooth `#0F8ADB` and playing `#F59E0B` on the
-  right, `text_tertiary` gray when off. Root lists use the original 28×10 segmented meter on the left;
-  the active half is bright, the other divider gray. Now Playing uses the same top row with only
-  its 18 px playback-mode icon below.
-- Settings opens on five cards: Random mode, Sleep timer, Sound, Display, System. Random and
-  Sleep are direct items; the other three open category pages. Category dots are removed.
+  right, `text_tertiary` gray when off. While playing, a purple mode block shows `L`, `1` or `S`
+  and is hidden when paused. Root lists use the original 28×10 segmented meter on the left;
+  the active half is bright, the other divider gray. Now Playing uses the same top row with no
+  separate mode icon.
+- Settings opens on five double-height cards: Random mode, Sleep timer, Sound, Display, System.
+  Random and Sleep are direct items; the other three open category pages. The home scrolls two
+  cards at a time with the next card peeking. Category dots are removed.
 - Settings is reached by Long Back; Long Menu is the screen's function key and never opens
   Settings. Inside Settings, Long Back returns to the current root.
 - Landscape Settings has no text header; the half-badge, glyph and rows carry the
   category. Portrait keeps the category name.
 - Settings category pages keep the half-badge, glyph and colour; rows stay static. Page slides
   keep their existing motion.
-- Now Playing uses a native 18 px playback-mode icon, no cover frame, and no persistent
-  play/pause icon: the amber status block carries the playing state.
+- Now Playing has no separate playback-mode icon or persistent play/pause icon: the amber status
+  block carries the playing state and the purple `L`/`1`/`S` block carries the mode. The spectrum
+  and progress bar sit lower, clear of the album line.
   The current/total time row and progress thumb are removed; only the volume number appears
   temporarily while changing volume.
 - Boot uses 200×112 landscape / 146×112 portrait stills with a 5px hard shadow, no card or frame.

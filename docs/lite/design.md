@@ -54,18 +54,21 @@ cyan `#35C7E8`, amber `#F59E0B`, success `#22C55E`.
 - Status uses 10×10 blocks with a 1 px hard shadow at y=8.
 - Right side: Bluetooth `#0F8ADB` and playing `#F59E0B`, 3 px apart, 8 px from the right edge;
   inactive blocks are `text_tertiary` gray, so colour always means the state is on.
+- While playing, a purple `#8B5CF6` mode block sits 3 px left of Bluetooth and shows a white
+  `L` (loop), `1` (loop one) or `S` (shuffle); it is hidden while paused.
+  The group is `[mode] [Bluetooth] [play]` at x=276/289/302 landscape and 126/139/152 portrait.
 - Root lists use the original 28×10 segmented meter on the left: 2 px border/shadow, two 12×6
   cells; All Songs `#2FA8FF`, Favorites `#EC4899`, with the inactive half divider gray.
-- Now Playing uses the same top status row and keeps only its 18 px playback-mode icon at y=24;
-  the play/pause state is carried by the amber status block.
+- Now Playing uses the same top status row; there is no separate playback-mode icon on the page.
 - The card shadow carries the battery/charging colour; the status markers do not.
 
 ### Now Playing
 
-- Landscape: title at (8, 8), Bluetooth block at x=251, state icons at x=269/294, spectrum
-  304×70, progress at y=138.
-- Portrait: Bluetooth block at x=101, state icons at x=119/144, title at (8, 24), spectrum
-  154×194 at y=86, progress at y=288.
+- Landscape: title at (8, 24), artist at (8, 48), album at (8, 64), spectrum 304×52 at y=88,
+  progress at y=144, transient volume number at y=148.
+- Portrait: title at (8, 44), artist at (8, 66), album at (8, 82), spectrum 154×176 at y=106,
+  progress at y=288.
+- Spectrum bars are capped and clipped to their area so they never touch the album line.
 - The time row and progress thumb are removed. The bottom area is empty except for the transient
   volume number while changing volume.
 
@@ -85,9 +88,11 @@ was prototyped and deferred because it duplicated that feedback and hid the Blue
 
 ### Settings
 
-- Settings home: five cards with 18/20 px colour icons — Random mode, Sleep timer, Sound,
-  Display, System. Landscape cards are 304×25 at y=29 with 2 px gaps; portrait cards are
-  154×48 at y=58 with 3 px gaps. Selected cards get the selection fill, border and white icons.
+- Settings home: five cards with 24/32 px colour icons — Random mode, Sleep timer, Sound,
+  Display, System. Landscape cards are 304×50 at y=29 with 4 px gaps; portrait cards are
+  154×96 at y=58 with 4 px gaps. The list scrolls two cards at a time with the next card peeking.
+  Selected cards get the selection fill, border and white icons; the label uses the 16 px title
+  font and the value uses the small font.
 - Random and Sleep are direct items; Sound/Display/System open category pages.
 - Category pages: no text header landscape; the half-badge and glyph identify the category.
   Portrait keeps the category title and colour rule. Category dots are removed.
