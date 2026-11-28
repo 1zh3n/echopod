@@ -28,6 +28,8 @@ front end. The list below is the useful summary; the git history has the exact c
   timer, Sound, Display, System. Random and Sleep are direct items with their values right-aligned;
   the other three open category pages. The home scrolls four rows at a time with the next row
   peeking. Category dots in the category pages are removed.
+- Date/Time uses the Settings card with six rows and an in-card hint; the selected row is blue
+  and the value turns yellow while editing.
 - Settings is reached by Long Back; Long Menu is the screen's function key and never opens
   Settings. Inside Settings, Long Back returns to the current root.
 - Landscape Settings has no text header; the half-badge, glyph and rows carry the

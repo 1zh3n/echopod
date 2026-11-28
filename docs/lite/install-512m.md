@@ -21,7 +21,7 @@ The 512 MB updater scans the card root for:
 It does **not** scan `HIFIEC90.IMG`. Copy the build to the card root and rename it, for example:
 
 ```text
-build/release-lite/HIFIEC90.IMG  ->  /MINIV954.IMG
+build/release-lite/HIFIEC90.IMG  ->  /MINIV955.IMG
 ```
 
 Then use the player's updater.
@@ -36,9 +36,14 @@ cmake --build --preset release-lite
 ## Current build
 
 ```text
-image:  MINIV954.IMG
-sha256: f29398dd249ac3c1c8f2e29debebf6964bd8ae2727097b7755cbb8e5d9773aa7
+image:  MINIV955.IMG
+sha256: 1ab6ae94dabc402f07b3974571bd26f96e813f9f882741d50bb0f6425d7fe798
 ```
+
+`MINIV955` fixes the playback-mode cycle when no track is loaded: a stale shuffled queue plan
+no longer makes Random mode look stuck. It also puts Date/Time in the same card layout as the
+Settings category pages: six rows, a blue selection row, a yellow value while editing, and the
+hint inside the card.
 
 `MINIV954` adds clear gaps between the compact Settings rows: 304×28 landscape / 154×52
 portrait, 4 px / 6 px gaps, 8 px colour dots, and four rows visible plus the next peeking.
@@ -113,17 +118,17 @@ The incremental images for this pass are:
 | `MINIV945` | flat 10×10 status blocks, root markers, cleaner repeat icon | `0f6ee445ae536dc581bf88b4702e1d142666427e5332f7f78b0256164dc65f67` |
 | `MINIV946` | coloured shadowed blocks, global Now Playing status row, Favorites A-Z threshold removed | `e5bc90b5270c36686b2dc977196708abee84cd26cfac281ccf1d0abaeac313c5` |
 | `MINIV947` | original rounded segmented root meter on the left | `0736cf5f1c8956c8403ccac23786fbd020606609662744a1620eabada67903e0` |
-| `MINIV948` | larger Settings cards with icons, Bluetooth blue / playing amber | `f29398dd249ac3c1c8f2e29debebf6964bd8ae2727097b7755cbb8e5d9773aa7` |
+| `MINIV948` | larger Settings cards with icons, Bluetooth blue / playing amber | `1ab6ae94dabc402f07b3974571bd26f96e813f9f882741d50bb0f6425d7fe798` |
 
 The 8 GB model is not supported.
 
 ## Verification
 
 - Host tests: 168/168 passed (`ctest --preset dev -E "^format$"`).
-- Lite panel tests: 77/77 passed.
+- Lite panel tests: 78/78 passed.
 - `release-lite` build and updater check valid.
-- Headroom: code 136,528 / 157,292 bytes (20,764 free); loaded total 409,208 / 437,600 bytes
-  (28,392 free); resident tables 18,236 / 18,432 (196 free); rescan overlay 85,400 / 86,016
+- Headroom: code 136,832 / 157,292 bytes (20,460 free); loaded total 409,512 / 437,600 bytes
+  (28,088 free); resident tables 18,236 / 18,432 (196 free); rescan overlay 85,400 / 86,016
   (616 free).
 - Still pending: the final 512 MB device pass over sorting, boot, dots, headers, navigation,
   local motion, root switching, Settings cards, favorites and portrait-flipped.

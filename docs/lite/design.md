@@ -99,6 +99,9 @@ was prototyped and deferred because it duplicated that feedback and hid the Blue
 - Category pages: no text header landscape; the half-badge and glyph identify the category.
   Portrait keeps the category title and colour rule. Category dots are removed.
 - Categories: Sound (6 rows), Display (6 rows), System (10 rows).
+- Date/Time uses the same card as a category page: 304×134 landscape / 154×254 portrait,
+  19/38 px rows, six fields plus the hint inside the card. The selected row is blue; while
+  editing, the value turns yellow.
 
 ### Sleep timer
 
