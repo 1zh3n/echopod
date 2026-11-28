@@ -22,6 +22,7 @@
 #include "screens/favorite_tracks_screen.h"
 #include "screens/now_playing_screen.h"
 #include "settings/settings.h"
+#include "settings_store.h"
 #include "ui/lite_badge.h"
 #include "ui/lite_color_icons.h"
 #include "ui/lite_frame.h"
@@ -37,6 +38,7 @@ enum {
 static uint32_t now_ms;
 
 static bool load_icon_asset(void);
+static bool title_is(const char *expected);
 
 static void step(void)
 {
@@ -67,19 +69,41 @@ static bool area_has_color(int x, int y, int width, int height, Color color)
     return false;
 }
 
-static void start_app_with_library(void)
+static void start_app_with_start_screen(StartScreen start)
 {
     uint32_t size = 0;
     uint32_t covers_size = 0;
     const uint8_t *bytes = fixture_bytes(&size);
     const uint8_t *covers = fixture_covers_bytes(&covers_size);
+    Settings settings = settings_defaults();
+    settings.start_screen = start;
+    uint8_t encoded[SETTINGS_FILE_SIZE];
+    settings_encode(&settings, encoded);
     fake_hal_reset();
     fake_hal_add_file("/.echo/library.db", bytes, size);
     fake_hal_add_file("/.echo/covers.bin", covers, covers_size);
+    fake_hal_add_file(SETTINGS_STORE_PATH, encoded, sizeof encoded);
     fake_hal_add_file("/.echo/build.tmp", NULL, 16 * 1024 * 1024);
     now_ms = START_MS;
     fake_hal_set_milliseconds(now_ms);
     app_start();
+}
+
+static void start_app_with_library(void)
+{
+    start_app_with_start_screen(START_MAIN_MENU);
+}
+
+static void boot_starts_on_all_songs(void)
+{
+    start_app_with_library();
+    CHECK(title_is("All Songs"));
+}
+
+static void a_saved_start_screen_still_boots_all_songs(void)
+{
+    start_app_with_start_screen(START_ALBUMS);
+    CHECK(title_is("All Songs"));
 }
 
 static void tap(Key key)
@@ -398,37 +422,9 @@ static void boot_screen_is_static(void)
     CHECK(memcmp(first, second, sizeof first) == 0);
 }
 
-static void colorful_home_has_no_text(void)
-{
-    start_app_with_library();
-    wait_ms(1400);
-    CHECK(fake_hal_pixel(160, 95) == COLOR_RGB(47, 168, 255));
-    CHECK(fake_hal_pixel(160, 118) == COLOR_RGB(255, 255, 255));
-}
-
 static void open_all_songs_and_play(void);
 
-static void home_card_is_rounded(void)
-{
-    start_app_with_library();
-    wait_ms(300);
-    CHECK(fake_hal_pixel(108, 24) == COLOR_RGB(250, 250, 249));
-    CHECK(fake_hal_pixel(108, 30) == COLOR_RGB(10, 10, 10));
-    CHECK(fake_hal_pixel(160, 24) == COLOR_RGB(10, 10, 10));
-}
-
-static void home_middle_card_opens_favorites(void)
-{
-    start_app_with_library();
-    move_down(1);
-    wait_ms(300);
-    CHECK(area_has_color(130, 50, 60, 60, COLOR_RGB(236, 72, 153)));
-    tap(KEY_PLAY);
-    wait_ms(300);
-    CHECK(title_is("Favorites"));
-}
-
-static void home_status_meter_tracks_bluetooth(void)
+static void root_status_meter_tracks_bluetooth(void)
 {
     start_app_with_library();
     wait_ms(300);
@@ -695,8 +691,7 @@ static void long_play_removes_a_song_favorite(void)
 static void settings_starts_on_quick(void)
 {
     start_app_with_library();
-    move_down(2);
-    tap(KEY_PLAY);
+    hold(KEY_BACK);
     wait_ms(300);
     CHECK(title_is("Settings"));
     CHECK(fake_hal_pixel(82, 86) == COLOR_RGB(47, 168, 255));
@@ -706,8 +701,7 @@ static void settings_starts_on_quick(void)
 static void landscape_settings_has_no_title(void)
 {
     start_app_with_library();
-    move_down(2);
-    tap(KEY_PLAY);
+    hold(KEY_BACK);
     wait_ms(300);
     CHECK(title_is("Settings"));
     CHECK(fake_hal_pixel(20, 16) == COLOR_RGB(250, 250, 249));
@@ -717,8 +711,7 @@ static void landscape_settings_has_no_title(void)
 static void settings_long_menu_switches_category(void)
 {
     start_app_with_library();
-    move_down(2);
-    tap(KEY_PLAY);
+    hold(KEY_BACK);
     wait_ms(300);
     hold(KEY_MENU);
     wait_ms(200);
@@ -738,8 +731,7 @@ static void settings_long_menu_switches_category(void)
 static void settings_short_press_cycles_value(void)
 {
     start_app_with_library();
-    move_down(2);
-    tap(KEY_PLAY);
+    hold(KEY_BACK);
     wait_ms(300);
     unsigned before = area_hash(12, 30, 140, 112);
     int depth = app_screen_depth();
@@ -753,8 +745,7 @@ static void settings_short_press_cycles_value(void)
 static void settings_subpage_opens(void)
 {
     start_app_with_library();
-    move_down(2);
-    tap(KEY_PLAY);
+    hold(KEY_BACK);
     wait_ms(300);
     hold(KEY_MENU);
     wait_ms(200);
@@ -768,7 +759,6 @@ static void settings_subpage_opens(void)
 
 static void open_all_songs_and_play(void)
 {
-    tap(KEY_PLAY);
     CHECK(title_is("All Songs"));
     tap(KEY_PLAY);
     CHECK(title_is("Now Playing"));
@@ -787,7 +777,6 @@ static void now_playing_uses_native_18px_icons(void)
 static void all_songs_long_play_opens_song_actions(void)
 {
     start_app_with_library();
-    tap(KEY_PLAY);
     CHECK(title_is("All Songs"));
     int depth = app_screen_depth();
     hold(KEY_PLAY);
@@ -865,7 +854,7 @@ static void long_play_on_now_playing_does_nothing(void)
     open_all_songs_and_play();
     hold(KEY_PLAY);
     CHECK(title_is("Now Playing"));
-    CHECK_EQUAL(3, app_screen_depth());
+    CHECK_EQUAL(2, app_screen_depth());
 }
 
 static void settings_menu_goes_to_now_playing_and_drops_settings(void)
@@ -891,7 +880,6 @@ static void lite_ignores_the_menu_key_setting(void)
 static void long_menu_opens_and_closes_section_jump(void)
 {
     start_app_with_library();
-    tap(KEY_PLAY);
     CHECK(title_is("All Songs"));
     hold(KEY_MENU);
     CHECK(title_is("A-Z"));
@@ -916,7 +904,6 @@ static void menu_closes_section_jump_without_opening_now_playing(void)
 static void section_jump_play_returns_to_the_list(void)
 {
     start_app_with_library();
-    tap(KEY_PLAY);
     hold(KEY_MENU);
     CHECK(title_is("A-Z"));
     move_down(4);
@@ -941,7 +928,7 @@ static void long_back_in_settings_goes_home(void)
     hold(KEY_MENU);
     CHECK(title_is("Settings"));
     hold(KEY_BACK);
-    CHECK(title_is("EchoPod"));
+    CHECK(title_is("All Songs"));
 }
 
 static void long_menu_in_settings_opens_next_category(void)
@@ -961,9 +948,8 @@ static void long_menu_in_settings_opens_next_category(void)
 static void open_settings_display(void)
 {
     start_app_with_library();
-    move_down(2);
-    tap(KEY_PLAY);
-    wait_ms(300);
+    hold(KEY_BACK);
+    wait_ms(200);
     hold(KEY_MENU);
     wait_ms(200);
     hold(KEY_MENU);
@@ -1019,14 +1005,12 @@ static void dark_palette_and_borders(void)
 static void settings_can_switch_to_portrait(void)
 {
     switch_orientation_to_portrait();
-    CHECK(fake_hal_pixel(85, 164) == COLOR_RGB(139, 92, 246));
-    CHECK(fake_hal_pixel(160, 76) != COLOR_RGB(139, 92, 246));
-
+    CHECK(title_is("All Songs"));
+    CHECK(fake_hal_pixel(8, 30) == DEFAULT_THEME.colors->text);
     tap(KEY_PLAY);
     wait_ms(300);
-    CHECK(fake_hal_pixel(20, 50) == COLOR_RGB(250, 250, 249));
-    CHECK(fake_hal_pixel(12, 34) == COLOR_RGB(53, 199, 232));
-    CHECK(fake_hal_pixel(20, 100) == COLOR_RGB(0, 111, 238));
+    CHECK(title_is("Now Playing"));
+    CHECK(fake_hal_pixel(40, 289) == DEFAULT_THEME.colors->divider);
 }
 
 static void settings_can_switch_to_portrait_flipped(void)
@@ -1044,9 +1028,10 @@ static void settings_can_switch_to_portrait_flipped(void)
 static void settings_can_switch_to_dark(void)
 {
     switch_theme_to_dark();
+    CHECK(title_is("All Songs"));
     CHECK(fake_hal_pixel(10, 16) == COLOR_RGB(11, 11, 13));
-    CHECK(fake_hal_pixel(120, 30) == COLOR_RGB(23, 23, 28));
-    CHECK(fake_hal_pixel(108, 30) == COLOR_RGB(82, 82, 91));
+    CHECK(fake_hal_pixel(120, 40) == COLOR_RGB(23, 23, 28));
+    CHECK(fake_hal_pixel(8, 30) == COLOR_RGB(82, 82, 91));
 }
 
 static void switch_dark_portrait(void)
@@ -1061,25 +1046,22 @@ static void switch_dark_portrait(void)
     wait_ms(300);
 }
 
-static void dark_portrait_home_and_settings(void)
+static void dark_portrait_root_and_settings(void)
 {
     switch_dark_portrait();
+    CHECK(title_is("All Songs"));
     CHECK(fake_hal_pixel(10, 16) == COLOR_RGB(11, 11, 13));
     CHECK(fake_hal_pixel(85, 110) == COLOR_RGB(23, 23, 28));
-    CHECK(fake_hal_pixel(29, 120) == COLOR_RGB(82, 82, 91));
-    CHECK(fake_hal_pixel(85, 164) == COLOR_RGB(139, 92, 246));
+    CHECK(fake_hal_pixel(8, 30) == COLOR_RGB(82, 82, 91));
 
     tap(KEY_PLAY);
     wait_ms(300);
-    CHECK(fake_hal_pixel(20, 50) == COLOR_RGB(11, 11, 13));
-    CHECK(fake_hal_pixel(12, 34) == COLOR_RGB(53, 199, 232));
-    CHECK(fake_hal_pixel(20, 100) == COLOR_RGB(0, 111, 238));
+    CHECK(title_is("Now Playing"));
 }
 
 static void portrait_now_playing_icons(void)
 {
     switch_orientation_to_portrait();
-    move_down(2);
     open_all_songs_and_play();
     wait_ms(300);
     CHECK(area_has_color(119, 8, 18, 18, COLOR_RGB(0, 111, 238)));
@@ -1125,6 +1107,8 @@ int main(void)
         return 1;
     }
     TestCase cases[] = {
+        TEST_CASE(boot_starts_on_all_songs),
+        TEST_CASE(a_saved_start_screen_still_boots_all_songs),
         TEST_CASE(now_playing_uses_native_18px_icons),
         TEST_CASE(all_songs_long_play_opens_song_actions),
         TEST_CASE(settings_quick_is_icon_only),
@@ -1149,7 +1133,7 @@ int main(void)
         TEST_CASE(settings_can_switch_to_portrait),
         TEST_CASE(settings_can_switch_to_portrait_flipped),
         TEST_CASE(settings_can_switch_to_dark),
-        TEST_CASE(dark_portrait_home_and_settings),
+        TEST_CASE(dark_portrait_root_and_settings),
         TEST_CASE(portrait_now_playing_icons),
         TEST_CASE(boot_has_portrait_still),
         TEST_CASE(charge_card_is_portrait),
@@ -1174,10 +1158,7 @@ int main(void)
         TEST_CASE(boot_screen_draws_the_still),
         TEST_CASE(boot_screen_is_static),
         TEST_CASE(boot_draws_across_strips),
-        TEST_CASE(colorful_home_has_no_text),
-        TEST_CASE(home_card_is_rounded),
-        TEST_CASE(home_middle_card_opens_favorites),
-        TEST_CASE(home_status_meter_tracks_bluetooth),
+        TEST_CASE(root_status_meter_tracks_bluetooth),
         TEST_CASE(now_playing_uses_bt_chip_with_controls),
         TEST_CASE(hold_the_volume_key_seeks_without_a_hold_bar),
         TEST_CASE(goodbye_screen_has_no_icon),

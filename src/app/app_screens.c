@@ -42,6 +42,7 @@ enum {
     HOME_STEPS = 256
 };
 
+#ifndef ECHO_LITE
 static const int8_t START_ENTRIES[START_SCREEN_COUNT] = {
     [START_MAIN_MENU] = START_HOME_ONLY,
     [START_NOW_PLAYING] = START_HOME_ONLY,
@@ -55,6 +56,7 @@ static const int8_t START_ENTRIES[START_SCREEN_COUNT] = {
     [START_FOLDERS] = 5,
     [START_ALL_SONGS] = 6,
 };
+#endif
 
 static const MusicEntry MUSIC_ENTRIES[MUSIC_ITEM_COUNT] = {
     {STR_MENU_COVER_FLOW, MUSIC_COVER_FLOW, BROWSE_ALBUMS, false},
@@ -76,6 +78,7 @@ static bool music_entry_shown(const void *context)
 }
 #endif
 
+#ifndef ECHO_LITE
 static int music_position(int entry)
 {
 #ifdef ECHO_LITE
@@ -88,6 +91,7 @@ static int music_position(int entry)
     return entry;
 #endif
 }
+#endif
 
 #ifndef ECHO_LITE
 static bool player_has_track(const void *context)
@@ -291,153 +295,7 @@ _Static_assert(THEME_ICON_COUNT - THEME_ICON_HOME_MUSIC == HOME_ITEM_COUNT,
                "Home has an icon for each of its items");
 #endif
 
-#ifdef ECHO_LITE
-static int32_t home_position;
-static int32_t home_target;
-static int32_t home_from;
-static uint32_t home_started_ms;
-static const uint8_t *home_options;
-
-static int32_t floor_division(int32_t value)
-{
-    int32_t quotient = value / 256;
-    if (value % 256 != 0 && value < 0) {
-        quotient--;
-    }
-    return quotient;
-}
-
-static int32_t positive_mod(int32_t value, int32_t modulus)
-{
-    int32_t result = value % modulus;
-    return result < 0 ? result + modulus : result;
-}
-
-static int32_t absolute32(int32_t value)
-{
-    return value < 0 ? -value : value;
-}
-
-static const ColorIcon *const HOME_ICONS[HOME_ITEM_COUNT] = {
-    &LITE_COLOR_ICON_ALL, &LITE_COLOR_ICON_FAVORITE, &LITE_COLOR_ICON_GEAR};
-
-static uint32_t home_duration_ms(void)
-{
-    return settings_animation_ms(home_options, SLIDE_DURATION_MS);
-}
-
-static int32_t home_eased(int32_t from, int32_t to, uint32_t elapsed, uint32_t duration)
-{
-    if (duration == 0 || elapsed >= duration) {
-        return to;
-    }
-    uint64_t remaining = duration - elapsed;
-    uint64_t left = (uint64_t)HOME_STEPS * remaining * remaining * remaining /
-                    ((uint64_t)duration * duration * duration);
-    uint32_t eased = HOME_STEPS - (uint32_t)left;
-    return from + (int32_t)(((int64_t)(to - from) * eased) / HOME_STEPS);
-}
-
-static bool home_scene_update(void *context, uint32_t now_ms)
-{
-    (void)context;
-    if (home_position != home_target) {
-        home_position =
-            home_eased(home_from, home_target, now_ms - home_started_ms, home_duration_ms());
-    }
-    return true;
-}
-
-static void draw_home_card(Canvas *canvas, const Theme *theme, Rect card)
-{
-    lite_card_rounded(canvas, theme, card, 5, 6);
-}
-
-static bool home_scene_draw(void *context, Canvas *canvas, MenuScreen *menu)
-{
-    AppScreens *screens = context;
-    const Theme *theme = menu->config.theme;
-    int width = theme->metrics.screen_width;
-    int height = theme->metrics.screen_height;
-    canvas_fill_rect(canvas, (Rect){0, 0, width, height}, theme->colors->background);
-
-    bool portrait = theme_is_portrait(theme);
-    int32_t base = floor_division(home_position);
-    int center = width / 2;
-    int spacing = portrait ? 108 : 96;
-    Rect card = portrait ? (Rect){center - 56, 108, 112, 112} : (Rect){center - 52, 24, 104, 104};
-    draw_home_card(canvas, theme, card);
-    Color shadow_color = lite_card_shadow_color(theme);
-
-    for (int32_t slot = base - 1; slot <= base + 2; slot++) {
-        int item = (int)positive_mod(slot, HOME_ITEM_COUNT);
-        int32_t offset = slot * HOME_STEPS - home_position;
-        uint32_t distance = (uint32_t)absolute32(offset);
-        uint32_t closeness = distance > HOME_STEPS ? HOME_STEPS : distance;
-        if (portrait && distance > HOME_STEPS) {
-            continue;
-        }
-        int size;
-        int x;
-        int y;
-        if (portrait) {
-            size = 64 - (int)(closeness * 24 / HOME_STEPS);
-            x = center;
-            y = 164 + (int)(offset * spacing / HOME_STEPS);
-        } else {
-            size = 64 - (int)(closeness * 24 / HOME_STEPS);
-            x = center + (int)(offset * spacing / HOME_STEPS);
-            y = 44 + (int)(closeness * 21 / HOME_STEPS);
-        }
-        bool selected = item == screens->home.list.selected;
-        int left = x - size / 2;
-        int top = portrait ? y - size / 2 : y;
-        int shadow = selected ? 4 : 3;
-        lite_icon_draw_scaled(canvas, &LITE_MASK_SHADOW,
-                              (Rect){left + shadow, top + shadow, size, size}, shadow_color);
-        color_icon_draw_scaled(canvas, HOME_ICONS[item], (Rect){left, top, size, size});
-    }
-
-    return true;
-}
-
-bool app_screens_home_key(AppScreens *screens, KeyEvent event, uint32_t now_ms)
-{
-    Navigation navigation = navigation_from_key(event);
-    if (navigation.intent != NAVIGATION_NEXT && navigation.intent != NAVIGATION_PREVIOUS) {
-        return false;
-    }
-    int step = navigation.intent == NAVIGATION_NEXT ? 1 : -1;
-    home_target += step * HOME_STEPS;
-    home_from = home_position;
-    home_started_ms = now_ms;
-    list_view_move(&screens->home.list, step, true, now_ms);
-    return true;
-}
-
-static void build_home(AppScreens *screens, AppScreensContext context)
-{
-    const Theme *theme = context.theme;
-    screens->home_items[0] = music_item(screens, context.store, 6);
-    screens->home_items[1] = app_screens_open_item(i18n_text(STR_MENU_FAVORITES),
-                                                   &screens->favorite_tracks.screen);
-    screens->home_items[2] =
-        app_screens_open_item(i18n_text(STR_MENU_SETTINGS), &screens->settings.menu.screen);
-    home_position = 0;
-    home_target = 0;
-    home_from = 0;
-    home_started_ms = 0;
-    home_options = context.settings->settings.options;
-    screens->home_scene = (MenuScene){home_scene_update, home_scene_draw, screens, true};
-    MenuConfig home = {.title = "EchoPod",
-                       .items = screens->home_items,
-                       .item_count = HOME_ITEM_COUNT,
-                       .theme = theme,
-                       .scene = &screens->home_scene};
-    menu_screen_init(&screens->home, home);
-    screens->home.list.visible_rows = HOME_ITEM_COUNT;
-}
-#else
+#ifndef ECHO_LITE
 static bool home_scene_update(void *context, uint32_t now_ms)
 {
     AppScreens *screens = context;
@@ -539,13 +397,21 @@ ECHO_STARTUP_CODE Screen *app_screens_init(AppScreens *screens, AppScreensContex
     favorite_tracks_screen_init(&screens->favorite_tracks, favorite_tracks);
 #endif
     build_music(screens, context);
-#ifndef ECHO_LITE
+#ifdef ECHO_LITE
+    screens->root_all_songs =
+        context.store->available
+            ? browse_pool_open(&screens->browse, 0, browse_root_query(BROWSE_ALL_SONGS))
+            : &screens->no_library.screen;
+    screens->root_favorites = &screens->favorite_tracks.screen;
+    return screens->root_all_songs;
+#else
     diagnostics_menu_build(screens, context.options, theme);
-#endif
     build_home(screens, context);
     return &screens->home.screen;
+#endif
 }
 
+#ifndef ECHO_LITE
 static int music_path(AppScreens *screens, int entry, Screen **path)
 {
     BrowseEntry *browse = &screens->browse_entries[entry];
@@ -557,22 +423,24 @@ static int music_path(AppScreens *screens, int entry, Screen **path)
     path[1] = browse_screen_for(browse);
     return path[1] != NULL ? START_PATH_CAPACITY : 1;
 }
+#endif
 
 int app_screens_start_path(AppScreens *screens, StartScreen start, Screen **path)
 {
+#ifdef ECHO_LITE
+    (void)screens;
+    (void)start;
+    (void)path;
+    return 0;
+#else
     if (start == START_NOW_PLAYING) {
         list_view_select(&screens->home.list, 1, 0);
         path[0] = &screens->now_playing.screen;
         return 1;
     }
-#ifdef ECHO_LITE
-    if (start == START_ALBUMS || start == START_ARTISTS || start == START_FAVORITES ||
-        start == START_COVER_FLOW || start == START_ALBUM_ARTISTS || start == START_GENRES) {
-        return 0;
-    }
-#endif
     if ((int)start >= (int)START_SCREEN_COUNT || START_ENTRIES[start] == START_HOME_ONLY) {
         return 0;
     }
     return music_path(screens, START_ENTRIES[start], path);
+#endif
 }

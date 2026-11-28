@@ -98,6 +98,8 @@ typedef struct AppScreens {
     MenuItem home_items[HOME_ITEM_COUNT];
 #ifdef ECHO_LITE
     const Player *player;
+    Screen *root_all_songs;
+    Screen *root_favorites;
 #endif
     HomeArt home_art;
     MenuScene home_scene;
@@ -133,6 +135,3 @@ Screen *app_screens_build_menu(MenuScreen *menu, const char *title, const MenuIt
 void diagnostics_menu_build(AppScreens *screens, AppOptions *options, const Theme *theme);
 #endif
 int app_screens_start_path(AppScreens *screens, StartScreen start, Screen **path);
-#ifdef ECHO_LITE
-bool app_screens_home_key(AppScreens *screens, KeyEvent event, uint32_t now_ms);
-#endif

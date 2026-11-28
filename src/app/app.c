@@ -594,7 +594,8 @@ static bool opens_settings(KeyEvent event)
 {
 #ifdef ECHO_LITE
     Screen *top = top_screen();
-    return event.key == KEY_MENU && event.gesture == KEY_GESTURE_LONG_PRESS && !top->menu_consumes &&
+    bool long_press = event.gesture == KEY_GESTURE_LONG_PRESS;
+    return long_press && (event.key == KEY_MENU || event.key == KEY_BACK) && !top->menu_consumes &&
            top != &app.screens.settings.menu.screen;
 #else
     Screen *top = top_screen();
@@ -655,10 +656,6 @@ static void apply_screen_action(Screen *leaving, ScreenAction action, int depth_
 static void dispatch_to_screen(KeyEvent event, uint32_t now_ms)
 {
     Screen *screen = top_screen();
-    if (screen == &app.screens.home.screen &&
-        app_screens_home_key(&app.screens, event, now_ms)) {
-        return;
-    }
     if (event.key == KEY_MENU && event.gesture == KEY_GESTURE_LONG_PRESS) {
         if (screen->long_menu_enabled && screen->long_menu != NULL) {
             int depth_before = screen_stack_depth(&app.stack);
