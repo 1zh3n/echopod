@@ -670,6 +670,12 @@ static void dispatch_to_screen(KeyEvent event, uint32_t now_ms)
         toggle_lite_root(now_ms);
         return;
     }
+    if (screen == &app.screens.settings.menu.screen && event.key == KEY_BACK &&
+        event.gesture == KEY_GESTURE_PRESS) {
+        int depth_before = screen_stack_depth(&app.stack);
+        apply_screen_action(screen, screen_action_pop_to_root(), depth_before, now_ms);
+        return;
+    }
     if (event.key == KEY_MENU && event.gesture == KEY_GESTURE_LONG_PRESS) {
         if (screen->long_menu_enabled && screen->long_menu != NULL) {
             int depth_before = screen_stack_depth(&app.stack);
