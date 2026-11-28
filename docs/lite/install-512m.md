@@ -21,7 +21,7 @@ The 512 MB updater scans the card root for:
 It does **not** scan `HIFIEC90.IMG`. Copy the build to the card root and rename it, for example:
 
 ```text
-build/release-lite/HIFIEC90.IMG  ->  /MINIV946.IMG
+build/release-lite/HIFIEC90.IMG  ->  /MINIV947.IMG
 ```
 
 Then use the player's updater.
@@ -36,9 +36,12 @@ cmake --build --preset release-lite
 ## Current build
 
 ```text
-image:  MINIV946.IMG
-sha256: e5bc90b5270c36686b2dc977196708abee84cd26cfac281ccf1d0abaeac313c5
+image:  MINIV947.IMG
+sha256: 0736cf5f1c8956c8403ccac23786fbd020606609662744a1620eabada67903e0
 ```
+
+`MINIV947` restores the original segmented root meter on the left: 28×10, rounded 2px
+border, 2px shadow, two 12×6 cells; the active root is bright, the other is divider gray.
 
 `MINIV946` gives the status blocks their own muted colours and 1px shadows, restores the
 segmented All Songs/Favorites rectangle on root lists, and moves Now Playing's title/icons down
@@ -83,7 +86,7 @@ The incremental images for this pass are:
 | `MINIV941` | song Favorites on Home, explicit favorites queue and resume, Add/Remove actions; audio-fed collection and Lite-only actions | `d1eb274b6fa84ae431c0aca12c9d3d13b59f67a771b02f1c011cbe4024a019c2` |
 | `MINIV942` | remove Home; All Songs / Favorites roots, root Back switching, Long Back Settings; Settings Back returns the root; root tabs deferred | `e3baece2bcd554eb401c837bbe7238037e475d4d39e9ae8b264d8a0be316eecc` |
 | `MINIV943` | cache the Favorites collection between root switches; stop scanning after the last favorite | `511d1e9d659d09e0f5b11e7bca01ea09da395e579627de334ed2d5755f828721` |
-| `MINIV944` | unified Menu keys, Settings five-card home, Favorites A-Z/duration, Now Playing cleanup | `e5bc90b5270c36686b2dc977196708abee84cd26cfac281ccf1d0abaeac313c5` |
+| `MINIV944` | unified Menu keys, Settings five-card home, Favorites A-Z/duration, Now Playing cleanup | `0736cf5f1c8956c8403ccac23786fbd020606609662744a1620eabada67903e0` |
 
 The 8 GB model is not supported.
 
@@ -92,8 +95,8 @@ The 8 GB model is not supported.
 - Host tests: 168/168 passed (`ctest --preset dev -E "^format$"`).
 - Lite panel tests: 75/75 passed.
 - `release-lite` build and updater check valid.
-- Headroom: code 136,520 / 157,292 bytes (20,772 free); loaded total 409,200 / 437,600 bytes
-  (28,400 free); resident tables 18,236 / 18,432 (196 free); rescan overlay 85,400 / 86,016
+- Headroom: code 136,536 / 157,292 bytes (20,756 free); loaded total 409,216 / 437,600 bytes
+  (28,384 free); resident tables 18,236 / 18,432 (196 free); rescan overlay 85,400 / 86,016
   (616 free).
 - Still pending: the final 512 MB device pass over sorting, boot, dots, headers, navigation,
   local motion, root switching, Settings cards, favorites and portrait-flipped.
