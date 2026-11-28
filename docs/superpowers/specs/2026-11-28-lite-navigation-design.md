@@ -137,6 +137,33 @@ Assessed risks: the group actions are slower than double tap, Settings from a le
 needs Long Back -> Home -> Settings, and long press is less discoverable. The proposal is
 recorded, not implemented.
 
+## Home simplification proposal
+
+Home is currently a three-card carousel: All Songs, Playlists, Settings. With song Favorites
+replacing Playlists and Settings opening from Long Menu, only two cards still need to be there:
+
+| Card | Reason |
+|---|---|
+| All Songs | no other shortcut |
+| Favorites | no other shortcut |
+| Settings | remove from Home; Long Menu is the shortcut |
+
+Proposed:
+
+- keep the two-card carousel and the same visual identity;
+- remove the Settings card from Home;
+- short Menu on Home: Now Playing;
+- Long Menu on Home: Settings / Quick;
+- do not add more cards or turn Home into a grid; two cards do not justify a 2D key layout;
+- keep the empty-state/no-track behavior.
+
+The trade-off is discoverability: Settings loses its visible Home icon. If that feels wrong on the
+device, keep the Settings card as a third entry; it is not a functional requirement.
+
+A separate productivity option is a Lite Start screen setting (Home / All Songs / Favorites /
+Now Playing). That would skip Home for people who always use one list, but it is a separate
+feature and not part of this proposal.
+
 ## Up Next stays a queue
 
 Up Next is not replaced by All Songs or Favorites. It is the playback queue view:
