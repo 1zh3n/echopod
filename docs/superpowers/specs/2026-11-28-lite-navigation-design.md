@@ -164,6 +164,23 @@ A separate productivity option is a Lite Start screen setting (Home / All Songs 
 Now Playing). That would skip Home for people who always use one list, but it is a separate
 feature and not part of this proposal.
 
+### Removing Home entirely
+
+Removing Home is possible only if there is a replacement root switch between All Songs and
+Favorites. The candidates are:
+
+- **Short Back at the root**: toggles All Songs <-> Favorites. Deeper Back still goes up.
+  Settings would need another gesture, for example Long Back; Long Back would no longer mean
+  Home because there is no Home.
+- **Long Back**: toggles the two roots from anywhere; then Settings needs a third gesture.
+- A tab/filter inside one list: needs a new key or a selectable header row.
+
+The two-card Home is already the direct switch: Volume selects, Play opens. That is one volume
+press when switching from the other root. Removing Home saves the visual screen but adds a new
+Back mode and moves Settings to Long Back, which is a larger interaction change than the
+efficiency gain. Recommendation: keep the two-card Home; use the Start screen setting to skip
+it when one list is used almost exclusively.
+
 ## Up Next stays a queue
 
 Up Next is not replaced by All Songs or Favorites. It is the playback queue view:
