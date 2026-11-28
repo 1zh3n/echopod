@@ -50,19 +50,20 @@ cyan `#35C7E8`, amber `#F59E0B`, success `#22C55E`.
 
 ### Root status
 
-- Top-left 28×8 status meter at (8, 4): 2 px border, 2 px hard shadow, two 12×4 cells.
-  Left cell blue `#006FEE` when Bluetooth is connected; right cell cyan `#35C7E8` when
-  playing. Inactive cells use the divider colour.
-- Light border is ink; dark border is `#52525B`; the shadow is black in both themes.
-- Now Playing replaces the meter with a 14×8 Bluetooth-only chip beside the shuffle/play
-  icons (x=236/96, y=13); the play/pause icon already shows playback.
-- The card shadow carries the battery/charging colour; the status meter does not.
+- Status uses flat 10×10 blocks, no border or shadow, at y=8.
+- Right side: Bluetooth block and playing block, 3 px apart, 8 px from the right edge.
+  Inactive blocks use `text_tertiary`; Bluetooth is blue `#2FA8FF`, playing cyan `#35C7E8`.
+- Root lists add two blocks at the left: All Songs `#2FA8FF`, Favorites `#EC4899`; the active
+  root is filled, the other is gray.
+- Now Playing keeps its 18 px mode/play icons and adds only a Bluetooth block 8 px to their
+  left, top-aligned at y=8.
+- The card shadow carries the battery/charging colour; status blocks do not.
 
 ### Now Playing
 
-- Landscape: title at (8, 8), Bluetooth chip at x=243, state icons at x=269/294,
-  spectrum 304×70, progress at y=138.
-- Portrait: Bluetooth chip at x=93, state icons at x=119/144, title at (8, 24), spectrum
+- Landscape: title at (8, 8), Bluetooth block at x=251, state icons at x=269/294, spectrum
+  304×70, progress at y=138.
+- Portrait: Bluetooth block at x=101, state icons at x=119/144, title at (8, 24), spectrum
   154×194 at y=86, progress at y=288.
 - The time row and progress thumb are removed. The bottom area is empty except for the transient
   volume number while changing volume.
@@ -79,7 +80,7 @@ cyan `#35C7E8`, amber `#F59E0B`, success `#22C55E`.
 ### Now Playing seek feedback
 
 Seek uses the progress and time display; there is no separate hold gauge. A 28×8 hold gauge
-was prototyped and deferred because it duplicated that feedback and hid the Bluetooth chip.
+was prototyped and deferred because it duplicated that feedback and hid the Bluetooth block.
 
 ### Settings
 

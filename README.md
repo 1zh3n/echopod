@@ -44,8 +44,8 @@ Keep the official firmware and a known recovery path before flashing.
 - **Runtime Landscape / Portrait / Portrait-flipped:** Settings → Display → Orientation,
   320×170 or 170×320 (portrait can also be turned 180°).
 - **Lite roots:** All Songs and Favorites, no Home screen; Short Back at the root switches
-  them, Short Menu opens Now Playing and Long Back opens Settings. A 28×8 status meter at
-  top-left shows Bluetooth and playback. The two root icons are deferred for now.
+  them, Short Menu opens Now Playing and Long Back opens Settings. Flat 10×10 status blocks show
+  Bluetooth/playback on the right and root markers on the left. The large root icons are deferred.
 - **Lite Settings:** a five-card home — Random mode, Sleep timer, Sound, Display, System.
   Random/Sleep are direct; Sound/Display/System open category pages. Category dots are gone;
   landscape keeps the half-badge and glyph. The sleep card shows a live countdown.
@@ -53,8 +53,8 @@ Keep the official firmware and a known recovery path before flashing.
 - **Favorites:** a song list of up to 256 path-hashed tracks, shown like All Songs (title +
   duration, A-Z jump), played as its own queue and restored after a restart; long Play on any
   track offers Add/Remove Favorites.
-- **Now Playing:** 18 px native mode/state icons, no cover frame; a 14×8 Bluetooth-only
-  chip sits next to the shuffle/play controls. Short volume changes volume, double skips,
+- **Now Playing:** 18 px native mode/state icons, no cover frame; a 10×10 Bluetooth-only
+  block sits next to the shuffle/play controls. Short volume changes volume, double skips,
   long press seeks; the flat progress bar is the seek feedback, with no time row or thumb.
 - **Boot and charging:** boot uses 200×112 landscape / 146×112 portrait stills with a 5px hard
   shadow, no card or frame; charging keeps the 96×64 animation card.
@@ -78,7 +78,7 @@ The boot chain, IDB, PMU firmware, fw2 and slot layout are not modified.
 > is rendered from the actual `LBOO` / `LBO2` assets, not a device photo.
 
 On the root lists, the top-left 28×8 status meter uses its left segment for Bluetooth and its right segment
-for playback. Now Playing keeps a Bluetooth-only chip beside the shuffle/play controls; the
+for playback. Now Playing keeps a 10×10 Bluetooth block beside the shuffle/play controls; the
 play/pause icon already shows playback. The card shadow carries the battery/charging colour.
 
 | Home (historical) | Now Playing |

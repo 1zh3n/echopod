@@ -21,7 +21,7 @@ The 512 MB updater scans the card root for:
 It does **not** scan `HIFIEC90.IMG`. Copy the build to the card root and rename it, for example:
 
 ```text
-build/release-lite/HIFIEC90.IMG  ->  /MINIV944.IMG
+build/release-lite/HIFIEC90.IMG  ->  /MINIV945.IMG
 ```
 
 Then use the player's updater.
@@ -36,9 +36,13 @@ cmake --build --preset release-lite
 ## Current build
 
 ```text
-image:  MINIV944.IMG
-sha256: d5acfe888aeb812d55f18cf85c66838d376e8690cc3c54e0504ba9ee7559bf20
+image:  MINIV945.IMG
+sha256: 0f6ee445ae536dc581bf88b4702e1d142666427e5332f7f78b0256164dc65f67
 ```
+
+`MINIV945` replaces the status meter/chip with flat 10×10 blocks: Bluetooth/play on the
+right, All Songs/Favorites markers on the left of root lists, gray inactive and coloured active,
+aligned at y=8. The Now Playing repeat/loop-one masks were redrawn on the 18px grid.
 
 `MINIV944` unifies the Menu keys: Short Menu always goes to Now Playing (then Up Next from Now
 Playing), while Long Menu is the screen function key — A-Z in All Songs/Favorites, next row in the
@@ -54,7 +58,7 @@ so the list frames and rows keep their existing appearance. Favorites is a path-
 of up to 256 tracks that plays as its own queue and restores through the resume file. Long Play
 on a track in All Songs, albums, folders, playlists or Up Next opens Play Next / Add to Up Next /
 Add or Remove Favorites. Settings opens on five cards — Random mode, Sleep timer, Sound,
-Display, System — with no category dots; the status meter is drawn inside each screen so it moves
+Display, System — with no category dots; the status blocks are drawn inside each screen so they move
 with the page. The build also keeps the runtime Light/Dark and
 landscape/portrait/portrait-flipped modes, the 8 px padding system, the 28×8 status meter, the
 existing list frames, no-text landscape Settings, black dark-mode shadows, and 200×112 / 146×112
@@ -74,7 +78,7 @@ The incremental images for this pass are:
 | `MINIV941` | song Favorites on Home, explicit favorites queue and resume, Add/Remove actions; audio-fed collection and Lite-only actions | `d1eb274b6fa84ae431c0aca12c9d3d13b59f67a771b02f1c011cbe4024a019c2` |
 | `MINIV942` | remove Home; All Songs / Favorites roots, root Back switching, Long Back Settings; Settings Back returns the root; root tabs deferred | `e3baece2bcd554eb401c837bbe7238037e475d4d39e9ae8b264d8a0be316eecc` |
 | `MINIV943` | cache the Favorites collection between root switches; stop scanning after the last favorite | `511d1e9d659d09e0f5b11e7bca01ea09da395e579627de334ed2d5755f828721` |
-| `MINIV944` | unified Menu keys, Settings five-card home, Favorites A-Z/duration, Now Playing cleanup | `d5acfe888aeb812d55f18cf85c66838d376e8690cc3c54e0504ba9ee7559bf20` |
+| `MINIV944` | unified Menu keys, Settings five-card home, Favorites A-Z/duration, Now Playing cleanup | `0f6ee445ae536dc581bf88b4702e1d142666427e5332f7f78b0256164dc65f67` |
 
 The 8 GB model is not supported.
 
@@ -83,8 +87,8 @@ The 8 GB model is not supported.
 - Host tests: 168/168 passed (`ctest --preset dev -E "^format$"`).
 - Lite panel tests: 74/74 passed.
 - `release-lite` build and updater check valid.
-- Headroom: code 136,504 / 157,292 bytes (20,788 free); loaded total 409,184 / 437,600 bytes
-  (28,416 free); resident tables 18,236 / 18,432 (196 free); rescan overlay 85,400 / 86,016
+- Headroom: code 136,472 / 157,292 bytes (20,820 free); loaded total 409,152 / 437,600 bytes
+  (28,448 free); resident tables 18,236 / 18,432 (196 free); rescan overlay 85,400 / 86,016
   (616 free).
 - Still pending: the final 512 MB device pass over sorting, boot, dots, headers, navigation,
   local motion, root switching, Settings cards, favorites and portrait-flipped.

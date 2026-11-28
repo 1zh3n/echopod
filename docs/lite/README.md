@@ -4,12 +4,12 @@ Personal EchoPod-based firmware for the **512 MB** Snowsky (FiiO) Echo Mini.
 
 - **UI:** neo-brutalist Lite layout, Light/Dark, 320×170 and 170×320.
 - **Hardware:** tested on one 512 MB unit; the 8 GB model is not supported.
-- **Current build:** `release-lite` preset; image `MINIV944.IMG`, pending a final device check.
+- **Current build:** `release-lite` preset; image `MINIV945.IMG`, pending a final device check.
 - **Upstream:** EchoPod 0.13.2.
 - **Implemented:** All Songs / Favorites roots with no Home; Short Back root switching and
   Long Back Settings; Short Menu as the Now Playing/Up Next key and Long Menu as the screen
   function key; Settings five-card home and three category pages; reusable TrackListScreen with
-  Favorites title+duration and A-Z; Now Playing without times or progress thumb; explicit
+  Favorites title+duration and A-Z; Now Playing without times or progress thumb; flat 10×10 status blocks with root markers and a cleaner repeat icon; explicit
   Favorites queue and resume; Pinyin/romaji CJK sorting; singleton overlay navigation; no-title
   All Songs and inset Up Next; portrait-flipped; sleep timer countdown and finish-track shutdown.
 
