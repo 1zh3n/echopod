@@ -721,6 +721,28 @@ static void song_actions_add_and_remove_in_lite(void)
     CHECK(!favorites_store_contains_track(&favorite_store, 0));
 }
 
+static void favorite_tracks_do_not_rescan_on_every_enter(void)
+{
+    Screen *screen = fresh_favorite_tracks();
+    favorites_store_toggle_track(&favorite_store, 0);
+    screen->enter(screen->context, START_MS);
+    CHECK_EQUAL(1, favorite_tracks.count);
+    favorite_fixture.memory.reads = 0;
+    screen->enter(screen->context, START_MS + 10);
+    CHECK_EQUAL(0, favorite_fixture.memory.reads);
+}
+
+static void favorite_tracks_refresh_when_the_store_changes(void)
+{
+    Screen *screen = fresh_favorite_tracks();
+    favorites_store_toggle_track(&favorite_store, 0);
+    screen->enter(screen->context, START_MS);
+    CHECK_EQUAL(1, favorite_tracks.count);
+    favorites_store_toggle_track(&favorite_store, 1);
+    screen->update(screen->context, START_MS + 10);
+    CHECK_EQUAL(2, favorite_tracks.count);
+}
+
 static void collecting_many_favorites_services_audio(void)
 {
     static BigLibrary big;
@@ -1221,6 +1243,8 @@ int main(void)
         TEST_CASE(starting_the_second_favorite_uses_the_favorites_queue),
         TEST_CASE(long_play_removes_a_song_favorite),
         TEST_CASE(song_actions_add_and_remove_in_lite),
+        TEST_CASE(favorite_tracks_do_not_rescan_on_every_enter),
+        TEST_CASE(favorite_tracks_refresh_when_the_store_changes),
         TEST_CASE(collecting_many_favorites_services_audio),
         TEST_CASE(settings_starts_on_quick),
         TEST_CASE(landscape_settings_has_no_title),

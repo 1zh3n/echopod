@@ -31,8 +31,11 @@ static void collect_tracks(FavoriteTracksScreen *favorites)
     FavoritesStore *store = favorites->config.favorites;
     uint16_t found = 0;
     if (store->favorites.count > 0) {
+        uint16_t wanted = store->favorites.count > PLAY_QUEUE_TRACK_LIST_MAX
+                              ? PLAY_QUEUE_TRACK_LIST_MAX
+                              : store->favorites.count;
         uint32_t total = library_count(library, LIBRARY_TITLE_ORDER);
-        for (uint32_t position = 0; position < total; position++) {
+        for (uint32_t position = 0; position < total && found < wanted; position++) {
             if (position % TRACKS_PER_AUDIO_SERVICE == 0) {
                 hal_audio_service();
             }
@@ -40,14 +43,12 @@ static void collect_tracks(FavoriteTracksScreen *favorites)
             if (library_read_index(library, LIBRARY_TITLE_ORDER, position, &track) &&
                 favorites_store_contains_track(store, track)) {
                 favorites->tracks[found++] = track;
-                if (found == PLAY_QUEUE_TRACK_LIST_MAX) {
-                    break;
-                }
             }
         }
     }
     favorites->count = found;
     favorites->revision = store->revision;
+    favorites->library_stamp = library_fingerprint(library);
     if (favorites->list.selected >= favorites->count) {
         favorites->list.selected = favorites->count > 0 ? favorites->count - 1 : 0;
     }
@@ -157,11 +158,19 @@ static void set_visible_rows(FavoriteTracksScreen *favorites)
     favorites->list.visible_rows = lite_list_rows(favorites->config.theme);
 }
 
+static bool favorites_changed(const FavoriteTracksScreen *favorites)
+{
+    return favorites->revision != favorites->config.favorites->revision ||
+           favorites->library_stamp != library_fingerprint(favorites->config.library);
+}
+
 static void enter(void *context, uint32_t now_ms)
 {
     FavoriteTracksScreen *favorites = context;
     favorites->now_ms = now_ms;
-    collect_tracks(favorites);
+    if (favorites_changed(favorites)) {
+        collect_tracks(favorites);
+    }
     set_visible_rows(favorites);
     list_view_restart_marquee(&favorites->list, now_ms);
     refresh_rows(favorites);
@@ -171,7 +180,7 @@ static void update(void *context, uint32_t now_ms)
 {
     FavoriteTracksScreen *favorites = context;
     favorites->now_ms = now_ms;
-    if (favorites->revision != favorites->config.favorites->revision) {
+    if (favorites_changed(favorites)) {
         collect_tracks(favorites);
     }
     set_visible_rows(favorites);
@@ -200,6 +209,7 @@ Screen *favorite_tracks_screen_init(FavoriteTracksScreen *favorites, FavoriteTra
     favorites->rows_first = -1;
     favorites->rows_count = 0;
     favorites->revision = 0;
+    favorites->library_stamp = 0;
     favorites->now_ms = 0;
     favorites->model = (ListModel){.context = favorites,
                                    .count = row_count,

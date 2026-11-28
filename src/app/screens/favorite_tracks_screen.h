@@ -37,6 +37,7 @@ typedef struct FavoriteTracksScreen {
     char labels[FAVORITE_TRACK_ROWS][FAVORITE_TRACK_LABEL_CAPACITY];
     char details[FAVORITE_TRACK_ROWS][FAVORITE_TRACK_DETAIL_CAPACITY];
     uint32_t revision;
+    uint32_t library_stamp;
     uint32_t now_ms;
 } FavoriteTracksScreen;
 
