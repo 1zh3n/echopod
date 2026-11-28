@@ -21,7 +21,7 @@ The 512 MB updater scans the card root for:
 It does **not** scan `HIFIEC90.IMG`. Copy the build to the card root and rename it, for example:
 
 ```text
-build/release-lite/HIFIEC90.IMG  ->  /MINIV955.IMG
+build/release-lite/HIFIEC90.IMG  ->  /MINIV956.IMG
 ```
 
 Then use the player's updater.
@@ -36,9 +36,15 @@ cmake --build --preset release-lite
 ## Current build
 
 ```text
-image:  MINIV955.IMG
-sha256: 1ab6ae94dabc402f07b3974571bd26f96e813f9f882741d50bb0f6425d7fe798
+image:  MINIV956.IMG
+sha256: 7bddbdc05f4d46825871a90be24b261fda08061359365502a7d44549e1d55dd4
 ```
+
+`MINIV956` fixes the review findings: list subpages (Up Next, Folders, Bluetooth) stay below
+the global status row; Settings categories remember their selected row; Date/Time keeps an
+unsaved edit across the Now Playing overlay; the 90/120-minute sleep countdown formats minutes
+correctly; dark-mode row separators use the theme divider; and portrait All Songs shows nine
+rows.
 
 `MINIV955` fixes the playback-mode cycle when no track is loaded: a stale shuffled queue plan
 no longer makes Random mode look stuck. It also puts Date/Time in the same card layout as the
@@ -126,16 +132,17 @@ The incremental images for this pass are:
 | `MINIV953` | compact Settings rows with colour dots, four visible | `01e4401a6e9c54420ce687676bc33582b2bbd43cd42cc660c1e9e1f90c94ad37` |
 | `MINIV954` | clearer Settings row spacing, 8 px dots, four visible | `f29398dd249ac3c1c8f2e29debebf6964bd8ae2727097b7755cbb8e5d9773aa7` |
 | `MINIV955` | Random mode cycle fix, Date/Time card layout, yellow edit value | `1ab6ae94dabc402f07b3974571bd26f96e813f9f882741d50bb0f6425d7fe798` |
+| `MINIV956` | list subpage inset, category selection memory, Date/Time edit preservation, sleep countdown and dark divider fixes | `7bddbdc05f4d46825871a90be24b261fda08061359365502a7d44549e1d55dd4` |
 
 The 8 GB model is not supported.
 
 ## Verification
 
 - Host tests: 168/168 passed (`ctest --preset dev -E "^format$"`).
-- Lite panel tests: 78/78 passed.
+- Lite panel tests: 81/81 passed.
 - `release-lite` build and updater check valid.
-- Headroom: code 136,832 / 157,292 bytes (20,460 free); loaded total 409,512 / 437,600 bytes
-  (28,088 free); resident tables 18,236 / 18,432 (196 free); rescan overlay 85,400 / 86,016
+- Headroom: code 136,904 / 157,292 bytes (20,388 free); loaded total 409,584 / 437,600 bytes
+  (28,016 free); resident tables 18,236 / 18,432 (196 free); rescan overlay 85,400 / 86,016
   (616 free).
 - Still pending: the final 512 MB device pass over sorting, boot, dots, headers, navigation,
   local motion, root switching, Settings cards, favorites and portrait-flipped.
