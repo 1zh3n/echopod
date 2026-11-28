@@ -37,7 +37,7 @@ cmake --build --preset release-lite
 
 ```text
 image:  MINIV941.IMG
-sha256: e5606ffea6494eb58675ee8d18c8d1ab6ef89351dac2de42089d7d4404944f7b
+sha256: d1eb274b6fa84ae431c0aca12c9d3d13b59f67a771b02f1c011cbe4024a019c2
 ```
 
 `MINIV941` is the song-favorites build. Lite Home is All Songs / Favorites / Settings; Favorites
@@ -62,7 +62,7 @@ The incremental images for this pass are:
 | `MINIV938` | final fixes: Menu closes the A-Z overlay, Up Next row sizing, compatibility initials and docs | `6c59b5d64a8b8b42a89298f8b5d67226e16d231f230408688ce56bbd703355b0` |
 | `MINIV939` | Settings absorbs Quick; 400 ms long Menu; standalone Quick panel removed | `962a349f7a2ca78c6a3775a7aea11ae152e94f8138fdca458dc086cab2ee9e0d` |
 | `MINIV940` | local motion, screen-owned status meter, static Settings rows | `d9f06accd78d268e375eac79c656c52421b0a1323f7679af34cc5fb6fe9b112d` |
-| `MINIV941` | song Favorites on Home, explicit favorites queue and resume, Add/Remove actions | `e5606ffea6494eb58675ee8d18c8d1ab6ef89351dac2de42089d7d4404944f7b` |
+| `MINIV941` | song Favorites on Home, explicit favorites queue and resume, Add/Remove actions; audio-fed collection and Lite-only actions | `d1eb274b6fa84ae431c0aca12c9d3d13b59f67a771b02f1c011cbe4024a019c2` |
 
 The 8 GB model is not supported.
 
@@ -71,8 +71,8 @@ The 8 GB model is not supported.
 - Host tests: 168/168 passed (`ctest --preset dev -E "^format$"`).
 - Lite panel tests: 57/57 passed.
 - `release-lite` build and updater check valid.
-- Headroom: code 137,980 / 157,292 bytes (19,312 free); loaded total 410,524 / 437,600 bytes
-  (27,076 free); resident tables 18,240 / 18,432 (192 free); rescan overlay 85,400 / 86,016
+- Headroom: code 137,992 / 157,292 bytes (19,300 free); loaded total 410,536 / 437,600 bytes
+  (27,064 free); resident tables 18,240 / 18,432 (192 free); rescan overlay 85,400 / 86,016
   (616 free).
 - Still pending: the final 512 MB device pass over sorting, boot, dots, headers, navigation,
   local motion, favorites and portrait-flipped.
