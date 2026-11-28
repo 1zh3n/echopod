@@ -36,9 +36,13 @@ cmake --build --preset release-lite
 ## Current build
 
 ```text
-image:  MINIV960.IMG
-sha256: 9ebc29a3cd3f620794bdc8847c906c555ecb37c3e8002fddb6b93c9ec3de75fd
+image:  MINIV961.IMG
+sha256: 137c474806aed0fde513dbc5d9c2f722a1523f8b796aa215a6e6bf050a037936
 ```
+
+`MINIV961` replaces the decorative Now Playing spectrum with one small bouncing square. It
+starts from a per-track position and direction, changes colour at each edge, and freezes when
+paused. It uses no audio data, decoder work or extra RAM; the old spectrum code is gone.
 
 `MINIV960` keeps the 512-track Favorites/queue/resume format and also reads the older
 558-byte Lite resume file, so a resume saved before the capacity change is not lost; the next
@@ -153,21 +157,24 @@ The incremental images for this pass are:
 | `MINIV958` | literal leading-article sorting; "The ..." under T | `de625aedc403db1ba5aead8603efa7bbc289d5d21b2f7c86163637af5d68e534` |
 | `MINIV959` | upstream 0.14.0/512 MB fixes, Lite cover cache removed, 512 favorites | `84ca0de4501bbc858bdad3aa457cb97e40759211a6e221e03902bc6bc95b0988` |
 | `MINIV960` | read old 558-byte Lite resume files | `9ebc29a3cd3f620794bdc8847c906c555ecb37c3e8002fddb6b93c9ec3de75fd` |
+| `MINIV961` | bouncing colour-changing Now Playing square, no fake spectrum | `137c474806aed0fde513dbc5d9c2f722a1523f8b796aa215a6e6bf050a037936` |
 
 The 8 GB model is not supported.
 
 ## Verification
 
 - Host tests: 168/168 passed (`ctest --preset dev -E "^format$"`).
-- Lite panel tests: 82/82 passed.
+- Lite panel tests: 86/86 passed.
+- Lite player tests: 56/56 passed.
 - Lite app static RAM: 69,586 / 131,072 bytes (61,486 free), via
   `tools/lite_ram_audit.py` and the `release-lite` compile commands.
 - `release-lite` build and updater check valid.
-- Headroom: code 136,740 / 157,292 bytes (20,552 free); loaded total 342,108 / 437,600 bytes
-  (95,492 free); resident tables 18,236 / 18,432 (196 free); rescan overlay 85,328 / 86,016
+- Headroom: code 136,864 / 157,292 bytes (20,428 free); loaded total 342,232 / 437,600 bytes
+  (95,368 free); resident tables 18,236 / 18,432 (196 free); rescan overlay 85,328 / 86,016
   (688 free).
 - Still pending: the final 512 MB device pass over sorting, boot, dots, headers, navigation,
-  local motion, root switching, Settings cards, favorites and portrait-flipped.
+  local motion, the bouncing square, root switching, Settings cards, favorites and
+  portrait-flipped.
 
 ## After flashing
 

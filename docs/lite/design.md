@@ -26,6 +26,9 @@ The mockup sheet is [mockups/index.html](mockups/index.html).
 Badge colours: blue `#2FA8FF`, orange `#FF9F1C`, purple `#8B5CF6`, indigo `#6366F1`,
 cyan `#35C7E8`, amber `#F59E0B`, success `#22C55E`.
 
+Now Playing bounce colours, in cycle order: amber `#FFD43B`, blue `#2FA8FF`, purple `#8B5CF6`,
+orange `#FF9F1C`, green `#22C55E`.
+
 ## Spacing
 
 - Base unit: 4 px. Outer gutter: 8 px left/right/bottom on panel screens
@@ -65,11 +68,13 @@ cyan `#35C7E8`, amber `#F59E0B`, success `#22C55E`.
 
 ### Now Playing
 
-- Landscape: title at (8, 24), artist at (8, 48), album at (8, 64), spectrum 304×52 at y=88,
-  progress at y=144, transient volume number at y=148.
-- Portrait: title at (8, 44), artist at (8, 66), album at (8, 82), spectrum 154×176 at y=106,
-  progress at y=288.
-- Spectrum bars are capped and clipped to their area so they never touch the album line.
+- Landscape: title at (8, 24), artist at (8, 48), album at (8, 64), lyric/bounce area 304×52 at
+  y=88, progress at y=144, transient volume number at y=148.
+- Portrait: title at (8, 44), artist at (8, 66), album at (8, 82), lyric/bounce area 154×176 at
+  y=106, progress at y=288.
+- With no synced lyrics, one 8×8 square bounces inside that area, inset 2 px. It changes to the
+  next palette colour at each edge and freezes when playback is paused. It is clipped to its
+  area so it never touches the album line.
 - The time row and progress thumb are removed. The bottom area is empty except for the transient
   volume number while changing volume.
 

@@ -37,8 +37,9 @@ front end. The list below is the useful summary; the git history has the exact c
 - Settings category pages keep the half-badge, glyph and colour; rows stay static. Page slides
   keep their existing motion.
 - Now Playing has no separate playback-mode icon or persistent play/pause icon: the amber status
-  block carries the playing state and the mode block carries random/loop/loop-one. The spectrum
-  and progress bar sit lower, clear of the album line.
+  block carries the playing state and the mode block carries random/loop/loop-one. When there
+  are no synced lyrics, a small 8×8 square bounces in the lyric area, changes colour at each
+  edge and freezes when paused. The progress bar sits lower, clear of the album line.
   The current/total time row and progress thumb are removed; only the volume number appears
   temporarily while changing volume.
 - Boot uses 200×112 landscape / 146×112 portrait stills with a 5px hard shadow, no card or frame.
