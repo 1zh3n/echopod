@@ -77,9 +77,9 @@ The boot chain, IDB, PMU firmware, fw2 and slot layout are not modified.
 > palette; the real screen may differ in font rendering and final asset placement. The boot sheet
 > is rendered from the actual `LBOO` / `LBO2` assets, not a device photo.
 
-On the root lists, the top-left 28×8 status meter uses its left segment for Bluetooth and its right segment
-for playback. Now Playing keeps a 10×10 Bluetooth block beside the shuffle/play controls; the
-play/pause icon already shows playback. The card shadow carries the battery/charging colour.
+On the root lists, the left 28×10 segmented meter shows the active root; Bluetooth and playback
+use 10×10 blocks at the top right. Now Playing uses the same top row and keeps its 18 px mode/play
+icons below it. The card shadow carries the battery/charging colour.
 
 | Home (historical) | Now Playing |
 |---|---|

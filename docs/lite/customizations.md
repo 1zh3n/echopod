@@ -19,9 +19,10 @@ front end. The list below is the useful summary; the git history has the exact c
   A-Z jump), played as its own queue, with Add/Remove in the song actions menu and direct removal
   from the Favorites list. The list is built through a reusable TrackListScreen for future
   explicit track collections.
-- Flat 10×10 status blocks drawn inside each screen: Bluetooth and playing on the right;
-  root lists add All Songs/Favorites markers on the left. Inactive is gray, active is coloured.
-  Now Playing keeps its 18 px mode/play icons and adds a Bluetooth block beside them.
+- 10×10 status blocks with 1 px shadows: Bluetooth `#0F8ADB` and playing `#F59E0B` on the
+  right, muted when inactive. Root lists use the original 28×10 segmented meter on the left;
+  the active half is bright, the other divider gray. Now Playing uses the same top row with its
+  18 px mode/play icons below.
 - Settings opens on five cards: Random mode, Sleep timer, Sound, Display, System. Random and
   Sleep are direct items; the other three open category pages. Category dots are removed.
 - Settings is reached by Long Back; Long Menu is the screen's function key and never opens

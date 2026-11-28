@@ -30,14 +30,15 @@ cyan `#35C7E8`, amber `#F59E0B`, success `#22C55E`.
 
 - Base unit: 4 px. Outer gutter: 8 px left/right/bottom on panel screens
   (Settings, Lists, Now Playing).
-- Landscape header band: 28 px. The status meter is 28×8 at `(8, 4)`; its 2 px
-  border/shadow are included in the header, not the content gutter.
+- Landscape header band: 28 px. Status markers use the row from y=8 to y=18; the list card
+  starts at y=28.
 - Portrait headers stay editorial: Settings card starts at y=58, Lists at y=40.
   Their cards end 8 px above the bottom edge.
 - Now Playing uses 8 px top/sides/bottom. Content width is 304 px landscape and
   154 px portrait; the progress bar ends 8 px above the bottom edge.
 - Settings home is an intentional compact-card exception inside the normal content area.
-- Root lists use the existing no-title list frame and card at `y=28`; the root-tab chrome is deferred.
+- Root lists use the existing no-title list frame and card at `y=28`; the left root switch is
+  the segmented 28×10 meter.
 
 ## Layout
 
@@ -50,14 +51,13 @@ cyan `#35C7E8`, amber `#F59E0B`, success `#22C55E`.
 
 ### Root status
 
-- Status uses flat 10×10 blocks, no border or shadow, at y=8.
-- Right side: Bluetooth block and playing block, 3 px apart, 8 px from the right edge.
-  Inactive blocks use `text_tertiary`; Bluetooth is blue `#2FA8FF`, playing cyan `#35C7E8`.
-- Root lists add two blocks at the left: All Songs `#2FA8FF`, Favorites `#EC4899`; the active
-  root is filled, the other is gray.
-- Now Playing keeps its 18 px mode/play icons and adds only a Bluetooth block 8 px to their
-  left, top-aligned at y=8.
-- The card shadow carries the battery/charging colour; status blocks do not.
+- Status uses 10×10 blocks with a 1 px hard shadow at y=8.
+- Right side: Bluetooth `#0F8ADB` and playing `#F59E0B`, 3 px apart, 8 px from the right edge;
+  inactive blocks are muted versions of their colours.
+- Root lists use the original 28×10 segmented meter on the left: 2 px border/shadow, two 12×6
+  cells; All Songs `#2FA8FF`, Favorites `#EC4899`, with the inactive half divider gray.
+- Now Playing uses the same top status row; its 18 px mode/play icons sit below at y=24.
+- The card shadow carries the battery/charging colour; the status markers do not.
 
 ### Now Playing
 
@@ -84,9 +84,9 @@ was prototyped and deferred because it duplicated that feedback and hid the Blue
 
 ### Settings
 
-- Settings home: five compact cards — Random mode, Sleep timer, Sound, Display, System.
-  Landscape cards are 304×23 at y=30 with 3 px gaps; portrait cards are 154×44 at y=58 with
-  4 px gaps. Selected cards get the selection fill and border.
+- Settings home: five cards with 18/20 px colour icons — Random mode, Sleep timer, Sound,
+  Display, System. Landscape cards are 304×25 at y=29 with 2 px gaps; portrait cards are
+  154×48 at y=58 with 3 px gaps. Selected cards get the selection fill, border and white icons.
 - Random and Sleep are direct items; Sound/Display/System open category pages.
 - Category pages: no text header landscape; the half-badge and glyph identify the category.
   Portrait keeps the category title and colour rule. Category dots are removed.
