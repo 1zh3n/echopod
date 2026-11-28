@@ -17,7 +17,7 @@
 #include "ui/header.h"
 #include "ui/icons.h"
 #include "ui/label.h"
-#include "ui/lite_frame.h"
+#include "ui/lite_badge.h"
 #include "ui/lite_icons.h"
 #include "ui/lite_status.h"
 #include "ui/marquee.h"
@@ -663,17 +663,17 @@ static void lite_layout(Layout *layout, bool portrait)
         layout->boxes[THEME_LAYOUT_ARTIST] = (Rect){8, 66, 154, 18};
         layout->boxes[THEME_LAYOUT_ALBUM] = (Rect){8, 82, 154, 18};
         layout->boxes[THEME_LAYOUT_FORMAT] = (Rect){0, 0, 0, 0};
-        layout->boxes[THEME_LAYOUT_LYRICS] = (Rect){8, 106, 154, 176};
-        layout->boxes[THEME_LAYOUT_PROGRESS] = (Rect){8, 288, 154, 4};
-        layout->boxes[THEME_LAYOUT_TIMES] = (Rect){8, 294, 154, 18};
+        layout->boxes[THEME_LAYOUT_LYRICS] = (Rect){8, 106, 154, 188};
+        layout->boxes[THEME_LAYOUT_PROGRESS] = (Rect){8, 298, 154, 4};
+        layout->boxes[THEME_LAYOUT_TIMES] = (Rect){8, 304, 154, 14};
     } else {
         layout->boxes[THEME_LAYOUT_TITLE] = (Rect){8, 24, 200, 22};
         layout->boxes[THEME_LAYOUT_ARTIST] = (Rect){8, 48, 304, 18};
         layout->boxes[THEME_LAYOUT_ALBUM] = (Rect){8, 64, 304, 18};
         layout->boxes[THEME_LAYOUT_FORMAT] = (Rect){224, 8, 88, 18};
-        layout->boxes[THEME_LAYOUT_LYRICS] = (Rect){8, 88, 304, 52};
-        layout->boxes[THEME_LAYOUT_PROGRESS] = (Rect){8, 144, 304, 3};
-        layout->boxes[THEME_LAYOUT_TIMES] = (Rect){8, 148, 304, 14};
+        layout->boxes[THEME_LAYOUT_LYRICS] = (Rect){8, 88, 304, 57};
+        layout->boxes[THEME_LAYOUT_PROGRESS] = (Rect){8, 149, 304, 3};
+        layout->boxes[THEME_LAYOUT_TIMES] = (Rect){8, 154, 304, 14};
         layout->aligns[THEME_LAYOUT_FORMAT] = THEME_ALIGN_RIGHT;
     }
     layout->boxes[THEME_LAYOUT_COVER] = (Rect){0, 0, 0, 0};
@@ -1250,7 +1250,7 @@ const ThemeColors *now_playing_home_colors(void)
 
 #ifdef ECHO_LITE
 enum {
-    BOUNCE_SIZE = 8,
+    BOUNCE_DIAMETER = 9,
     BOUNCE_INSET = 2,
     BOUNCE_SPEED_X = 23,
     BOUNCE_SPEED_Y = 14
@@ -1297,13 +1297,13 @@ static void draw_lite_bounce(const NowPlayingScreen *now_playing, Canvas *canvas
                              const Layout *layout)
 {
     Rect area = layout->boxes[THEME_LAYOUT_LYRICS];
-    if (area.width < BOUNCE_SIZE || area.height < BOUNCE_SIZE) {
+    if (area.width < BOUNCE_DIAMETER || area.height < BOUNCE_DIAMETER) {
         return;
     }
-    int inset_x = area.width >= BOUNCE_SIZE + 2 * BOUNCE_INSET ? BOUNCE_INSET : 0;
-    int inset_y = area.height >= BOUNCE_SIZE + 2 * BOUNCE_INSET ? BOUNCE_INSET : 0;
-    int span_x = area.width - BOUNCE_SIZE - 2 * inset_x;
-    int span_y = area.height - BOUNCE_SIZE - 2 * inset_y;
+    int inset_x = area.width >= BOUNCE_DIAMETER + 2 * BOUNCE_INSET ? BOUNCE_INSET : 0;
+    int inset_y = area.height >= BOUNCE_DIAMETER + 2 * BOUNCE_INSET ? BOUNCE_INSET : 0;
+    int span_x = area.width - BOUNCE_DIAMETER - 2 * inset_x;
+    int span_y = area.height - BOUNCE_DIAMETER - 2 * inset_y;
     uint16_t track = now_playing->status.track;
     uint32_t seed = hash_update(HASH_START, &track, sizeof track);
     uint32_t phase_x = bounce_phase(span_x, seed, 0, 8);
@@ -1317,9 +1317,8 @@ static void draw_lite_bounce(const NowPlayingScreen *now_playing, Canvas *canvas
         bounce_hits(span_x, phase_x, distance_x) + bounce_hits(span_y, phase_y, distance_y);
     Color color = BOUNCE_COLORS[hits % (sizeof BOUNCE_COLORS / sizeof BOUNCE_COLORS[0])];
     Canvas clipped = canvas_clipped(canvas, area);
-    Color shadow = lite_card_shadow_color(now_playing->config.theme);
-    canvas_fill_rect(&clipped, (Rect){x + 1, y + 1, BOUNCE_SIZE, BOUNCE_SIZE}, shadow);
-    canvas_fill_rect(&clipped, (Rect){x, y, BOUNCE_SIZE, BOUNCE_SIZE}, color);
+    Point center = {x + BOUNCE_DIAMETER / 2, y + BOUNCE_DIAMETER / 2};
+    lite_shape_fill_circle(&clipped, center, BOUNCE_DIAMETER / 2, color);
 }
 #endif
 

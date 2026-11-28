@@ -86,7 +86,7 @@ static bool bounce_color(Color color)
     return false;
 }
 
-static bool bounce_square(Rect area, Rect *square, Color *color)
+static bool bounce_ball(Rect area, Rect *ball, Color *color)
 {
     int min_x = area.x + area.width;
     int min_y = area.y + area.height;
@@ -120,7 +120,7 @@ static bool bounce_square(Rect area, Rect *square, Color *color)
     if (found == 0) {
         return false;
     }
-    *square = (Rect){min_x, min_y, max_x - min_x + 1, max_y - min_y + 1};
+    *ball = (Rect){min_x, min_y, max_x - min_x + 1, max_y - min_y + 1};
     *color = found;
     return true;
 }
@@ -629,23 +629,55 @@ static void now_playing_has_no_time_or_thumb(void)
     open_all_songs_and_play();
     fake_hal_audio_set_position(30000);
     wait_ms(300);
-    CHECK(!area_has_color(8, 148, 304, 14, DEFAULT_THEME.colors->text));
-    CHECK(fake_hal_pixel(157, 142) == DEFAULT_THEME.colors->background);
+    CHECK(!area_has_color(8, 154, 304, 14, DEFAULT_THEME.colors->text));
+    CHECK(fake_hal_pixel(157, 148) == DEFAULT_THEME.colors->background);
     tap(KEY_VOLUME_UP);
     wait_ms(300);
-    CHECK(area_has_color(8, 148, 304, 14, DEFAULT_THEME.colors->text));
+    CHECK(area_has_color(8, 154, 304, 14, DEFAULT_THEME.colors->text));
 }
 
-static void now_playing_bounce_is_one_small_square(void)
+static void now_playing_progress_keeps_the_bottom_status_gap(void)
+{
+    Theme landscape = default_theme_for(false);
+    NowPlayingScreen screen = {.config = {.theme = &landscape}};
+    ThemeLayout layout;
+    now_playing_builtin_layout(&screen, &layout);
+    const ThemeLayoutBox *progress = &layout.boxes[THEME_LAYOUT_PROGRESS];
+    const ThemeLayoutBox *times = &layout.boxes[THEME_LAYOUT_TIMES];
+    const ThemeLayoutBox *lyrics = &layout.boxes[THEME_LAYOUT_LYRICS];
+    CHECK_EQUAL(149, progress->y);
+    CHECK_EQUAL(3, progress->height);
+    CHECK_EQUAL(170 - 18, progress->y + progress->height);
+    CHECK_EQUAL(154, times->y);
+    CHECK(times->y >= progress->y + progress->height);
+    CHECK_EQUAL(88 + 57, lyrics->y + lyrics->height);
+
+    Theme portrait = default_theme_for(true);
+    NowPlayingScreen portrait_screen = {.config = {.theme = &portrait}};
+    now_playing_builtin_layout(&portrait_screen, &layout);
+    progress = &layout.boxes[THEME_LAYOUT_PROGRESS];
+    times = &layout.boxes[THEME_LAYOUT_TIMES];
+    lyrics = &layout.boxes[THEME_LAYOUT_LYRICS];
+    CHECK_EQUAL(298, progress->y);
+    CHECK_EQUAL(4, progress->height);
+    CHECK_EQUAL(320 - 18, progress->y + progress->height);
+    CHECK_EQUAL(304, times->y);
+    CHECK(times->y >= progress->y + progress->height);
+    CHECK_EQUAL(106 + 188, lyrics->y + lyrics->height);
+}
+
+static void now_playing_bounce_is_one_small_ball(void)
 {
     start_app_with_library();
     open_all_songs_and_play();
     wait_ms(300);
-    Rect square;
+    Rect ball;
     Color color;
-    CHECK(bounce_square((Rect){8, 88, 304, 52}, &square, &color));
-    CHECK_EQUAL(8, square.width);
-    CHECK_EQUAL(8, square.height);
+    CHECK(bounce_ball((Rect){8, 88, 304, 57}, &ball, &color));
+    CHECK_EQUAL(9, ball.width);
+    CHECK_EQUAL(9, ball.height);
+    CHECK(fake_hal_pixel(ball.x, ball.y) == DEFAULT_THEME.colors->background);
+    CHECK(fake_hal_pixel(ball.x + 4, ball.y + 4) == color);
 }
 
 static void now_playing_bounce_moves_inside_the_lyrics_area(void)
@@ -653,14 +685,14 @@ static void now_playing_bounce_moves_inside_the_lyrics_area(void)
     start_app_with_library();
     open_all_songs_and_play();
     wait_ms(300);
-    Rect area = {8, 88, 304, 52};
+    Rect area = {8, 88, 304, 57};
     Rect first;
     Rect later;
     Color color;
-    CHECK(bounce_square(area, &first, &color));
+    CHECK(bounce_ball(area, &first, &color));
     fake_hal_audio_set_position(5000);
     wait_ms(200);
-    CHECK(bounce_square(area, &later, &color));
+    CHECK(bounce_ball(area, &later, &color));
     CHECK(first.x != later.x || first.y != later.y);
     CHECK(later.x >= area.x + 2);
     CHECK(later.y >= area.y + 2);
@@ -672,25 +704,25 @@ static void now_playing_bounce_changes_color_at_an_edge(void)
 {
     start_app_with_library();
     open_all_songs_and_play();
-    Rect area = {8, 88, 304, 52};
+    Rect area = {8, 88, 304, 57};
     uint32_t position = 0;
     fake_hal_audio_set_position(position);
     wait_ms(300);
-    Rect square;
+    Rect ball;
     Color color;
-    CHECK(bounce_square(area, &square, &color));
+    CHECK(bounce_ball(area, &ball, &color));
     Color last_color = color;
     bool changed = false;
     for (int index = 0; index < 200; index++) {
         position += 100;
         fake_hal_audio_set_position(position);
         wait_ms(100);
-        CHECK(bounce_square(area, &square, &color));
+        CHECK(bounce_ball(area, &ball, &color));
         if (color == last_color) {
             continue;
         }
-        CHECK(square.x <= area.x + 4 || square.x + square.width >= area.x + area.width - 4 ||
-              square.y <= area.y + 4 || square.y + square.height >= area.y + area.height - 4);
+        CHECK(ball.x <= area.x + 4 || ball.x + ball.width >= area.x + area.width - 4 ||
+              ball.y <= area.y + 4 || ball.y + ball.height >= area.y + area.height - 4);
         changed = true;
         last_color = color;
     }
@@ -702,15 +734,15 @@ static void now_playing_bounce_freezes_when_paused(void)
     start_app_with_library();
     open_all_songs_and_play();
     wait_ms(300);
-    Rect area = {8, 88, 304, 52};
+    Rect area = {8, 88, 304, 57};
     Rect before;
     Rect after;
     Color color;
     Color after_color;
-    CHECK(bounce_square(area, &before, &color));
+    CHECK(bounce_ball(area, &before, &color));
     tap(KEY_PLAY);
     wait_ms(1000);
-    CHECK(bounce_square(area, &after, &after_color));
+    CHECK(bounce_ball(area, &after, &after_color));
     CHECK_EQUAL(before.x, after.x);
     CHECK_EQUAL(before.y, after.y);
     CHECK_EQUAL(color, after_color);
@@ -1293,7 +1325,7 @@ static void now_playing_uses_a_status_mode_block(void)
     CHECK(fake_hal_pixel(302, 10) == DEFAULT_THEME.colors->text_tertiary);
     CHECK(fake_hal_pixel(304, 10) == DEFAULT_THEME.colors->text_tertiary);
     CHECK(!area_has_color(8, 64, 304, 18, COLOR_RGB(0, 111, 238)));
-    CHECK(fake_hal_pixel(40, 145) == DEFAULT_THEME.colors->divider);
+    CHECK(fake_hal_pixel(40, 149) == DEFAULT_THEME.colors->divider);
     tap(KEY_PLAY);
     wait_ms(300);
     CHECK(fake_hal_pixel(302, 10) == DEFAULT_THEME.colors->text_tertiary);
@@ -1530,7 +1562,7 @@ static void settings_can_switch_to_portrait(void)
     tap(KEY_PLAY);
     wait_ms(300);
     CHECK(title_is("Now Playing"));
-    CHECK(fake_hal_pixel(40, 289) == DEFAULT_THEME.colors->divider);
+    CHECK(fake_hal_pixel(40, 298) == DEFAULT_THEME.colors->divider);
 }
 
 static void settings_can_switch_to_portrait_flipped(void)
@@ -1601,7 +1633,7 @@ static void portrait_now_playing_icons(void)
     CHECK(fake_hal_pixel(152, 10) == DEFAULT_THEME.colors->text_tertiary);
     CHECK(fake_hal_pixel(154, 10) == DEFAULT_THEME.colors->text_tertiary);
     CHECK(!area_has_color(144, 24, 18, 18, COLOR_RGB(0, 111, 238)));
-    CHECK(fake_hal_pixel(40, 289) == DEFAULT_THEME.colors->divider);
+    CHECK(fake_hal_pixel(40, 298) == DEFAULT_THEME.colors->divider);
 }
 
 static void boot_has_portrait_still(void)
@@ -1719,7 +1751,8 @@ int main(void)
         TEST_CASE(root_status_blocks_track_bluetooth_and_root),
         TEST_CASE(now_playing_uses_bt_chip_with_controls),
         TEST_CASE(now_playing_has_no_time_or_thumb),
-        TEST_CASE(now_playing_bounce_is_one_small_square),
+        TEST_CASE(now_playing_progress_keeps_the_bottom_status_gap),
+        TEST_CASE(now_playing_bounce_is_one_small_ball),
         TEST_CASE(now_playing_bounce_moves_inside_the_lyrics_area),
         TEST_CASE(now_playing_bounce_changes_color_at_an_edge),
         TEST_CASE(now_playing_bounce_freezes_when_paused),
