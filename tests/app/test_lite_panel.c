@@ -643,9 +643,9 @@ static void the_sleep_quick_card_counts_down(void)
     move_down(1);
     tap(KEY_PLAY);
     wait_ms(100);
-    unsigned before = area_hash(8, 77, 304, 44);
+    unsigned before = area_hash(8, 61, 304, 30);
     wait_ms(1000);
-    unsigned after = area_hash(8, 77, 304, 44);
+    unsigned after = area_hash(8, 61, 304, 30);
     CHECK(before != after);
 }
 
@@ -901,19 +901,17 @@ static void settings_starts_on_home(void)
     hold(KEY_BACK);
     wait_ms(300);
     CHECK(title_is("Settings"));
-    CHECK(area_has_color(16, 39, 24, 24, COLOR_RGB(255, 255, 255)));
-    CHECK(area_has_color(16, 87, 24, 24, COLOR_RGB(99, 102, 241)));
-    CHECK(area_has_color(16, 135, 24, 24, COLOR_RGB(47, 168, 255)));
-    CHECK(area_has_color(240, 29, 70, 44, COLOR_RGB(255, 255, 255)));
-    CHECK(area_has_color(240, 77, 70, 44, DEFAULT_THEME.colors->text_secondary));
-    move_down(3);
+    CHECK(area_has_color(18, 39, 10, 10, COLOR_RGB(255, 255, 255)));
+    CHECK(area_has_color(18, 71, 10, 10, COLOR_RGB(99, 102, 241)));
+    CHECK(area_has_color(18, 103, 10, 10, COLOR_RGB(47, 168, 255)));
+    CHECK(area_has_color(18, 135, 10, 10, COLOR_RGB(53, 199, 232)));
+    CHECK(area_has_color(240, 29, 70, 30, COLOR_RGB(255, 255, 255)));
+    CHECK(area_has_color(240, 61, 70, 30, DEFAULT_THEME.colors->text_secondary));
+    move_down(4);
     wait_ms(200);
-    CHECK(area_has_color(16, 39, 24, 24, COLOR_RGB(99, 102, 241)));
-    CHECK(fake_hal_pixel(160, 147) == DEFAULT_THEME.colors->selection_background);
-    move_down(1);
-    wait_ms(200);
-    CHECK(area_has_color(16, 39, 24, 24, COLOR_RGB(47, 168, 255)));
-    CHECK(fake_hal_pixel(160, 147) == DEFAULT_THEME.colors->selection_background);
+    CHECK(area_has_color(18, 39, 10, 10, COLOR_RGB(99, 102, 241)));
+    CHECK(fake_hal_pixel(160, 140) == DEFAULT_THEME.colors->selection_background);
+    CHECK(fake_hal_pixel(160, 154) == DEFAULT_THEME.colors->selection_background);
 }
 
 static void landscape_settings_has_no_title(void)
@@ -1049,13 +1047,13 @@ static void settings_short_press_cycles_value(void)
     start_app_with_library();
     hold(KEY_BACK);
     wait_ms(300);
-    unsigned before = area_hash(8, 29, 304, 44);
+    unsigned before = area_hash(8, 29, 304, 30);
     int depth = app_screen_depth();
     tap(KEY_PLAY);
     wait_ms(100);
     CHECK(title_is("Settings"));
     CHECK_EQUAL(depth, app_screen_depth());
-    CHECK(area_hash(8, 29, 304, 44) != before);
+    CHECK(area_hash(8, 29, 304, 30) != before);
 }
 
 static void settings_subpage_opens(void)

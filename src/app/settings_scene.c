@@ -35,14 +35,14 @@ enum {
     HOME_CARD_X = 8,
     HOME_CARD_WIDTH = 304,
     HOME_CARD_TOP = 29,
-    HOME_CARD_HEIGHT = 44,
-    HOME_CARD_GAP = 4,
+    HOME_CARD_HEIGHT = 30,
+    HOME_CARD_GAP = 2,
     HOME_PORTRAIT_X = 8,
     HOME_PORTRAIT_WIDTH = 154,
     HOME_PORTRAIT_TOP = 58,
-    HOME_PORTRAIT_HEIGHT = 72,
-    HOME_PORTRAIT_GAP = 4,
-    HOME_BOTTOM_MARGIN = 8
+    HOME_PORTRAIT_HEIGHT = 56,
+    HOME_PORTRAIT_GAP = 3,
+    HOME_BOTTOM_MARGIN = 6
 };
 
 typedef struct CategoryVisual {
@@ -121,39 +121,14 @@ static bool home_scene_draw(void *context, Canvas *canvas, MenuScreen *menu)
                              colors->selection_background);
             draw_card_border(&cards, card, colors->selection_background);
         }
-        Point center = {card.x + (portrait ? 20 : 22), card.y + card.height / 2};
-        int icon_size = portrait ? 28 : 24;
-        if (index == 4) {
-            lite_shape_fill_circle(&cards, center, portrait ? 16 : 14,
-                                   colors->selection_text);
-            color_icon_draw_scaled(&cards, &LITE_COLOR_ICON_GEAR,
-                                   (Rect){center.x - icon_size / 2, center.y - icon_size / 2,
-                                          icon_size, icon_size});
-        } else {
-            Color icon_color = selected ? colors->selection_text : HOME_COLORS[index];
-            Rect icon = {center.x - icon_size / 2, center.y - icon_size / 2, icon_size, icon_size};
-            switch (index) {
-            case 0:
-                lite_icon_draw_scaled(&cards, &LITE_ICON_SHUFFLE_18, icon, icon_color);
-                break;
-            case 1:
-                lite_icon_draw_scaled(&cards, &LITE_ICON_MOON, icon, icon_color);
-                break;
-            case 2:
-                lite_icon_draw_scaled(&cards, &LITE_ICON_CATEGORY_SOUND, icon, icon_color);
-                break;
-            case 3:
-                lite_icon_draw_scaled(&cards, &LITE_ICON_CATEGORY_DISPLAY, icon, icon_color);
-                break;
-            default:
-                break;
-            }
-        }
+        Point dot = {card.x + (portrait ? 14 : 15), card.y + card.height / 2};
+        lite_shape_fill_circle(&cards, dot, 5,
+                               selected ? colors->selection_text : HOME_COLORS[index]);
         TextStyle title_style = {.font = theme->fonts.title,
                                  .color = selected ? colors->selection_text : colors->text};
         TextStyle body_style = {.font = theme->fonts.body,
                                 .color = selected ? colors->selection_text : colors->text_secondary};
-        int label_x = card.x + (portrait ? 38 : 46);
+        int label_x = card.x + 28;
         int label_width = card.width - (label_x - card.x) - (portrait ? 6 : 10);
         const char *value = menu->model.detail != NULL
                                 ? menu->model.detail(menu->model.context, index)
