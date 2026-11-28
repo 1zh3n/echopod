@@ -47,14 +47,12 @@ typedef struct CategoryVisual {
 } CategoryVisual;
 
 static const CategoryVisual CATEGORIES[SETTINGS_GROUP_COUNT] = {
+    {COLOR_RGB(99, 102, 241), COLOR_RGB(165, 180, 252), COLOR_RGB(55, 48, 163),
+     &LITE_ICON_SHUFFLE},
     {COLOR_RGB(47, 168, 255), COLOR_RGB(139, 215, 255), COLOR_RGB(22, 119, 200),
      &LITE_ICON_CATEGORY_SOUND},
     {COLOR_RGB(53, 199, 232), COLOR_RGB(139, 227, 245), COLOR_RGB(14, 116, 144),
      &LITE_ICON_CATEGORY_DISPLAY},
-    {COLOR_RGB(255, 159, 28), COLOR_RGB(255, 211, 122), COLOR_RGB(200, 106, 0),
-     &LITE_ICON_CATEGORY_LIBRARY},
-    {COLOR_RGB(245, 158, 11), COLOR_RGB(252, 211, 77), COLOR_RGB(180, 83, 9),
-     &LITE_ICON_CATEGORY_BUTTONS},
     {COLOR_RGB(139, 92, 246), COLOR_RGB(196, 167, 250), COLOR_RGB(91, 33, 182), NULL},
 };
 
@@ -63,7 +61,7 @@ static const char CHEVRON[] = ">";
 static bool settings_scene_update(void *context, uint32_t now_ms)
 {
     SettingsScreens *screens = context;
-    screens->menu.list.visible_rows = theme_is_portrait(screens->theme) ? 7 : 5;
+    screens->menu.list.visible_rows = theme_is_portrait(screens->theme) ? 7 : SETTINGS_LIST_ROWS;
     if (screens->transitioning) {
         uint32_t duration = settings_animation_ms(screens->context.store->settings.options,
                                                   SETTINGS_TRANSITION_MS);
@@ -103,7 +101,102 @@ static void draw_category_glyph(Canvas *canvas, int group)
         (Rect){13, 13, 38, 38});
 }
 
-static void draw_scene(Canvas *canvas, MenuScreen *menu, int group, int dx)
+static void draw_card_border(Canvas *canvas, Rect card, Color color)
+{
+    canvas_fill_rect(canvas, (Rect){card.x, card.y, card.width, 2}, color);
+    canvas_fill_rect(canvas, (Rect){card.x, card.y + card.height - 2, card.width, 2}, color);
+    canvas_fill_rect(canvas, (Rect){card.x, card.y, 2, card.height}, color);
+    canvas_fill_rect(canvas, (Rect){card.x + card.width - 2, card.y, 2, card.height}, color);
+}
+
+static void draw_quick_cards(SettingsScreens *screens, Canvas *canvas, MenuScreen *menu)
+{
+    const Theme *theme = menu->config.theme;
+    const ThemeColors *colors = theme->colors;
+    bool portrait = theme_is_portrait(theme);
+    Rect first = portrait ? (Rect){12, 58, 146, 118} : (Rect){12, 30, 140, 112};
+    Rect second = portrait ? (Rect){12, 186, 146, 118} : (Rect){168, 30, 140, 112};
+    lite_card(canvas, theme, first, 5);
+    lite_card(canvas, theme, second, 5);
+    if (menu->list.selected == 0) {
+        draw_card_border(canvas, first, colors->selection_background);
+    } else {
+        draw_card_border(canvas, second, colors->selection_background);
+    }
+
+    PlaybackMode mode = player_playback_mode(screens->context.player);
+    const IconMask *mode_icon = mode == PLAYBACK_RANDOM   ? &LITE_ICON_SHUFFLE
+                                : mode == PLAYBACK_LOOP ? &LITE_ICON_LOOP
+                                                        : &LITE_ICON_LOOP_ONE;
+    LiteBadgeStyle mode_style = {
+        .base = COLOR_RGB(47, 168, 255),
+        .light = COLOR_RGB(139, 215, 255),
+        .dark = COLOR_RGB(22, 119, 200),
+        .ink = colors->text,
+        .shadow = lite_card_shadow_color(theme),
+    };
+    Point mode_center = {first.x + first.width / 2, first.y + 56};
+    lite_badge_draw_circle(canvas, mode_center, 32, &mode_style);
+    lite_icon_draw_scaled(canvas, mode_icon,
+                          (Rect){mode_center.x - 19, mode_center.y - 19, 38, 38},
+                          COLOR_RGB(255, 255, 255));
+
+    LiteBadgeStyle sleep_style = {
+        .base = COLOR_RGB(99, 102, 241),
+        .light = COLOR_RGB(165, 180, 252),
+        .dark = COLOR_RGB(55, 48, 163),
+        .ink = colors->text,
+        .shadow = lite_card_shadow_color(theme),
+    };
+    Point sleep_center = {second.x + second.width / 2, second.y + 56};
+    lite_badge_draw_circle(canvas, sleep_center, 32, &sleep_style);
+    lite_icon_draw_scaled(canvas, &LITE_ICON_MOON,
+                          (Rect){sleep_center.x - 15, second.y + 34, 30, 30},
+                          COLOR_RGB(255, 255, 255));
+    TextStyle text = {.font = theme->fonts.small, .color = COLOR_RGB(255, 255, 255)};
+    char value[12];
+    value[0] = '\0';
+    if (screens->context.power != NULL) {
+        if (screens->context.power->sleep_pending) {
+            value[0] = 'E';
+            value[1] = 'N';
+            value[2] = 'D';
+            value[3] = '\0';
+        } else if (screens->context.power->sleep_timer_active) {
+            uint32_t seconds =
+                (power_policy_sleep_remaining_ms(screens->context.power, menu->now_ms) + 999u) /
+                1000u;
+            int length = 0;
+            if (seconds >= 3600u) {
+                value[length++] = (char)('0' + seconds / 3600u % 10);
+                value[length++] = ':';
+                value[length++] = (char)('0' + seconds / 60u % 10);
+            } else {
+                if (seconds / 60u >= 10u) {
+                    value[length++] = (char)('0' + seconds / 60u / 10u % 10);
+                }
+                value[length++] = (char)('0' + seconds / 60u % 10);
+                value[length++] = ':';
+            }
+            value[length++] = (char)('0' + seconds % 60u / 10u);
+            value[length++] = (char)('0' + seconds % 60u % 10u);
+            value[length] = '\0';
+        }
+    }
+    int pill_width = value[0] == '\0' ? 20 : text_width(text.font, value) + 10;
+    Rect pill = {sleep_center.x - pill_width / 2, second.y + 70, pill_width, 16};
+    canvas_fill_rect(canvas, pill, sleep_style.dark);
+    if (value[0] == '\0') {
+        canvas_fill_rect(canvas, (Rect){sleep_center.x - 5, second.y + 77, 10, 2},
+                         COLOR_RGB(255, 255, 255));
+    } else {
+        label_draw(canvas, text,
+                   (Label){.area = label_centered_area(text.font, pill, value), .text = value});
+    }
+}
+
+static void draw_scene(SettingsScreens *screens, Canvas *canvas, MenuScreen *menu, int group,
+                       int dx)
 {
     const Theme *theme = menu->config.theme;
     Canvas shifted = canvas_shifted(canvas, dx, theme_content_area(theme));
@@ -117,6 +210,7 @@ static void draw_scene(Canvas *canvas, MenuScreen *menu, int group, int dx)
     int selected = menu->list.selected;
     int top = menu->list.top;
     bool portrait = theme_is_portrait(theme);
+    bool quick = group == SETTINGS_QUICK;
     Rect rows;
     int row_height;
     int visible;
@@ -134,6 +228,10 @@ static void draw_scene(Canvas *canvas, MenuScreen *menu, int group, int dx)
                    (Label){.area = {12, 8, 146, 20}, .text = settings_category_title(group)});
         draw_category_dots(canvas, theme, group, 112, 18);
         canvas_fill_rect(canvas, (Rect){12, 34, 36, 4}, visual->base);
+        if (quick) {
+            draw_quick_cards(screens, canvas, menu);
+            return;
+        }
         rows = lite_card(canvas, theme, (Rect){8, 58, 154, 254}, 4);
         row_height = count > 6 ? 34 : 38;
         visible = count < 7 ? count : 7;
@@ -143,15 +241,19 @@ static void draw_scene(Canvas *canvas, MenuScreen *menu, int group, int dx)
         divider_width = 130;
     } else {
         canvas_fill_rect(canvas, theme_content_area(theme), colors->background);
+        draw_category_dots(canvas, theme, group, SETTINGS_DOT_X, SETTINGS_DOT_Y);
+        if (quick) {
+            draw_quick_cards(screens, canvas, menu);
+            return;
+        }
         rows = lite_card(canvas, theme,
                          (Rect){SETTINGS_CARD_X, SETTINGS_CARD_TOP, SETTINGS_CARD_WIDTH,
                                 SETTINGS_CARD_HEIGHT},
                          4);
-        draw_category_dots(canvas, theme, group, SETTINGS_DOT_X, SETTINGS_DOT_Y);
         row_height = theme->metrics.row_height;
         visible = menu->list.visible_rows;
         if (visible <= 0) {
-            visible = SETTINGS_TOP_COUNT;
+            visible = SETTINGS_LIST_ROWS;
         }
         fill_x = SETTINGS_CARD_X;
         fill_width = SETTINGS_CARD_WIDTH;
@@ -279,7 +381,7 @@ static bool settings_scene_draw(void *context, Canvas *canvas, MenuScreen *menu)
 {
     SettingsScreens *screens = context;
     if (!screens->transitioning) {
-        draw_scene(canvas, menu, screens->shown, 0);
+        draw_scene(screens, canvas, menu, screens->shown, 0);
         return true;
     }
     uint32_t duration =
@@ -287,13 +389,13 @@ static bool settings_scene_draw(void *context, Canvas *canvas, MenuScreen *menu)
     uint32_t elapsed = screens->menu.now_ms - screens->transition_started_ms;
     if (duration == 0 || elapsed >= duration) {
         screens->transitioning = false;
-        draw_scene(canvas, menu, screens->shown, 0);
+        draw_scene(screens, canvas, menu, screens->shown, 0);
         return true;
     }
     int moved = transition_distance(elapsed, duration);
     screens->previous_menu.now_ms = screens->menu.now_ms;
-    draw_scene(canvas, &screens->previous_menu, screens->previous_group, -moved);
-    draw_scene(canvas, menu, screens->shown, SETTINGS_TRANSITION_PX - moved);
+    draw_scene(screens, canvas, &screens->previous_menu, screens->previous_group, -moved);
+    draw_scene(screens, canvas, menu, screens->shown, SETTINGS_TRANSITION_PX - moved);
     return true;
 }
 

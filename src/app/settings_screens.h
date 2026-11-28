@@ -16,6 +16,15 @@
 #include "ui/theme.h"
 #include "ui/toast.h"
 
+#ifdef ECHO_LITE
+typedef enum SettingsGroup {
+    SETTINGS_QUICK,
+    SETTINGS_SOUND,
+    SETTINGS_DISPLAY,
+    SETTINGS_SYSTEM,
+    SETTINGS_GROUP_COUNT
+} SettingsGroup;
+#else
 typedef enum SettingsGroup {
     SETTINGS_SOUND,
     SETTINGS_DISPLAY,
@@ -24,10 +33,12 @@ typedef enum SettingsGroup {
     SETTINGS_SYSTEM,
     SETTINGS_GROUP_COUNT
 } SettingsGroup;
+#endif
 
 enum {
     SETTINGS_CHOICE_COUNT = 33,
     SETTINGS_TOP_COUNT = SETTINGS_GROUP_COUNT,
+    SETTINGS_LIST_ROWS = 5,
     SETTINGS_GROUP_ROWS_MAX = 10
 };
 
@@ -82,6 +93,7 @@ struct SettingsScreens {
     uint8_t shown;
     MenuItem rows[SETTINGS_GROUP_ROWS_MAX];
 #ifdef ECHO_LITE
+    MenuItem quick_items[2];
     MenuScreen previous_menu;
     MenuItem previous_rows[SETTINGS_GROUP_ROWS_MAX];
     uint8_t previous_group;

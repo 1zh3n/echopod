@@ -751,10 +751,10 @@ static Screen *open_level(BrowsePool *pool, int level, BrowseQuery query, Spoken
         .draw = draw,
     };
 #ifdef ECHO_LITE
-    browse->screen.double_menu_enabled =
+    browse->screen.long_menu_enabled =
         is_lettered(query.kind) && list_view_sections_vary(&browse->list);
-    browse->screen.double_menu_context = browse;
-    browse->screen.double_menu = open_section_jump;
+    browse->screen.long_menu_context = browse;
+    browse->screen.long_menu = open_section_jump;
 #endif
     return &browse->screen;
 }

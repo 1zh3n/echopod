@@ -388,11 +388,6 @@ static ScreenAction run_command(NowPlayingScreen *now_playing, NowPlayingCommand
     case NOW_PLAYING_UP_NEXT:
         return now_playing->config.up_next != NULL ? screen_action_push(now_playing->config.up_next)
                                                    : screen_action_none();
-#ifdef ECHO_LITE
-    case NOW_PLAYING_PANEL:
-        return now_playing->config.panel != NULL ? screen_action_push(now_playing->config.panel)
-                                                 : screen_action_none();
-#endif
     case NOW_PLAYING_EQUALIZER:
         return now_playing->config.equalizer != NULL
                    ? screen_action_push(now_playing->config.equalizer)
@@ -1363,16 +1358,6 @@ static void draw(void *context, Canvas *canvas)
 #endif
 }
 
-#ifdef ECHO_LITE
-static ScreenAction open_panel(void *context, uint32_t now_ms)
-{
-    (void)now_ms;
-    NowPlayingScreen *now_playing = context;
-    return now_playing->config.panel != NULL ? screen_action_push(now_playing->config.panel)
-                                             : screen_action_none();
-}
-#endif
-
 Screen *now_playing_screen_init(NowPlayingScreen *now_playing, NowPlayingConfig config)
 {
     now_playing->config = config;
@@ -1390,14 +1375,9 @@ Screen *now_playing_screen_init(NowPlayingScreen *now_playing, NowPlayingConfig 
         .hold_volume_keys = true,
 #ifdef ECHO_LITE
         .overlay = true,
-        .double_menu_enabled = true,
-        .double_menu_context = now_playing,
 #endif
         .enter = enter,
         .handle_key = handle_key,
-#ifdef ECHO_LITE
-        .double_menu = open_panel,
-#endif
         .update = update,
         .draw = draw,
     };

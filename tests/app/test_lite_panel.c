@@ -30,6 +30,8 @@ enum {
 
 static uint32_t now_ms;
 
+static bool load_icon_asset(void);
+
 static void step(void)
 {
     fake_hal_set_milliseconds(now_ms);
@@ -76,18 +78,6 @@ static void start_app_with_library(void)
 
 static void tap(Key key)
 {
-    fake_hal_queue_transition(key, true, now_ms);
-    fake_hal_queue_transition(key, false, now_ms + KEY_HOLD_MS);
-    now_ms += KEY_HOLD_MS + 10;
-    step();
-}
-
-static void double_tap(Key key)
-{
-    fake_hal_queue_transition(key, true, now_ms);
-    fake_hal_queue_transition(key, false, now_ms + KEY_HOLD_MS);
-    now_ms += KEY_HOLD_MS + 10;
-    step();
     fake_hal_queue_transition(key, true, now_ms);
     fake_hal_queue_transition(key, false, now_ms + KEY_HOLD_MS);
     now_ms += KEY_HOLD_MS + 10;
@@ -183,8 +173,21 @@ static void badge_draws_flat_circle_and_half(void)
     CHECK(canvas_pixel_at(&canvas, 19, 80) == COLOR_RGB(250, 250, 249));
 }
 
+static bool local_has_color(Canvas *canvas, int x, int y, int width, int height, Color color)
+{
+    for (int row = y; row < y + height; row++) {
+        for (int column = x; column < x + width; column++) {
+            if (canvas_pixel_at(canvas, column, row) == color) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 static void every_lite_icon_draws(void)
 {
+    CHECK(load_icon_asset());
     static Color pixels[HAL_DISPLAY_WIDTH * HAL_DISPLAY_HEIGHT];
     Canvas canvas = canvas_make(pixels, (Rect){0, 0, HAL_DISPLAY_WIDTH, HAL_DISPLAY_HEIGHT});
     const IconMask *masks[] = {
@@ -202,13 +205,14 @@ static void every_lite_icon_draws(void)
         canvas_clear(&canvas, COLOR_RGB(1, 2, 3));
         lite_icon_draw_scaled(&canvas, masks[index], (Rect){100, 40, 48, 48},
                               COLOR_RGB(255, 255, 255));
-        CHECK(area_has_color(100, 40, 48, 48, COLOR_RGB(255, 255, 255)));
+        CHECK(local_has_color(&canvas, 100, 40, 48, 48, COLOR_RGB(255, 255, 255)));
     }
     for (size_t index = 0; index < sizeof colors / sizeof colors[0]; index++) {
         canvas_clear(&canvas, COLOR_RGB(1, 2, 3));
         color_icon_draw_scaled(&canvas, colors[index], (Rect){100, 40, 64, 64});
-        CHECK(area_has_color(100, 40, 64, 64, COLOR_RGB(47, 168, 255)) ||
-              area_has_color(100, 40, 64, 64, COLOR_RGB(255, 105, 180)));
+        CHECK(local_has_color(&canvas, 100, 40, 64, 64, COLOR_RGB(47, 168, 255)) ||
+              local_has_color(&canvas, 100, 40, 64, 64, COLOR_RGB(255, 159, 28)) ||
+              local_has_color(&canvas, 100, 40, 64, 64, COLOR_RGB(139, 92, 246)));
     }
 }
 
@@ -467,12 +471,6 @@ static void the_sleep_timer_waits_for_the_current_track(void)
         (HalBattery){.known = true, .percent = 80, .millivolts = 3900, .usb_power = false});
     open_all_songs_and_play();
     hold(KEY_MENU);
-    double_tap(KEY_MENU);
-    double_tap(KEY_MENU);
-    double_tap(KEY_MENU);
-    double_tap(KEY_MENU);
-    move_down(3);
-    tap(KEY_PLAY);
     move_down(1);
     tap(KEY_PLAY);
 
@@ -486,17 +484,17 @@ static void the_sleep_timer_waits_for_the_current_track(void)
     CHECK_EQUAL(1, fake_hal_power_off_count());
 }
 
-static void the_sleep_panel_counts_down(void)
+static void the_sleep_quick_card_counts_down(void)
 {
     start_app_with_library();
     open_all_songs_and_play();
-    double_tap(KEY_MENU);
+    hold(KEY_MENU);
     move_down(1);
     tap(KEY_PLAY);
     wait_ms(100);
-    unsigned before = area_hash(214, 98, 48, 20);
+    unsigned before = area_hash(224, 100, 28, 16);
     wait_ms(1000);
-    unsigned after = area_hash(214, 98, 48, 20);
+    unsigned after = area_hash(224, 100, 28, 16);
     CHECK(before != after);
 }
 
@@ -521,15 +519,15 @@ static void charging_screen_has_green_shadow_and_no_text(void)
     CHECK(pixels[85 * HAL_DISPLAY_WIDTH + 160] != DEFAULT_THEME.colors->header_background);
 }
 
-static void settings_starts_on_sound(void)
+static void settings_starts_on_quick(void)
 {
     start_app_with_library();
     move_down(2);
     tap(KEY_PLAY);
     wait_ms(300);
     CHECK(title_is("Settings"));
-    CHECK(fake_hal_pixel(20, 50) == COLOR_RGB(47, 168, 255));
-    CHECK(fake_hal_pixel(160, 40) == COLOR_RGB(0, 111, 238));
+    CHECK(fake_hal_pixel(82, 86) == COLOR_RGB(47, 168, 255));
+    CHECK(fake_hal_pixel(214, 86) == COLOR_RGB(99, 102, 241));
 }
 
 static void landscape_settings_has_no_title(void)
@@ -540,31 +538,28 @@ static void landscape_settings_has_no_title(void)
     wait_ms(300);
     CHECK(title_is("Settings"));
     CHECK(fake_hal_pixel(20, 16) == COLOR_RGB(250, 250, 249));
-    CHECK(fake_hal_pixel(302, 8) == COLOR_RGB(139, 92, 246));
+    CHECK(fake_hal_pixel(290, 8) == COLOR_RGB(139, 92, 246));
 }
 
-static void settings_double_menu_switches_category(void)
+static void settings_long_menu_switches_category(void)
 {
     start_app_with_library();
     move_down(2);
     tap(KEY_PLAY);
     wait_ms(300);
-    double_tap(KEY_MENU);
+    hold(KEY_MENU);
     wait_ms(200);
     CHECK(title_is("Settings"));
+    CHECK(fake_hal_pixel(20, 50) == COLOR_RGB(47, 168, 255));
+    hold(KEY_MENU);
+    wait_ms(200);
     CHECK(fake_hal_pixel(20, 50) == COLOR_RGB(53, 199, 232));
-    double_tap(KEY_MENU);
-    wait_ms(200);
-    CHECK(fake_hal_pixel(20, 50) == COLOR_RGB(255, 159, 28));
-    double_tap(KEY_MENU);
-    wait_ms(200);
-    CHECK(fake_hal_pixel(20, 50) == COLOR_RGB(245, 158, 11));
-    double_tap(KEY_MENU);
+    hold(KEY_MENU);
     wait_ms(200);
     CHECK(fake_hal_pixel(20, 50) == COLOR_RGB(139, 92, 246));
     CHECK(fake_hal_pixel(39, 95) == COLOR_RGB(139, 92, 246));
     CHECK(fake_hal_pixel(51, 95) == COLOR_RGB(255, 255, 255));
-    CHECK(fake_hal_pixel(302, 8) == COLOR_RGB(139, 92, 246));
+    CHECK(fake_hal_pixel(290, 8) == COLOR_RGB(139, 92, 246));
 }
 
 static void settings_short_press_cycles_value(void)
@@ -573,13 +568,13 @@ static void settings_short_press_cycles_value(void)
     move_down(2);
     tap(KEY_PLAY);
     wait_ms(300);
-    unsigned before = area_hash(250, 30, 46, 26);
+    unsigned before = area_hash(12, 30, 140, 112);
     int depth = app_screen_depth();
     tap(KEY_PLAY);
     wait_ms(100);
     CHECK(title_is("Settings"));
     CHECK_EQUAL(depth, app_screen_depth());
-    CHECK(area_hash(250, 30, 46, 26) != before);
+    CHECK(area_hash(12, 30, 140, 112) != before);
 }
 
 static void settings_subpage_opens(void)
@@ -588,6 +583,8 @@ static void settings_subpage_opens(void)
     move_down(2);
     tap(KEY_PLAY);
     wait_ms(300);
+    hold(KEY_MENU);
+    wait_ms(200);
     move_down(5);
     tap(KEY_PLAY);
     wait_ms(100);
@@ -614,30 +611,30 @@ static void now_playing_uses_native_18px_icons(void)
     CHECK(fake_hal_pixel(40, 139) == DEFAULT_THEME.colors->divider);
 }
 
-static void quick_panel_is_icon_only(void)
+static void settings_quick_is_icon_only(void)
 {
     start_app_with_library();
     open_all_songs_and_play();
-    double_tap(KEY_MENU);
+    hold(KEY_MENU);
     wait_ms(300);
-    CHECK(title_is("Playback"));
-    CHECK(fake_hal_pixel(55, 86) == COLOR_RGB(47, 168, 255));
-    CHECK(fake_hal_pixel(211, 86) == COLOR_RGB(99, 102, 241));
-    CHECK(fake_hal_pixel(229, 104) == COLOR_RGB(55, 48, 163));
+    CHECK(title_is("Settings"));
+    CHECK(fake_hal_pixel(82, 86) == COLOR_RGB(47, 168, 255));
+    CHECK(fake_hal_pixel(214, 86) == COLOR_RGB(99, 102, 241));
+    CHECK(fake_hal_pixel(220, 100) == COLOR_RGB(99, 102, 241));
     CHECK(fake_hal_pixel(160, 155) == COLOR_RGB(250, 250, 249));
 }
 
-static void quick_panel_sleep_value_fits(void)
+static void settings_quick_sleep_value_fits(void)
 {
     start_app_with_library();
     open_all_songs_and_play();
-    double_tap(KEY_MENU);
+    hold(KEY_MENU);
     wait_ms(300);
     tap(KEY_VOLUME_UP);
     tap(KEY_PLAY);
     wait_ms(100);
     CHECK(area_has_color(224, 100, 28, 16, COLOR_RGB(255, 255, 255)));
-    CHECK(fake_hal_pixel(168, 31) == COLOR_RGB(99, 102, 241));
+    CHECK(fake_hal_pixel(214, 86) == COLOR_RGB(99, 102, 241));
     for (int step = 0; step < 5; step++) {
         tap(KEY_PLAY);
         wait_ms(20);
@@ -647,19 +644,19 @@ static void quick_panel_sleep_value_fits(void)
     CHECK(fake_hal_pixel(270, 108) != COLOR_RGB(55, 48, 163));
 }
 
-static void short_menu_on_the_panel_returns_to_now_playing(void)
+static void short_menu_in_settings_returns_to_now_playing(void)
 {
     start_app_with_library();
     open_all_songs_and_play();
     int depth = app_screen_depth();
-    double_tap(KEY_MENU);
-    CHECK(title_is("Playback"));
+    hold(KEY_MENU);
+    CHECK(title_is("Settings"));
     CHECK_EQUAL(depth + 1, app_screen_depth());
     tap(KEY_MENU);
     CHECK(title_is("Now Playing"));
     CHECK_EQUAL(depth, app_screen_depth());
-    double_tap(KEY_MENU);
-    CHECK(title_is("Playback"));
+    hold(KEY_MENU);
+    CHECK(title_is("Settings"));
     tap(KEY_MENU);
     CHECK(title_is("Now Playing"));
     CHECK_EQUAL(depth, app_screen_depth());
@@ -704,12 +701,12 @@ static void lite_ignores_the_menu_key_setting(void)
     CHECK(!now_playing_controls_of(options).menu_skips);
 }
 
-static void double_menu_opens_and_closes_section_jump(void)
+static void long_menu_opens_and_closes_section_jump(void)
 {
     start_app_with_library();
     tap(KEY_PLAY);
     CHECK(title_is("All Songs"));
-    double_tap(KEY_MENU);
+    hold(KEY_MENU);
     CHECK(title_is("A-Z"));
     tap(KEY_BACK);
     CHECK(title_is("All Songs"));
@@ -721,7 +718,7 @@ static void menu_closes_section_jump_without_opening_now_playing(void)
     open_all_songs_and_play();
     tap(KEY_BACK);
     CHECK(title_is("All Songs"));
-    double_tap(KEY_MENU);
+    hold(KEY_MENU);
     CHECK(title_is("A-Z"));
     tap(KEY_MENU);
     CHECK(title_is("All Songs"));
@@ -733,47 +730,45 @@ static void section_jump_play_returns_to_the_list(void)
 {
     start_app_with_library();
     tap(KEY_PLAY);
-    double_tap(KEY_MENU);
+    hold(KEY_MENU);
     CHECK(title_is("A-Z"));
     move_down(4);
     tap(KEY_PLAY);
     CHECK(title_is("All Songs"));
 }
 
-static void short_menu_in_a_lettered_list_waits_for_the_double_window(void)
+static void short_menu_in_a_lettered_list_opens_now_playing(void)
 {
     start_app_with_library();
     open_all_songs_and_play();
     tap(KEY_BACK);
     CHECK(title_is("All Songs"));
     tap(KEY_MENU);
-    CHECK(title_is("All Songs"));
-    wait_ms(300);
     CHECK(title_is("Now Playing"));
 }
 
-static void long_back_on_panel_goes_home(void)
+static void long_back_in_settings_goes_home(void)
 {
     start_app_with_library();
     open_all_songs_and_play();
-    double_tap(KEY_MENU);
-    CHECK(title_is("Playback"));
+    hold(KEY_MENU);
+    CHECK(title_is("Settings"));
     hold(KEY_BACK);
     CHECK(title_is("EchoPod"));
 }
 
-static void long_menu_on_the_panel_opens_settings(void)
+static void long_menu_in_settings_opens_next_category(void)
 {
     start_app_with_library();
     open_all_songs_and_play();
-    double_tap(KEY_MENU);
-    CHECK(title_is("Playback"));
+    hold(KEY_MENU);
+    CHECK(title_is("Settings"));
     hold(KEY_MENU);
     CHECK(title_is("Settings"));
     tap(KEY_BACK);
-    CHECK(title_is("Playback"));
-    tap(KEY_MENU);
     CHECK(title_is("Now Playing"));
+    tap(KEY_MENU);
+    CHECK(title_is("Up Next"));
 }
 
 static void open_settings_display(void)
@@ -782,7 +777,9 @@ static void open_settings_display(void)
     move_down(2);
     tap(KEY_PLAY);
     wait_ms(300);
-    double_tap(KEY_MENU);
+    hold(KEY_MENU);
+    wait_ms(200);
+    hold(KEY_MENU);
     wait_ms(200);
 }
 
@@ -892,7 +889,7 @@ static void dark_portrait_home_and_settings(void)
     CHECK(fake_hal_pixel(20, 100) == COLOR_RGB(0, 111, 238));
 }
 
-static void portrait_now_playing_and_panel(void)
+static void portrait_now_playing_icons(void)
 {
     switch_orientation_to_portrait();
     move_down(2);
@@ -901,12 +898,6 @@ static void portrait_now_playing_and_panel(void)
     CHECK(area_has_color(119, 8, 18, 18, COLOR_RGB(0, 111, 238)));
     CHECK(area_has_color(144, 8, 18, 18, COLOR_RGB(10, 10, 10)));
     CHECK(fake_hal_pixel(40, 289) == DEFAULT_THEME.colors->divider);
-
-    double_tap(KEY_MENU);
-    wait_ms(300);
-    CHECK(fake_hal_pixel(55, 91) == COLOR_RGB(47, 168, 255));
-    CHECK(fake_hal_pixel(55, 223) == COLOR_RGB(99, 102, 241));
-    CHECK(fake_hal_pixel(12, 35) == COLOR_RGB(0, 111, 238));
 }
 
 static void boot_has_portrait_still(void)
@@ -948,19 +939,19 @@ int main(void)
     }
     TestCase cases[] = {
         TEST_CASE(now_playing_uses_native_18px_icons),
-        TEST_CASE(quick_panel_is_icon_only),
-        TEST_CASE(quick_panel_sleep_value_fits),
-        TEST_CASE(short_menu_on_the_panel_returns_to_now_playing),
+        TEST_CASE(settings_quick_is_icon_only),
+        TEST_CASE(settings_quick_sleep_value_fits),
+        TEST_CASE(short_menu_in_settings_returns_to_now_playing),
         TEST_CASE(long_menu_on_now_playing_opens_settings),
         TEST_CASE(long_play_on_now_playing_does_nothing),
         TEST_CASE(settings_menu_goes_to_now_playing_and_drops_settings),
         TEST_CASE(lite_ignores_the_menu_key_setting),
-        TEST_CASE(double_menu_opens_and_closes_section_jump),
+        TEST_CASE(long_menu_opens_and_closes_section_jump),
         TEST_CASE(menu_closes_section_jump_without_opening_now_playing),
         TEST_CASE(section_jump_play_returns_to_the_list),
-        TEST_CASE(short_menu_in_a_lettered_list_waits_for_the_double_window),
-        TEST_CASE(long_back_on_panel_goes_home),
-        TEST_CASE(long_menu_on_the_panel_opens_settings),
+        TEST_CASE(short_menu_in_a_lettered_list_opens_now_playing),
+        TEST_CASE(long_back_in_settings_goes_home),
+        TEST_CASE(long_menu_in_settings_opens_next_category),
         TEST_CASE(gear_glyph_draws_only_white_outline),
         TEST_CASE(every_lite_icon_draws),
         TEST_CASE(badge_draws_flat_circle_and_half),
@@ -971,14 +962,14 @@ int main(void)
         TEST_CASE(settings_can_switch_to_portrait_flipped),
         TEST_CASE(settings_can_switch_to_dark),
         TEST_CASE(dark_portrait_home_and_settings),
-        TEST_CASE(portrait_now_playing_and_panel),
+        TEST_CASE(portrait_now_playing_icons),
         TEST_CASE(boot_has_portrait_still),
         TEST_CASE(charge_card_is_portrait),
         TEST_CASE(category_icons_are_40px),
         TEST_CASE(compact_icons_are_native_18px),
-        TEST_CASE(settings_starts_on_sound),
+        TEST_CASE(settings_starts_on_quick),
         TEST_CASE(landscape_settings_has_no_title),
-        TEST_CASE(settings_double_menu_switches_category),
+        TEST_CASE(settings_long_menu_switches_category),
         TEST_CASE(settings_short_press_cycles_value),
         TEST_CASE(settings_subpage_opens),
         TEST_CASE(lite_animation_arena_is_available),
@@ -996,7 +987,7 @@ int main(void)
         TEST_CASE(hold_the_volume_key_seeks_without_a_hold_bar),
         TEST_CASE(goodbye_screen_has_no_icon),
         TEST_CASE(the_sleep_timer_waits_for_the_current_track),
-        TEST_CASE(the_sleep_panel_counts_down),
+        TEST_CASE(the_sleep_quick_card_counts_down),
         TEST_CASE(charging_screen_has_green_shadow_and_no_text),
     };
     return test_run_all(cases, TEST_CASE_COUNT(cases));

@@ -102,6 +102,9 @@ static const KeyConfig KEY_CONFIG = {
         {
             [KEY_VOLUME_UP] = 1000,
             [KEY_VOLUME_DOWN] = 1000,
+#ifdef ECHO_LITE
+            [KEY_MENU] = 400,
+#endif
             [KEY_POWER] = 2000,
         },
 };
@@ -567,12 +570,6 @@ static void use_screen_key_behaviors(void)
     bool at_once = app.display_on && top->select_on_press;
     key_tracker_set_behavior(&app.keys, KEY_PLAY,
                              at_once ? KEY_BEHAVIOR_PRESS : KEY_BEHAVIOR_TAP_OR_HOLD);
-#ifdef ECHO_LITE
-    key_tracker_set_behavior(
-        &app.keys, KEY_MENU,
-        app.display_on && top->double_menu_enabled ? KEY_BEHAVIOR_TAP_HOLD_DOUBLE
-                                                   : KEY_BEHAVIOR_TAP_OR_HOLD);
-#endif
 }
 
 static bool opens_now_playing(KeyEvent event)
@@ -662,13 +659,20 @@ static void dispatch_to_screen(KeyEvent event, uint32_t now_ms)
         app_screens_home_key(&app.screens, event, now_ms)) {
         return;
     }
-    if (event.key == KEY_MENU && event.gesture == KEY_GESTURE_DOUBLE_PRESS) {
-        if (screen->double_menu_enabled && screen->double_menu != NULL) {
+    if (event.key == KEY_MENU && event.gesture == KEY_GESTURE_LONG_PRESS) {
+        if (screen->long_menu_enabled && screen->long_menu != NULL) {
             int depth_before = screen_stack_depth(&app.stack);
-            ScreenAction action =
-                screen->double_menu(screen->double_menu_context, now_ms);
+            ScreenAction action = screen->long_menu(screen->long_menu_context, now_ms);
             apply_screen_action(screen, action, depth_before, now_ms);
+            return;
         }
+        if (screen->menu_consumes) {
+            int depth_before = screen_stack_depth(&app.stack);
+            ScreenAction action = screen->handle_key(screen->context, event, now_ms);
+            apply_screen_action(screen, action, depth_before, now_ms);
+            return;
+        }
+        open_overlay(&app.screens.settings.menu.screen, false, now_ms);
         return;
     }
     if (opens_now_playing(event)) {

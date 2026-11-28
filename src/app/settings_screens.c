@@ -736,27 +736,21 @@ ECHO_RESIDENT static const SettingsLink LINKS[ROW_GROUP - ROW_BLUETOOTH] = {
 
 #ifdef ECHO_LITE
 ECHO_RESIDENT static const uint8_t ROWS[] = {
-    ROW_GROUP,          ROW_GROUP + 1,      ROW_GROUP + 2,
-    ROW_GROUP + 3,      ROW_GROUP + 4,      CHOICE_GAIN,
-    CHOICE_OUTPUT,      CHOICE_FILTER,      CHOICE_BALANCE,
-    CHOICE_BLUETOOTH_LEVEL, ROW_EQUALIZER,  CHOICE_THEME,
-    CHOICE_ORIENTATION, CHOICE_BRIGHTNESS,  CHOICE_TIMEOUT,
-    CHOICE_ANIMATIONS,  ROW_FOLDERS,        ROW_RESCAN,
-    CHOICE_LYRICS,      CHOICE_SWAP,        CHOICE_MENU_KEY,
-    CHOICE_POWER_ON,    CHOICE_LANGUAGE,    ROW_DATE_TIME,
-    CHOICE_AUTO_OFF,    CHOICE_SLEEP,       ROW_BLUETOOTH,
-    CHOICE_USB_MODE,    CHOICE_USB_PROMPT};
+    CHOICE_GAIN,    CHOICE_OUTPUT,   CHOICE_FILTER,  CHOICE_BALANCE,
+    CHOICE_BLUETOOTH_LEVEL, ROW_EQUALIZER,
+    CHOICE_THEME,   CHOICE_ORIENTATION, CHOICE_BRIGHTNESS, CHOICE_TIMEOUT,
+    CHOICE_ANIMATIONS, CHOICE_LYRICS,
+    CHOICE_LANGUAGE, ROW_DATE_TIME,  CHOICE_AUTO_OFF, ROW_BLUETOOTH,
+    CHOICE_USB_MODE, CHOICE_USB_PROMPT, ROW_FOLDERS, ROW_RESCAN,
+    CHOICE_SWAP,    CHOICE_POWER_ON};
 
 enum {
+    SOUND_FIRST = 0,
     SOUND_ROWS = 6,
-    DISPLAY_FIRST = SETTINGS_TOP_COUNT + SOUND_ROWS,
-    DISPLAY_ROWS = 5,
-    LIBRARY_FIRST = DISPLAY_FIRST + DISPLAY_ROWS,
-    LIBRARY_ROWS = 3,
-    BUTTONS_FIRST = LIBRARY_FIRST + LIBRARY_ROWS,
-    BUTTONS_ROWS = 3,
-    SYSTEM_FIRST = BUTTONS_FIRST + BUTTONS_ROWS,
-    SYSTEM_ROWS = 7
+    DISPLAY_FIRST = SOUND_FIRST + SOUND_ROWS,
+    DISPLAY_ROWS = 6,
+    SYSTEM_FIRST = DISPLAY_FIRST + DISPLAY_ROWS,
+    SYSTEM_ROWS = 10
 };
 #else
 ECHO_RESIDENT static const uint8_t ROWS[] = {
@@ -788,12 +782,20 @@ enum {
 };
 #endif
 
+#ifdef ECHO_LITE
+ECHO_RESIDENT static const SettingsGroupRows GROUPS[SETTINGS_GROUP_COUNT] = {
+    {STR_SETTINGS_QUICK, 0, 2},
+    {STR_SETTINGS_SOUND, SOUND_FIRST, SOUND_ROWS},
+    {STR_SETTINGS_DISPLAY, DISPLAY_FIRST, DISPLAY_ROWS},
+    {STR_SETTINGS_SYSTEM, SYSTEM_FIRST, SYSTEM_ROWS}};
+#else
 ECHO_RESIDENT static const SettingsGroupRows GROUPS[SETTINGS_GROUP_COUNT] = {
     {STR_SETTINGS_SOUND, SETTINGS_TOP_COUNT, SOUND_ROWS},
     {STR_SETTINGS_DISPLAY, DISPLAY_FIRST, DISPLAY_ROWS},
     {STR_SETTINGS_LIBRARY, LIBRARY_FIRST, LIBRARY_ROWS},
     {STR_SETTINGS_BUTTONS, BUTTONS_FIRST, BUTTONS_ROWS},
     {STR_SETTINGS_SYSTEM, SYSTEM_FIRST, SYSTEM_ROWS}};
+#endif
 
 _Static_assert(sizeof ROWS == SYSTEM_FIRST + SYSTEM_ROWS, "the System group ends the rows");
 #ifndef ECHO_LITE
@@ -801,8 +803,7 @@ _Static_assert((int)DISPLAY_ROWS == (int)SETTINGS_GROUP_ROWS_MAX,
                "the Display group is the longest and sizes the row buffer");
 #endif
 _Static_assert((int)SOUND_ROWS < (int)SETTINGS_GROUP_ROWS_MAX &&
-                   (int)LIBRARY_ROWS < (int)SETTINGS_GROUP_ROWS_MAX &&
-                   (int)SYSTEM_ROWS < (int)SETTINGS_GROUP_ROWS_MAX,
+                   (int)SYSTEM_ROWS <= (int)SETTINGS_GROUP_ROWS_MAX,
                "the groups fit the row buffer");
 
 #ifndef ECHO_LITE
@@ -906,7 +907,7 @@ static void settings_show_category(SettingsScreens *screens, int group, int sele
         previous_count = SETTINGS_GROUP_ROWS_MAX;
     }
     for (int index = 0; index < previous_count; index++) {
-        screens->previous_rows[index] = screens->rows[index];
+        screens->previous_rows[index] = screens->menu.config.items[index];
     }
     screens->previous_menu.now_ms = now_ms;
     MenuConfig previous = {.title = i18n_text(STR_MENU_SETTINGS),
@@ -920,15 +921,59 @@ static void settings_show_category(SettingsScreens *screens, int group, int sele
     screens->transitioning = previous_count > 0;
     screens->transition_started_ms = now_ms;
 
-    const SettingsGroupRows *rows = &GROUPS[group];
     screens->shown = (uint8_t)group;
-    fill_rows(screens, screens->rows, rows->first, rows->count);
-    screens->menu.config.items = screens->rows;
-    screens->menu.config.item_count = rows->count;
+    if (group == SETTINGS_QUICK) {
+        screens->menu.config.items = screens->quick_items;
+        screens->menu.config.item_count = 2;
+    } else {
+        const SettingsGroupRows *rows = &GROUPS[group];
+        fill_rows(screens, screens->rows, rows->first, rows->count);
+        screens->menu.config.items = screens->rows;
+        screens->menu.config.item_count = rows->count;
+    }
     screens->menu.list.top = 0;
     list_view_select(&screens->menu.list, selected, now_ms);
     screens->menu.list.visible_rows =
-        theme_is_portrait(screens->theme) ? 7 : SETTINGS_TOP_COUNT;
+        theme_is_portrait(screens->theme) ? 7 : SETTINGS_LIST_ROWS;
+}
+
+static ScreenAction quick_playback_mode(void *context)
+{
+    SettingsScreens *screens = context;
+    Player *player = screens->context.player;
+    PlaybackMode mode = player_playback_mode(player);
+    mode = (PlaybackMode)((mode + 1) % 3);
+    settings_playback_set_mode(&screens->context, mode, hal_clock_microseconds());
+    return screen_action_none();
+}
+
+static ScreenAction quick_sleep_timer(void *context)
+{
+    SettingsScreens *screens = context;
+    int sleep = settings_sleep_current(&screens->context);
+    sleep = (sleep + 1) % SLEEP_TIMER_OPTION_COUNT;
+    settings_sleep_apply(&screens->context, sleep, hal_clock_milliseconds());
+    return screen_action_none();
+}
+
+static const char *quick_mode_value(const void *context)
+{
+    const SettingsScreens *screens = context;
+    switch (player_playback_mode(screens->context.player)) {
+    case PLAYBACK_RANDOM:
+        return "Random";
+    case PLAYBACK_LOOP:
+        return "Loop";
+    case PLAYBACK_ONE:
+        return "Loop One";
+    }
+    return "";
+}
+
+static const char *quick_sleep_value(const void *context)
+{
+    const SettingsScreens *screens = context;
+    return settings_sleep_label(settings_sleep_current(&screens->context));
 }
 
 void settings_next_category(SettingsScreens *screens, uint32_t now_ms)
@@ -938,7 +983,7 @@ void settings_next_category(SettingsScreens *screens, uint32_t now_ms)
     settings_show_category(screens, group, screens->selected[group], now_ms);
 }
 
-static ScreenAction double_menu(void *context, uint32_t now_ms)
+static ScreenAction long_menu(void *context, uint32_t now_ms)
 {
     settings_next_category(context, now_ms);
     return screen_action_none();
@@ -961,24 +1006,30 @@ Screen *settings_screens_init(SettingsScreens *screens, SettingsContext context,
         screens->entries[index] = (SettingsEntry){.choice = &CHOICES[index], .owner = screens};
     }
 #ifdef ECHO_LITE
-    screens->shown = SETTINGS_SOUND;
+    screens->shown = SETTINGS_QUICK;
     for (int group = 0; group < SETTINGS_GROUP_COUNT; group++) {
         screens->selected[group] = 0;
     }
-    fill_rows(screens, screens->rows, GROUPS[SETTINGS_SOUND].first,
-              GROUPS[SETTINGS_SOUND].count);
+    screens->quick_items[0] = (MenuItem){.label = i18n_text(STR_SETTINGS_PLAYBACK_MODE),
+                                         .select = quick_playback_mode,
+                                         .context = screens,
+                                         .value = quick_mode_value};
+    screens->quick_items[1] = (MenuItem){.label = i18n_text(STR_SETTINGS_SLEEP_TIMER),
+                                         .select = quick_sleep_timer,
+                                         .context = screens,
+                                         .value = quick_sleep_value};
     MenuConfig menu = {.title = i18n_text(STR_MENU_SETTINGS),
-                       .items = screens->rows,
-                       .item_count = GROUPS[SETTINGS_SOUND].count,
+                       .items = screens->quick_items,
+                       .item_count = 2,
                        .theme = theme,
                        .scene = settings_scene(screens)};
     Screen *screen = menu_screen_init(&screens->menu, menu);
     screens->menu.screen.select_on_press = false;
     screens->menu.screen.overlay = true;
-    screens->menu.screen.double_menu_enabled = true;
-    screens->menu.screen.double_menu_context = screens;
-    screens->menu.screen.double_menu = double_menu;
-    screens->menu.list.visible_rows = SETTINGS_TOP_COUNT;
+    screens->menu.screen.long_menu_enabled = true;
+    screens->menu.screen.long_menu_context = screens;
+    screens->menu.screen.long_menu = long_menu;
+    screens->menu.list.visible_rows = SETTINGS_LIST_ROWS;
     list_view_select(&screens->menu.list, 0, 0);
     return screen;
 #else
