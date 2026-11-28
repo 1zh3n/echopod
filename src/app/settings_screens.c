@@ -784,7 +784,6 @@ enum {
 
 #ifdef ECHO_LITE
 ECHO_RESIDENT static const SettingsGroupRows GROUPS[SETTINGS_GROUP_COUNT] = {
-    {STR_SETTINGS_QUICK, 0, 2},
     {STR_SETTINGS_SOUND, SOUND_FIRST, SOUND_ROWS},
     {STR_SETTINGS_DISPLAY, DISPLAY_FIRST, DISPLAY_ROWS},
     {STR_SETTINGS_SYSTEM, SYSTEM_FIRST, SYSTEM_ROWS}};
@@ -896,27 +895,23 @@ static ScreenAction open_group(void *context)
 #endif
 
 #ifdef ECHO_LITE
-static void settings_show_category(SettingsScreens *screens, int group, int selected,
-                                   uint32_t now_ms)
+static ScreenAction open_category(void *context)
 {
-    screens->previous_group = screens->shown;
-    screens->transitioning = true;
-    screens->transition_started_ms = now_ms;
-
-    screens->shown = (uint8_t)group;
-    if (group == SETTINGS_QUICK) {
-        screens->menu.config.items = screens->quick_items;
-        screens->menu.config.item_count = 2;
-    } else {
-        const SettingsGroupRows *rows = &GROUPS[group];
-        fill_rows(screens, screens->rows, rows->first, rows->count);
-        screens->menu.config.items = screens->rows;
-        screens->menu.config.item_count = rows->count;
+    SettingsGroupLink *link = context;
+    SettingsScreens *screens = link->owner;
+    if (link->group >= SETTINGS_GROUP_COUNT) {
+        return screen_action_none();
     }
+    const SettingsGroupRows *rows = &GROUPS[link->group];
+    screens->shown = link->group;
+    fill_rows(screens, screens->rows, rows->first, rows->count);
+    screens->menu.config.items = screens->rows;
+    screens->menu.config.item_count = rows->count;
     screens->menu.list.top = 0;
-    list_view_select(&screens->menu.list, selected, now_ms);
+    list_view_select(&screens->menu.list, screens->selected[link->group], 0);
     screens->menu.list.visible_rows =
         theme_is_portrait(screens->theme) ? 7 : SETTINGS_LIST_ROWS;
+    return screen_action_push(&screens->menu.screen);
 }
 
 static ScreenAction quick_playback_mode(void *context)
@@ -955,20 +950,36 @@ static const char *quick_mode_value(const void *context)
 static const char *quick_sleep_value(const void *context)
 {
     const SettingsScreens *screens = context;
-    return settings_sleep_label(settings_sleep_current(&screens->context));
-}
-
-void settings_next_category(SettingsScreens *screens, uint32_t now_ms)
-{
-    screens->selected[screens->shown] = (uint8_t)screens->menu.list.selected;
-    int group = (screens->shown + 1) % SETTINGS_GROUP_COUNT;
-    settings_show_category(screens, group, screens->selected[group], now_ms);
-}
-
-static ScreenAction long_menu(void *context, uint32_t now_ms)
-{
-    settings_next_category(context, now_ms);
-    return screen_action_none();
+    static char value[12];
+    if (screens->context.power == NULL) {
+        return settings_sleep_label(settings_sleep_current(&screens->context));
+    }
+    if (screens->context.power->sleep_pending) {
+        return "END";
+    }
+    if (!screens->context.power->sleep_timer_active) {
+        return settings_sleep_label(settings_sleep_current(&screens->context));
+    }
+    uint32_t seconds =
+        (power_policy_sleep_remaining_ms(screens->context.power, hal_clock_milliseconds()) +
+         999u) /
+        1000u;
+    int length = 0;
+    if (seconds >= 3600u) {
+        value[length++] = (char)('0' + seconds / 3600u % 10);
+        value[length++] = ':';
+        value[length++] = (char)('0' + seconds / 60u % 10);
+    } else {
+        if (seconds / 60u >= 10u) {
+            value[length++] = (char)('0' + seconds / 60u / 10u % 10);
+        }
+        value[length++] = (char)('0' + seconds / 60u % 10);
+        value[length++] = ':';
+    }
+    value[length++] = (char)('0' + seconds % 60u / 10u);
+    value[length++] = (char)('0' + seconds % 60u % 10u);
+    value[length] = '\0';
+    return value;
 }
 
 const char *settings_category_title(int group)
@@ -988,31 +999,53 @@ Screen *settings_screens_init(SettingsScreens *screens, SettingsContext context,
         screens->entries[index] = (SettingsEntry){.choice = &CHOICES[index], .owner = screens};
     }
 #ifdef ECHO_LITE
-    screens->shown = SETTINGS_QUICK;
+    screens->shown = SETTINGS_SOUND;
     for (int group = 0; group < SETTINGS_GROUP_COUNT; group++) {
         screens->selected[group] = 0;
+        screens->links[group] = (SettingsGroupLink){.owner = screens, .group = (uint8_t)group};
     }
-    screens->quick_items[0] = (MenuItem){.label = i18n_text(STR_SETTINGS_PLAYBACK_MODE),
-                                         .select = quick_playback_mode,
-                                         .context = screens,
-                                         .value = quick_mode_value};
-    screens->quick_items[1] = (MenuItem){.label = i18n_text(STR_SETTINGS_SLEEP_TIMER),
-                                         .select = quick_sleep_timer,
-                                         .context = screens,
-                                         .value = quick_sleep_value};
+    screens->home_items[0] = (MenuItem){.label = i18n_text(STR_SETTINGS_PLAYBACK_MODE),
+                                        .select = quick_playback_mode,
+                                        .context = screens,
+                                        .value = quick_mode_value};
+    screens->home_items[1] = (MenuItem){.label = i18n_text(STR_SETTINGS_SLEEP_TIMER),
+                                        .select = quick_sleep_timer,
+                                        .context = screens,
+                                        .value = quick_sleep_value};
+    screens->home_items[2] = (MenuItem){.label = i18n_text(STR_SETTINGS_SOUND),
+                                        .select = open_category,
+                                        .context = &screens->links[SETTINGS_SOUND],
+                                        .opens = true};
+    screens->home_items[3] = (MenuItem){.label = i18n_text(STR_SETTINGS_DISPLAY),
+                                        .select = open_category,
+                                        .context = &screens->links[SETTINGS_DISPLAY],
+                                        .opens = true};
+    screens->home_items[4] = (MenuItem){.label = i18n_text(STR_SETTINGS_SYSTEM),
+                                        .select = open_category,
+                                        .context = &screens->links[SETTINGS_SYSTEM],
+                                        .opens = true};
+    MenuConfig home = {.title = i18n_text(STR_MENU_SETTINGS),
+                       .items = screens->home_items,
+                       .item_count = 5,
+                       .theme = theme,
+                       .scene = settings_home_scene(screens)};
+    Screen *screen = menu_screen_init(&screens->home, home);
+    screens->home.screen.overlay = true;
+    screens->home.screen.settings = true;
+    screens->home.list.visible_rows = 5;
+    list_view_select(&screens->home.list, 0, 0);
+
     MenuConfig menu = {.title = i18n_text(STR_MENU_SETTINGS),
-                       .items = screens->quick_items,
-                       .item_count = 2,
+                       .items = screens->rows,
+                       .item_count = 0,
                        .theme = theme,
                        .scene = settings_scene(screens)};
-    Screen *screen = menu_screen_init(&screens->menu, menu);
-    screens->menu.screen.select_on_press = false;
-    screens->menu.screen.overlay = true;
-    screens->menu.screen.long_menu_enabled = true;
-    screens->menu.screen.long_menu_context = screens;
-    screens->menu.screen.long_menu = long_menu;
-    screens->menu.list.visible_rows = SETTINGS_LIST_ROWS;
-    list_view_select(&screens->menu.list, 0, 0);
+    MenuScreen *category = &screens->menu;
+    menu_screen_init(category, menu);
+    category->screen.overlay = true;
+    category->screen.settings = true;
+    category->list.visible_rows = SETTINGS_LIST_ROWS;
+    list_view_select(&category->list, 0, 0);
     return screen;
 #else
     screens->shown = 0;

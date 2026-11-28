@@ -256,7 +256,13 @@ static void build_settings(AppScreens *screens, AppScreensContext context)
                              .rescan_requested = context.rescan_requested,
                              .theme = context.theme};
     folders_screen_init(&screens->folders, folders);
+#ifdef ECHO_LITE
+    screens->settings_home = settings_screens_init(&screens->settings, settings, context.theme);
+    screens->folders.screen.settings = true;
+    screens->date_time.screen.settings = true;
+#else
     settings_screens_init(&screens->settings, settings, context.theme);
+#endif
 }
 
 #ifndef ECHO_LITE
@@ -379,8 +385,14 @@ ECHO_STARTUP_CODE Screen *app_screens_init(AppScreens *screens, AppScreensContex
     EqualizerConfig equalizer = {
         .store = context.equalizer, .toast = context.toast, .theme = theme};
     now_playing.equalizer = equalizer_screen_init(&screens->equalizer, equalizer);
+#ifdef ECHO_LITE
+    screens->equalizer.screen.settings = true;
+#endif
     message_screen_init(&screens->no_library, no_library);
     bluetooth_screen_init(&screens->bluetooth, context.bluetooth, theme);
+#ifdef ECHO_LITE
+    screens->bluetooth.screen.settings = true;
+#endif
     now_playing_screen_init(&screens->now_playing, now_playing);
 #ifdef ECHO_LITE
     TrackListConfig favorite_tracks = {

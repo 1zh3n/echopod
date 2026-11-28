@@ -18,7 +18,6 @@
 
 #ifdef ECHO_LITE
 typedef enum SettingsGroup {
-    SETTINGS_QUICK,
     SETTINGS_SOUND,
     SETTINGS_DISPLAY,
     SETTINGS_SYSTEM,
@@ -83,7 +82,11 @@ struct SettingsScreens {
     const Theme *theme;
     MenuScreen menu;
     ChoiceScreen choice;
-#ifndef ECHO_LITE
+#ifdef ECHO_LITE
+    MenuScreen home;
+    MenuItem home_items[5];
+    SettingsGroupLink links[SETTINGS_GROUP_COUNT];
+#else
     MenuScreen group;
     SettingsGroupLink links[SETTINGS_GROUP_COUNT];
     MenuItem items[SETTINGS_TOP_COUNT];
@@ -92,12 +95,6 @@ struct SettingsScreens {
     uint8_t selected[SETTINGS_GROUP_COUNT];
     uint8_t shown;
     MenuItem rows[SETTINGS_GROUP_ROWS_MAX];
-#ifdef ECHO_LITE
-    MenuItem quick_items[2];
-    uint8_t previous_group;
-    uint32_t transition_started_ms;
-    bool transitioning;
-#endif
 };
 
 Screen *settings_screens_init(SettingsScreens *screens, SettingsContext context,
@@ -108,5 +105,4 @@ void settings_sleep_apply(SettingsContext *context, int option, uint32_t now_ms)
 void settings_playback_set_mode(SettingsContext *context, PlaybackMode mode, uint32_t seed);
 #ifdef ECHO_LITE
 const char *settings_category_title(int group);
-void settings_next_category(SettingsScreens *screens, uint32_t now_ms);
 #endif

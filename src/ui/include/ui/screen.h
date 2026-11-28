@@ -30,6 +30,7 @@ struct Screen {
     bool select_on_press;
     bool overlay;
     bool menu_consumes;
+    bool settings;
     bool long_menu_enabled;
     void *long_menu_context;
     void (*enter)(void *context, uint32_t now_ms);

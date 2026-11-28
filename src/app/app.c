@@ -595,8 +595,7 @@ static bool opens_settings(KeyEvent event)
 #ifdef ECHO_LITE
     Screen *top = top_screen();
     bool long_press = event.gesture == KEY_GESTURE_LONG_PRESS;
-    return long_press && (event.key == KEY_MENU || event.key == KEY_BACK) && !top->menu_consumes &&
-           top != &app.screens.settings.menu.screen;
+    return long_press && (event.key == KEY_MENU || event.key == KEY_BACK) && !top->settings;
 #else
     Screen *top = top_screen();
     bool now_playing_flow = top == &app.screens.now_playing.screen;
@@ -670,10 +669,17 @@ static void dispatch_to_screen(KeyEvent event, uint32_t now_ms)
         toggle_lite_root(now_ms);
         return;
     }
-    if (screen == &app.screens.settings.menu.screen && event.key == KEY_BACK &&
+    if (screen == app.screens.settings_home && event.key == KEY_BACK &&
         event.gesture == KEY_GESTURE_PRESS) {
         int depth_before = screen_stack_depth(&app.stack);
         apply_screen_action(screen, screen_action_pop_to_root(), depth_before, now_ms);
+        return;
+    }
+    if (event.key == KEY_BACK && event.gesture == KEY_GESTURE_LONG_PRESS) {
+        int depth_before = screen_stack_depth(&app.stack);
+        ScreenAction action = screen->settings ? screen_action_pop_to_root()
+                                               : screen_action_push(app.screens.settings_home);
+        apply_screen_action(screen, action, depth_before, now_ms);
         return;
     }
     if (event.key == KEY_MENU && event.gesture == KEY_GESTURE_LONG_PRESS) {
@@ -689,7 +695,7 @@ static void dispatch_to_screen(KeyEvent event, uint32_t now_ms)
             apply_screen_action(screen, action, depth_before, now_ms);
             return;
         }
-        open_overlay(&app.screens.settings.menu.screen, false, now_ms);
+        open_overlay(app.screens.settings_home, false, now_ms);
         return;
     }
     if (opens_now_playing(event)) {
@@ -697,7 +703,7 @@ static void dispatch_to_screen(KeyEvent event, uint32_t now_ms)
         return;
     }
     if (opens_settings(event)) {
-        open_overlay(&app.screens.settings.menu.screen, false, now_ms);
+        open_overlay(app.screens.settings_home, false, now_ms);
         return;
     }
     int depth_before = screen_stack_depth(&app.stack);
