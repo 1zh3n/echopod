@@ -33,9 +33,7 @@
 #include "ui/toast.h"
 
 enum {
-#ifdef ECHO_LITE
-    HOME_ITEM_COUNT = 3,
-#else
+#ifndef ECHO_LITE
     HOME_ITEM_COUNT = 6,
 #endif
     SHELF_COUNT = 2,
@@ -72,7 +70,9 @@ typedef struct BrowseEntry {
 } BrowseEntry;
 
 typedef struct AppScreens {
+#ifndef ECHO_LITE
     MenuScreen home;
+#endif
     MenuScreen music;
     SettingsScreens settings;
     MenuScreen diagnostics;
@@ -95,14 +95,14 @@ typedef struct AppScreens {
     EqualizerScreen equalizer;
     DateTimeScreen date_time;
     FoldersScreen folders;
-    MenuItem home_items[HOME_ITEM_COUNT];
 #ifdef ECHO_LITE
-    const Player *player;
     Screen *root_all_songs;
     Screen *root_favorites;
-#endif
+#else
+    MenuItem home_items[HOME_ITEM_COUNT];
     HomeArt home_art;
     MenuScene home_scene;
+#endif
     MenuItem music_items[MUSIC_ITEM_COUNT];
 #ifndef ECHO_LITE
     MenuItem diagnostics_items[DIAGNOSTICS_ITEM_COUNT];

@@ -356,9 +356,6 @@ static void build_home(AppScreens *screens, AppScreensContext context)
 ECHO_STARTUP_CODE Screen *app_screens_init(AppScreens *screens, AppScreensContext context)
 {
     const Theme *theme = context.theme;
-#ifdef ECHO_LITE
-    screens->player = context.player;
-#endif
     build_settings(screens, context);
     bool card = hal_storage_card_ready();
     MessageConfig no_library = {
