@@ -211,6 +211,22 @@ scenes every frame. The local version changes only the badge/dot region, which a
 display writes small at the `Faster` setting. The overlay sheet can be deleted with its
 `canvas_shifted_y` path.
 
+## Status meter ownership
+
+`MINIV938` draws the Lite status meter or Now Playing Bluetooth chip after the screen:
+`draw_frame()` calls `screen->draw()` (or `draw_slide()`), then
+`draw_lite_status_meter()`. During a page slide the content moves and the meter stays fixed, so
+the meter reads as a separate overlay stamped on top.
+
+Next pass: make the meter/chip part of the screen chrome. Draw it inside the shifted canvas for
+each screen, using the screen pointer to choose the two-segment meter or the Now Playing
+Bluetooth chip. The leaving and arriving screens then each carry their own status indicator
+through the slide. This is a draw-ownership change, not a new animation.
+
+The alternative is to reserve a fixed top strip and treat the meter as system chrome; that keeps
+it still during slides and needs a layout band. The preferred option is to move it with the
+screen.
+
 ## Still open
 
 - Home at 240 ms or 280 ms: 240 ms is the first build; move to 280 ms only if the device check
