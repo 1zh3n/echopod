@@ -527,6 +527,19 @@ static void status_meter_and_chip_draw_native_segments(void)
     CHECK(canvas_pixel_at(&canvas, 54, 14) == COLOR_RGB(0, 111, 238));
 }
 
+static void now_playing_has_no_time_or_thumb(void)
+{
+    start_app_with_library();
+    open_all_songs_and_play();
+    fake_hal_audio_set_position(30000);
+    wait_ms(300);
+    CHECK(!area_has_color(8, 144, 304, 18, DEFAULT_THEME.colors->text));
+    CHECK(fake_hal_pixel(157, 134) == DEFAULT_THEME.colors->background);
+    tap(KEY_VOLUME_UP);
+    wait_ms(300);
+    CHECK(area_has_color(8, 144, 304, 18, DEFAULT_THEME.colors->text));
+}
+
 static void hold_the_volume_key_seeks_without_a_hold_bar(void)
 {
     start_app_with_library();
@@ -1328,6 +1341,7 @@ int main(void)
         TEST_CASE(long_back_on_favorites_opens_settings),
         TEST_CASE(root_status_meter_tracks_bluetooth),
         TEST_CASE(now_playing_uses_bt_chip_with_controls),
+        TEST_CASE(now_playing_has_no_time_or_thumb),
         TEST_CASE(hold_the_volume_key_seeks_without_a_hold_bar),
         TEST_CASE(goodbye_screen_has_no_icon),
         TEST_CASE(the_sleep_timer_waits_for_the_current_track),

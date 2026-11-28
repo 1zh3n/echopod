@@ -901,10 +901,6 @@ static void draw_progress(const NowPlayingScreen *now_playing, Canvas *canvas, c
     canvas_fill_rect(canvas, bar, theme->colors->divider);
     Color fill = volume ? COLOR_RGB(255, 212, 59) : lite_status_progress();
     canvas_fill_rect(canvas, (Rect){bar.x, bar.y, filled, bar.height}, fill);
-    if (filled > 0) {
-        canvas_fill_rect(canvas, (Rect){bar.x + filled - 3, bar.y - 4, 6, 10},
-                         theme->colors->text);
-    }
 #else
     const BoxStyle *fill = now_playing->scrubbing || volume ? &theme->boxes->progress_active
                                                             : &theme->boxes->progress_fill;
@@ -935,14 +931,7 @@ static void draw_times(const NowPlayingScreen *now_playing, Canvas *canvas, cons
         StringBuilder text = string_builder_make(level, sizeof level);
         string_builder_append_unsigned(&text, now_playing->status.volume);
         draw_right_aligned(canvas, style, area, level);
-        return;
     }
-    char elapsed[TIME_CAPACITY];
-    char total[TIME_CAPACITY];
-    format_duration(shown_position(now_playing), elapsed, sizeof elapsed);
-    format_duration(now_playing->status.duration_ms, total, sizeof total);
-    label_draw(canvas, style, (Label){.area = area, .text = elapsed});
-    draw_right_aligned(canvas, style, area, total);
 #else
     uint32_t position_ms = shown_position(now_playing);
     uint32_t duration_ms = now_playing->status.duration_ms;
