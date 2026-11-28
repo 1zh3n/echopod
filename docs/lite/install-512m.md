@@ -21,7 +21,7 @@ The 512 MB updater scans the card root for:
 It does **not** scan `HIFIEC90.IMG`. Copy the build to the card root and rename it, for example:
 
 ```text
-build/release-lite/HIFIEC90.IMG  ->  /MINIV942.IMG
+build/release-lite/HIFIEC90.IMG  ->  /MINIV943.IMG
 ```
 
 Then use the player's updater.
@@ -36,11 +36,16 @@ cmake --build --preset release-lite
 ## Current build
 
 ```text
-image:  MINIV942.IMG
-sha256: e3baece2bcd554eb401c837bbe7238037e475d4d39e9ae8b264d8a0be316eecc
+image:  MINIV943.IMG
+sha256: 511d1e9d659d09e0f5b11e7bca01ea09da395e579627de334ed2d5755f828721
 ```
 
-`MINIV942` removes the Home carousel. Boot goes directly to All Songs; Short Back at the root
+`MINIV943` caches the Favorites list between root switches. The first visit still builds it,
+but switching All Songs <-> Favorites afterwards reuses the collected list until the favorites
+store or the library changes; this removes the full library scan that made the switch feel
+laggy with even one favorite. It also stops scanning once every favorite has been found.
+
+`MINIV943` removes the Home carousel. Boot goes directly to All Songs; Short Back at the root
 switches to Favorites and back, and Long Back opens Settings. The root-tab icons are deferred,
 so the list frames and rows keep their existing appearance. Favorites is a path-hashed song list
 of up to 256 tracks that plays as its own queue and restores through the resume file. Long Play
@@ -66,16 +71,17 @@ The incremental images for this pass are:
 | `MINIV940` | local motion, screen-owned status meter, static Settings rows | `d9f06accd78d268e375eac79c656c52421b0a1323f7679af34cc5fb6fe9b112d` |
 | `MINIV941` | song Favorites on Home, explicit favorites queue and resume, Add/Remove actions; audio-fed collection and Lite-only actions | `d1eb274b6fa84ae431c0aca12c9d3d13b59f67a771b02f1c011cbe4024a019c2` |
 | `MINIV942` | remove Home; All Songs / Favorites roots, root Back switching, Long Back Settings; Settings Back returns the root; root tabs deferred | `e3baece2bcd554eb401c837bbe7238037e475d4d39e9ae8b264d8a0be316eecc` |
+| `MINIV943` | cache the Favorites collection between root switches; stop scanning after the last favorite | `511d1e9d659d09e0f5b11e7bca01ea09da395e579627de334ed2d5755f828721` |
 
 The 8 GB model is not supported.
 
 ## Verification
 
 - Host tests: 168/168 passed (`ctest --preset dev -E "^format$"`).
-- Lite panel tests: 64/64 passed.
+- Lite panel tests: 66/66 passed.
 - `release-lite` build and updater check valid.
-- Headroom: code 137,132 / 157,292 bytes (20,160 free); loaded total 409,372 / 437,600 bytes
-  (28,228 free); resident tables 18,240 / 18,432 (192 free); rescan overlay 85,400 / 86,016
+- Headroom: code 137,232 / 157,292 bytes (20,060 free); loaded total 409,472 / 437,600 bytes
+  (28,128 free); resident tables 18,240 / 18,432 (192 free); rescan overlay 85,400 / 86,016
   (616 free).
 - Still pending: the final 512 MB device pass over sorting, boot, dots, headers, navigation,
   local motion, root switching, favorites and portrait-flipped.
