@@ -424,6 +424,66 @@ static void boot_screen_is_static(void)
 
 static void open_all_songs_and_play(void);
 
+static void back_at_the_root_toggles_all_songs_and_favorites(void)
+{
+    start_app_with_library();
+    CHECK(title_is("All Songs"));
+    tap(KEY_BACK);
+    wait_ms(300);
+    CHECK(title_is("Favorites"));
+    tap(KEY_BACK);
+    wait_ms(300);
+    CHECK(title_is("All Songs"));
+}
+
+static void back_from_now_playing_returns_to_the_current_root(void)
+{
+    start_app_with_library();
+    tap(KEY_PLAY);
+    CHECK(title_is("Now Playing"));
+    tap(KEY_BACK);
+    CHECK(title_is("All Songs"));
+    tap(KEY_BACK);
+    wait_ms(300);
+    CHECK(title_is("Favorites"));
+}
+
+static void settings_from_favorites_returns_to_favorites(void)
+{
+    start_app_with_library();
+    tap(KEY_BACK);
+    wait_ms(300);
+    CHECK(title_is("Favorites"));
+    hold(KEY_BACK);
+    wait_ms(200);
+    CHECK(title_is("Settings"));
+    tap(KEY_BACK);
+    CHECK(title_is("Favorites"));
+}
+
+static void long_back_on_now_playing_opens_settings(void)
+{
+    start_app_with_library();
+    tap(KEY_PLAY);
+    CHECK(title_is("Now Playing"));
+    hold(KEY_BACK);
+    wait_ms(200);
+    CHECK(title_is("Settings"));
+    tap(KEY_BACK);
+    CHECK(title_is("Now Playing"));
+}
+
+static void long_menu_on_favorites_opens_settings(void)
+{
+    start_app_with_library();
+    tap(KEY_BACK);
+    wait_ms(300);
+    CHECK(title_is("Favorites"));
+    hold(KEY_MENU);
+    wait_ms(200);
+    CHECK(title_is("Settings"));
+}
+
 static void root_status_meter_tracks_bluetooth(void)
 {
     start_app_with_library();
@@ -1158,6 +1218,11 @@ int main(void)
         TEST_CASE(boot_screen_draws_the_still),
         TEST_CASE(boot_screen_is_static),
         TEST_CASE(boot_draws_across_strips),
+        TEST_CASE(back_at_the_root_toggles_all_songs_and_favorites),
+        TEST_CASE(back_from_now_playing_returns_to_the_current_root),
+        TEST_CASE(settings_from_favorites_returns_to_favorites),
+        TEST_CASE(long_back_on_now_playing_opens_settings),
+        TEST_CASE(long_menu_on_favorites_opens_settings),
         TEST_CASE(root_status_meter_tracks_bluetooth),
         TEST_CASE(now_playing_uses_bt_chip_with_controls),
         TEST_CASE(hold_the_volume_key_seeks_without_a_hold_bar),

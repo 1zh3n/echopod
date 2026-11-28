@@ -653,9 +653,23 @@ static void apply_screen_action(Screen *leaving, ScreenAction action, int depth_
     }
 }
 
+static void toggle_lite_root(uint32_t now_ms)
+{
+    Screen *target = top_screen() == app.screens.root_favorites ? app.screens.root_all_songs
+                                                               : app.screens.root_favorites;
+    if (target != NULL && screen_stack_replace_root(&app.stack, target, now_ms)) {
+        use_screen_key_behaviors();
+    }
+}
+
 static void dispatch_to_screen(KeyEvent event, uint32_t now_ms)
 {
     Screen *screen = top_screen();
+    if (app.stack.depth == 1 && event.key == KEY_BACK &&
+        event.gesture == KEY_GESTURE_PRESS) {
+        toggle_lite_root(now_ms);
+        return;
+    }
     if (event.key == KEY_MENU && event.gesture == KEY_GESTURE_LONG_PRESS) {
         if (screen->long_menu_enabled && screen->long_menu != NULL) {
             int depth_before = screen_stack_depth(&app.stack);
