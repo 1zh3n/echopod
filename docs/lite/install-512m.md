@@ -160,6 +160,8 @@ The 8 GB model is not supported.
 
 - Host tests: 168/168 passed (`ctest --preset dev -E "^format$"`).
 - Lite panel tests: 82/82 passed.
+- Lite app static RAM: 69,586 / 131,072 bytes (61,486 free), via
+  `tools/lite_ram_audit.py` and the `release-lite` compile commands.
 - `release-lite` build and updater check valid.
 - Headroom: code 136,740 / 157,292 bytes (20,552 free); loaded total 342,108 / 437,600 bytes
   (95,492 free); resident tables 18,236 / 18,432 (196 free); rescan overlay 85,328 / 86,016

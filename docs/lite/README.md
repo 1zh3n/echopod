@@ -132,7 +132,8 @@ not device photos; see [design.md](design.md) for tokens and geometry.
   articles are literal, so "The End of the World" sorts under T; an existing library needs a
   rescan to pick up the new order.
 - **Space work:** the Lite build drops the unused cover cache (about 67 KB of static RAM), so
-  song Favorites can hold 512 tracks and the loaded total has about 95 KB free. Lite icon masks
+  song Favorites can hold 512 tracks. Lite app static RAM is 69,586 / 131,072 bytes (61,486
+  free); the loaded total has about 95 KB free. Lite icon masks
   moved to the glyph face; Lite theme-store/assets removed. Resident tables still have only
   196 bytes free, so keep new table data small.
 - **Review fixes:** Settings categories remember their row; Date/Time preserves an unsaved edit
@@ -161,6 +162,17 @@ ctest --preset dev -E '^format$'
 
 Lite UI tests: `build/lite-test/tests/test_lite_panel`. The full Lite test configuration is not
 yet a separate CTest target; treat `test_lite_panel` as the authoritative UI suite.
+
+The Lite app static RAM audit uses the real `release-lite` compile commands:
+
+```sh
+python3 tools/lite_ram_audit.py \
+  --compile-commands build/release-lite/compile_commands.json \
+  --budget-bytes 131072
+```
+
+Current result: **69,586 / 131,072 bytes (61,486 free)**. The older `target_audit` compiles the
+non-Lite source set, so it is not a substitute for this Lite-specific number.
 
 ## Install and recovery
 
