@@ -6,6 +6,7 @@
 #include "playback/resume_state.h"
 
 enum {
+    VERSION_FIELD = 4,
     SHUFFLE_FIELD = 6,
     SOURCE_KIND_FIELD = 16,
     CHECKSUM_FIELD = RESUME_STATE_SIZE - 4
@@ -191,10 +192,25 @@ static void unknown_source_kinds_are_rejected(void)
     CHECK(!resume_state_decode(bytes, sizeof bytes, &state));
 }
 
+static void a_version_two_state_migrates_its_old_volume(void)
+{
+    ResumeState state = sample_state();
+    uint8_t bytes[RESUME_STATE_SIZE];
+    ResumeState decoded;
+    resume_state_encode(&state, bytes);
+    bytes[VERSION_FIELD] = 2;
+    bytes[VERSION_FIELD + 1] = 0;
+    rewrite_checksum(bytes);
+    CHECK(resume_state_decode(bytes, sizeof bytes, &decoded));
+    CHECK_EQUAL(69, decoded.volume);
+    CHECK_EQUAL(state.track, decoded.track);
+}
+
 int main(void)
 {
     static const TestCase cases[] = {
         TEST_CASE(a_state_survives_a_round_trip),
+        TEST_CASE(a_version_two_state_migrates_its_old_volume),
         TEST_CASE(an_explicit_track_list_survives_a_round_trip),
         TEST_CASE(a_wrong_magic_is_rejected),
         TEST_CASE(a_corrupted_byte_fails_the_checksum),

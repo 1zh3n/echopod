@@ -9,7 +9,7 @@
 enum {
     RING_FRAMES = 8192,
     RING_WORDS = 2 * RING_FRAMES,
-    FULL_VOLUME = 50
+    FULL_VOLUME = 85
 };
 
 typedef struct Fixture {

@@ -72,6 +72,8 @@ static void a_settings_file_from_before_orientation_loads_in_landscape(void)
 {
     Settings older = settings_defaults();
     older.brightness = BRIGHT;
+    older.volume = 12;
+    older.dac_volume = 30;
     uint8_t bytes[SETTINGS_FILE_SIZE];
     settings_encode(&older, bytes);
     bytes[VERSION_FIELD] = 4;
@@ -87,10 +89,12 @@ static void a_settings_file_from_before_orientation_loads_in_landscape(void)
     CHECK_EQUAL(ORIENTATION_LANDSCAPE, settings.settings.orientation);
 }
 
-static void a_32_byte_version_8_settings_file_loads_and_is_saved_as_version_9(void)
+static void a_32_byte_version_8_settings_file_loads_and_is_saved_as_version_10(void)
 {
     Settings older = settings_defaults();
     older.brightness = BRIGHT;
+    older.volume = 12;
+    older.dac_volume = 30;
     older.options[OPTION_ACCENT] = 3;
     uint8_t bytes[SETTINGS_FILE_SIZE];
     settings_encode(&older, bytes);
@@ -108,7 +112,7 @@ static void a_32_byte_version_8_settings_file_loads_and_is_saved_as_version_9(vo
     int writes = fake_hal_write_count();
     CHECK(settings_store_save(&settings));
     CHECK_EQUAL(writes + 1, fake_hal_write_count());
-    CHECK_EQUAL(9, settings.saved[VERSION_FIELD]);
+    CHECK_EQUAL(10, settings.saved[VERSION_FIELD]);
     uint32_t size = 0;
     fake_hal_file_bytes(SETTINGS_STORE_PATH, &size);
     CHECK_EQUAL(SETTINGS_FILE_SIZE, size);
@@ -313,7 +317,7 @@ int main(void)
         TEST_CASE(unchanged_settings_are_not_written_again),
         TEST_CASE(a_corrupted_settings_file_falls_back_to_the_defaults),
         TEST_CASE(a_settings_file_from_before_orientation_loads_in_landscape),
-        TEST_CASE(a_32_byte_version_8_settings_file_loads_and_is_saved_as_version_9),
+        TEST_CASE(a_32_byte_version_8_settings_file_loads_and_is_saved_as_version_10),
         TEST_CASE(the_orientation_is_loaded_again),
         TEST_CASE(hardware_settings_reach_the_hal),
         TEST_CASE(toggling_an_album_adds_it_and_saves),

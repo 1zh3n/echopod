@@ -12,6 +12,7 @@ set(ECHO_CORE_SOURCES
     random.c
     string_builder.c
     utf8.c
+    volume_curve.c
     volume_path.c
     wall_clock.c
 )

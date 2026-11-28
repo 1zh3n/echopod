@@ -3,9 +3,10 @@
 #include <stddef.h>
 
 #include "core/hash.h"
+#include "core/volume_curve.h"
 
 enum {
-    VERSION = 9,
+    VERSION = 10,
     FIRST_VERSION = 1,
     AUTO_OFF_VERSION = 2,
     USB_MODE_VERSION = 3,
@@ -15,6 +16,7 @@ enum {
     DAC_VERSION = 7,
     OPTIONS_VERSION = 8,
     WIDE_VERSION = 9,
+    VOLUME_CURVE_VERSION = 10,
     FILTER_SHIFT = 5,
     BALANCE_MASK = 0x1F,
     MAGIC_SIZE = 4,
@@ -40,7 +42,7 @@ enum {
     CHECKSUM_FIELD = SETTINGS_FILE_SIZE - 4,
     DEFAULT_BRIGHTNESS = 7,
     DEFAULT_TIMEOUT_OPTION = 2,
-    DEFAULT_VOLUME = 12,
+    DEFAULT_VOLUME = 30,
     DEFAULT_AUTO_OFF_OPTION = 2,
     MILLISECONDS_PER_MINUTE = 60000,
     MILLISECONDS_PER_SECOND = 1000,
@@ -224,15 +226,16 @@ static bool options_valid(const uint8_t *bytes)
 
 static bool values_valid(const uint8_t *bytes)
 {
+    uint8_t volume_max =
+        bytes[VERSION_FIELD] < VOLUME_CURVE_VERSION ? VOLUME_LEGACY_MAX : SETTINGS_VOLUME_MAX;
     return bytes[BRIGHTNESS_FIELD] >= SETTINGS_BRIGHTNESS_MIN &&
            bytes[BRIGHTNESS_FIELD] <= SETTINGS_BRIGHTNESS_MAX &&
            bytes[TIMEOUT_FIELD] < SCREEN_TIMEOUT_OPTION_COUNT &&
            bytes[GAIN_FIELD] < GAIN_LEVEL_COUNT && bytes[OUTPUT_FIELD] < OUTPUT_JACK_COUNT &&
            bytes[START_FIELD] < START_SCREEN_COUNT && bytes[SHUFFLE_FIELD] < SHUFFLE_MODE_COUNT &&
-           bytes[REPEAT_FIELD] < REPEAT_MODE_COUNT && bytes[VOLUME_FIELD] <= SETTINGS_VOLUME_MAX &&
+           bytes[REPEAT_FIELD] < REPEAT_MODE_COUNT && bytes[VOLUME_FIELD] <= volume_max &&
            bytes[AUTO_OFF_FIELD] < AUTO_OFF_OPTION_COUNT &&
-           bytes[USB_MODE_FIELD] < USB_MODE_COUNT &&
-           bytes[DAC_VOLUME_FIELD] <= SETTINGS_VOLUME_MAX &&
+           bytes[USB_MODE_FIELD] < USB_MODE_COUNT && bytes[DAC_VOLUME_FIELD] <= volume_max &&
            bytes[ORIENTATION_FIELD] < ORIENTATION_COUNT &&
            (bytes[VERSION_FIELD] < LANGUAGE_VERSION || bytes[LANGUAGE_FIELD] < LANGUAGE_COUNT) &&
            (bytes[VERSION_FIELD] < DAC_VERSION ||
@@ -246,6 +249,7 @@ bool settings_decode(const uint8_t *bytes, uint32_t length, Settings *settings)
     if (length < SETTINGS_V8_FILE_SIZE || !header_valid(bytes, length) || !values_valid(bytes)) {
         return false;
     }
+    uint8_t version = bytes[VERSION_FIELD];
     *settings = (Settings){
         .brightness = bytes[BRIGHTNESS_FIELD],
         .screen_timeout = bytes[TIMEOUT_FIELD],
@@ -254,13 +258,14 @@ bool settings_decode(const uint8_t *bytes, uint32_t length, Settings *settings)
         .start_screen = (StartScreen)bytes[START_FIELD],
         .shuffle = (ShuffleMode)bytes[SHUFFLE_FIELD],
         .repeat = (RepeatMode)bytes[REPEAT_FIELD],
-        .volume = bytes[VOLUME_FIELD],
-        .auto_off = bytes[VERSION_FIELD] < AUTO_OFF_VERSION ? (uint8_t)DEFAULT_AUTO_OFF_OPTION
-                                                            : bytes[AUTO_OFF_FIELD],
-        .usb_mode = bytes[VERSION_FIELD] < USB_MODE_VERSION ? USB_MODE_STORAGE
-                                                            : (UsbMode)bytes[USB_MODE_FIELD],
-        .dac_volume = bytes[VERSION_FIELD] < DAC_VOLUME_VERSION
-                          ? (uint8_t)SETTINGS_DEFAULT_DAC_VOLUME
+        .volume = version < VOLUME_CURVE_VERSION ? volume_level_from_legacy(bytes[VOLUME_FIELD])
+                                                 : bytes[VOLUME_FIELD],
+        .auto_off =
+            version < AUTO_OFF_VERSION ? (uint8_t)DEFAULT_AUTO_OFF_OPTION : bytes[AUTO_OFF_FIELD],
+        .usb_mode = version < USB_MODE_VERSION ? USB_MODE_STORAGE : (UsbMode)bytes[USB_MODE_FIELD],
+        .dac_volume = version < DAC_VOLUME_VERSION ? (uint8_t)SETTINGS_DEFAULT_DAC_VOLUME
+                      : version < VOLUME_CURVE_VERSION
+                          ? volume_level_from_legacy(bytes[DAC_VOLUME_FIELD])
                           : bytes[DAC_VOLUME_FIELD],
         .orientation = bytes[VERSION_FIELD] < ORIENTATION_VERSION
                            ? ORIENTATION_LANDSCAPE

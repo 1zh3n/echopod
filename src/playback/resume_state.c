@@ -1,9 +1,11 @@
 #include "playback/resume_state.h"
 
 #include "core/hash.h"
+#include "core/volume_curve.h"
 
 enum {
-    VERSION = 2,
+    VERSION = 3,
+    LEGACY_VERSION = 2,
     MAGIC_FIELD = 0,
     VERSION_FIELD = 4,
     SHUFFLE_FIELD = 6,
@@ -104,7 +106,8 @@ static bool header_valid(const uint8_t *bytes, uint32_t length)
         }
     }
     uint32_t checksum_field = length - 4;
-    return get_u16(bytes, VERSION_FIELD) == VERSION &&
+    uint16_t version = get_u16(bytes, VERSION_FIELD);
+    return version >= LEGACY_VERSION && version <= VERSION &&
            get_u32(bytes, (int)checksum_field) == hash_update(HASH_START, bytes, checksum_field);
 }
 
@@ -147,11 +150,13 @@ bool resume_state_decode(const uint8_t *bytes, uint32_t length, ResumeState *sta
     if (count > PLAY_QUEUE_TRACK_LIST_MAX || count > track_bytes / 2) {
         return false;
     }
+    uint16_t version = get_u16(bytes, VERSION_FIELD);
     *state = (ResumeState){
         .library_fingerprint = get_u32(bytes, FINGERPRINT_FIELD),
         .plan = decode_plan(bytes),
         .repeat = (RepeatMode)bytes[REPEAT_FIELD],
-        .volume = bytes[VOLUME_FIELD],
+        .volume =
+            version < VERSION ? volume_level_from_legacy(bytes[VOLUME_FIELD]) : bytes[VOLUME_FIELD],
         .cursor = {get_u16(bytes, CURSOR_POSITION_FIELD), get_u16(bytes, CURSOR_ALBUM_TRACK_FIELD)},
         .track = get_u16(bytes, TRACK_FIELD),
         .position_ms = get_u32(bytes, POSITION_FIELD),
@@ -159,8 +164,7 @@ bool resume_state_decode(const uint8_t *bytes, uint32_t length, ResumeState *sta
         .explicit_count = count,
     };
     for (uint16_t index = 0; index < count; index++) {
-        state->explicit_tracks[index] =
-            get_u16(bytes, EXPLICIT_TRACKS_FIELD + index * 2);
+        state->explicit_tracks[index] = get_u16(bytes, EXPLICIT_TRACKS_FIELD + index * 2);
     }
     state->plan.track_count = count;
     state->plan.tracks = count > 0 ? state->explicit_tracks : NULL;

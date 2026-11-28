@@ -14,7 +14,7 @@ enum {
     POSITION_MS = 139600,
     DURATION_MS = 245000,
     SCRUB_MS = 201000,
-    VOLUME = 32,
+    VOLUME = 54,
     TEXT_MS = 60000,
     NOW_MS = 60600,
     TICK_MS = 100

@@ -4,6 +4,7 @@
 #include "core/i18n.h"
 #include "face_text.h"
 #include "np_faces_test.h"
+#include "settings/settings.h"
 #include "tiny_font.h"
 #include "ui/label.h"
 
@@ -317,7 +318,7 @@ static void the_volume_feedback_names_the_level(void)
     char buffer[FACE_FEEDBACK_CAPACITY];
     const char *text = face_feedback_text(&frame, buffer, sizeof buffer);
     CHECK(text != NULL);
-    CHECK(strcmp(text, "Volume 32") == 0);
+    CHECK(strcmp(text, "Volume 54") == 0);
 }
 
 static void scrubbing_beats_the_volume_feedback(void)
@@ -416,12 +417,12 @@ static void the_progress_width_is_proportional_and_clamped(void)
     CHECK_EQUAL(750, face_progress_width(3000000000u, 4000000000u, 1000));
 }
 
-static void the_volume_width_scales_to_fifty_and_clamps(void)
+static void the_volume_width_scales_to_the_volume_max_and_clamps(void)
 {
     CHECK_EQUAL(0, face_volume_width(0, 150));
-    CHECK_EQUAL(96, face_volume_width(32, 150));
-    CHECK_EQUAL(75, face_volume_width(25, 150));
-    CHECK_EQUAL(150, face_volume_width(50, 150));
+    CHECK_EQUAL(54 * 150 / SETTINGS_VOLUME_MAX, face_volume_width(54, 150));
+    CHECK_EQUAL(25 * 150 / SETTINGS_VOLUME_MAX, face_volume_width(25, 150));
+    CHECK_EQUAL(150, face_volume_width(SETTINGS_VOLUME_MAX, 150));
     CHECK_EQUAL(150, face_volume_width(200, 150));
 }
 
@@ -449,7 +450,7 @@ static void the_bar_shows_the_volume_in_the_hot_colour_even_while_scrubbing(void
     scene.frame.scrubbing = true;
     NowPlayingFrame frame = np_test_frame(&scene);
     FaceFill fill = face_bar_fill(&frame, 150);
-    CHECK_EQUAL(96, fill.width);
+    CHECK_EQUAL(face_volume_width(54, 150), fill.width);
     CHECK(fill.hot);
 }
 
@@ -669,7 +670,7 @@ int main(void)
         TEST_CASE(the_volume_feedback_replaces_the_lyric_as_a_static_label),
         TEST_CASE(scrubbing_replaces_everything_with_the_hint),
         TEST_CASE(the_progress_width_is_proportional_and_clamped),
-        TEST_CASE(the_volume_width_scales_to_fifty_and_clamps),
+        TEST_CASE(the_volume_width_scales_to_the_volume_max_and_clamps),
         TEST_CASE(the_bar_shows_the_position_in_the_normal_colour),
         TEST_CASE(the_bar_follows_the_scrub_target_in_the_hot_colour),
         TEST_CASE(the_bar_shows_the_volume_in_the_hot_colour_even_while_scrubbing),

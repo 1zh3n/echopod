@@ -141,9 +141,10 @@ static void the_volume_bar_stays_longer_than_a_badge(void)
 static void the_volume_bar_fills_in_proportion_to_the_level(void)
 {
     CHECK_EQUAL(0, now_playing_volume_width(0, 100));
-    CHECK_EQUAL(50, now_playing_volume_width(25, 100));
-    CHECK_EQUAL(100, now_playing_volume_width(50, 100));
-    CHECK_EQUAL(100, now_playing_volume_width(80, 100));
+    CHECK_EQUAL(25 * 100 / SETTINGS_VOLUME_MAX, now_playing_volume_width(25, 100));
+    CHECK_EQUAL(50 * 100 / SETTINGS_VOLUME_MAX, now_playing_volume_width(50, 100));
+    CHECK_EQUAL(80 * 100 / SETTINGS_VOLUME_MAX, now_playing_volume_width(80, 100));
+    CHECK_EQUAL(100, now_playing_volume_width(SETTINGS_VOLUME_MAX, 100));
 }
 
 static void progress_fills_in_proportion_to_the_position(void)

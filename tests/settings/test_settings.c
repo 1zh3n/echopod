@@ -5,6 +5,7 @@
 enum {
     VERSION_FIELD = 4,
     BRIGHTNESS_FIELD = 6,
+    VOLUME_FIELD = 13,
     AUTO_OFF_FIELD = 14,
     USB_MODE_FIELD = 15,
     DAC_VOLUME_FIELD = 16,
@@ -56,10 +57,10 @@ static void defaults_are_comfortable(void)
     CHECK_EQUAL(START_MAIN_MENU, settings.start_screen);
     CHECK_EQUAL(SHUFFLE_OFF, settings.shuffle);
     CHECK_EQUAL(REPEAT_OFF, settings.repeat);
-    CHECK_EQUAL(12, settings.volume);
+    CHECK_EQUAL(30, settings.volume);
     CHECK_EQUAL(5u * 60000u, settings_auto_off_ms(&settings));
     CHECK_EQUAL(USB_MODE_STORAGE, settings.usb_mode);
-    CHECK_EQUAL(30, settings.dac_volume);
+    CHECK_EQUAL(60, settings.dac_volume);
     CHECK_EQUAL(ORIENTATION_LANDSCAPE, settings.orientation);
 }
 
@@ -81,7 +82,7 @@ static void a_version_one_file_keeps_its_values_and_gets_the_default_auto_off(vo
     rewrite_checksum(bytes);
     Settings decoded;
     CHECK(settings_decode(bytes, sizeof bytes, &decoded));
-    CHECK_EQUAL(42, decoded.volume);
+    CHECK_EQUAL(75, decoded.volume);
     CHECK_EQUAL(settings_defaults().auto_off, decoded.auto_off);
     CHECK_EQUAL(USB_MODE_STORAGE, decoded.usb_mode);
 }
@@ -105,7 +106,7 @@ static void the_usb_mode_and_dac_volume_are_saved_at_bytes_fifteen_and_sixteen(v
     Settings settings = custom_settings();
     uint8_t bytes[SETTINGS_FILE_SIZE];
     settings_encode(&settings, bytes);
-    CHECK_EQUAL(9, bytes[VERSION_FIELD]);
+    CHECK_EQUAL(10, bytes[VERSION_FIELD]);
     CHECK_EQUAL(USB_MODE_DAC, bytes[USB_MODE_FIELD]);
     CHECK_EQUAL(37, bytes[DAC_VOLUME_FIELD]);
 }
@@ -131,7 +132,7 @@ static void a_version_four_file_keeps_its_values_and_loads_in_landscape(void)
     CHECK_EQUAL(ORIENTATION_LANDSCAPE, decoded.orientation);
     CHECK_EQUAL(3, decoded.brightness);
     CHECK_EQUAL(USB_MODE_DAC, decoded.usb_mode);
-    CHECK_EQUAL(37, decoded.dac_volume);
+    CHECK_EQUAL(69, decoded.dac_volume);
 }
 
 static void a_version_four_file_ignores_whatever_sits_in_the_orientation_byte(void)
@@ -200,7 +201,7 @@ static void a_version_three_file_keeps_its_usb_mode_and_gets_the_default_dac_vol
     Settings decoded;
     CHECK(settings_decode(bytes, sizeof bytes, &decoded));
     CHECK_EQUAL(USB_MODE_DAC, decoded.usb_mode);
-    CHECK_EQUAL(SETTINGS_DEFAULT_DAC_VOLUME, decoded.dac_volume);
+    CHECK_EQUAL(60, decoded.dac_volume);
 }
 
 static void a_dac_volume_above_the_top_is_rejected(void)
@@ -390,9 +391,40 @@ static void put_checksum(uint8_t *bytes, int field)
     }
 }
 
+static void a_version_nine_volume_table_is_mapped_to_the_new_scale(void)
+{
+    Settings settings = custom_settings();
+    uint8_t bytes[SETTINGS_FILE_SIZE];
+    settings_encode(&settings, bytes);
+    bytes[VERSION_FIELD] = 9;
+    bytes[VOLUME_FIELD] = 4;
+    bytes[DAC_VOLUME_FIELD] = 30;
+    put_checksum(bytes, OPTIONS_CHECKSUM_FIELD);
+    Settings decoded;
+    CHECK(settings_decode(bytes, sizeof bytes, &decoded));
+    CHECK_EQUAL(30, decoded.volume);
+    CHECK_EQUAL(61, decoded.dac_volume);
+
+    bytes[VOLUME_FIELD] = 12;
+    bytes[DAC_VOLUME_FIELD] = 50;
+    put_checksum(bytes, OPTIONS_CHECKSUM_FIELD);
+    CHECK(settings_decode(bytes, sizeof bytes, &decoded));
+    CHECK_EQUAL(39, decoded.volume);
+    CHECK_EQUAL(85, decoded.dac_volume);
+
+    bytes[VOLUME_FIELD] = 1;
+    bytes[DAC_VOLUME_FIELD] = 2;
+    put_checksum(bytes, OPTIONS_CHECKSUM_FIELD);
+    CHECK(settings_decode(bytes, sizeof bytes, &decoded));
+    CHECK_EQUAL(1, decoded.volume);
+    CHECK_EQUAL(8, decoded.dac_volume);
+}
+
 static Settings settings_with_every_option_at_its_top(void)
 {
     Settings settings = custom_settings();
+    settings.volume = 1;
+    settings.dac_volume = 1;
     settings.filter = DAC_FILTER_COUNT - 1;
     settings.balance = SETTINGS_BALANCE_STEPS - 1;
     for (int option = 0; option < SETTINGS_OPTION_COUNT; option++) {
@@ -462,13 +494,13 @@ static void the_animation_speed_scales_animation_times(void)
     CHECK_EQUAL(70u, settings_animation_ms(NULL, 70));
 }
 
-static void a_version_9_file_is_48_bytes_with_the_checksum_at_the_end(void)
+static void a_version_10_file_is_48_bytes_with_the_checksum_at_the_end(void)
 {
     Settings settings = settings_with_every_option_at_its_top();
     uint8_t bytes[SETTINGS_FILE_SIZE];
     settings_encode(&settings, bytes);
     CHECK_EQUAL(48, SETTINGS_FILE_SIZE);
-    CHECK_EQUAL(9, bytes[VERSION_FIELD]);
+    CHECK_EQUAL(10, bytes[VERSION_FIELD]);
     CHECK_EQUAL(ANIMATION_FASTER, bytes[OPTIONS_FIELD + OPTION_ANIMATION_SPEED]);
     CHECK_EQUAL(1, bytes[OPTIONS_FIELD + OPTION_LISTEN_HISTORY]);
     CHECK_EQUAL(NP_FACE_OPTION_SLOTS - 1, bytes[NOW_PLAYING_FACE_FIELD]);
@@ -521,7 +553,7 @@ static void a_version_8_file_keeps_every_value_and_gets_the_new_defaults(void)
     CHECK_EQUAL(0, from_a_longer_file.options[OPTION_LISTEN_HISTORY]);
 }
 
-static void a_version_8_file_is_saved_again_as_version_9(void)
+static void a_version_8_file_is_saved_again_as_version_10(void)
 {
     Settings settings = settings_with_every_option_at_its_top();
     uint8_t bytes[SETTINGS_FILE_SIZE];
@@ -531,7 +563,7 @@ static void a_version_8_file_is_saved_again_as_version_9(void)
     uint8_t again[SETTINGS_FILE_SIZE];
     settings_encode(&decoded, again);
     Settings reloaded;
-    CHECK_EQUAL(9, again[VERSION_FIELD]);
+    CHECK_EQUAL(10, again[VERSION_FIELD]);
     CHECK(settings_decode(again, sizeof again, &reloaded));
     check_same_values(&settings, &reloaded);
     CHECK_EQUAL(ROCKER_MODE_COUNT - 1, reloaded.options[OPTION_ROCKER]);
@@ -552,14 +584,14 @@ static void a_short_or_corrupted_version_8_file_is_rejected(void)
     CHECK(!settings_decode(bytes, SETTINGS_V8_FILE_SIZE, &decoded));
 }
 
-static void the_now_playing_face_is_saved_at_byte_41_in_a_version_9_file(void)
+static void the_now_playing_face_is_saved_at_byte_41_in_a_version_10_file(void)
 {
     CHECK_EQUAL(NOW_PLAYING_FACE_FIELD, OPTIONS_FIELD + OPTION_NOW_PLAYING_FACE);
     Settings settings = custom_settings();
     settings.options[OPTION_NOW_PLAYING_FACE] = NP_FACE_TURNTABLE;
     uint8_t bytes[SETTINGS_FILE_SIZE];
     settings_encode(&settings, bytes);
-    CHECK_EQUAL(9, bytes[VERSION_FIELD]);
+    CHECK_EQUAL(10, bytes[VERSION_FIELD]);
     CHECK_EQUAL(NP_FACE_TURNTABLE, bytes[NOW_PLAYING_FACE_FIELD]);
     Settings decoded;
     CHECK(settings_decode(bytes, sizeof bytes, &decoded));
@@ -646,12 +678,13 @@ int main(void)
         TEST_CASE(the_new_options_are_saved_and_read_back),
         TEST_CASE(the_new_options_default_to_their_first_choice),
         TEST_CASE(the_animation_speed_scales_animation_times),
-        TEST_CASE(a_version_9_file_is_48_bytes_with_the_checksum_at_the_end),
+        TEST_CASE(a_version_nine_volume_table_is_mapped_to_the_new_scale),
+        TEST_CASE(a_version_10_file_is_48_bytes_with_the_checksum_at_the_end),
         TEST_CASE(a_file_from_the_internal_storage_switch_still_loads),
         TEST_CASE(a_version_8_file_keeps_every_value_and_gets_the_new_defaults),
-        TEST_CASE(a_version_8_file_is_saved_again_as_version_9),
+        TEST_CASE(a_version_8_file_is_saved_again_as_version_10),
         TEST_CASE(a_short_or_corrupted_version_8_file_is_rejected),
-        TEST_CASE(the_now_playing_face_is_saved_at_byte_41_in_a_version_9_file),
+        TEST_CASE(the_now_playing_face_is_saved_at_byte_41_in_a_version_10_file),
         TEST_CASE(a_file_with_nothing_in_byte_41_reads_the_standard_face),
         TEST_CASE(a_face_from_a_newer_firmware_is_accepted_up_to_the_eighth_slot),
         TEST_CASE(the_checksum_covers_the_now_playing_face_byte),
