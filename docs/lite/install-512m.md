@@ -37,7 +37,7 @@ cmake --build --preset release-lite
 
 ```text
 image:  MINIV944.IMG
-sha256: 855635b3d035b9ccf70c781fd93c51ee43f106e2367f8211f14cc8335d284644
+sha256: d5acfe888aeb812d55f18cf85c66838d376e8690cc3c54e0504ba9ee7559bf20
 ```
 
 `MINIV944` unifies the Menu keys: Short Menu always goes to Now Playing (then Up Next from Now
@@ -53,10 +53,9 @@ Songs; Short Back at the root switches to Favorites and back, and Long Back open
 so the list frames and rows keep their existing appearance. Favorites is a path-hashed song list
 of up to 256 tracks that plays as its own queue and restores through the resume file. Long Play
 on a track in All Songs, albums, folders, playlists or Up Next opens Play Next / Add to Up Next /
-Add or Remove Favorites. Settings absorbed the old Quick panel:
-Quick / Sound / Display / System, 400 ms long Menu for the next category or Settings, and no
-double Menu. Category changes animate only the badge, glyph and dots; the status meter is drawn
-inside each screen so it moves with the page. The build also keeps the runtime Light/Dark and
+Add or Remove Favorites. Settings opens on five cards — Random mode, Sleep timer, Sound,
+Display, System — with no category dots; the status meter is drawn inside each screen so it moves
+with the page. The build also keeps the runtime Light/Dark and
 landscape/portrait/portrait-flipped modes, the 8 px padding system, the 28×8 status meter, the
 existing list frames, no-text landscape Settings, black dark-mode shadows, and 200×112 / 146×112
 boot stills. CJK titles sort by pinyin/romaji and stay interleaved under A-Z.
@@ -75,20 +74,20 @@ The incremental images for this pass are:
 | `MINIV941` | song Favorites on Home, explicit favorites queue and resume, Add/Remove actions; audio-fed collection and Lite-only actions | `d1eb274b6fa84ae431c0aca12c9d3d13b59f67a771b02f1c011cbe4024a019c2` |
 | `MINIV942` | remove Home; All Songs / Favorites roots, root Back switching, Long Back Settings; Settings Back returns the root; root tabs deferred | `e3baece2bcd554eb401c837bbe7238037e475d4d39e9ae8b264d8a0be316eecc` |
 | `MINIV943` | cache the Favorites collection between root switches; stop scanning after the last favorite | `511d1e9d659d09e0f5b11e7bca01ea09da395e579627de334ed2d5755f828721` |
-| `MINIV944` | unified Menu keys, Settings five-card home, Favorites A-Z/duration, Now Playing cleanup | `855635b3d035b9ccf70c781fd93c51ee43f106e2367f8211f14cc8335d284644` |
+| `MINIV944` | unified Menu keys, Settings five-card home, Favorites A-Z/duration, Now Playing cleanup | `d5acfe888aeb812d55f18cf85c66838d376e8690cc3c54e0504ba9ee7559bf20` |
 
 The 8 GB model is not supported.
 
 ## Verification
 
 - Host tests: 168/168 passed (`ctest --preset dev -E "^format$"`).
-- Lite panel tests: 70/70 passed.
+- Lite panel tests: 74/74 passed.
 - `release-lite` build and updater check valid.
-- Headroom: code 136,416 / 157,292 bytes (20,876 free); loaded total 409,096 / 437,600 bytes
-  (28,504 free); resident tables 18,240 / 18,432 (192 free); rescan overlay 85,400 / 86,016
+- Headroom: code 136,504 / 157,292 bytes (20,788 free); loaded total 409,184 / 437,600 bytes
+  (28,416 free); resident tables 18,236 / 18,432 (196 free); rescan overlay 85,400 / 86,016
   (616 free).
 - Still pending: the final 512 MB device pass over sorting, boot, dots, headers, navigation,
-  local motion, root switching, favorites and portrait-flipped.
+  local motion, root switching, Settings cards, favorites and portrait-flipped.
 
 ## After flashing
 

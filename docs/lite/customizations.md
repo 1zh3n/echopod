@@ -52,7 +52,7 @@ front end. The list below is the useful summary; the git history has the exact c
   in Now Playing and Settings. Long Play on a Favorites row removes that song.
 - In the A-Z/# overlay, short Back or Menu closes it; long Back closes it to the root.
 - Volume hold only scrolls; section jump moved to long Menu.
-- The Lite Menu-key setting is hidden; Menu always opens Up Next.
+- The Lite Menu-key setting is hidden; Short Menu is the Now Playing/Up Next navigation key.
 
 ## Code and assets
 

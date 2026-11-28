@@ -15,11 +15,12 @@ a screenshot source.
 - Home card: 6 px radius, 104×104 landscape / 112×112 portrait, 64 px selected icon, no keyline.
 - Status: 28×8 meter at `(8, 4)` (blue = Bluetooth, cyan = playing). Now Playing uses a
   14×8 Bluetooth-only chip beside shuffle/play.
-- Settings: landscape has no text header; the meter is at `(8, 4)` and the category dots centre
-  on y=8. Portrait keeps the category name and ends its card 8 px above the bottom.
-- Now Playing: 8 px sides/top/bottom; content width 304/154; times end 8 px above the bottom.
+- Settings: five cards on the home screen; category pages have no text header landscape, no
+  category dots, and keep the half-badge/glyph. Portrait keeps the category name.
+- Now Playing: 8 px sides/top/bottom; content width 304/154; flat progress bar, no time row or
+  thumb; transient volume number only.
 - Lists portrait: 154×272 card ending 8 px above the bottom.
-- Settings Quick: intentional 12 px horizontal / 30–58 px vertical exception inside Settings.
+- Settings home: five compact cards inside the normal content area.
 - Battery/charging: still carried by the card shadow.
 - Dark: border `#52525B`, shadow `#000000`.
 
@@ -35,7 +36,7 @@ a screenshot source.
 
 ![Settings](../../images/lite/settings-final-v4.png)
 
-## Quick panel (historical; now Settings Quick)
+## Quick panel (historical; now Settings home items)
 
 ![Quick panel](../../images/lite/quick-panel-final-v3.png)
 
