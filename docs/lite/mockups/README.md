@@ -3,7 +3,7 @@
 These are the final design-reference sheets for the 512 MB Lite UI. The Home sheet is the pre-M8 design (Home was removed); Now Playing,
 Settings and Quick panel sheets are **design mockups, not device screenshots**; real font
 rendering and final asset placement can differ slightly. The Quick panel sheet is historical:
-Quick is now the first Settings category. The boot sheet is rendered from the actual `LBOO` /
+Quick is split into direct items on the Settings home. The boot sheet is rendered from the actual `LBOO` /
 `LBO2` firmware assets.
 
 The PNG files below are the design source. The HTML page is only a convenience index; it is not

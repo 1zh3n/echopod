@@ -11,7 +11,7 @@
   <img src="docs/images/lite/home-final-v6.png" alt="Home 的 Light/Dark、横屏/竖屏" width="100%">
 </p>
 
-<p align="center"><em>Home 是 M8 之前的旧设计（现已移除）；Now Playing、Settings 和旧版 Quick panel 是设计稿（2×），不是实机截图；Quick 现已并入 Settings 的第一个分类。下方开机图是从真实固件素材渲染的。</em></p>
+<p align="center"><em>Home 是 M8 之前的旧设计（现已移除）；Now Playing、Settings 和旧版 Quick panel 是设计稿（2×），不是实机截图；Quick 已拆成 Settings 首页的直接项。下方开机图是从真实固件素材渲染的。</em></p>
 
 ## 这是什么
 
@@ -42,13 +42,12 @@
   320×170 或 170×320（竖屏可翻转 180°）。
 - **Lite 根页面：** All Songs 和 Favorites，没有 Home；根层短按 Back 切换两者，短按 Menu 打开 Now Playing，长按 Back 打开 Settings。左上角 28×8 状态 meter
   显示蓝牙和播放。
-- **Lite Settings：** 一屏一类；长按 Menu 切换类别。横屏去掉文字标题，由半圆 icon、类别圆点和菜单项表达；竖屏保留类别名。Settings 默认打开 Quick，内含播放模式和睡眠定时两张 icon-only 卡片。
-- **Settings Quick：** 两张 icon-only 卡片，播放模式和睡眠定时；定时显示秒级倒计时，并可等当前歌曲结束后关机。
-- **Favorites：** 最多 256 首歌曲，按路径哈希保存；作为独立队列播放，重启后恢复；任意歌曲长按 Play 可 Add/Remove Favorites。
-- **Now Playing：** 18px 原生模式/状态图标，无封面框；shuffle/play 旁是 14×8 的蓝牙-only chip。音量短按调音量、双击切歌、长按 seek；进度/时间本身就是反馈。
+- **Lite Settings：** 五张卡片首页——Random mode、Sleep timer、Sound、Display、System。前两项直接操作，后三项进入分类页；类别圆点已移除，横屏保留半圆 icon 和 glyph。睡眠卡片显示实时倒计时。Settings 通过长按 Back 进入。
+- **Favorites：** 最多 256 首歌曲，按路径哈希保存；和 All Songs 一样显示歌名+时长并支持 A-Z；作为独立队列播放，重启后恢复；任意歌曲长按 Play 可 Add/Remove Favorites。
+- **Now Playing：** 18px 原生模式/状态图标，无封面框；shuffle/play 旁是 14×8 的蓝牙-only chip。音量短按调音量、双击切歌、长按 seek；只保留平进度条作为 seek 反馈，不显示时间行和 thumb。
 - **启动和充电：** 开机图为 200×112 横版 / 146×112 竖版图片，带 5px 硬阴影，没有卡片和边框；充电仍用 96×64 动画卡。
 - **排序：** GB2312 中文按拼音、日文假名按罗马字，和英文一起按 A-Z 混排；未收录汉字落到 `#`。在可按字母分区的列表里长按 Menu 打开 A-Z/# 跳转。
-- **按键：** Now Playing 音量单击/双击/长按；短按 Menu 打开 Up Next，长按 Menu 打开 Settings（可分区列表中为 A-Z/# 跳转）；根层短按 Back 在 All Songs 和 Favorites 之间切换，长按 Back 打开 Settings。没有双击 Menu，也没有独立播放面板。
+- **按键：** Now Playing 音量单击/双击/长按；短按 Menu 打开 Now Playing（已在 Now Playing 时打开 Up Next）；长按 Menu 是功能键——All Songs/Favorites 的 A-Z、A-Z 层的下一行、Now Playing 的当前歌曲操作；长按 Back 打开 Settings，在 Settings 内回根。没有双击 Menu，也没有独立播放面板。
 - **空间清理：** Lite 图标 mask 移到 glyph face；移除 Lite theme store/assets；删掉未使用的 Lite 路径。
 - **上游：** 写这份说明时已合入 EchoPod 0.13.2，包括播放、USB、FAT 和 HE-AAC 修复。
 

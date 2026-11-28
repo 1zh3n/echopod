@@ -15,19 +15,23 @@ front end. The list below is the useful summary; the git history has the exact c
 - Neo-brutalist Lite visual language: 2 px borders, hard shadows, flat colour badges.
 - No Home screen. All Songs and Favorites are roots; Short Back at the root switches them.
   The deferred root-tab icons are not drawn yet, so the existing list frames stay unchanged.
-- Song Favorites: a path-hashed list of up to 256 tracks, played as its own queue, with
-  Add/Remove in the song actions menu and direct removal from the Favorites list.
+- Song Favorites: a path-hashed list of up to 256 tracks, shown like All Songs (title + duration,
+  A-Z jump), played as its own queue, with Add/Remove in the song actions menu and direct removal
+  from the Favorites list. The list is built through a reusable TrackListScreen for future
+  explicit track collections.
 - 28×8 global status meter drawn inside each screen: blue = Bluetooth, cyan = playing; Now
   Playing uses a 14×8 Bluetooth-only chip beside shuffle/play. The meter moves with the page.
-- Settings is one category per screen: Quick / Sound / Display / System. Long Menu moves to
-  the next category; long Play no longer does.
-- Settings opens on Quick, with icon-only playback-mode and sleep-timer cards. The standalone
-  Quick panel is gone; Long Back opens Settings from a root, a list or Now Playing.
-- Landscape Settings has no text header; the half-badge, category dots and rows carry the
+- Settings opens on five cards: Random mode, Sleep timer, Sound, Display, System. Random and
+  Sleep are direct items; the other three open category pages. Category dots are removed.
+- Settings is reached by Long Back; Long Menu is the screen's function key and never opens
+  Settings. Inside Settings, Long Back returns to the current root.
+- Landscape Settings has no text header; the half-badge, glyph and rows carry the
   category. Portrait keeps the category name.
-- Settings category changes animate only the badge, glyph and dots; rows stay static. Page
-  slides keep their existing motion.
+- Settings category pages keep the half-badge, glyph and colour; rows stay static. Page slides
+  keep their existing motion.
 - Now Playing uses native 18 px mode/state icons, no cover frame, and a Bluetooth-only chip.
+  The current/total time row and progress thumb are removed; only the volume number appears
+  temporarily while changing volume.
 - Boot uses 200×112 landscape / 146×112 portrait stills with a 5px hard shadow, no card or frame.
 - Charging keeps the 96×64 animation card.
 - Runtime Light/Dark and Landscape/Portrait/Portrait-flipped in Settings → Display.
@@ -39,9 +43,11 @@ front end. The list below is the useful summary; the git history has the exact c
 - Now Playing: volume single press = volume, double press = previous/next, long press = seek.
 - Boot goes directly to All Songs. Short Back at the root switches All Songs <-> Favorites;
   deeper Short Back goes up one level.
-- Menu is always Up Next in Now Playing; long Menu opens Settings. There is no double Menu.
-- Long Menu in All Songs opens the A-Z/# jump; in Favorites and other non-lettered screens it
-  opens Settings. Long Back opens Settings from a root, a list or Now Playing.
+- Short Menu opens Now Playing; on Now Playing it opens Up Next. There is no double Menu.
+- Long Menu is the current screen's function: A-Z in All Songs/Favorites, next row in A-Z,
+  current song actions in Now Playing, no action in Up Next/Settings.
+- Long Back opens Settings from a root, a list, Now Playing or A-Z; inside Settings it returns
+  to the current root.
 - Long Play on a track opens Play Next / Add to Up Next / Add or Remove Favorites. It is a no-op
   in Now Playing and Settings. Long Play on a Favorites row removes that song.
 - In the A-Z/# overlay, short Back or Menu closes it; long Back closes it to the root.

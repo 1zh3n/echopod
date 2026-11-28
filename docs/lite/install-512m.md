@@ -21,7 +21,7 @@ The 512 MB updater scans the card root for:
 It does **not** scan `HIFIEC90.IMG`. Copy the build to the card root and rename it, for example:
 
 ```text
-build/release-lite/HIFIEC90.IMG  ->  /MINIV943.IMG
+build/release-lite/HIFIEC90.IMG  ->  /MINIV944.IMG
 ```
 
 Then use the player's updater.
@@ -36,17 +36,20 @@ cmake --build --preset release-lite
 ## Current build
 
 ```text
-image:  MINIV943.IMG
-sha256: 511d1e9d659d09e0f5b11e7bca01ea09da395e579627de334ed2d5755f828721
+image:  MINIV944.IMG
+sha256: 855635b3d035b9ccf70c781fd93c51ee43f106e2367f8211f14cc8335d284644
 ```
 
-`MINIV943` caches the Favorites list between root switches. The first visit still builds it,
-but switching All Songs <-> Favorites afterwards reuses the collected list until the favorites
-store or the library changes; this removes the full library scan that made the switch feel
-laggy with even one favorite. It also stops scanning once every favorite has been found.
+`MINIV944` unifies the Menu keys: Short Menu always goes to Now Playing (then Up Next from Now
+Playing), while Long Menu is the screen function key — A-Z in All Songs/Favorites, next row in the
+A-Z overlay, current-song actions in Now Playing, and no action in Up Next/Settings. Long Back
+opens Settings; inside Settings it returns to the current root. Settings opens on five cards:
+Random mode, Sleep timer, Sound, Display, System. Category dots are removed. Favorites now looks
+like All Songs (title + duration, A-Z) through a reusable track-list screen. Now Playing removes
+the time row and progress thumb but keeps the transient volume number.
 
-`MINIV943` removes the Home carousel. Boot goes directly to All Songs; Short Back at the root
-switches to Favorites and back, and Long Back opens Settings. The root-tab icons are deferred,
+It also keeps the Favorites collection cache between root switches. Boot goes directly to All
+Songs; Short Back at the root switches to Favorites and back, and Long Back opens Settings. The root-tab icons are deferred,
 so the list frames and rows keep their existing appearance. Favorites is a path-hashed song list
 of up to 256 tracks that plays as its own queue and restores through the resume file. Long Play
 on a track in All Songs, albums, folders, playlists or Up Next opens Play Next / Add to Up Next /
@@ -72,16 +75,17 @@ The incremental images for this pass are:
 | `MINIV941` | song Favorites on Home, explicit favorites queue and resume, Add/Remove actions; audio-fed collection and Lite-only actions | `d1eb274b6fa84ae431c0aca12c9d3d13b59f67a771b02f1c011cbe4024a019c2` |
 | `MINIV942` | remove Home; All Songs / Favorites roots, root Back switching, Long Back Settings; Settings Back returns the root; root tabs deferred | `e3baece2bcd554eb401c837bbe7238037e475d4d39e9ae8b264d8a0be316eecc` |
 | `MINIV943` | cache the Favorites collection between root switches; stop scanning after the last favorite | `511d1e9d659d09e0f5b11e7bca01ea09da395e579627de334ed2d5755f828721` |
+| `MINIV944` | unified Menu keys, Settings five-card home, Favorites A-Z/duration, Now Playing cleanup | `855635b3d035b9ccf70c781fd93c51ee43f106e2367f8211f14cc8335d284644` |
 
 The 8 GB model is not supported.
 
 ## Verification
 
 - Host tests: 168/168 passed (`ctest --preset dev -E "^format$"`).
-- Lite panel tests: 66/66 passed.
+- Lite panel tests: 70/70 passed.
 - `release-lite` build and updater check valid.
-- Headroom: code 137,232 / 157,292 bytes (20,060 free); loaded total 409,472 / 437,600 bytes
-  (28,128 free); resident tables 18,240 / 18,432 (192 free); rescan overlay 85,400 / 86,016
+- Headroom: code 136,416 / 157,292 bytes (20,876 free); loaded total 409,096 / 437,600 bytes
+  (28,504 free); resident tables 18,240 / 18,432 (192 free); rescan overlay 85,400 / 86,016
   (616 free).
 - Still pending: the final 512 MB device pass over sorting, boot, dots, headers, navigation,
   local motion, root switching, favorites and portrait-flipped.

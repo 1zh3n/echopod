@@ -11,7 +11,7 @@
   <img src="docs/images/lite/home-final-v6.png" alt="Home screen in light and dark, landscape and portrait" width="100%">
 </p>
 
-<p align="center"><em>The Home sheet is the pre-M8 design (Home was removed); Now Playing, Settings and the historical Quick panel sheet are design mockups (2×), not device screenshots. Quick is now the first Settings category. The boot sheet below is rendered from the actual firmware assets.</em></p>
+<p align="center"><em>The Home sheet is the pre-M8 design (Home was removed); Now Playing, Settings and the historical Quick panel sheet are design mockups (2×), not device screenshots. Quick is split into direct items on the Settings home. The boot sheet below is rendered from the actual firmware assets.</em></p>
 
 ## What this is
 
@@ -46,24 +46,24 @@ Keep the official firmware and a known recovery path before flashing.
 - **Lite roots:** All Songs and Favorites, no Home screen; Short Back at the root switches
   them, Short Menu opens Now Playing and Long Back opens Settings. A 28×8 status meter at
   top-left shows Bluetooth and playback. The two root icons are deferred for now.
-- **Lite Settings:** one category per screen; 400 ms long Menu switches category. Landscape
-  drops the text header, leaving the half-badge, category dots and rows; portrait keeps the
-  category name. Settings opens on Quick, with icon-only playback-mode and sleep-timer cards;
-  the timer shows a second-by-second countdown and can wait for the current track before
-  powering off.
-- **Favorites:** a song list of up to 256 path-hashed tracks, played as its own queue and
-  restored after a restart; long Play on any track offers Add/Remove Favorites.
+- **Lite Settings:** a five-card home — Random mode, Sleep timer, Sound, Display, System.
+  Random/Sleep are direct; Sound/Display/System open category pages. Category dots are gone;
+  landscape keeps the half-badge and glyph. The sleep card shows a live countdown.
+  Settings is reached by Long Back.
+- **Favorites:** a song list of up to 256 path-hashed tracks, shown like All Songs (title +
+  duration, A-Z jump), played as its own queue and restored after a restart; long Play on any
+  track offers Add/Remove Favorites.
 - **Now Playing:** 18 px native mode/state icons, no cover frame; a 14×8 Bluetooth-only
   chip sits next to the shuffle/play controls. Short volume changes volume, double skips,
-  long press seeks; the progress/time display is the seek feedback.
+  long press seeks; the flat progress bar is the seek feedback, with no time row or thumb.
 - **Boot and charging:** boot uses 200×112 landscape / 146×112 portrait stills with a 5px hard
   shadow, no card or frame; charging keeps the 96×64 animation card.
 - **Sorting:** GB2312 Chinese sorts by pinyin and kana by romaji, interleaved with Latin
   under A-Z; unknown kanji falls under `#`. Long Menu in a lettered list opens the A-Z/# jump.
-- **Controls:** volume single/double/long press in Now Playing; short Menu opens Up Next, long
-  Menu opens Settings (or the A-Z/# jump in lettered lists); long Back opens Settings; short
-  Back at the root switches All Songs and Favorites. There is no double Menu or standalone
-  playback panel.
+- **Controls:** volume single/double/long press in Now Playing; Short Menu opens Now Playing
+  (Up Next from Now Playing); Long Menu is A-Z in All Songs/Favorites, next row in A-Z, or
+  current-song actions in Now Playing; Long Back opens Settings and returns to the root inside
+  Settings. There is no double Menu or standalone playback panel.
 - **Space work:** Lite icon masks moved to a glyph face; Lite theme store/assets removed;
   unused Lite paths dropped.
 - **Upstream:** current with EchoPod 0.13.2 when this README was written, including its playback,

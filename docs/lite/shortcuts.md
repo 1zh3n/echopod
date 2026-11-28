@@ -4,53 +4,62 @@ These are the Lite controls. The boot/recovery button combinations are not chang
 
 | Screen | Volume | Play | Menu | Back |
 |---|---|---|---|---|
-| Root list (All Songs / Favorites) | change row; hold: repeat, faster after 1.5 s | short: open | short: Now Playing; long: A-Z in All Songs, Settings in Favorites | short: switch root; long: Settings |
-| Deeper list | change row; hold: repeat, faster after 1.5 s | short: open; long: song actions on tracks | short: Now Playing; long: Settings (A-Z in lettered lists) | short: up one level; long: Settings |
-| Song actions | change row | short: choose | short: close | short: close |
-| Favorites | change row | short: play the favorites queue | short: Now Playing; long: Settings | short: back to All Songs at the root; long: Settings |
-| Now Playing | short: volume; double: previous/next; long: seek | short: pause/play | short: Up Next; long: Settings | short: leave; long: Settings |
-| Up Next | change row | short: play the row | short: Now Playing; long: Settings | short: back; long: Settings |
-| Settings | change row | short: change value / open | short: Now Playing; long: next category | short: return to the root; long: return to the root |
-| A-Z / # jump | select letter | short: jump | short: close | short: close; long: close |
+| Root list (All Songs / Favorites) | change row; hold: repeat, faster after 1.5 s | short: open | short: Now Playing; long: A-Z | short: switch root; long: Settings |
+| Deeper list | change row; hold: repeat, faster after 1.5 s | short: open; long: song actions on tracks | short: Now Playing; long: A-Z in lettered lists | short: up one level; long: Settings |
+| Song actions | change row | short: choose | short: Now Playing | short: close |
+| A-Z / # jump | select letter | short: jump | short: Now Playing; long: next grid row | short: close; long: Settings |
+| Now Playing | short: volume; double: previous/next; long: seek | short: pause/play | short: Up Next; long: current song actions | short: leave; long: Settings |
+| Up Next | change row | short: play the row | short: Now Playing; long: no action | short: back; long: Settings |
+| Settings home | change card | short: change value / open | short: Now Playing; long: no action | short: current root; long: current root |
+| Settings category | change row | short: change value / open | short: Now Playing; long: no action | short: Settings home; long: current root |
+| Settings subpage | change row | short: change value / open | short: Now Playing; long: no action | short: previous Settings page; long: current root |
 
-The root is All Songs or Favorites. Short Back at the root switches between them; deeper Short
-Back goes up one list level. There is no Home screen. Long Back opens Settings from a root, a
-list or Now Playing. Settings Short Back returns to whichever root was current when it opened.
+**Short Menu is navigation:** it opens Now Playing; on Now Playing it opens Up Next. It does this on
+every screen where a track is loaded, including the A-Z overlay.
 
-Long Menu uses a 400 ms threshold. There is no double-Menu gesture: a short Menu acts
-immediately. In Settings, Long Menu advances to the next category.
+**Long Menu is the current screen's function key:**
 
-The Menu-key setting is removed from Lite: Menu always opens Up Next in Now Playing. Volume
-double-press still does previous/next.
+- All Songs / Favorites: A-Z jump.
+- A-Z overlay: move to the next grid row (7 cells landscape, 4 portrait, wrapping).
+- Now Playing: actions for the current track.
+- Up Next and Settings: no action.
 
-The two 24×24 root icons and their selection outline are deferred. List headers, rows, cards and
-the status meter keep their existing M7 appearance.
+**Long Back is the single Settings entry:** from a root, list, Now Playing, Up Next or A-Z it opens
+Settings. Inside Settings (home, category or a subpage such as Equalizer/Folders/Date-Time/
+Bluetooth) it returns to the current root.
 
-## Song actions
+Short Back at the root switches All Songs and Favorites. In a Settings category it returns to the
+Settings home; in a Settings subpage it returns to the category page.
 
-Long Play on a track in All Songs, an album, a folder, a playlist or Up Next opens the same
-actions menu:
+There is no double Menu. The Menu long-press threshold is 400 ms.
 
-- Play Next;
-- Add to Up Next;
-- Add to Favorites, or Remove from Favorites when the track is already saved.
+## Favorites
 
-Adding or removing shows the existing favorites toast. The list is capped at 256 songs and
-survives a rescan because it stores a hash of the track path, not a library index.
+Favorites is a track list like All Songs:
 
-Long Play on a row in the Favorites list removes that song directly.
+- rows show title and duration;
+- the list is sorted by title and has the same A-Z/# jump;
+- selecting a row starts the Favorites queue, so next/previous stay inside it;
+- Long Play removes the selected song;
+- the list is cached between root switches until a favorite or the library changes.
 
-## Settings Quick cards
+## Settings
 
-Settings opens on Quick, which has two icon-only cards:
+Settings opens on five cards:
 
-- playback mode: Random → Loop → Loop One → Random;
-- sleep timer: Off → 15 → 30 → 45 → 60 → 90 → 120 → Off.
+```text
+Random mode
+Sleep timer
+Sound        >
+Display      >
+System       >
+```
 
-The sleep timer shows its remaining time and can wait for the current track before shutting
-down. Long Play is a no-op in Settings.
+Random and Sleep are direct items. Sound, Display and System open category pages. Category dots
+are gone; the half-badge, glyph and colour identify the category. The sleep card shows a live
+countdown.
 
-## Long volume
+## Now Playing
 
-Long volume only scrolls rows. The old ~3 s section jump is gone; use long Menu in a lettered
-list for the A-Z/# overlay.
+Now Playing has no current/total time row and no progress thumb. The progress bar is a flat line;
+seek is shown only by the bar length. Changing volume still shows the volume number temporarily.

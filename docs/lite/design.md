@@ -4,7 +4,7 @@ The final Lite design is a neo-brutalist interface with runtime Light/Dark and l
 The mockup sheet is [mockups/index.html](mockups/index.html).
 
 > The Home sheet is the pre-M8 design (Home was removed); Now Playing, Settings and Quick panel are design mockups, not device screenshots.
-> The standalone Quick panel sheet is historical: Quick is now the first Settings category.
+> The standalone Quick panel sheet is historical: Quick is split into direct items on the Settings home.
 > The boot image is rendered from the actual firmware assets.
 
 ## Palette
@@ -35,9 +35,8 @@ cyan `#35C7E8`, amber `#F59E0B`, success `#22C55E`.
 - Portrait headers stay editorial: Settings card starts at y=58, Lists at y=40.
   Their cards end 8 px above the bottom edge.
 - Now Playing uses 8 px top/sides/bottom. Content width is 304 px landscape and
-  154 px portrait; the time row ends 8 px above the bottom edge.
-- Settings Quick is an intentional two-card exception inside the normal content area:
-  12 px horizontal gutter and 30/58 px vertical starts.
+  154 px portrait; the progress bar ends 8 px above the bottom edge.
+- Settings home is an intentional compact-card exception inside the normal content area.
 - Root lists use the existing no-title list frame and card at `y=28`; the root-tab chrome is deferred.
 
 ## Layout
@@ -62,9 +61,11 @@ cyan `#35C7E8`, amber `#F59E0B`, success `#22C55E`.
 ### Now Playing
 
 - Landscape: title at (8, 8), Bluetooth chip at x=243, state icons at x=269/294,
-  spectrum 304×70, progress at y=138, times at y=144.
+  spectrum 304×70, progress at y=138.
 - Portrait: Bluetooth chip at x=93, state icons at x=119/144, title at (8, 24), spectrum
-  154×194 at y=86, progress at y=288, times at y=294. The time row ends 8 px above the bottom.
+  154×194 at y=86, progress at y=288.
+- The time row and progress thumb are removed. The bottom area is empty except for the transient
+  volume number while changing volume.
 
 ### Sorting
 
@@ -82,20 +83,13 @@ was prototyped and deferred because it duplicated that feedback and hid the Blue
 
 ### Settings
 
-- Landscape: no text header; the half-badge, category dots and rows carry the category. The
-  status meter is at (8, 4) and the category dots centre on y=8; the card stays at y=28;
-  five 26 px rows.
-- Portrait: no large icon; category title, colour rule, two-line rows. Seven 34 px rows are
-  visible in a 154×254 card at (8, 58). The card ends 8 px above the bottom edge. The category
-  title stays because portrait has no half-badge.
-- Categories: Quick (two cards), Sound (6 rows), Display (6 rows), System (10 rows).
-
-### Settings Quick
-
-- Landscape: playback-mode card at (12, 30) and sleep card at (168, 30), both 140×112.
-- Portrait: both 146×118, stacked at y=58 and y=186.
-- The category badge, glyph and dots animate on a category change; the cards and rows stay
-  static.
+- Settings home: five compact cards — Random mode, Sleep timer, Sound, Display, System.
+  Landscape cards are 304×23 at y=30 with 3 px gaps; portrait cards are 154×44 at y=58 with
+  4 px gaps. Selected cards get the selection fill and border.
+- Random and Sleep are direct items; Sound/Display/System open category pages.
+- Category pages: no text header landscape; the half-badge and glyph identify the category.
+  Portrait keeps the category title and colour rule. Category dots are removed.
+- Categories: Sound (6 rows), Display (6 rows), System (10 rows).
 
 ### Sleep timer
 
