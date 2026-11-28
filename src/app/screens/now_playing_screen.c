@@ -3,6 +3,7 @@
 #include <stddef.h>
 
 #include "core/format.h"
+#include "core/hash.h"
 #include "core/i18n.h"
 #include "core/string_builder.h"
 #include "gfx/image.h"
@@ -16,6 +17,7 @@
 #include "ui/header.h"
 #include "ui/icons.h"
 #include "ui/label.h"
+#include "ui/lite_frame.h"
 #include "ui/lite_icons.h"
 #include "ui/lite_status.h"
 #include "ui/marquee.h"
@@ -1247,41 +1249,77 @@ const ThemeColors *now_playing_home_colors(void)
 #endif
 
 #ifdef ECHO_LITE
-static void draw_lite_spectrum(const NowPlayingScreen *now_playing, Canvas *canvas,
-                               const Layout *layout)
+enum {
+    BOUNCE_SIZE = 8,
+    BOUNCE_INSET = 2,
+    BOUNCE_SPEED_X = 23,
+    BOUNCE_SPEED_Y = 14
+};
+
+static const Color BOUNCE_COLORS[] = {
+    COLOR_RGB(255, 212, 59), COLOR_RGB(47, 168, 255), COLOR_RGB(139, 92, 246),
+    COLOR_RGB(255, 159, 28), COLOR_RGB(34, 197, 94),
+};
+
+static uint32_t bounce_distance(uint32_t position_ms, uint32_t speed)
+{
+    return position_ms / 1000u * speed + position_ms % 1000u * speed / 1000u;
+}
+
+static uint32_t bounce_phase(int span, uint32_t seed, unsigned start_shift, unsigned flip_shift)
+{
+    if (span <= 1) {
+        return 0;
+    }
+    uint32_t start = 1u + ((seed >> start_shift) % (uint32_t)(span - 1));
+    return (seed & (1u << flip_shift)) != 0 ? (uint32_t)(2 * span) - start : start;
+}
+
+static int bounce_position(int span, uint32_t phase, uint32_t distance)
+{
+    if (span <= 0) {
+        return 0;
+    }
+    uint32_t period = (uint32_t)span * 2u;
+    uint32_t value = (phase + distance) % period;
+    return value <= (uint32_t)span ? (int)value : (int)(period - value);
+}
+
+static uint32_t bounce_hits(int span, uint32_t phase, uint32_t distance)
+{
+    if (span <= 0) {
+        return 0;
+    }
+    return (phase + distance) / (uint32_t)span - phase / (uint32_t)span;
+}
+
+static void draw_lite_bounce(const NowPlayingScreen *now_playing, Canvas *canvas,
+                             const Layout *layout)
 {
     Rect area = layout->boxes[THEME_LAYOUT_LYRICS];
-    if (area.width <= 0 || area.height <= 0) {
+    if (area.width < BOUNCE_SIZE || area.height < BOUNCE_SIZE) {
         return;
     }
-    static const uint8_t heights[] = {
-        18, 30, 14, 42, 26, 54, 34, 20, 46, 60, 28, 38, 16,
-        50, 32, 22, 44, 58, 30, 18, 40, 52, 24, 36, 14, 46};
-    const Theme *theme = now_playing->config.theme;
-    int baseline = area.y + area.height - 4;
-    int max_height = area.height - 6;
-    int phase = now_playing->status.state == PLAYER_PLAYING ? (int)(now_playing->now_ms / 120) : 0;
-    int bars = area.width < 200 ? 14 : 26;
-    int grow = area.height > 100 ? 2 : 1;
-    Canvas bars_canvas = canvas_clipped(canvas, area);
-    for (int index = 0; index < bars; index++) {
-        int height = heights[index];
-        if (now_playing->status.state == PLAYER_PLAYING) {
-            height = 10 + ((height + phase * 3 + index * 7) % 42);
-        }
-        height *= grow;
-        if (height > max_height) {
-            height = max_height;
-        }
-        int x = area.x + 6 + index * 10;
-        bool yellow_bar = bars == 14 ? index == 2 || index == 6 || index == 10
-                                     : index == 5 || index == 12 || index == 19;
-        Color color = yellow_bar ? COLOR_RGB(255, 212, 59)
-                                 : theme->colors->selection_background;
-        canvas_fill_rect(&bars_canvas, (Rect){x, baseline - height, 6, height}, color);
-    }
-    canvas_fill_rect(&bars_canvas, (Rect){area.x, baseline, area.width, 2},
-                     theme->colors->text);
+    int inset_x = area.width >= BOUNCE_SIZE + 2 * BOUNCE_INSET ? BOUNCE_INSET : 0;
+    int inset_y = area.height >= BOUNCE_SIZE + 2 * BOUNCE_INSET ? BOUNCE_INSET : 0;
+    int span_x = area.width - BOUNCE_SIZE - 2 * inset_x;
+    int span_y = area.height - BOUNCE_SIZE - 2 * inset_y;
+    uint16_t track = now_playing->status.track;
+    uint32_t seed = hash_update(HASH_START, &track, sizeof track);
+    uint32_t phase_x = bounce_phase(span_x, seed, 0, 8);
+    uint32_t phase_y = bounce_phase(span_y, seed, 12, 24);
+    uint32_t position_ms = shown_position(now_playing);
+    uint32_t distance_x = bounce_distance(position_ms, BOUNCE_SPEED_X);
+    uint32_t distance_y = bounce_distance(position_ms, BOUNCE_SPEED_Y);
+    int x = area.x + inset_x + bounce_position(span_x, phase_x, distance_x);
+    int y = area.y + inset_y + bounce_position(span_y, phase_y, distance_y);
+    uint32_t hits =
+        bounce_hits(span_x, phase_x, distance_x) + bounce_hits(span_y, phase_y, distance_y);
+    Color color = BOUNCE_COLORS[hits % (sizeof BOUNCE_COLORS / sizeof BOUNCE_COLORS[0])];
+    Canvas clipped = canvas_clipped(canvas, area);
+    Color shadow = lite_card_shadow_color(now_playing->config.theme);
+    canvas_fill_rect(&clipped, (Rect){x + 1, y + 1, BOUNCE_SIZE, BOUNCE_SIZE}, shadow);
+    canvas_fill_rect(&clipped, (Rect){x, y, BOUNCE_SIZE, BOUNCE_SIZE}, color);
 }
 #endif
 
@@ -1319,7 +1357,7 @@ static void draw(void *context, Canvas *canvas)
     if (layout.lyrics) {
         draw_lyrics(now_playing, canvas, &layout);
     } else {
-        draw_lite_spectrum(now_playing, canvas, &layout);
+        draw_lite_bounce(now_playing, canvas, &layout);
     }
 #else
     if (layout.lyrics) {

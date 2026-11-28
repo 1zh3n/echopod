@@ -72,6 +72,59 @@ static bool area_has_color(int x, int y, int width, int height, Color color)
     return false;
 }
 
+static bool bounce_color(Color color)
+{
+    static const Color colors[] = {
+        COLOR_RGB(255, 212, 59), COLOR_RGB(47, 168, 255), COLOR_RGB(139, 92, 246),
+        COLOR_RGB(255, 159, 28), COLOR_RGB(34, 197, 94),
+    };
+    for (size_t index = 0; index < sizeof colors / sizeof colors[0]; index++) {
+        if (color == colors[index]) {
+            return true;
+        }
+    }
+    return false;
+}
+
+static bool bounce_square(Rect area, Rect *square, Color *color)
+{
+    int min_x = area.x + area.width;
+    int min_y = area.y + area.height;
+    int max_x = area.x - 1;
+    int max_y = area.y - 1;
+    Color found = 0;
+    for (int row = area.y; row < area.y + area.height; row++) {
+        for (int column = area.x; column < area.x + area.width; column++) {
+            Color pixel = fake_hal_pixel(column, row);
+            if (!bounce_color(pixel)) {
+                continue;
+            }
+            if (found != 0 && pixel != found) {
+                return false;
+            }
+            found = pixel;
+            if (column < min_x) {
+                min_x = column;
+            }
+            if (column > max_x) {
+                max_x = column;
+            }
+            if (row < min_y) {
+                min_y = row;
+            }
+            if (row > max_y) {
+                max_y = row;
+            }
+        }
+    }
+    if (found == 0) {
+        return false;
+    }
+    *square = (Rect){min_x, min_y, max_x - min_x + 1, max_y - min_y + 1};
+    *color = found;
+    return true;
+}
+
 static void start_app_with_start_screen(StartScreen start)
 {
     uint32_t size = 0;
@@ -581,6 +634,86 @@ static void now_playing_has_no_time_or_thumb(void)
     tap(KEY_VOLUME_UP);
     wait_ms(300);
     CHECK(area_has_color(8, 148, 304, 14, DEFAULT_THEME.colors->text));
+}
+
+static void now_playing_bounce_is_one_small_square(void)
+{
+    start_app_with_library();
+    open_all_songs_and_play();
+    wait_ms(300);
+    Rect square;
+    Color color;
+    CHECK(bounce_square((Rect){8, 88, 304, 52}, &square, &color));
+    CHECK_EQUAL(8, square.width);
+    CHECK_EQUAL(8, square.height);
+}
+
+static void now_playing_bounce_moves_inside_the_lyrics_area(void)
+{
+    start_app_with_library();
+    open_all_songs_and_play();
+    wait_ms(300);
+    Rect area = {8, 88, 304, 52};
+    Rect first;
+    Rect later;
+    Color color;
+    CHECK(bounce_square(area, &first, &color));
+    fake_hal_audio_set_position(5000);
+    wait_ms(200);
+    CHECK(bounce_square(area, &later, &color));
+    CHECK(first.x != later.x || first.y != later.y);
+    CHECK(later.x >= area.x + 2);
+    CHECK(later.y >= area.y + 2);
+    CHECK(later.x + later.width <= area.x + area.width - 2);
+    CHECK(later.y + later.height <= area.y + area.height - 2);
+}
+
+static void now_playing_bounce_changes_color_at_an_edge(void)
+{
+    start_app_with_library();
+    open_all_songs_and_play();
+    Rect area = {8, 88, 304, 52};
+    uint32_t position = 0;
+    fake_hal_audio_set_position(position);
+    wait_ms(300);
+    Rect square;
+    Color color;
+    CHECK(bounce_square(area, &square, &color));
+    Color last_color = color;
+    bool changed = false;
+    for (int index = 0; index < 200; index++) {
+        position += 100;
+        fake_hal_audio_set_position(position);
+        wait_ms(100);
+        CHECK(bounce_square(area, &square, &color));
+        if (color == last_color) {
+            continue;
+        }
+        CHECK(square.x <= area.x + 4 || square.x + square.width >= area.x + area.width - 4 ||
+              square.y <= area.y + 4 || square.y + square.height >= area.y + area.height - 4);
+        changed = true;
+        last_color = color;
+    }
+    CHECK(changed);
+}
+
+static void now_playing_bounce_freezes_when_paused(void)
+{
+    start_app_with_library();
+    open_all_songs_and_play();
+    wait_ms(300);
+    Rect area = {8, 88, 304, 52};
+    Rect before;
+    Rect after;
+    Color color;
+    Color after_color;
+    CHECK(bounce_square(area, &before, &color));
+    tap(KEY_PLAY);
+    wait_ms(1000);
+    CHECK(bounce_square(area, &after, &after_color));
+    CHECK_EQUAL(before.x, after.x);
+    CHECK_EQUAL(before.y, after.y);
+    CHECK_EQUAL(color, after_color);
 }
 
 static void hold_the_volume_key_seeks_without_a_hold_bar(void)
@@ -1586,6 +1719,10 @@ int main(void)
         TEST_CASE(root_status_blocks_track_bluetooth_and_root),
         TEST_CASE(now_playing_uses_bt_chip_with_controls),
         TEST_CASE(now_playing_has_no_time_or_thumb),
+        TEST_CASE(now_playing_bounce_is_one_small_square),
+        TEST_CASE(now_playing_bounce_moves_inside_the_lyrics_area),
+        TEST_CASE(now_playing_bounce_changes_color_at_an_edge),
+        TEST_CASE(now_playing_bounce_freezes_when_paused),
         TEST_CASE(hold_the_volume_key_seeks_without_a_hold_bar),
         TEST_CASE(date_time_uses_a_settings_card),
         TEST_CASE(goodbye_screen_has_no_icon),
