@@ -8,7 +8,7 @@
 #ifdef ECHO_LITE
 #define LITE_ICON_POINTER(offset) ((const uint8_t *)(uintptr_t)(0x10000000u + (offset)))
 #define LITE_ICON_POINTER_BASE 0x10000000u
-#define LITE_ICON_POINTER_LIMIT (LITE_ICON_POINTER_BASE + 16810u)
+#define LITE_ICON_POINTER_LIMIT (LITE_ICON_POINTER_BASE + 18858u)
 const uint8_t *lite_icon_levels(const uint8_t *encoded, uint32_t bytes);
 #endif
 

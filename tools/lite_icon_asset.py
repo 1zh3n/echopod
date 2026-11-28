@@ -9,7 +9,7 @@ FILES = [
     ROOT / "src/ui/lite_category_icons.c",
 ]
 ORDER = [
-    "ALL_LEVELS", "LIST_LEVELS", "GEAR_LEVELS", "SHADOW_LEVELS",
+    "ALL_LEVELS", "LIST_LEVELS", "GEAR_LEVELS", "SHADOW_LEVELS", "FAVORITE_LEVELS",
     "shuffle_levels", "loop_levels", "loop_one_levels", "moon_levels",
     "shuffle18_levels", "loop18_levels", "loop_one18_levels", "play18_levels",
     "pause18_levels", "sound_levels", "display_levels", "library_levels",

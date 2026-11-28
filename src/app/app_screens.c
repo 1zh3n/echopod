@@ -319,7 +319,7 @@ static int32_t absolute32(int32_t value)
 }
 
 static const ColorIcon *const HOME_ICONS[HOME_ITEM_COUNT] = {
-    &LITE_COLOR_ICON_ALL, &LITE_COLOR_ICON_LIST, &LITE_COLOR_ICON_GEAR};
+    &LITE_COLOR_ICON_ALL, &LITE_COLOR_ICON_FAVORITE, &LITE_COLOR_ICON_GEAR};
 
 static uint32_t home_duration_ms(void)
 {
@@ -419,7 +419,8 @@ static void build_home(AppScreens *screens, AppScreensContext context)
 {
     const Theme *theme = context.theme;
     screens->home_items[0] = music_item(screens, context.store, 6);
-    screens->home_items[1] = music_item(screens, context.store, 7);
+    screens->home_items[1] = app_screens_open_item(i18n_text(STR_MENU_FAVORITES),
+                                                   &screens->favorite_tracks.screen);
     screens->home_items[2] =
         app_screens_open_item(i18n_text(STR_MENU_SETTINGS), &screens->settings.menu.screen);
     home_position = 0;

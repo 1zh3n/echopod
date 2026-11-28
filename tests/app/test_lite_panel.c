@@ -203,7 +203,7 @@ static void every_lite_icon_draws(void)
         &LITE_ICON_CATEGORY_BUTTONS,
     };
     const ColorIcon *colors[] = {&LITE_COLOR_ICON_ALL, &LITE_COLOR_ICON_LIST,
-                                 &LITE_COLOR_ICON_GEAR};
+                                 &LITE_COLOR_ICON_GEAR, &LITE_COLOR_ICON_FAVORITE};
     for (size_t index = 0; index < sizeof masks / sizeof masks[0]; index++) {
         canvas_clear(&canvas, COLOR_RGB(1, 2, 3));
         lite_icon_draw_scaled(&canvas, masks[index], (Rect){100, 40, 48, 48},
@@ -215,7 +215,8 @@ static void every_lite_icon_draws(void)
         color_icon_draw_scaled(&canvas, colors[index], (Rect){100, 40, 64, 64});
         CHECK(local_has_color(&canvas, 100, 40, 64, 64, COLOR_RGB(47, 168, 255)) ||
               local_has_color(&canvas, 100, 40, 64, 64, COLOR_RGB(255, 159, 28)) ||
-              local_has_color(&canvas, 100, 40, 64, 64, COLOR_RGB(139, 92, 246)));
+              local_has_color(&canvas, 100, 40, 64, 64, COLOR_RGB(139, 92, 246)) ||
+              local_has_color(&canvas, 100, 40, 64, 64, COLOR_RGB(236, 72, 153)));
     }
 }
 
@@ -411,6 +412,15 @@ static void home_card_is_rounded(void)
     CHECK(fake_hal_pixel(108, 24) == COLOR_RGB(250, 250, 249));
     CHECK(fake_hal_pixel(108, 30) == COLOR_RGB(10, 10, 10));
     CHECK(fake_hal_pixel(160, 24) == COLOR_RGB(10, 10, 10));
+}
+
+static void home_middle_card_opens_favorites(void)
+{
+    start_app_with_library();
+    move_down(1);
+    tap(KEY_PLAY);
+    wait_ms(300);
+    CHECK(title_is("Favorites"));
 }
 
 static void home_status_meter_tracks_bluetooth(void)
@@ -1082,6 +1092,7 @@ int main(void)
         TEST_CASE(boot_draws_across_strips),
         TEST_CASE(colorful_home_has_no_text),
         TEST_CASE(home_card_is_rounded),
+        TEST_CASE(home_middle_card_opens_favorites),
         TEST_CASE(home_status_meter_tracks_bluetooth),
         TEST_CASE(now_playing_uses_bt_chip_with_controls),
         TEST_CASE(hold_the_volume_key_seeks_without_a_hold_bar),

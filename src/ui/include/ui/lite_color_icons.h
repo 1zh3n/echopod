@@ -15,6 +15,7 @@ typedef struct ColorIcon {
 extern const ColorIcon LITE_COLOR_ICON_ALL;
 extern const ColorIcon LITE_COLOR_ICON_LIST;
 extern const ColorIcon LITE_COLOR_ICON_GEAR;
+extern const ColorIcon LITE_COLOR_ICON_FAVORITE;
 extern const IconMask LITE_MASK_SHADOW;
 
 void color_icon_draw_scaled(Canvas *canvas, const ColorIcon *icon, Rect area);
