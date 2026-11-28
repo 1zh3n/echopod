@@ -35,13 +35,13 @@ enum {
     HOME_CARD_X = 8,
     HOME_CARD_WIDTH = 304,
     HOME_CARD_TOP = 29,
-    HOME_CARD_HEIGHT = 30,
-    HOME_CARD_GAP = 2,
+    HOME_CARD_HEIGHT = 28,
+    HOME_CARD_GAP = 4,
     HOME_PORTRAIT_X = 8,
     HOME_PORTRAIT_WIDTH = 154,
     HOME_PORTRAIT_TOP = 58,
-    HOME_PORTRAIT_HEIGHT = 56,
-    HOME_PORTRAIT_GAP = 3,
+    HOME_PORTRAIT_HEIGHT = 52,
+    HOME_PORTRAIT_GAP = 6,
     HOME_BOTTOM_MARGIN = 6
 };
 
@@ -66,6 +66,20 @@ static const Color HOME_COLORS[5] = {
 };
 
 static const char CHEVRON[] = ">";
+
+static void draw_dot(Canvas *canvas, Point center, Color color)
+{
+    static const uint8_t DOT_ROWS[8] = {0x3C, 0x7E, 0xFF, 0xFF, 0xFF, 0xFF, 0x7E, 0x3C};
+    for (int row = 0; row < 8; row++) {
+        for (int column = 0; column < 8; column++) {
+            if ((DOT_ROWS[row] & (0x80 >> column)) != 0) {
+                canvas_fill_rect(canvas,
+                                 (Rect){center.x - 4 + column, center.y - 4 + row, 1, 1},
+                                 color);
+            }
+        }
+    }
+}
 
 static int home_visible_rows(const Theme *theme)
 {
@@ -122,8 +136,7 @@ static bool home_scene_draw(void *context, Canvas *canvas, MenuScreen *menu)
             draw_card_border(&cards, card, colors->selection_background);
         }
         Point dot = {card.x + (portrait ? 14 : 15), card.y + card.height / 2};
-        lite_shape_fill_circle(&cards, dot, 5,
-                               selected ? colors->selection_text : HOME_COLORS[index]);
+        draw_dot(&cards, dot, selected ? colors->selection_text : HOME_COLORS[index]);
         TextStyle title_style = {.font = theme->fonts.title,
                                  .color = selected ? colors->selection_text : colors->text};
         TextStyle body_style = {.font = theme->fonts.body,
