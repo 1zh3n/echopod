@@ -139,6 +139,11 @@ recorded, not implemented.
 
 ## Home simplification proposal
 
+**Update 2026-11-28: the two-card Home was rejected after discussion. Both the carousel and a
+static two-card Home feel like a menu with no purpose once Playlists and Settings are gone. The
+candidate is to remove Home entirely after Favorites exists; see "Removing Home entirely"
+below.**
+
 Home is currently a three-card carousel: All Songs, Playlists, Settings. With song Favorites
 replacing Playlists and Settings opening from Long Menu, only two cards still need to be there:
 
@@ -176,10 +181,28 @@ Favorites. The candidates are:
 - A tab/filter inside one list: needs a new key or a selectable header row.
 
 The two-card Home is already the direct switch: Volume selects, Play opens. That is one volume
-press when switching from the other root. Removing Home saves the visual screen but adds a new
-Back mode and moves Settings to Long Back, which is a larger interaction change than the
-efficiency gain. Recommendation: keep the two-card Home; use the Start screen setting to skip
-it when one list is used almost exclusively.
+press when switching from the other root. However, after the device discussion the two-card Home
+was rejected as still feeling like a menu with no purpose. The no-Home model is now the
+candidate, with this key map:
+
+- root is All Songs or Favorites;
+- Short Back at the root toggles All Songs <-> Favorites; deeper Short Back goes up;
+- Long Back opens Settings;
+- Short Menu opens Now Playing;
+- Long Menu is A-Z in lettered lists, Settings/Quick in Now Playing and non-lettered lists, next
+  category in Settings.
+
+Trade-offs:
+
+- Back at the root is no longer inert; it changes lists.
+- Settings moves to Long Back; Long Back no longer means Home because there is no Home.
+- Switching roots from a deep list needs repeated Short Back to the root.
+- The Home visual identity and its visible Settings card disappear.
+- Boot must choose All Songs or Favorites, or remember the last root.
+
+Recommendation: remove Home only after Favorites exists (M7), as its own increment; keep the
+existing Home until then so the tree is not half-finished. Add a Start screen option if boot
+should skip directly to a chosen root.
 
 ## Up Next stays a queue
 
