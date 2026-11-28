@@ -678,8 +678,18 @@ static void dispatch_to_screen(KeyEvent event, uint32_t now_ms)
     }
     if (event.key == KEY_BACK && event.gesture == KEY_GESTURE_LONG_PRESS) {
         int depth_before = screen_stack_depth(&app.stack);
-        ScreenAction action = screen->settings ? screen_action_pop_to_root()
-                                               : screen_action_push(&app.screens.settings.home.screen);
+        ScreenAction action;
+        if (screen == &app.screens.settings.home.screen ||
+            screen == &app.screens.settings.menu.screen) {
+            action = screen_action_pop_to_root();
+        } else if (screen->settings) {
+            action = screen->handle_key(screen->context, event, now_ms);
+            if (action.type == SCREEN_ACTION_NONE) {
+                action = screen_action_pop_to_root();
+            }
+        } else {
+            action = screen_action_push(&app.screens.settings.home.screen);
+        }
         apply_screen_action(screen, action, depth_before, now_ms);
         return;
     }
@@ -701,12 +711,6 @@ static void dispatch_to_screen(KeyEvent event, uint32_t now_ms)
         open_overlay(&app.screens.now_playing.screen, true, now_ms);
         return;
     }
-#ifndef ECHO_LITE
-    if (opens_settings(event)) {
-        open_overlay(&app.screens.settings.home.screen, false, now_ms);
-        return;
-    }
-#endif
     int depth_before = screen_stack_depth(&app.stack);
     ScreenAction action = screen->handle_key(screen->context, event, now_ms);
     apply_screen_action(screen, action, depth_before, now_ms);

@@ -609,6 +609,9 @@ static void init_editor(EqualizerEditor *editor, EqualizerConfig config)
     editor->screen = (Screen){
         .title = i18n_text(STR_SETTINGS_EQ_CUSTOM_TITLE),
         .context = editor,
+#ifdef ECHO_LITE
+        .settings = true,
+#endif
         .enter = enter_editor,
         .handle_key = handle_editor_key,
         .draw = draw_editor,

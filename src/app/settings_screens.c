@@ -609,7 +609,11 @@ static ScreenAction open_choice(void *context)
         .context = slot ? (void *)entry : &screens->context,
         .theme = screens->theme,
     };
-    return screen_action_push(choice_screen_init(&screens->choice, config));
+    Screen *choice_screen = choice_screen_init(&screens->choice, config);
+#ifdef ECHO_LITE
+    choice_screen->settings = true;
+#endif
+    return screen_action_push(choice_screen);
 }
 
 #ifdef ECHO_LITE
@@ -938,11 +942,11 @@ static const char *quick_mode_value(const void *context)
     const SettingsScreens *screens = context;
     switch (player_playback_mode(screens->context.player)) {
     case PLAYBACK_RANDOM:
-        return "Random";
+        return i18n_text(STR_SETTINGS_MODE_RANDOM);
     case PLAYBACK_LOOP:
-        return "Loop";
+        return i18n_text(STR_SETTINGS_MODE_LOOP);
     case PLAYBACK_ONE:
-        return "Loop One";
+        return i18n_text(STR_SETTINGS_MODE_LOOP_ONE);
     }
     return "";
 }
@@ -1003,7 +1007,7 @@ Screen *settings_screens_init(SettingsScreens *screens, SettingsContext context,
     for (int group = 0; group < SETTINGS_GROUP_COUNT; group++) {
         screens->selected[group] = 0;
     }
-    screens->home_items[0] = (MenuItem){.label = i18n_text(STR_SETTINGS_PLAYBACK_MODE),
+    screens->home_items[0] = (MenuItem){.label = i18n_text(STR_SETTINGS_RANDOM_MODE),
                                         .select = quick_playback_mode,
                                         .context = screens,
                                         .value = quick_mode_value};

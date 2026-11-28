@@ -601,9 +601,6 @@ static void the_sleep_quick_card_counts_down(void)
     wait_ms(100);
     unsigned before = area_hash(8, 56, 304, 23);
     wait_ms(1000);
-    tap(KEY_VOLUME_DOWN);
-    tap(KEY_VOLUME_UP);
-    wait_ms(100);
     unsigned after = area_hash(8, 56, 304, 23);
     CHECK(before != after);
 }
@@ -867,6 +864,79 @@ static void settings_category_back_returns_home(void)
     CHECK_EQUAL(home_depth, app_screen_depth());
     tap(KEY_BACK);
     CHECK_EQUAL(home_depth - 1, app_screen_depth());
+    CHECK(title_is("All Songs"));
+}
+
+static void long_back_from_a_settings_choice_returns_root(void)
+{
+    start_app_with_library();
+    hold(KEY_BACK);
+    wait_ms(200);
+    move_down(3);
+    tap(KEY_PLAY);
+    wait_ms(200);
+    move_down(2);
+    tap(KEY_PLAY);
+    wait_ms(200);
+    CHECK(title_is("Brightness"));
+    hold(KEY_BACK);
+    wait_ms(200);
+    CHECK(title_is("All Songs"));
+}
+
+static void long_back_from_equalizer_custom_returns_root(void)
+{
+    start_app_with_library();
+    hold(KEY_BACK);
+    wait_ms(200);
+    move_down(2);
+    tap(KEY_PLAY);
+    wait_ms(200);
+    move_down(5);
+    tap(KEY_PLAY);
+    wait_ms(200);
+    CHECK(title_is("Equalizer"));
+    move_down(7);
+    tap(KEY_PLAY);
+    wait_ms(200);
+    int depth = app_screen_depth();
+    CHECK(depth > 1);
+    hold(KEY_BACK);
+    wait_ms(200);
+    CHECK(title_is("All Songs"));
+}
+
+static void long_back_from_folders_returns_root(void)
+{
+    start_app_with_library();
+    hold(KEY_BACK);
+    wait_ms(200);
+    move_down(4);
+    tap(KEY_PLAY);
+    wait_ms(200);
+    move_down(6);
+    tap(KEY_PLAY);
+    wait_ms(200);
+    CHECK(!title_is("Settings"));
+    hold(KEY_BACK);
+    wait_ms(200);
+    CHECK(title_is("All Songs"));
+}
+
+static void long_back_from_date_time_returns_root(void)
+{
+    start_app_with_library();
+    hold(KEY_BACK);
+    wait_ms(200);
+    move_down(4);
+    tap(KEY_PLAY);
+    wait_ms(200);
+    move_down(1);
+    tap(KEY_PLAY);
+    wait_ms(200);
+    CHECK(!title_is("Settings"));
+    hold(KEY_BACK);
+    wait_ms(200);
     CHECK(title_is("All Songs"));
 }
 
@@ -1322,6 +1392,10 @@ int main(void)
         TEST_CASE(landscape_settings_has_no_title),
         TEST_CASE(settings_category_back_returns_home),
         TEST_CASE(long_back_from_a_settings_subpage_returns_root),
+        TEST_CASE(long_back_from_a_settings_choice_returns_root),
+        TEST_CASE(long_back_from_equalizer_custom_returns_root),
+        TEST_CASE(long_back_from_folders_returns_root),
+        TEST_CASE(long_back_from_date_time_returns_root),
         TEST_CASE(settings_long_menu_does_nothing),
         TEST_CASE(settings_short_press_cycles_value),
         TEST_CASE(settings_subpage_opens),
