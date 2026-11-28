@@ -649,6 +649,28 @@ static void the_sleep_quick_card_counts_down(void)
     CHECK(before != after);
 }
 
+static void date_time_uses_a_settings_card(void)
+{
+    start_app_with_library();
+    hold(KEY_BACK);
+    wait_ms(200);
+    move_down(4);
+    tap(KEY_PLAY);
+    wait_ms(200);
+    move_down(1);
+    tap(KEY_PLAY);
+    wait_ms(300);
+    CHECK(fake_hal_pixel(8, 28) == DEFAULT_THEME.colors->text);
+    CHECK(fake_hal_pixel(4, 40) == DEFAULT_THEME.colors->background);
+    CHECK(fake_hal_pixel(100, 35) == DEFAULT_THEME.colors->selection_background);
+    CHECK(area_has_color(24, 30, 80, 19, DEFAULT_THEME.colors->selection_text));
+    CHECK(fake_hal_pixel(302, 8) == DEFAULT_THEME.colors->text_tertiary);
+    CHECK(area_has_color(100, 144, 120, 16, DEFAULT_THEME.colors->text_tertiary));
+    tap(KEY_PLAY);
+    wait_ms(300);
+    CHECK(area_has_color(250, 30, 60, 19, COLOR_RGB(255, 212, 59)));
+}
+
 static void goodbye_screen_has_no_icon(void)
 {
     start_app_with_library();
@@ -1500,6 +1522,7 @@ int main(void)
         TEST_CASE(now_playing_uses_bt_chip_with_controls),
         TEST_CASE(now_playing_has_no_time_or_thumb),
         TEST_CASE(hold_the_volume_key_seeks_without_a_hold_bar),
+        TEST_CASE(date_time_uses_a_settings_card),
         TEST_CASE(goodbye_screen_has_no_icon),
         TEST_CASE(the_sleep_timer_waits_for_the_current_track),
         TEST_CASE(the_sleep_quick_card_counts_down),

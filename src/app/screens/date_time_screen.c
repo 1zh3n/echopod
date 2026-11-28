@@ -7,6 +7,9 @@
 #include "ui/header.h"
 #include "ui/label.h"
 #include "ui/navigation.h"
+#ifdef ECHO_LITE
+#include "ui/lite_frame.h"
+#endif
 
 enum {
     FIELD_YEAR,
@@ -190,9 +193,75 @@ static void value_text(const DateTimeScreen *screen, int field, char *text, size
     string_builder_append_unsigned(&builder, (uint32_t)value);
 }
 
+#ifdef ECHO_LITE
+static void draw_lite(const DateTimeScreen *screen, Canvas *canvas)
+{
+    const Theme *theme = screen->config.theme;
+    const ThemeColors *colors = theme->colors;
+    bool portrait = theme_is_portrait(theme);
+    canvas_fill_rect(canvas, theme_content_area(theme), colors->background);
+    Rect rows = lite_card(canvas, theme,
+                          portrait ? (Rect){8, 58, 154, 254} : (Rect){8, 28, 304, 134}, 4);
+    int row_height = portrait ? 38 : 19;
+    int label_x = rows.x + (portrait ? 8 : 12);
+    int right = rows.x + rows.width - (portrait ? 8 : 12);
+    int divider_x = rows.x + 12;
+    int divider_width = rows.width - 24;
+    TextStyle label_style = {.font = theme->fonts.body};
+    TextStyle value_style = {.font = theme->fonts.small};
+    for (int field = 0; field < DATE_TIME_FIELD_COUNT; field++) {
+        int y = rows.y + field * row_height;
+        bool selected = field == screen->field;
+        if (selected) {
+            canvas_fill_rect(canvas, (Rect){rows.x, y, rows.width, row_height},
+                             colors->selection_background);
+        }
+        if (field > 0) {
+            canvas_fill_rect(canvas, (Rect){divider_x, y, divider_width, 1}, colors->divider);
+        }
+        char value[VALUE_CAPACITY];
+        value_text(screen, field, value, sizeof value);
+        label_style.color = selected ? colors->selection_text : colors->text;
+        int value_width = text_width(value_style.font, value);
+        int value_top = portrait ? y + row_height / 2 : y;
+        int value_height = portrait ? row_height / 2 : row_height;
+        value_style.color = selected ? (screen->editing ? COLOR_RGB(255, 212, 59)
+                                                        : colors->selection_text)
+                                     : colors->text_secondary;
+        if (portrait) {
+            label_draw(canvas, label_style,
+                       (Label){.area = {label_x, y, rows.width - 16, row_height / 2},
+                               .text = i18n_text(FIELD_LABELS[field])});
+            label_draw(canvas, value_style,
+                       (Label){.area = {right - value_width, value_top, value_width,
+                                        value_height},
+                               .text = value});
+        } else {
+            label_draw(canvas, label_style,
+                       (Label){.area = {label_x, y, right - label_x - value_width - 6,
+                                        row_height},
+                               .text = i18n_text(FIELD_LABELS[field])});
+            label_draw(canvas, value_style,
+                       (Label){.area = {right - value_width, value_top, value_width,
+                                        value_height},
+                               .text = value});
+        }
+    }
+    TextStyle hint = {.font = theme->fonts.small, .color = colors->text_tertiary};
+    const char *text =
+        i18n_text(screen->editing ? STR_SETTINGS_TIME_EDIT_HINT : STR_SETTINGS_TIME_PICK_HINT);
+    Rect hint_area = {rows.x, rows.y + row_height * DATE_TIME_FIELD_COUNT, rows.width, 16};
+    label_draw(canvas, hint,
+               (Label){.area = label_centered_area(hint.font, hint_area, text), .text = text});
+}
+#endif
+
 static void draw(void *context, Canvas *canvas)
 {
     const DateTimeScreen *screen = context;
+#ifdef ECHO_LITE
+    draw_lite(screen, canvas);
+#else
     const Theme *theme = screen->config.theme;
     Rect content = theme_content_area(theme);
     int padding = theme->metrics.padding;
@@ -226,6 +295,7 @@ static void draw(void *context, Canvas *canvas)
                       HINT_HEIGHT};
     label_draw(canvas, hint,
                (Label){.area = label_centered_area(hint.font, hint_area, text), .text = text});
+#endif
 }
 
 Screen *date_time_screen_init(DateTimeScreen *screen, DateTimeConfig config)

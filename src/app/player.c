@@ -429,6 +429,8 @@ static void apply_shuffle(Player *player, ShuffleMode shuffle, uint32_t seed)
 {
     player->shuffle = shuffle;
     if (!player->has_track) {
+        player->queue.plan.shuffle = player->spoken ? SHUFFLE_OFF : shuffle;
+        player->queue.plan.seed = seed;
         return;
     }
     PlayQueuePlan plan = player->queue.plan;
@@ -466,7 +468,8 @@ PlaybackMode player_playback_mode(const Player *player)
     if (player->repeat == REPEAT_ONE) {
         return PLAYBACK_ONE;
     }
-    if (player->shuffle != SHUFFLE_OFF || player->queue.plan.shuffle != SHUFFLE_OFF) {
+    if (player->shuffle != SHUFFLE_OFF ||
+        (player->has_track && player->queue.plan.shuffle != SHUFFLE_OFF)) {
         return PLAYBACK_RANDOM;
     }
     return PLAYBACK_LOOP;
