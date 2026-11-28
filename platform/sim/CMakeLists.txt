@@ -3,6 +3,7 @@ target_include_directories(echo_sim_options PUBLIC .)
 target_link_libraries(echo_sim_options PUBLIC echo_core PRIVATE echo_options)
 
 find_package(SDL2 CONFIG REQUIRED)
+find_library(MATH_LIBRARY m)
 
 add_library(echo_sim_codecs STATIC sim_codecs.c)
 target_include_directories(echo_sim_codecs SYSTEM PUBLIC ${PROJECT_SOURCE_DIR}/third_party/dr_libs)
@@ -43,3 +44,13 @@ add_executable(echo_sim
 string(TIMESTAMP ECHO_SIM_BUILD_DATE "%Y%m%d" UTC)
 target_compile_definitions(echo_sim PRIVATE SDL_MAIN_HANDLED ECHO_SIM_BUILD_DATE=${ECHO_SIM_BUILD_DATE})
 target_link_libraries(echo_sim PRIVATE echo_app echo_builtin_themes echo_sim_glyphs echo_sim_language echo_library_scan echo_sim_options echo_sim_decoder echo_sim_storage echo_options SDL2::SDL2)
+if(MATH_LIBRARY)
+    target_link_libraries(echo_sim PRIVATE ${MATH_LIBRARY})
+endif()
+if(ECHO_LITE)
+    target_sources(echo_sim PRIVATE sim_lite_assets.c)
+    target_compile_definitions(echo_sim PRIVATE
+        ECHO_LITE_ANIMATION_ASSET="${PROJECT_SOURCE_DIR}/assets/lite_animation.bin"
+        ECHO_LITE_ICONS_ASSET="${PROJECT_SOURCE_DIR}/assets/lite_icons.bin"
+    )
+endif()
