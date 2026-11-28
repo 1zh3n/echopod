@@ -23,7 +23,7 @@ enum {
     BROWSE_LABEL_CAPACITY = 128,
     BROWSE_DETAIL_CAPACITY = 16,
     BROWSE_TITLE_CAPACITY = 96,
-    SONG_ACTION_COUNT = 2
+    SONG_ACTION_COUNT = 3
 };
 
 typedef struct BrowseRowStamp {
@@ -98,6 +98,8 @@ struct BrowsePool {
 };
 
 void browse_pool_init(BrowsePool *pool, BrowsePoolConfig config);
+ScreenAction browse_pool_song_actions(void *context, uint16_t track, const char *title,
+                                     uint32_t now_ms);
 Screen *browse_pool_open(BrowsePool *pool, int level, BrowseQuery query);
 Screen *browse_pool_open_favorites(BrowsePool *pool, int level);
 Screen *browse_pool_open_shelf(BrowsePool *pool, int level, SpokenKind shelf);

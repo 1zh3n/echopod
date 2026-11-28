@@ -507,8 +507,11 @@ ECHO_STARTUP_CODE Screen *app_screens_init(AppScreens *screens, AppScreensContex
         .title = i18n_text(card ? STR_MENU_NO_LIBRARY : STR_MENU_NO_CARD),
         .message = i18n_text(card ? STR_MENU_NO_LIBRARY_HINT : STR_MENU_NO_CARD_HINT),
         .theme = theme};
-    UpNextConfig up_next = {
-        .library = &context.store->library, .theme = theme, .player = context.player};
+    UpNextConfig up_next = {.library = &context.store->library,
+                            .theme = theme,
+                            .player = context.player,
+                            .song_actions = browse_pool_song_actions,
+                            .song_actions_context = &screens->browse};
     NowPlayingConfig now_playing = {.player = context.player,
                                     .library = &context.store->library,
                                     .theme = theme,

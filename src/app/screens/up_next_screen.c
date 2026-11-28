@@ -239,11 +239,26 @@ static ScreenAction select_row(void *context, int index)
     return screen_action_pop();
 }
 
+static ScreenAction hold_row(void *context, int index)
+{
+    UpNextScreen *up_next = context;
+    if (up_next->chapters || up_next->config.song_actions == NULL) {
+        return screen_action_none();
+    }
+    QueueWalk walk = start_walk(up_next->config.player);
+    uint16_t track = 0;
+    if (!track_at(up_next, index, &walk, &track)) {
+        return screen_action_none();
+    }
+    return up_next->config.song_actions(up_next->config.song_actions_context, track,
+                                        cached_text(up_next, index, false), up_next->now_ms);
+}
+
 static ScreenAction handle_key(void *context, KeyEvent event, uint32_t now_ms)
 {
     UpNextScreen *up_next = context;
     up_next->now_ms = now_ms;
-    ListSelection selection = {.select = select_row, .hold = NULL, .context = up_next};
+    ListSelection selection = {.select = select_row, .hold = hold_row, .context = up_next};
     ScreenAction action = list_navigation_handle(&up_next->list, event, now_ms, selection);
     refresh_rows(up_next);
     return action;

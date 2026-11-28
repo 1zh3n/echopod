@@ -565,24 +565,52 @@ static ScreenAction add_song_to_up_next(void *context)
     return queue_song(context, false);
 }
 
-static ScreenAction open_song_actions(BrowseScreen *browse, int index, uint16_t track)
+static ScreenAction toggle_song_favorite(void *context)
 {
-    BrowsePool *pool = browse->pool;
+    BrowsePool *pool = context;
+    SongActions *actions = &pool->song_actions;
+    if (pool->config.favorites == NULL) {
+        return screen_action_none();
+    }
+    FavoriteResult result = favorites_store_toggle_track(pool->config.favorites, actions->track);
+    if (pool->config.toast != NULL) {
+        toast_show(pool->config.toast, favorites_store_message(result), actions->now_ms);
+    }
+    return screen_action_pop();
+}
+
+ScreenAction browse_pool_song_actions(void *context, uint16_t track, const char *title,
+                                     uint32_t now_ms)
+{
+    BrowsePool *pool = context;
     SongActions *actions = &pool->song_actions;
     actions->track = track;
-    actions->now_ms = browse->now_ms;
-    StringBuilder title = string_builder_make(actions->title, sizeof actions->title);
-    string_builder_append(&title, row_label(browse, index));
+    actions->now_ms = now_ms;
+    StringBuilder builder = string_builder_make(actions->title, sizeof actions->title);
+    string_builder_append(&builder, title);
     actions->items[0] = (MenuItem){
         .label = i18n_text(STR_MENU_PLAY_NEXT), .select = play_song_next, .context = pool};
     actions->items[1] = (MenuItem){.label = i18n_text(STR_MENU_ADD_TO_UP_NEXT),
                                    .select = add_song_to_up_next,
                                    .context = pool};
+    bool favorite = pool->config.favorites != NULL &&
+                    favorites_store_contains_track(pool->config.favorites, track);
+    actions->items[2] =
+        (MenuItem){.label = i18n_text(favorite ? STR_MENU_REMOVE_FROM_FAVORITES
+                                              : STR_MENU_ADD_TO_FAVORITES),
+                   .select = toggle_song_favorite,
+                   .context = pool};
     MenuConfig config = {.title = actions->title,
                          .items = actions->items,
                          .item_count = SONG_ACTION_COUNT,
                          .theme = pool->config.theme};
     return screen_action_push(menu_screen_init(&actions->menu, config));
+}
+
+static ScreenAction open_song_actions(BrowseScreen *browse, int index, uint16_t track)
+{
+    return browse_pool_song_actions(browse->pool, track, row_label(browse, index),
+                                    browse->now_ms);
 }
 
 static ScreenAction hold_row(void *context, int index)

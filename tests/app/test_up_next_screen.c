@@ -39,12 +39,39 @@ static void play_album_from(uint32_t position)
     CHECK(player_play_list(&player, back_in_black(), position, SEED));
 }
 
+static int hold_calls;
+static uint16_t held_track;
+static char held_title[64];
+
+static ScreenAction record_hold(void *context, uint16_t track, const char *title,
+                                uint32_t now_ms)
+{
+    (void)context;
+    (void)now_ms;
+    hold_calls++;
+    held_track = track;
+    strncpy(held_title, title, sizeof held_title - 1);
+    held_title[sizeof held_title - 1] = '\0';
+    return screen_action_pop();
+}
+
 static void open_up_next(void)
 {
+    hold_calls = 0;
+    held_title[0] = '\0';
     screen = up_next_screen_init(
         &up_next,
-        (UpNextConfig){.library = &fixture.library, .theme = &DEFAULT_THEME, .player = &player});
+        (UpNextConfig){.library = &fixture.library,
+                       .theme = &DEFAULT_THEME,
+                       .player = &player,
+                       .song_actions = record_hold});
     screen->enter(screen->context, 100);
+}
+
+static ScreenAction hold_play(void)
+{
+    return screen->handle_key(
+        screen->context, (KeyEvent){.key = KEY_PLAY, .gesture = KEY_GESTURE_LONG_PRESS}, 200);
 }
 
 static int row_count(void)
@@ -238,6 +265,27 @@ static void back_returns_to_now_playing(void)
     CHECK_EQUAL(SCREEN_ACTION_POP, press(KEY_BACK).type);
 }
 
+static void holding_a_queue_row_offers_song_actions(void)
+{
+    play_album_from(0);
+    open_up_next();
+    press(KEY_VOLUME_UP);
+    ScreenAction action = hold_play();
+    CHECK_EQUAL(SCREEN_ACTION_POP, action.type);
+    CHECK_EQUAL(1, hold_calls);
+    CHECK_EQUAL(1, held_track);
+    CHECK(strcmp("Shoot to Thrill", held_title) == 0);
+}
+
+static void holding_a_chapter_row_offers_nothing(void)
+{
+    play_chaptered_book();
+    open_chapters();
+    hold_calls = 0;
+    hold_play();
+    CHECK_EQUAL(0, hold_calls);
+}
+
 int main(void)
 {
     static const TestCase cases[] = {
@@ -255,6 +303,8 @@ int main(void)
         TEST_CASE(choosing_a_list_song_skips_the_added_ones),
         TEST_CASE(choosing_the_playing_song_just_returns),
         TEST_CASE(back_returns_to_now_playing),
+        TEST_CASE(holding_a_queue_row_offers_song_actions),
+        TEST_CASE(holding_a_chapter_row_offers_nothing),
     };
     return test_run_all(cases, TEST_CASE_COUNT(cases));
 }

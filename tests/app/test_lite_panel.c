@@ -717,6 +717,20 @@ static void now_playing_uses_native_18px_icons(void)
     CHECK(fake_hal_pixel(40, 139) == DEFAULT_THEME.colors->divider);
 }
 
+static void all_songs_long_play_opens_song_actions(void)
+{
+    start_app_with_library();
+    tap(KEY_PLAY);
+    CHECK(title_is("All Songs"));
+    int depth = app_screen_depth();
+    hold(KEY_PLAY);
+    CHECK_EQUAL(depth + 1, app_screen_depth());
+    move_down(2);
+    tap(KEY_PLAY);
+    CHECK_EQUAL(depth, app_screen_depth());
+    CHECK(title_is("All Songs"));
+}
+
 static void settings_quick_is_icon_only(void)
 {
     start_app_with_library();
@@ -1045,6 +1059,7 @@ int main(void)
     }
     TestCase cases[] = {
         TEST_CASE(now_playing_uses_native_18px_icons),
+        TEST_CASE(all_songs_long_play_opens_song_actions),
         TEST_CASE(settings_quick_is_icon_only),
         TEST_CASE(settings_quick_sleep_value_fits),
         TEST_CASE(short_menu_in_settings_returns_to_now_playing),

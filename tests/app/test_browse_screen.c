@@ -16,10 +16,12 @@ static BrowseScreen *opened(BrowseQuery query)
 {
     fake_hal_reset();
     Library *library = fixture_library_open(&fixture);
+    player_init(&player, library);
     favorites = (FavoritesStore){.library = library};
-    browse_pool_init(
-        &pool,
-        (BrowsePoolConfig){.library = library, .theme = &DEFAULT_THEME, .favorites = &favorites});
+    browse_pool_init(&pool, (BrowsePoolConfig){.library = library,
+                                               .theme = &DEFAULT_THEME,
+                                               .player = &player,
+                                               .favorites = &favorites});
     Screen *screen = browse_pool_open(&pool, 0, query);
     screen->enter(screen->context, 0);
     return screen->context;
@@ -272,6 +274,59 @@ static void opening_another_list_at_the_same_level_shows_its_own_rows(void)
     check_rows_match_the_library(artists->context, 3);
 }
 
+static Screen *long_press_track(BrowseScreen *browse, int index, uint16_t *track)
+{
+    BrowseItem item;
+    CHECK(browse_item(pool.config.library, browse->query, (uint32_t)(index - browse->extra),
+                      &item));
+    CHECK_EQUAL(BROWSE_ITEM_TRACK, item.kind);
+    *track = item.index;
+    list_view_select(&browse->list, index, 0);
+    ScreenAction action = browse->screen.handle_key(
+        browse, (KeyEvent){.key = KEY_PLAY, .gesture = KEY_GESTURE_LONG_PRESS}, 0);
+    CHECK_EQUAL(SCREEN_ACTION_PUSH, action.type);
+    return action.target;
+}
+
+static void song_actions_add_then_remove_a_favorite(void)
+{
+    BrowseScreen *browse = opened(browse_root_query(BROWSE_ALL_SONGS));
+    uint16_t track = 0;
+    Screen *menu = long_press_track(browse, 1, &track);
+    SongActions *actions = &pool.song_actions;
+    CHECK(menu == &actions->menu.screen);
+    CHECK_EQUAL(3, actions->menu.config.item_count);
+    CHECK(strcmp(i18n_text(STR_MENU_ADD_TO_FAVORITES), actions->items[2].label) == 0);
+    ScreenAction result = actions->items[2].select(actions->items[2].context);
+    CHECK_EQUAL(SCREEN_ACTION_POP, result.type);
+    CHECK(favorites_store_contains_track(&favorites, track));
+    long_press_track(browse, 1, &track);
+    CHECK(strcmp(i18n_text(STR_MENU_REMOVE_FROM_FAVORITES), actions->items[2].label) == 0);
+    actions->items[2].select(actions->items[2].context);
+    CHECK(!favorites_store_contains_track(&favorites, track));
+}
+
+static void song_actions_reach_every_track_list(void)
+{
+    uint16_t track = 0;
+    BrowseScreen *browse = opened(browse_root_query(BROWSE_ALL_SONGS));
+    CHECK(long_press_track(browse, 1, &track) != NULL);
+    BrowseQuery album = {.kind = BROWSE_ALBUM_TRACKS,
+                         .group = LIBRARY_ARTISTS,
+                         .subject = 0,
+                         .artist = LIBRARY_NONE};
+    browse = opened(album);
+    CHECK(long_press_track(browse, 0, &track) != NULL);
+    BrowseQuery playlist = {.kind = BROWSE_PLAYLIST_TRACKS,
+                            .group = LIBRARY_PLAYLISTS,
+                            .subject = 0,
+                            .artist = LIBRARY_NONE};
+    browse = opened(playlist);
+    CHECK(long_press_track(browse, 1, &track) != NULL);
+    browse = opened_folder(true);
+    CHECK(long_press_track(browse, 1, &track) != NULL);
+}
+
 int main(void)
 {
     static const TestCase cases[] = {
@@ -288,6 +343,8 @@ int main(void)
         TEST_CASE(scrolling_one_row_loads_only_the_new_row),
         TEST_CASE(coming_back_to_a_list_reads_nothing),
         TEST_CASE(a_favorite_added_elsewhere_shows_when_the_list_comes_back),
+        TEST_CASE(song_actions_add_then_remove_a_favorite),
+        TEST_CASE(song_actions_reach_every_track_list),
         TEST_CASE(opening_another_list_at_the_same_level_shows_its_own_rows),
     };
     return test_run_all(cases, TEST_CASE_COUNT(cases));

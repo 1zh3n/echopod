@@ -19,6 +19,9 @@ typedef struct UpNextConfig {
     const Library *library;
     const Theme *theme;
     Player *player;
+    ScreenAction (*song_actions)(void *context, uint16_t track, const char *title,
+                                 uint32_t now_ms);
+    void *song_actions_context;
 } UpNextConfig;
 
 typedef struct UpNextScreen {
