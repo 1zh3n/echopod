@@ -21,7 +21,7 @@ The 512 MB updater scans the card root for:
 It does **not** scan `HIFIEC90.IMG`. Copy the build to the card root and rename it, for example:
 
 ```text
-build/release-lite/HIFIEC90.IMG  ->  /MINIV960.IMG
+build/release-lite/HIFIEC90.IMG  ->  /MINIV963.IMG
 ```
 
 Then use the player's updater.
