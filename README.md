@@ -48,7 +48,7 @@ Keep the official firmware and a known recovery path before flashing.
   Bluetooth/playback and the playback mode on the right, with a segmented root meter on the left.
   The large root icons are deferred.
 - **Lite Settings:** a five-row home — Random mode, Sleep timer, Sound, Display, System.
-  Compact rows use a colour dot on the left and scroll four at a time with the next row peeking;
+  Compact rows use an 8 px colour dot on the left and scroll four at a time with the next row peeking;
   direct values sit on the right. Random/Sleep are direct; Sound/Display/System open category
   pages. Category dots in the category pages are gone; landscape keeps the half-badge and glyph.
   The sleep row shows a live countdown. Settings is reached by Long Back.

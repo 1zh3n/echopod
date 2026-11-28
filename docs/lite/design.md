@@ -89,9 +89,9 @@ was prototyped and deferred because it duplicated that feedback and hid the Blue
 
 ### Settings
 
-- Settings home: five compact rows with a 10 px colour dot on the left — Random mode, Sleep
-  timer, Sound, Display, System. Landscape rows are 304×30 at y=29 with 2 px gaps; portrait
-  rows are 154×56 at y=58 with 3 px gaps. The list scrolls four rows at a time with the next row
+- Settings home: five compact rows with an 8 px colour dot on the left — Random mode, Sleep
+  timer, Sound, Display, System. Landscape rows are 304×28 at y=29 with 4 px gaps; portrait
+  rows are 154×52 at y=58 with 6 px gaps. The list scrolls four rows at a time with the next row
   peeking. Direct values are right-aligned (landscape on the same line, portrait on the second
   line). Selected rows get the selection fill, border and white dot; the label uses the 16 px
   title font and the value uses the small font.

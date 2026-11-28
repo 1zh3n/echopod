@@ -24,8 +24,8 @@ front end. The list below is the useful summary; the git history has the exact c
   is purple with no glyph, loop is gray with no glyph, loop one is gray with a white `1`. Root
   lists use the original 28×10 segmented meter on the left; the active half is bright, the other
   divider gray. Now Playing uses the same top row with no separate mode icon.
-- Settings opens on five compact rows with a colour dot on the left: Random mode, Sleep timer,
-  Sound, Display, System. Random and Sleep are direct items with their values right-aligned;
+- Settings opens on five compact rows with an 8 px colour dot on the left: Random mode, Sleep
+  timer, Sound, Display, System. Random and Sleep are direct items with their values right-aligned;
   the other three open category pages. The home scrolls four rows at a time with the next row
   peeking. Category dots in the category pages are removed.
 - Settings is reached by Long Back; Long Menu is the screen's function key and never opens

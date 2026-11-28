@@ -55,8 +55,8 @@ Display      >
 System       >
 ```
 
-The compact rows have a colour dot on the left and scroll four at a time; the next row peeks at
-the bottom. Random and Sleep are direct items with their values right-aligned. Sound, Display and
+The compact rows have an 8 px colour dot on the left and scroll four at a time; the next row
+peeks at the bottom. Random and Sleep are direct items with their values right-aligned. Sound, Display and
 System open category pages. Category dots in the category pages are gone; the half-badge, glyph
 and colour identify the category. The sleep row shows a live countdown.
 
