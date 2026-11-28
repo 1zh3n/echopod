@@ -56,6 +56,7 @@ typedef struct ScanStats {
 
 typedef struct ScanJob {
     ScanFileSystem files;
+    const char *root;
     void *memory;
     uint32_t size;
     void *listing;

@@ -7,6 +7,9 @@
 
 typedef struct CardFilesReport {
     bool library_created;
+#ifdef ECHO_LITE
+    bool private_library_created;
+#endif
     bool card_full;
 } CardFilesReport;
 

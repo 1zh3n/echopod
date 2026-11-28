@@ -17,6 +17,8 @@ void lite_status_block_draw(Canvas *canvas, Point origin, Color color);
 void lite_status_mode_draw(Canvas *canvas, Point origin, Color color, char mode);
 void lite_status_root_draw(Canvas *canvas, const Theme *theme, Point origin, Color all,
                             Color favorites);
+void lite_status_root_three_draw(Canvas *canvas, const Theme *theme, Point origin, Color all,
+                                 Color favorites, Color private);
 Rect lite_list_frame(Canvas *canvas, const Theme *theme, const char *title);
 Rect lite_list_frame_no_title(Canvas *canvas, const Theme *theme);
 #endif

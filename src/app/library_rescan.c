@@ -14,6 +14,9 @@
 #include "library_store.h"
 
 static const char MUSIC_ROOT[] = "/";
+#ifdef ECHO_LITE
+static const char PRIVATE_MUSIC_ROOT[] = "/.private/";
+#endif
 const char LIBRARY_SCRATCH_PATH[] = "/.echo/build.tmp";
 const char RESCAN_TIMES_PATH[] = "/.echo/rescan_times.bin";
 
@@ -137,6 +140,16 @@ static bool write_library(void *context, uint32_t offset, const void *bytes, uin
     return timed_write(LIBRARY_STORE_PATH, offset, bytes, length);
 }
 
+#ifdef ECHO_LITE
+static bool write_private_library(void *context, uint32_t offset, const void *bytes,
+                                  uint32_t length)
+{
+    (void)context;
+    hal_system_keep_alive();
+    return timed_write(PRIVATE_LIBRARY_STORE_PATH, offset, bytes, length);
+}
+#endif
+
 static bool write_scratch(void *context, uint32_t offset, const void *bytes, uint32_t length)
 {
     (void)context;
@@ -257,6 +270,50 @@ static void run_passes(const LibraryScanEntry *entry, const ScanJob *job, Rescan
     (void)hal_file_write(RESCAN_TIMES_PATH, spent, sizeof spent);
 }
 
+#ifdef ECHO_LITE
+bool private_music_present(void)
+{
+    HalDir dir;
+    if (!hal_dir_open(&dir, PRIVATE_MUSIC_ROOT)) {
+        return false;
+    }
+    hal_dir_close(&dir);
+    return true;
+}
+
+static void run_private_scan(const LibraryScanEntry *entry, const ScanJob *job,
+                             RescanOutcome *outcome)
+{
+    if (outcome->result != SCAN_OK) {
+        return;
+    }
+    if (!private_music_present()) {
+        uint32_t empty = 0;
+        (void)hal_file_write(PRIVATE_LIBRARY_STORE_PATH, &empty, sizeof empty);
+        return;
+    }
+    uint32_t capacity = reserved_size_of(PRIVATE_LIBRARY_STORE_PATH);
+    if (capacity == 0) {
+        return;
+    }
+    RescanFiles *files = job->files.context;
+    MusicFolders no_skips = {0};
+    const MusicFolders *saved = files->skip;
+    files->skip = &no_skips;
+    ScanJob private_job = *job;
+    private_job.root = PRIVATE_MUSIC_ROOT;
+    private_job.sink = (ByteSink){write_private_library, NULL};
+    private_job.capacity = capacity;
+    private_job.progress = (ScanProgress){0};
+    ScanStats stats;
+    ScanResult result = entry->scan(&private_job, &stats);
+    files->skip = saved;
+    if (result != SCAN_OK) {
+        (void)result;
+    }
+}
+#endif
+
 RescanOutcome library_rescan_run(RescanProgress progress)
 {
     static RescanFiles files;
@@ -310,6 +367,9 @@ RescanOutcome library_rescan_run(RescanProgress progress)
         .progress = {report, &files},
     };
     run_passes(entry, &job, &outcome);
+#ifdef ECHO_LITE
+    run_private_scan(entry, &job, &outcome);
+#endif
     hal_file_close(&files.scratch);
     hal_system_return_scratch();
     hal_input_drop_presses();

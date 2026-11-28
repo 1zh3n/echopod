@@ -53,6 +53,8 @@ typedef struct PlayerListStart {
 
 typedef struct Player {
     const Library *library;
+    const char *resume_path;
+    const char *up_next_path;
     uint32_t fingerprint;
     PlayQueue queue;
     UpNext up_next;
@@ -84,8 +86,15 @@ typedef struct Player {
 
 extern const char PLAYER_RESUME_PATH[];
 extern const char PLAYER_UP_NEXT_PATH[];
+#ifdef ECHO_LITE
+extern const char PLAYER_PRIVATE_RESUME_PATH[];
+extern const char PLAYER_PRIVATE_UP_NEXT_PATH[];
+#endif
 
 void player_init(Player *player, const Library *library);
+#ifdef ECHO_LITE
+void player_set_paths(Player *player, const char *resume_path, const char *up_next_path);
+#endif
 bool player_play_list(Player *player, BrowseQuery source, uint32_t position, uint32_t seed);
 bool player_play_tracks(Player *player, const uint16_t *tracks, uint16_t count, uint16_t position);
 bool player_play_from(Player *player, PlayerListStart start);

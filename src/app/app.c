@@ -148,6 +148,10 @@ typedef struct AppState {
     uint32_t send_us;
     ScreenStack stack;
     LibraryStore library;
+#ifdef ECHO_LITE
+    LibraryStore private_library;
+    bool private_active;
+#endif
     Player player;
 #ifdef ECHO_LITE
     uint16_t sleep_track;
@@ -656,10 +660,66 @@ static void apply_screen_action(Screen *leaving, ScreenAction action, int depth_
     }
 }
 
+static void use_lite_library(const Library *library, bool private)
+{
+    if (app.player.has_track) {
+        player_flush_save(&app.player);
+    }
+    player_release_output(&app.player);
+    player_init(&app.player, library);
+#ifdef ECHO_LITE
+    if (private) {
+        player_set_paths(&app.player, PLAYER_PRIVATE_RESUME_PATH, PLAYER_PRIVATE_UP_NEXT_PATH);
+    }
+#endif
+    settings_store_restore_playback(&app.settings, &app.player, hal_clock_microseconds());
+    player_restore(&app.player);
+#ifdef ECHO_LITE
+    player_set_playback_mode(&app.player, player_playback_mode(&app.player),
+                             hal_clock_microseconds());
+#endif
+    app.screens.now_playing.config.library = library;
+    app.screens.up_next.config.library = library;
+}
+
+static void enter_lite_private(void)
+{
+    if (app.private_active || !app.private_library.available) {
+        return;
+    }
+    use_lite_library(&app.private_library.library, true);
+    app.private_active = true;
+}
+
+static void leave_lite_private(void)
+{
+    if (!app.private_active) {
+        return;
+    }
+    use_lite_library(&app.library.library, false);
+    app.private_active = false;
+}
+
 static void toggle_lite_root(uint32_t now_ms)
 {
-    Screen *target = top_screen() == app.screens.root_favorites ? app.screens.root_all_songs
-                                                               : app.screens.root_favorites;
+    Screen *roots[3];
+    int count = 0;
+    roots[count++] = app.screens.root_all_songs;
+    roots[count++] = app.screens.root_favorites;
+    if (app.screens.root_private != NULL) {
+        roots[count++] = app.screens.root_private;
+    }
+    Screen *current = top_screen();
+    int index = 0;
+    while (index < count && roots[index] != current) {
+        index++;
+    }
+    Screen *target = roots[(index + 1) % count];
+    if (target == app.screens.root_private) {
+        enter_lite_private();
+    } else if (app.private_active) {
+        leave_lite_private();
+    }
     if (target != NULL && screen_stack_replace_root(&app.stack, target, now_ms)) {
         use_screen_key_behaviors();
     }
@@ -1050,7 +1110,10 @@ static void draw_lite_status_meter(Canvas *canvas, const Screen *screen)
     Color playing_color = COLOR_RGB(245, 158, 11);
     Color mode_color = COLOR_RGB(139, 92, 246);
     Color pink = COLOR_RGB(236, 72, 153);
-    if (screen == app.screens.root_all_songs || screen == app.screens.root_favorites) {
+    if (screen == app.screens.root_private) {
+        lite_status_root_three_draw(canvas, theme, (Point){8, 8}, theme->colors->divider,
+                                    theme->colors->divider, mode_color);
+    } else if (screen == app.screens.root_all_songs || screen == app.screens.root_favorites) {
         bool favorite = screen == app.screens.root_favorites;
         lite_status_root_draw(canvas, theme, (Point){8, 8},
                               favorite ? theme->colors->divider : all_color,
@@ -1256,6 +1319,9 @@ static void start_playback(void)
     cover_cache_close(&app.covers);
 #endif
     library_store_open(&app.library);
+#ifdef ECHO_LITE
+    library_store_open_path(&app.private_library, PRIVATE_LIBRARY_STORE_PATH);
+#endif
     player_init(&app.player, &app.library.library);
     settings_store_restore_playback(&app.settings, &app.player, hal_clock_microseconds());
     player_restore(&app.player);
@@ -1302,6 +1368,9 @@ static void start_screens(uint32_t now_ms)
         .theme = &app.theme,
         .stage_theme = &app.stage_theme,
         .store = &app.library,
+#ifdef ECHO_LITE
+        .private_store = &app.private_library,
+#endif
         .player = &app.player,
 #ifdef ECHO_LITE
         .spoken = NULL,
@@ -1333,7 +1402,11 @@ static void report_card_files(CardFilesReport files, uint32_t now_ms)
     if (files.card_full) {
         toast_show(&app.toast, i18n_text(STR_BOOT_CARD_FULL), now_ms);
     }
-    if (files.library_created) {
+    if (files.library_created
+#ifdef ECHO_LITE
+        || files.private_library_created
+#endif
+    ) {
         app.rescan_requested = true;
     } else if (music_check_firmware_is_new()) {
         app.music_check_requested = true;
@@ -1368,6 +1441,9 @@ ECHO_STARTUP_CODE static void start_up(void)
     app.options = (AppOptions){.show_frame_time = false, .ignore_power_taps = false};
     app.toast = (Toast){.visible = false};
     app.powered_off = false;
+#ifdef ECHO_LITE
+    app.private_active = false;
+#endif
     app.charging = false;
     app.frame_stable = false;
     app.key_activity = false;
@@ -1677,6 +1753,9 @@ void app_request_rescan_if_music_changed(void)
 {
     app.music_check_requested = true;
     app.usb_written = true;
+#ifdef ECHO_LITE
+    app.rescan_requested |= private_music_present();
+#endif
 }
 
 static const StringId CLOCK_PROMPT_OPTIONS[] = {STR_SETTINGS_SET_NOW, STR_SETTINGS_LATER};

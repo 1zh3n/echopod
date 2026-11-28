@@ -3,6 +3,9 @@
 #include <stddef.h>
 
 const char LIBRARY_STORE_PATH[] = "/.echo/library.db";
+#ifdef ECHO_LITE
+const char PRIVATE_LIBRARY_STORE_PATH[] = "/.echo/private.db";
+#endif
 
 static bool read_file(void *context, uint32_t offset, void *buffer, uint32_t length)
 {
@@ -20,9 +23,14 @@ void library_store_close(LibraryStore *store)
 
 bool library_store_open(LibraryStore *store)
 {
+    return library_store_open_path(store, LIBRARY_STORE_PATH);
+}
+
+bool library_store_open_path(LibraryStore *store, const char *path)
+{
     library_store_close(store);
     store->library = (Library){.source = {.read = NULL, .context = NULL}};
-    if (!hal_file_open(&store->file, LIBRARY_STORE_PATH)) {
+    if (!hal_file_open(&store->file, path)) {
         return false;
     }
     ByteSource file_source = {.read = read_file, .context = store};

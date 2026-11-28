@@ -20,6 +20,7 @@
 #include "screens/now_playing_screen.h"
 #ifdef ECHO_LITE
 #include "favorite_track_source.h"
+#include "private_track_source.h"
 #include "screens/track_list_screen.h"
 #endif
 #ifndef ECHO_LITE
@@ -84,6 +85,8 @@ typedef struct AppScreens {
 #ifdef ECHO_LITE
     TrackListScreen favorite_tracks;
     FavoriteTrackSource favorite_source;
+    TrackListScreen private_tracks;
+    PrivateTrackSource private_source;
 #endif
     CoverFlowScreen cover_flow;
     BrowseEntry browse_entries[MUSIC_ITEM_COUNT];
@@ -100,6 +103,7 @@ typedef struct AppScreens {
 #ifdef ECHO_LITE
     Screen *root_all_songs;
     Screen *root_favorites;
+    Screen *root_private;
 #else
     MenuItem home_items[HOME_ITEM_COUNT];
     HomeArt home_art;
@@ -116,6 +120,9 @@ typedef struct AppScreensContext {
     const Theme *theme;
     const Theme *stage_theme;
     const LibraryStore *store;
+#ifdef ECHO_LITE
+    const LibraryStore *private_store;
+#endif
     Player *player;
     SettingsStore *settings;
     FavoritesStore *favorites;

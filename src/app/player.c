@@ -13,6 +13,10 @@
 
 const char PLAYER_RESUME_PATH[] = "/.echo/resume.bin";
 const char PLAYER_UP_NEXT_PATH[] = "/.echo/upnext.bin";
+#ifdef ECHO_LITE
+const char PLAYER_PRIVATE_RESUME_PATH[] = "/.echo/private_resume.bin";
+const char PLAYER_PRIVATE_UP_NEXT_PATH[] = "/.echo/private_upnext.bin";
+#endif
 
 static uint32_t current_position(const Player *player)
 {
@@ -55,7 +59,7 @@ static void save_up_next(const Player *player)
 {
     uint8_t bytes[UP_NEXT_STATE_SIZE];
     up_next_encode(&player->up_next, player->fingerprint, bytes);
-    (void)hal_file_write(PLAYER_UP_NEXT_PATH, bytes, sizeof bytes);
+    (void)hal_file_write(player->up_next_path, bytes, sizeof bytes);
 }
 
 static bool current_track(const Player *player, uint16_t *track)
@@ -246,6 +250,8 @@ static bool move_and_start(Player *player, int direction, bool wrap)
 void player_init(Player *player, const Library *library)
 {
     player->library = library;
+    player->resume_path = PLAYER_RESUME_PATH;
+    player->up_next_path = PLAYER_UP_NEXT_PATH;
     player->fingerprint = library_fingerprint(library);
     player->queue.library = library;
     player->queue.count = 0;
@@ -269,6 +275,14 @@ void player_init(Player *player, const Library *library)
     become_idle(player);
     hal_audio_set_volume(player->volume);
 }
+
+#ifdef ECHO_LITE
+void player_set_paths(Player *player, const char *resume_path, const char *up_next_path)
+{
+    player->resume_path = resume_path;
+    player->up_next_path = up_next_path;
+}
+#endif
 
 void player_set_resume(Player *player, PlayerResume resume)
 {
@@ -672,14 +686,14 @@ bool player_save(Player *player)
     };
     uint8_t bytes[RESUME_STATE_SIZE];
     resume_state_encode(&state, bytes);
-    return hal_file_write(PLAYER_RESUME_PATH, bytes, sizeof bytes);
+    return hal_file_write(player->resume_path, bytes, sizeof bytes);
 }
 
-static bool read_resume_state(ResumeState *state)
+static bool read_resume_state(const Player *player, ResumeState *state)
 {
     HalFile file;
     uint8_t bytes[RESUME_STATE_SIZE];
-    if (!hal_file_open(&file, PLAYER_RESUME_PATH)) {
+    if (!hal_file_open(&file, player->resume_path)) {
         return false;
     }
     uint32_t length = file.size < RESUME_STATE_SIZE ? file.size : RESUME_STATE_SIZE;
@@ -703,7 +717,7 @@ static void load_up_next(Player *player)
 {
     HalFile file;
     uint8_t bytes[UP_NEXT_STATE_SIZE];
-    if (!hal_file_open(&file, PLAYER_UP_NEXT_PATH)) {
+    if (!hal_file_open(&file, player->up_next_path)) {
         return;
     }
     bool read = file.size >= UP_NEXT_STATE_SIZE && hal_file_read(file, 0, bytes, sizeof bytes);
@@ -713,11 +727,15 @@ static void load_up_next(Player *player)
     }
 }
 
+#ifdef ECHO_LITE
+bool player_restore(Player *player)
+#else
 ECHO_STARTUP_CODE bool player_restore(Player *player)
+#endif
 {
     ResumeState state;
     load_up_next(player);
-    if (!read_resume_state(&state) || state.library_fingerprint != player->fingerprint ||
+    if (!read_resume_state(player, &state) || state.library_fingerprint != player->fingerprint ||
         !rebuild_queue(player, &state)) {
         return false;
     }

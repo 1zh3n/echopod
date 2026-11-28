@@ -11,7 +11,7 @@ set(ECHO_THEME_SOURCES theme_assets.c theme_store.c)
 set(ECHO_FAVORITE_TRACKS_SOURCES)
 if(ECHO_LITE)
     set(ECHO_THEME_SOURCES)
-    list(APPEND ECHO_FAVORITE_TRACKS_SOURCES screens/track_list_screen.c)
+    list(APPEND ECHO_FAVORITE_TRACKS_SOURCES screens/track_list_screen.c private_track_source.c)
 endif()
 add_library(echo_app STATIC
     app.c

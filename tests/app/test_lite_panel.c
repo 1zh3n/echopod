@@ -150,6 +150,26 @@ static void start_app_with_library(void)
     start_app_with_start_screen(START_MAIN_MENU);
 }
 
+static void start_app_with_private_library(void)
+{
+    uint32_t size = 0;
+    uint32_t covers_size = 0;
+    const uint8_t *bytes = fixture_bytes(&size);
+    const uint8_t *covers = fixture_covers_bytes(&covers_size);
+    Settings settings = settings_defaults();
+    uint8_t encoded[SETTINGS_FILE_SIZE];
+    settings_encode(&settings, encoded);
+    fake_hal_reset();
+    fake_hal_add_file("/.echo/library.db", bytes, size);
+    fake_hal_add_file("/.echo/private.db", bytes, size);
+    fake_hal_add_file("/.echo/covers.bin", covers, covers_size);
+    fake_hal_add_file(SETTINGS_STORE_PATH, encoded, sizeof encoded);
+    fake_hal_add_file("/.echo/build.tmp", NULL, 16 * 1024 * 1024);
+    now_ms = START_MS;
+    fake_hal_set_milliseconds(now_ms);
+    app_start();
+}
+
 static void boot_starts_on_all_songs(void)
 {
     start_app_with_library();
@@ -487,6 +507,27 @@ static void back_at_the_root_toggles_all_songs_and_favorites(void)
     tap(KEY_BACK);
     wait_ms(300);
     CHECK(title_is("Favorites"));
+    tap(KEY_BACK);
+    wait_ms(300);
+    CHECK(title_is("All Songs"));
+}
+
+static void a_private_library_adds_a_third_root(void)
+{
+    start_app_with_private_library();
+    CHECK(title_is("All Songs"));
+    tap(KEY_BACK);
+    wait_ms(300);
+    CHECK(title_is("Favorites"));
+    tap(KEY_BACK);
+    wait_ms(300);
+    CHECK(title_is("Private"));
+    tap(KEY_PLAY);
+    wait_ms(300);
+    CHECK(title_is("Now Playing"));
+    tap(KEY_BACK);
+    wait_ms(300);
+    CHECK(title_is("Private"));
     tap(KEY_BACK);
     wait_ms(300);
     CHECK(title_is("All Songs"));
@@ -1744,6 +1785,7 @@ int main(void)
         TEST_CASE(boot_screen_is_static),
         TEST_CASE(boot_draws_across_strips),
         TEST_CASE(back_at_the_root_toggles_all_songs_and_favorites),
+        TEST_CASE(a_private_library_adds_a_third_root),
         TEST_CASE(back_from_now_playing_returns_to_the_current_root),
         TEST_CASE(settings_from_favorites_returns_to_favorites),
         TEST_CASE(long_back_on_now_playing_opens_settings),

@@ -606,8 +606,21 @@ ScanResult library_scan(const ScanJob *job, ScanStats *stats)
         }
         return SCAN_OUT_OF_MEMORY;
     }
+#ifdef ECHO_LITE
+    const char *root = job->root != NULL && job->root[0] != '\0' ? job->root : "/";
+    uint32_t root_length = text_length(root);
+    if (root_length >= SCAN_PATH_CAPACITY) {
+        pinyin_table_set(NULL);
+        return SCAN_PATH_TOO_LONG;
+    }
+    for (uint32_t index = 0; index < root_length; index++) {
+        state->path[index] = root[index];
+    }
+    truncate_path(state, root_length);
+#else
     state->path[0] = '/';
     truncate_path(state, 1);
+#endif
     ScanResult result = walk(state, job, stats);
     if (result == SCAN_OK && job->progress.report != NULL) {
         job->progress.report(job->progress.context, 0, stats->tracks);

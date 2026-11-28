@@ -410,6 +410,22 @@ ECHO_STARTUP_CODE Screen *app_screens_init(AppScreens *screens, AppScreensContex
         .empty_message = STR_MENU_NO_SONG_FAVORITES,
     };
     track_list_screen_init(&screens->favorite_tracks, favorite_tracks);
+    screens->root_private = NULL;
+    if (context.private_store != NULL && context.private_store->available &&
+        library_count(&context.private_store->library, LIBRARY_TITLE_ORDER) > 0) {
+        TrackListConfig private_tracks = {
+            .library = &context.private_store->library,
+            .player = context.player,
+            .now_playing = &screens->now_playing.screen,
+            .theme = theme,
+            .source =
+                private_track_source(&screens->private_source, &context.private_store->library),
+            .title = STR_MENU_PRIVATE,
+            .empty_message = STR_MENU_NO_PRIVATE_TRACKS,
+        };
+        track_list_screen_init(&screens->private_tracks, private_tracks);
+        screens->root_private = &screens->private_tracks.screen;
+    }
 #endif
     build_music(screens, context);
 #ifdef ECHO_LITE

@@ -139,6 +139,25 @@ void lite_status_root_draw(Canvas *canvas, const Theme *theme, Point origin, Col
                      favorites);
 }
 
+void lite_status_root_three_draw(Canvas *canvas, const Theme *theme, Point origin, Color all,
+                                 Color favorites, Color private)
+{
+    const int width = 28;
+    const int height = 10;
+    const int radius = 2;
+    const int border = 2;
+    fill_round_rect(canvas,
+                    (Rect){origin.x + 2, origin.y + 2, width, height}, radius,
+                    lite_status_shadow());
+    fill_round_rect(canvas, (Rect){origin.x, origin.y, width, height}, radius,
+                    lite_card_border_color(theme));
+    canvas_fill_rect(canvas, (Rect){origin.x + border, origin.y + border, 8, 6}, all);
+    canvas_fill_rect(canvas, (Rect){origin.x + border + 8, origin.y + border, 8, 6},
+                     favorites);
+    canvas_fill_rect(canvas, (Rect){origin.x + border + 16, origin.y + border, 8, 6},
+                     private);
+}
+
 Rect lite_list_frame_no_title(Canvas *canvas, const Theme *theme)
 {
     const ThemeColors *colors = theme->colors;
