@@ -180,6 +180,31 @@ See [install-512m.md](install-512m.md). The 512 MB updater looks for `/ECHOMINI.
 `/MINIV000.IMG`–`/MINIV999.IMG`, not `HIFIEC90.IMG`. Copy the image to the card with a supported
 name, run the updater, and keep the official firmware available.
 
+## Future ideas (not implemented)
+
+### Multiple Favorites lists
+
+The current Favorites root is still a **single** list of up to 512 songs. Multiple lists are
+possible, but they are not implemented and are not part of the current image.
+
+If this is picked up later:
+
+- **Data:** either one file per list or one multi-list file with list names/IDs and a key set per
+  list. The current `/.echo/favorite_tracks.bin` reservation is only 4 KB; one 512-song list is
+  about 2 KB, so 8 lists need roughly 16–20 KB. An existing file would need a reserve/grow or a
+  migration path.
+- **RAM:** keep only the active list's keys, queue and resume state in RAM; load the other lists
+  from the card on demand. Lite currently has 61 KB of app static RAM free, so a small number of
+  lists would fit, but loading on demand is simpler.
+- **UI/key model:** a list picker needs a key. Long Menu on the Favorites root is currently the
+  A-Z jump, so either Long Menu opens the list picker and A-Z moves inside a list, or a small
+  `Lists >` row/third root is added. The second option changes the two-root model.
+- **Queue/resume:** save the active list ID together with the explicit queue, track and position,
+  otherwise switching lists or restarting can restore the wrong queue.
+
+This is a moderate feature, not a hardware or format risk. It was left out because there is no
+current need.
+
 ## Scope and caution
 
 - **512 MB only.** The 8 GB model is not supported.

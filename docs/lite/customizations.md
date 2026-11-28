@@ -85,3 +85,5 @@ front end. The list below is the useful summary; the git history has the exact c
 - Boot chain, IDB, PMU firmware, fw2 and slot layout.
 - The generic EchoPod feature set remains in the source for reference and for non-Lite builds.
 - Library rescan performance is a separate task.
+- Multiple Favorites lists are not implemented; the current Favorites root is one list of up to
+  512 songs. See the future-ideas section in [README.md](README.md).
