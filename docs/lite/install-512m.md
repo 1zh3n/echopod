@@ -37,7 +37,7 @@ cmake --build --preset release-lite
 
 ```text
 image:  MINIV942.IMG
-sha256: 6a5eed2e80ac2c19fb182eb3701ab04d958fe97bf10ad1aa642048be49dc89a6
+sha256: e3baece2bcd554eb401c837bbe7238037e475d4d39e9ae8b264d8a0be316eecc
 ```
 
 `MINIV942` removes the Home carousel. Boot goes directly to All Songs; Short Back at the root
@@ -65,17 +65,17 @@ The incremental images for this pass are:
 | `MINIV939` | Settings absorbs Quick; 400 ms long Menu; standalone Quick panel removed | `962a349f7a2ca78c6a3775a7aea11ae152e94f8138fdca458dc086cab2ee9e0d` |
 | `MINIV940` | local motion, screen-owned status meter, static Settings rows | `d9f06accd78d268e375eac79c656c52421b0a1323f7679af34cc5fb6fe9b112d` |
 | `MINIV941` | song Favorites on Home, explicit favorites queue and resume, Add/Remove actions; audio-fed collection and Lite-only actions | `d1eb274b6fa84ae431c0aca12c9d3d13b59f67a771b02f1c011cbe4024a019c2` |
-| `MINIV942` | remove Home; All Songs / Favorites roots, root Back switching, Long Back Settings; root tabs deferred | `6a5eed2e80ac2c19fb182eb3701ab04d958fe97bf10ad1aa642048be49dc89a6` |
+| `MINIV942` | remove Home; All Songs / Favorites roots, root Back switching, Long Back Settings; Settings Back returns the root; root tabs deferred | `e3baece2bcd554eb401c837bbe7238037e475d4d39e9ae8b264d8a0be316eecc` |
 
 The 8 GB model is not supported.
 
 ## Verification
 
 - Host tests: 168/168 passed (`ctest --preset dev -E "^format$"`).
-- Lite panel tests: 63/63 passed.
+- Lite panel tests: 64/64 passed.
 - `release-lite` build and updater check valid.
-- Headroom: code 137,112 / 157,292 bytes (20,180 free); loaded total 409,352 / 437,600 bytes
-  (28,248 free); resident tables 18,240 / 18,432 (192 free); rescan overlay 85,400 / 86,016
+- Headroom: code 137,132 / 157,292 bytes (20,160 free); loaded total 409,372 / 437,600 bytes
+  (28,228 free); resident tables 18,240 / 18,432 (192 free); rescan overlay 85,400 / 86,016
   (616 free).
 - Still pending: the final 512 MB device pass over sorting, boot, dots, headers, navigation,
   local motion, root switching, favorites and portrait-flipped.
