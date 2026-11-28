@@ -19,7 +19,8 @@
 #include "screens/equalizer_screen.h"
 #include "screens/now_playing_screen.h"
 #ifdef ECHO_LITE
-#include "screens/favorite_tracks_screen.h"
+#include "favorite_track_source.h"
+#include "screens/track_list_screen.h"
 #endif
 #ifndef ECHO_LITE
 #include "screens/test_pattern_screen.h"
@@ -81,7 +82,8 @@ typedef struct AppScreens {
     NowPlayingScreen now_playing;
     UpNextScreen up_next;
 #ifdef ECHO_LITE
-    FavoriteTracksScreen favorite_tracks;
+    TrackListScreen favorite_tracks;
+    FavoriteTrackSource favorite_source;
 #endif
     CoverFlowScreen cover_flow;
     BrowseEntry browse_entries[MUSIC_ITEM_COUNT];

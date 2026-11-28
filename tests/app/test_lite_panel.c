@@ -5,6 +5,7 @@
 #include "app/app.h"
 #include "browse_screen.h"
 #include "check.h"
+#include "core/format.h"
 #include "core/i18n.h"
 #include "default_theme.h"
 #include "fake_hal.h"
@@ -19,7 +20,8 @@
 #include "lite_animation.h"
 #include "player.h"
 #include "screens/charge_screen.h"
-#include "screens/favorite_tracks_screen.h"
+#include "favorite_track_source.h"
+#include "screens/track_list_screen.h"
 #include "screens/now_playing_screen.h"
 #include "settings/settings.h"
 #include "settings_store.h"
@@ -611,7 +613,8 @@ static void charging_screen_has_green_shadow_and_no_text(void)
 static FixtureLibrary favorite_fixture;
 static FavoritesStore favorite_store;
 static Player favorite_player;
-static FavoriteTracksScreen favorite_tracks;
+static TrackListScreen favorite_tracks;
+static FavoriteTrackSource favorite_source;
 static Screen favorite_target;
 static Toast favorite_toast;
 
@@ -623,15 +626,16 @@ static Screen *fresh_favorite_tracks(void)
     player_init(&favorite_player, library);
     favorite_target = (Screen){0};
     favorite_toast = (Toast){0};
-    FavoriteTracksConfig config = {
+    TrackListConfig config = {
         .library = library,
-        .favorites = &favorite_store,
         .player = &favorite_player,
         .now_playing = &favorite_target,
         .theme = &DEFAULT_THEME,
-        .toast = &favorite_toast,
+        .source = favorite_track_source(&favorite_source, &favorite_store, &favorite_toast),
+        .title = STR_MENU_FAVORITES,
+        .empty_message = STR_MENU_NO_SONG_FAVORITES,
     };
-    Screen *screen = favorite_tracks_screen_init(&favorite_tracks, config);
+    Screen *screen = track_list_screen_init(&favorite_tracks, config);
     screen->enter(screen->context, START_MS);
     return screen;
 }
@@ -645,7 +649,7 @@ static void two_song_favorites(void)
 static void favorite_tracks_lists_nothing_when_empty(void)
 {
     Screen *screen = fresh_favorite_tracks();
-    FavoriteTracksScreen *favorites = screen->context;
+    TrackListScreen *favorites = screen->context;
     CHECK_EQUAL(0, favorites->count);
     ScreenAction action = screen->handle_key(
         favorites, (KeyEvent){.key = KEY_PLAY, .gesture = KEY_GESTURE_PRESS}, START_MS);
@@ -657,16 +661,37 @@ static void favorite_tracks_lists_two_favorites_in_title_order(void)
     Screen *screen = fresh_favorite_tracks();
     two_song_favorites();
     screen->enter(screen->context, START_MS);
-    FavoriteTracksScreen *favorites = screen->context;
+    TrackListScreen *favorites = screen->context;
     CHECK_EQUAL(2, favorites->count);
     LibraryTrack track;
     CHECK(library_read_track(favorites->config.library, favorites->tracks[0], &track));
-    char title[FAVORITE_TRACK_LABEL_CAPACITY];
+    char title[TRACK_LIST_LABEL_CAPACITY];
     CHECK(library_read_string(favorites->config.library, track.title, title, sizeof title));
     CHECK(strcmp(title, favorites->labels[0]) == 0);
     CHECK(library_read_track(favorites->config.library, favorites->tracks[1], &track));
     CHECK(library_read_string(favorites->config.library, track.title, title, sizeof title));
     CHECK(strcmp(title, favorites->labels[1]) == 0);
+    char duration[TRACK_LIST_DETAIL_CAPACITY];
+    format_duration(track.duration_ms, duration, sizeof duration);
+    CHECK(strcmp(duration, favorites->details[1]) == 0);
+}
+
+static void favorite_tracks_support_az_jump(void)
+{
+    Screen *screen = fresh_favorite_tracks();
+    favorites_store_toggle_track(&favorite_store, 0);
+    favorites_store_toggle_track(&favorite_store, 6);
+    screen->enter(screen->context, START_MS);
+    TrackListScreen *favorites = screen->context;
+    CHECK(favorites->model.section != NULL);
+    CHECK(screen->long_menu_enabled);
+    ScreenAction opened = screen->long_menu(screen->long_menu_context, START_MS + 10);
+    CHECK_EQUAL(SCREEN_ACTION_PUSH, opened.type);
+    CHECK(strcmp("A-Z", opened.target->title) == 0);
+    ScreenAction chosen = opened.target->handle_key(
+        opened.target->context, (KeyEvent){.key = KEY_PLAY, .gesture = KEY_GESTURE_PRESS},
+        START_MS + 20);
+    CHECK_EQUAL(SCREEN_ACTION_POP, chosen.type);
 }
 
 static void starting_the_second_favorite_uses_the_favorites_queue(void)
@@ -674,7 +699,7 @@ static void starting_the_second_favorite_uses_the_favorites_queue(void)
     Screen *screen = fresh_favorite_tracks();
     two_song_favorites();
     screen->enter(screen->context, START_MS);
-    FavoriteTracksScreen *favorites = screen->context;
+    TrackListScreen *favorites = screen->context;
     screen->handle_key(favorites,
                        (KeyEvent){.key = KEY_VOLUME_UP, .gesture = KEY_GESTURE_PRESS},
                        START_MS + 10);
@@ -756,15 +781,16 @@ static void collecting_many_favorites_services_audio(void)
     player_init(&favorite_player, library);
     favorite_target = (Screen){0};
     favorite_toast = (Toast){0};
-    FavoriteTracksConfig config = {
+    TrackListConfig config = {
         .library = library,
-        .favorites = &favorite_store,
         .player = &favorite_player,
         .now_playing = &favorite_target,
         .theme = &DEFAULT_THEME,
-        .toast = &favorite_toast,
+        .source = favorite_track_source(&favorite_source, &favorite_store, &favorite_toast),
+        .title = STR_MENU_FAVORITES,
+        .empty_message = STR_MENU_NO_SONG_FAVORITES,
     };
-    Screen *screen = favorite_tracks_screen_init(&favorite_tracks, config);
+    Screen *screen = track_list_screen_init(&favorite_tracks, config);
     int before = fake_hal_audio_service_count();
     screen->enter(screen->context, START_MS);
     CHECK(fake_hal_audio_service_count() > before);
@@ -776,7 +802,7 @@ static void long_play_removes_a_song_favorite(void)
     Screen *screen = fresh_favorite_tracks();
     two_song_favorites();
     screen->enter(screen->context, START_MS);
-    FavoriteTracksScreen *favorites = screen->context;
+    TrackListScreen *favorites = screen->context;
     screen->handle_key(favorites,
                        (KeyEvent){.key = KEY_PLAY, .gesture = KEY_GESTURE_LONG_PRESS},
                        START_MS + 10);
@@ -1240,6 +1266,7 @@ int main(void)
         TEST_CASE(compact_icons_are_native_18px),
         TEST_CASE(favorite_tracks_lists_nothing_when_empty),
         TEST_CASE(favorite_tracks_lists_two_favorites_in_title_order),
+        TEST_CASE(favorite_tracks_support_az_jump),
         TEST_CASE(starting_the_second_favorite_uses_the_favorites_queue),
         TEST_CASE(long_play_removes_a_song_favorite),
         TEST_CASE(song_actions_add_and_remove_in_lite),

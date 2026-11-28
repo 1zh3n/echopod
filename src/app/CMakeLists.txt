@@ -11,7 +11,7 @@ set(ECHO_THEME_SOURCES theme_assets.c theme_store.c)
 set(ECHO_FAVORITE_TRACKS_SOURCES)
 if(ECHO_LITE)
     set(ECHO_THEME_SOURCES)
-    list(APPEND ECHO_FAVORITE_TRACKS_SOURCES screens/favorite_tracks_screen.c)
+    list(APPEND ECHO_FAVORITE_TRACKS_SOURCES screens/track_list_screen.c)
 endif()
 add_library(echo_app STATIC
     app.c
@@ -24,6 +24,7 @@ add_library(echo_app STATIC
     cover_cache.c
     default_theme.c
     favorites_store.c
+    favorite_track_source.c
     ${ECHO_DIAGNOSTICS_SOURCES}
     ${ECHO_FAVORITE_TRACKS_SOURCES}
     equalizer_files.c

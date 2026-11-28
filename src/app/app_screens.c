@@ -383,15 +383,17 @@ ECHO_STARTUP_CODE Screen *app_screens_init(AppScreens *screens, AppScreensContex
     bluetooth_screen_init(&screens->bluetooth, context.bluetooth, theme);
     now_playing_screen_init(&screens->now_playing, now_playing);
 #ifdef ECHO_LITE
-    FavoriteTracksConfig favorite_tracks = {
+    TrackListConfig favorite_tracks = {
         .library = &context.store->library,
-        .favorites = context.favorites,
         .player = context.player,
         .now_playing = &screens->now_playing.screen,
         .theme = theme,
-        .toast = context.toast,
+        .source = favorite_track_source(&screens->favorite_source, context.favorites,
+                                        context.toast),
+        .title = STR_MENU_FAVORITES,
+        .empty_message = STR_MENU_NO_SONG_FAVORITES,
     };
-    favorite_tracks_screen_init(&screens->favorite_tracks, favorite_tracks);
+    track_list_screen_init(&screens->favorite_tracks, favorite_tracks);
 #endif
     build_music(screens, context);
 #ifdef ECHO_LITE
