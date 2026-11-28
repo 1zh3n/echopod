@@ -296,3 +296,41 @@ performance item remains separate and is not part of this pass.
 - [ ] Update `docs/lite/install-512m.md`, shortcuts/README wording, and the verification notes.
 - [ ] Review the diff against all specs; no unimplemented approved rule may remain silently
       open. Leave the rescan-performance item separate.
+
+---
+
+## Next milestones
+
+### M5: Settings absorbs the Quick Panel
+
+- Add the Quick category with playback-mode and sleep-timer cards.
+- Simplify to Quick / Sound / Display / System; fold Buttons and Library, move Lyrics to
+  Display, remove the duplicate Sleep row.
+- Remove the standalone Quick Panel and its overlay entry.
+- Long Menu opens Settings/Quick from Home, Now Playing and non-lettered lists; A-Z stays in
+  lettered lists; Settings Long Menu goes to the next category.
+- Remove double Menu; use a 400 ms long-Menu threshold for Lite.
+- Tests: quick cards, four categories, Settings Back, long-Menu mapping, no panel overlay.
+
+### M6: Local motion
+
+- Remove the overlay sheet; overlay panels appear and disappear directly.
+- Settings category changes keep the rows static and animate only the badge, glyph and category
+  dots.
+- Keep page slides and the Home carousel.
+- Tests: no overlay slide, dot interpolation, rows do not move, page slides unchanged.
+
+### M7: Song favorites
+
+- Add the path-hash song-favorites store and card file.
+- Replace the Home Playlists card with Favorites.
+- Add a favorite-song list and Add/Remove Favorites in the song actions menu.
+- Decide and implement the queue: a real favorites queue is preferred; starting All Songs is
+  only the fallback.
+- Write a separate implementation plan before coding; this is larger than a Home-card rename.
+- Album-favorites cleanup follows after M7, not as its own image.
+
+### Separate
+
+- Rescan performance/stutter.
+- Any further Quick/Settings visual tuning after M5-M7 device checks.
