@@ -34,10 +34,11 @@ class SortKeyTest(unittest.TestCase):
     def test_case_is_ignored(self):
         self.assertEqual(library_index.sort_key("abba"), library_index.sort_key("ABBA"))
 
-    def test_a_leading_the_is_ignored(self):
-        self.assertEqual("beatles", library_index.sort_key("The Beatles"))
+    def test_a_leading_the_is_kept(self):
+        self.assertEqual("the beatles", library_index.sort_key("The Beatles"))
         self.assertEqual("theatre", library_index.sort_key("Theatre"))
         self.assertEqual("the", library_index.sort_key("The"))
+        self.assertEqual("t", library_index.sort_initial("The Beatles"))
 
     def test_accents_are_ignored(self):
         self.assertEqual("bjork", library_index.sort_key("Björk"))
@@ -265,7 +266,7 @@ class BuildLibraryTest(unittest.TestCase):
 
     def test_albums_are_sorted_by_title(self):
         titles = [album.title for album in self.library.albums]
-        self.assertEqual(["Back In Black", "The Best of Something", "High Voltage", "Homogenic",
+        self.assertEqual(["Back In Black", "High Voltage", "Homogenic", "The Best of Something",
                           "This Won't Be The Last Time"], titles)
 
     def test_album_tracks_are_contiguous_and_in_track_order(self):
@@ -275,8 +276,8 @@ class BuildLibraryTest(unittest.TestCase):
 
     def test_artists_are_sorted_and_list_albums_chronologically(self):
         names = [artist.name for artist in self.library.artists]
-        self.assertEqual(["AC/DC", "acloudyskye", "The Beatles", "Björk"], names)
-        bjork = self.library.artists[3]
+        self.assertEqual(["AC/DC", "acloudyskye", "Björk", "The Beatles"], names)
+        bjork = self.library.artists[2]
         self.assertEqual(["Homogenic", "The Best of Something"], self.album_titles(bjork.albums))
         self.assertEqual(["High Voltage", "Back In Black"],
                          self.album_titles(self.library.artists[0].albums))
@@ -466,7 +467,7 @@ class EncodeLibraryTest(unittest.TestCase):
         self.assertEqual((60000, 1, 1), (fields[6], fields[7], fields[8]))
 
     def test_album_records_round_trip(self):
-        fields = ALBUM_RECORD.unpack_from(self.data, self.section(1)[0] + ALBUM_RECORD.size)
+        fields = ALBUM_RECORD.unpack_from(self.data, self.section(1)[0] + 3 * ALBUM_RECORD.size)
         self.assertEqual("The Best of Something", self.string_at(fields[0]))
         self.assertEqual((3, 2, 2001), (fields[1], fields[2], fields[3]))
         self.assertEqual(0xFFFF, fields[6])
@@ -474,10 +475,10 @@ class EncodeLibraryTest(unittest.TestCase):
     def test_group_links_point_at_albums(self):
         links_offset = self.section(8)[0]
         name, first_link, count, _ = GROUP_RECORD.unpack_from(
-            self.data, self.section(2)[0] + 3 * GROUP_RECORD.size)
+            self.data, self.section(2)[0] + 2 * GROUP_RECORD.size)
         self.assertEqual("Björk", self.string_at(name))
         albums = struct.unpack_from(f"<{count}H", self.data, links_offset + 2 * first_link)
-        self.assertEqual((3, 1), albums)
+        self.assertEqual((2, 3), albums)
 
     def test_strings_are_stored_once(self):
         strings_offset, strings_size, _, _ = self.section(9)

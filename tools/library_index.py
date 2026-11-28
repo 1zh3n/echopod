@@ -48,7 +48,6 @@ FOLDERS_CHECK = struct.Struct("<I")
 FOLDERS_CHECKED_BYTES = FOLDERS_HEAD.size + FOLDERS_KEYS.size
 FOLDERS_BYTES = FOLDERS_CHECKED_BYTES + FOLDERS_CHECK.size
 
-LEADING_ARTICLE = re.compile(r"^the\s+(?=\S)")
 DISC_TRACK_PREFIX = re.compile(r"^(\d+)-(\d+)\s*-\s*")
 TRACK_PREFIX = re.compile(r"^(\d+)\s*[-.]\s*")
 LEADING_NUMBER = re.compile(r"\s*(\d+)")
@@ -158,12 +157,12 @@ def sort_key(text):
     text = pinyin_text(text)
     decomposed = unicodedata.normalize("NFKD", text)
     stripped = "".join(character for character in decomposed if not unicodedata.combining(character))
-    return LEADING_ARTICLE.sub("", stripped.casefold().strip())
+    return stripped.casefold().strip()
 
 
 def sort_initial(text):
     table = pinyin_data()
-    folded = LEADING_ARTICLE.sub("", text.strip().casefold())
+    folded = text.strip().casefold()
     if not folded:
         return "#"
     first = folded[0]

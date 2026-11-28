@@ -14,7 +14,7 @@ enum {
     FEW_READS = 200,
     UPDATES_FOR_A_LAP = BIG_ALBUMS,
     RED_ALBUM = 0,
-    BLUE_ALBUM = 2
+    BLUE_ALBUM = 1
 };
 
 static FixtureLibrary fixture;

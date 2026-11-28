@@ -73,6 +73,7 @@ Full key table and A-Z geometry: [docs/lite/shortcuts.md](docs/lite/shortcuts.md
 - **Now Playing:** no time row, progress thumb or separate mode icon; flat progress bar, lower
   spectrum, transient volume number, and the same top status row as every screen.
 - **Sorting:** GB2312 Chinese by pinyin and kana by romaji, interleaved with Latin under A-Z.
+  Leading articles are literal: "The End of the World" sorts under T, not E.
 - **Review fixes:** category selection is remembered; Date/Time keeps unsaved edits across the
   Now Playing overlay; 90/120-minute sleep countdown is formatted correctly; dark-mode list
   separators use the theme divider; portrait All Songs shows nine rows; Settings list subpages

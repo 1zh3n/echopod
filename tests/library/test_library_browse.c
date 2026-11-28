@@ -6,18 +6,18 @@
 
 enum {
     TEXT_CAPACITY = 64,
-    BJORK = 3,
+    BJORK = 2,
     VARIOUS_ARTISTS = 3,
     METAL = 1,
     BACK_IN_BLACK = 0,
-    BEST_OF = 1,
-    HIGH_VOLTAGE = 2,
-    HOMOGENIC = 3,
+    BEST_OF = 3,
+    HIGH_VOLTAGE = 1,
+    HOMOGENIC = 2,
     HELLS_BELLS = 0,
-    HELP = 2,
-    ARMY_OF_ME = 3,
-    HUNTER = 5,
-    JOGA = 6,
+    HELP = 5,
+    ARMY_OF_ME = 6,
+    HUNTER = 3,
+    JOGA = 4,
     BJORK_FOLDER = 6,
     HOMOGENIC_FOLDER = 7
 };
@@ -204,7 +204,7 @@ static void folder_tracks_join_the_folder_and_its_subfolders(void)
     CHECK_EQUAL(3, browse_count(library, tracks));
     CHECK_EQUAL(HELLS_BELLS, item_at(library, tracks, 0).index);
     CHECK_EQUAL(1, item_at(library, tracks, 1).index);
-    CHECK_EQUAL(4, item_at(library, tracks, 2).index);
+    CHECK_EQUAL(2, item_at(library, tracks, 2).index);
     BrowseItem past;
     CHECK(!browse_item(library, tracks, 3, &past));
     CHECK(title_is(library, tracks, "AC DC"));

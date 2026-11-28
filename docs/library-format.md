@@ -57,7 +57,7 @@ Every sort and grouping key of a spoken track starts with a spoken flag that sor
 
 ## Sorting
 
-Sort keys are case-insensitive and accent-insensitive (Unicode NFKD with combining marks removed), and a leading "The " is ignored. So "The Beatles" sorts as "beatles" and "Björk" as "bjork".
+Sort keys are case-insensitive and accent-insensitive (Unicode NFKD with combining marks removed). Leading articles are kept, so "The Beatles" sorts as "the beatles" under T and "Björk" as "bjork" under B.
 
 ## Files and tags
 

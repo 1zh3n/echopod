@@ -9,13 +9,13 @@
 enum {
     HELLS_BELLS = 0,
     SHOOT_TO_THRILL = 1,
-    HELP = 2,
-    ARMY_OF_ME = 3,
-    HUNTER = 5,
-    JOGA = 6,
+    HELP = 5,
+    ARMY_OF_ME = 6,
+    HUNTER = 3,
+    JOGA = 4,
     SHOOTS = 7,
     BACK_IN_BLACK = 0,
-    HOMOGENIC = 3,
+    HOMOGENIC = 2,
     BACK_IN_BLACK_FOLDER = 2,
     ALBUM_COUNT = 5,
     BIG_LIST = 3000,
@@ -438,8 +438,8 @@ static void rebuilding_from_its_own_explicit_list_keeps_the_tracks(void)
     CHECK(play_queue_build(&queue, library, plan));
     CHECK_EQUAL(3, queue.count);
     CHECK_EQUAL(JOGA, current_track(&queue));
-    CHECK_EQUAL(2, explicit_track_after(&queue, -1, false));
-    CHECK_EQUAL(5, explicit_track_after(&queue, 1, false));
+    CHECK_EQUAL(HELP, explicit_track_after(&queue, -1, false));
+    CHECK_EQUAL(HUNTER, explicit_track_after(&queue, 1, false));
 }
 
 static void a_single_track_explicit_list_has_no_next(void)

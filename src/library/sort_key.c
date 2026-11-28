@@ -194,15 +194,6 @@ static size_t content_end(const char *key, size_t length)
     return end;
 }
 
-static size_t without_article(const char *key, size_t start, size_t end)
-{
-    if (end - start < 4 || key[start] != 't' || key[start + 1] != 'h' || key[start + 2] != 'e') {
-        return start;
-    }
-    size_t after = skip_spaces(key, start + 3, end);
-    return after > start + 3 && after < end ? after : start;
-}
-
 size_t sort_key_make(const char *text, char *key, size_t capacity)
 {
     KeyBuilder builder = {.key = key, .capacity = capacity, .length = 0, .full = false};
@@ -221,7 +212,7 @@ size_t sort_key_make(const char *text, char *key, size_t capacity)
         }
     }
     size_t end = content_end(key, builder.length);
-    size_t start = without_article(key, skip_spaces(key, 0, end), end);
+    size_t start = skip_spaces(key, 0, end);
     for (size_t index = start; index < end; index++) {
         key[index - start] = key[index];
     }

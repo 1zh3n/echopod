@@ -7,7 +7,7 @@ import library_index
 from library_fixture import FIXTURE_TRACKS
 from PIL import Image
 
-FIXTURE_COLORS = {0: (255, 0, 0), 2: (0, 0, 255)}
+FIXTURE_COLORS = {0: (255, 0, 0), 1: (0, 0, 255)}
 
 
 def fixture_bytes():

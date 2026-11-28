@@ -128,7 +128,9 @@ not device photos; see [design.md](design.md) for tokens and geometry.
   (purple random, gray loop, gray `1` loop-one). Inactive states are neutral gray.
 - **Now Playing:** no time row or thumb; spectrum/progress moved lower; no separate play/pause
   or mode icon.
-- **Sorting:** GB2312 pinyin and kana romaji interleaved with Latin under A-Z.
+- **Sorting:** GB2312 pinyin and kana romaji interleaved with Latin under A-Z. Leading
+  articles are literal, so "The End of the World" sorts under T; an existing library needs a
+  rescan to pick up the new order.
 - **Space work:** Lite icon masks moved to the glyph face; Lite theme-store/assets removed;
   unused Lite paths dropped. Resident tables have 196 bytes free, so keep new table data small.
 - **Review fixes:** Settings categories remember their row; Date/Time preserves an unsaved edit

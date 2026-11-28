@@ -11,9 +11,9 @@ typedef struct KeyCase {
 } KeyCase;
 
 static const KeyCase CASES[] = {
-    {"The Beatles", "beatles"},
+    {"The Beatles", "the beatles"},
     {"Bj\xc3\xb6rk", "bjork"},
-    {"  The  Who ", "who"},
+    {"  The  Who ", "the  who"},
     {"Theatre", "theatre"},
     {"the", "the"},
     {"The ", "the"},
@@ -40,7 +40,7 @@ static const KeyCase CASES[] = {
     {"\xe2\x85\xab", "xii"},
     {"the\xc2\xa0"
      "band",
-     "band"},
+     "the band"},
     {"\xc4\xb0stanbul", "istanbul"},
     {"\xc7\x85"
      "emal",
@@ -91,7 +91,7 @@ static void cjk_keys_match_the_pc_indexer(void)
 
 static void comparison_follows_the_keys(void)
 {
-    CHECK(sort_key_compare("The Beatles", "Bj\xc3\xb6rk") < 0);
+    CHECK(sort_key_compare("The Beatles", "Bj\xc3\xb6rk") > 0);
     CHECK(sort_key_compare("Bj\xc3\xb6rk", "bjork") == 0);
     CHECK(sort_key_compare("ABBA", "abba") == 0);
     CHECK(sort_key_compare("Zebra", "apple") > 0);

@@ -76,24 +76,9 @@ static const char *skip_spaces(const char *text)
     }
 }
 
-static const char *after_article(const char *text)
-{
-    const char *cursor = text;
-    if (lowered(utf8_next(&cursor)) != 't' || lowered(utf8_next(&cursor)) != 'h' ||
-        lowered(utf8_next(&cursor)) != 'e') {
-        return text;
-    }
-    const char *after_word = cursor;
-    const char *rest = skip_spaces(cursor);
-    if (rest == after_word || *rest == '\0') {
-        return text;
-    }
-    return rest;
-}
-
 char sort_key_initial(const char *text)
 {
-    const char *cursor = after_article(skip_spaces(text));
+    const char *cursor = skip_spaces(text);
     uint32_t code_point = lowered(folded(utf8_next(&cursor)));
     if (code_point < OTHER_SCRIPT) {
         return (char)code_point;

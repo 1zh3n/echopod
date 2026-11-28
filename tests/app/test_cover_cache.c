@@ -5,8 +5,8 @@
 
 enum {
     RED_ALBUM = 0,
-    BARE_ALBUM = 1,
-    BLUE_ALBUM = 2,
+    BARE_ALBUM = 2,
+    BLUE_ALBUM = 1,
     RED = 0xF800,
     BLUE = 0x001F
 };

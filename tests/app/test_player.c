@@ -11,8 +11,8 @@ enum {
     BACK_IN_BLACK = 0,
     HELLS_BELLS = 0,
     SHOOT_TO_THRILL = 1,
-    HELP = 2,
-    ARMY_OF_ME = 3,
+    HELP = 5,
+    ARMY_OF_ME = 6,
     LATE_IN_TRACK_MS = 5000,
     EARLY_IN_TRACK_MS = 1000,
     SEED = 7

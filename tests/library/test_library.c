@@ -7,10 +7,11 @@ enum {
     STRING_CAPACITY = 64,
     VERSION_OFFSET = 4,
     TRACKS_OFFSET_FIELD = 8,
-    BJORK_ARTIST = 3,
+    BJORK_ARTIST = 2,
     HOMOGENIC_FOLDER = 7,
     BACK_IN_BLACK_FOLDER = 2,
-    BEST_OF_ALBUM = 1,
+    BEST_OF_ALBUM = 3,
+    HOMOGENIC_ALBUM = 2,
     VARIOUS_ARTISTS = 3,
     POP = 2
 };
@@ -109,7 +110,7 @@ static void albums_decode_every_field(void)
     CHECK_EQUAL(VARIOUS_ARTISTS, album.album_artist);
     CHECK_EQUAL(POP, album.genre);
     CHECK_EQUAL(2001, album.year);
-    CHECK_EQUAL(2, album.first_track);
+    CHECK_EQUAL(5, album.first_track);
     CHECK_EQUAL(2, album.track_count);
     CHECK_EQUAL(LIBRARY_NONE, album.cover);
 }
@@ -125,7 +126,7 @@ static void groups_link_to_their_albums(void)
     CHECK_EQUAL(2, bjork.link_count);
     CHECK(library_read_index(library, LIBRARY_LINKS, bjork.first_link, &first));
     CHECK(library_read_index(library, LIBRARY_LINKS, bjork.first_link + 1, &second));
-    CHECK_EQUAL(3, first);
+    CHECK_EQUAL(HOMOGENIC_ALBUM, first);
     CHECK_EQUAL(BEST_OF_ALBUM, second);
 }
 
@@ -144,7 +145,7 @@ static void folders_list_subfolders_then_tracks(void)
     CHECK(string_is(library, homogenic.name, "Homogenic"));
     CHECK_EQUAL(2, homogenic.track_count);
     CHECK(library_read_index(library, LIBRARY_LINKS, homogenic.first_link, &first_track));
-    CHECK_EQUAL(5, first_track);
+    CHECK_EQUAL(3, first_track);
 }
 
 static void the_title_order_starts_with_the_first_title(void)
@@ -215,7 +216,7 @@ static void playlists_link_to_their_tracks_in_order(void)
     }
     CHECK_EQUAL(7, tracks[0]);
     CHECK_EQUAL(0, tracks[1]);
-    CHECK_EQUAL(6, tracks[2]);
+    CHECK_EQUAL(4, tracks[2]);
 }
 
 static void album_keys_are_stable_and_distinct(void)

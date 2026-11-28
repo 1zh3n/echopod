@@ -4,7 +4,7 @@ Status: **implemented in MINIV932.**
 
 ## What is implemented
 
-- Before the existing NFKD/casefold/article pipeline, each GB2312 Hanzi is replaced by
+- Before the existing NFKD/casefold pipeline, each GB2312 Hanzi is replaced by
   its primary pinyin syllable and each kana by its romaji syllable. Latin and mapped CJK
   therefore share one A-Z order.
 - The table is `assets/pinyin.bin`: 6,940 records (6,763 GB2312 Hanzi plus 177 kana),

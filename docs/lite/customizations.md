@@ -68,6 +68,8 @@ front end. The list below is the useful summary; the git history has the exact c
 - Song favorites use `/.echo/favorite_tracks.bin`; album favorites stay available to non-Lite.
 - The Favorites queue is an explicit track list in `PlayQueue` and is saved in the resume file,
   so next/previous and restart stay inside Favorites.
+- Sort keys keep leading articles: "The End of the World" sorts under T. An existing
+  `library.db` needs a rescan to pick up the new order.
 - Lite icon masks moved from the code window to a glyph face (`assets/lite_icons.bin`). The
   Favorites heart mask is kept for the deferred root tabs; the existing list frames do not draw
   it yet.

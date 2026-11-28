@@ -11,8 +11,8 @@
 
 enum {
     BACK_IN_BLACK = 0,
-    HELP = 2,
-    ARMY_OF_ME = 3,
+    HELP = 5,
+    ARMY_OF_ME = 6,
     SEED = 7
 };
 

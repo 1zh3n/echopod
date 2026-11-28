@@ -46,7 +46,7 @@ enum {
     MUSIC_ARTISTS_INDEX = 1,
     MUSIC_ALBUMS_INDEX = 3,
     MUSIC_FOLDERS_INDEX = 5,
-    BJORK_POSITION = 3,
+    BJORK_POSITION = 2,
     HOME_SETTINGS_INDEX = 1,
     HOME_NOW_PLAYING_INDEX = 3,
     SETTINGS_FIRST_GROUP_INDEX = 0,
@@ -2147,7 +2147,7 @@ static void now_playing_without_a_cover_keeps_the_text_layout(void)
 {
     start_app_with_library();
     open_music_entry(MUSIC_ALBUMS_INDEX);
-    move_down(1);
+    move_down(3);
     tap(KEY_PLAY);
     tap(KEY_PLAY);
     wait_ms(SLIDE_DURATION_MS);
@@ -3004,7 +3004,7 @@ typedef enum ShotLayout {
 
 enum {
     SHOT_POSITION_MS = 61000,
-    SHOT_SECOND_ALBUM = 1
+    SHOT_SECOND_ALBUM = 3
 };
 
 static Orientation keeping_portrait(void)
