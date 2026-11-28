@@ -77,6 +77,17 @@ bool screen_stack_apply(ScreenStack *stack, ScreenAction action, uint32_t now_ms
     return true;
 }
 
+bool screen_stack_replace_root(ScreenStack *stack, Screen *root, uint32_t now_ms)
+{
+    if (root == NULL || stack->screens[0] == root) {
+        return false;
+    }
+    stack->screens[0] = root;
+    stack->depth = 1;
+    enter_top(stack, now_ms);
+    return true;
+}
+
 bool screen_stack_show(ScreenStack *stack, Screen *target, uint32_t now_ms)
 {
     if (target == NULL) {

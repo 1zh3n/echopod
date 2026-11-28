@@ -150,6 +150,21 @@ static void showing_the_root_pops_back_to_it(void)
     CHECK_EQUAL(2, fakes[0].entered);
 }
 
+static void replacing_the_root_drops_deeper_screens(void)
+{
+    ScreenStack stack = stack_with_root();
+    screen_stack_apply(&stack, screen_action_push(&fakes[1].screen), 200);
+    screen_stack_apply(&stack, screen_action_push(&fakes[2].screen), 300);
+    CHECK(screen_stack_replace_root(&stack, &fakes[3].screen, 500));
+    CHECK_EQUAL(1, screen_stack_depth(&stack));
+    CHECK(screen_stack_top(&stack) == &fakes[3].screen);
+    CHECK_EQUAL(1, fakes[3].entered);
+    CHECK_EQUAL(500, fakes[3].entered_at_ms);
+    CHECK(!screen_stack_replace_root(&stack, &fakes[3].screen, 600));
+    CHECK(!screen_stack_replace_root(&stack, NULL, 700));
+    CHECK_EQUAL(1, stack.depth);
+}
+
 static void replacing_overlays_closes_them_before_a_new_overlay(void)
 {
     ScreenStack stack = stack_with_root();
@@ -215,6 +230,7 @@ int main(void)
         TEST_CASE(showing_a_new_screen_pushes_it_once),
         TEST_CASE(showing_an_existing_screen_pops_everything_above_it),
         TEST_CASE(showing_the_root_pops_back_to_it),
+        TEST_CASE(replacing_the_root_drops_deeper_screens),
         TEST_CASE(replacing_overlays_closes_them_before_a_new_overlay),
         TEST_CASE(replacing_overlays_raises_an_existing_target),
         TEST_CASE(showing_nothing_is_refused),

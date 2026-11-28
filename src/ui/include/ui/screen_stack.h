@@ -18,5 +18,6 @@ void screen_stack_init(ScreenStack *stack, Screen *root, uint32_t now_ms);
 Screen *screen_stack_top(const ScreenStack *stack);
 int screen_stack_depth(const ScreenStack *stack);
 bool screen_stack_apply(ScreenStack *stack, ScreenAction action, uint32_t now_ms);
+bool screen_stack_replace_root(ScreenStack *stack, Screen *root, uint32_t now_ms);
 bool screen_stack_show(ScreenStack *stack, Screen *target, uint32_t now_ms);
 bool screen_stack_show_replacing_overlays(ScreenStack *stack, Screen *target, uint32_t now_ms);
