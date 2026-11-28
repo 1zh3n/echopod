@@ -93,7 +93,7 @@ front end. The list below is the useful summary; the git history has the exact c
 - Library rescan performance is a separate task.
 - Multiple Favorites lists are not implemented; the current Favorites root is one list of up to
   512 songs. See the future-ideas section in [README.md](README.md).
-- Private audio as a third list, a secret key sequence and encryption are design notes only.
-  The recommended private-list design is a separate hidden folder/library, not a normal M3U or
-  folder list; a key sequence is UI hiding, not encryption. See
-  [private-audio.md](private-audio.md).
+- Private audio as a third root is implemented from `/.private/` with `/.echo/private.db`; it is
+  separate from All Songs/Favorites and switches the active player. The current list cap is 512.
+  A secret key sequence and encryption remain design notes only; a key sequence is UI hiding, not
+  encryption. See [private-audio.md](private-audio.md).

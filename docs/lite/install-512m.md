@@ -21,7 +21,7 @@ The 512 MB updater scans the card root for:
 It does **not** scan `HIFIEC90.IMG`. Copy the build to the card root and rename it, for example:
 
 ```text
-build/release-lite/HIFIEC90.IMG  ->  /MINIV963.IMG
+build/release-lite/HIFIEC90.IMG  ->  /MINIV965.IMG
 ```
 
 Then use the player's updater.
@@ -36,9 +36,14 @@ cmake --build --preset release-lite
 ## Current build
 
 ```text
-image:  MINIV964.IMG
-sha256: a2db54c2c8cf1b3dcf945cd1f0975c2d4c9e126d313436a4b02cdd2027175270
+image:  MINIV965.IMG
+sha256: e15c221aca1ca257a9c35e22fe4bff0e82aa98d1d1c76ab3a9788e97c64967b2
 ```
+
+`MINIV965` adds the optional private third root. Audio copied to `/.private/` is scanned into
+`/.echo/private.db`; the normal library skips the hidden folder. The root appears only when the
+private index has tracks, and the list is currently capped at 512 tracks. It has its own player
+queue and resume; no lock or encryption. The private scan adds no normal-library entries.
 
 `MINIV964` replaces the 50-step volume curve with 85 steps of exactly 1 dB. The default is 30,
 close to the old level 4. Old 50-step settings and resume files are mapped by loudness. The
@@ -174,23 +179,24 @@ The incremental images for this pass are:
 | `MINIV962` | 18 px bottom gap, taller collision area, 9×9 flat ball | `e213f084daf813344217f143d6942ce530b3125fa5ed26120938c3ffe5a3ecdd` |
 | `MINIV963` | volume shown only by the yellow progress bar | `6a6cdbaa2e7d24c2affaa698a97867c45ca8fcfbeb4fa9f33609b60672b70e9b` |
 | `MINIV964` | 85 one-decibel volume steps, default 30, old volume settings migrated | `a2db54c2c8cf1b3dcf945cd1f0975c2d4c9e126d313436a4b02cdd2027175270` |
+| `MINIV965` | optional private third root, device-scanned `/.private`, 512-track cap | `e15c221aca1ca257a9c35e22fe4bff0e82aa98d1d1c76ab3a9788e97c64967b2` |
 
 The 8 GB model is not supported.
 
 ## Verification
 
 - Host tests: 168/168 passed (`ctest --preset dev -E "^format$"`).
-- Lite panel tests: 87/87 passed.
+- Lite panel tests: 88/88 passed.
 - Lite player tests: 56/56 passed.
-- Lite app static RAM: 69,586 / 131,072 bytes (61,486 free), via
+- Lite app static RAM: 74,830 / 131,072 bytes (56,242 free), via
   `tools/lite_ram_audit.py` and the `release-lite` compile commands.
 - `release-lite` build and updater check valid.
-- Headroom: code 136,728 / 157,292 bytes (20,564 free); loaded total 342,096 / 437,600 bytes
-  (95,504 free); resident tables 18,236 / 18,432 (196 free); rescan overlay 85,328 / 86,016
+- Headroom: code 138,780 / 157,292 bytes (18,512 free); loaded total 349,388 / 437,600 bytes
+  (88,212 free); resident tables 18,236 / 18,432 (196 free); rescan overlay 85,328 / 86,016
   (688 free).
 - Still pending: the final 512 MB device pass over sorting, boot, dots, headers, navigation,
-  local motion, the bouncing ball, the 4.4 mm and Bluetooth volume curves, root switching,
-  Settings cards, favorites and portrait-flipped.
+  local motion, the bouncing ball, the 4.4 mm and Bluetooth volume curves, the private third
+  root, root switching, Settings cards, favorites and portrait-flipped.
 
 ## After flashing
 

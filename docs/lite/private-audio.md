@@ -1,16 +1,17 @@
 # Private audio / third list — design note
 
-**Status: design only, not implemented.** This is the private-list idea discussed for the
-personal 512 MB Lite build. Encryption is explicitly out of scope for now.
+**Status: implemented in the working branch; image/device pass pending.** This is the private
+third-root design for the personal 512 MB Lite build. Encryption is explicitly out of scope.
 
 ## Goal
 
 - Normal All Songs, Favorites, A-Z, shuffle, queues and resume keep working exactly as they do.
 - The owner can copy recordings or other personal audio into one dedicated folder.
-- That folder appears as a separate private list and is not mixed into All Songs or Favorites.
+- That folder appears as a separate third root (`All Songs → Favorites → Private → All Songs`) and
+  is not mixed into All Songs or Favorites.
 - The private list has its own playback queue and resume state.
-- The private list is a session entered on purpose, not part of the normal root cycle. This is
-  what keeps a hidden/listening state from leaking through Short Menu or Up Next.
+- Leaving the Private root stops/restores the private player and reopens the normal player. There
+  is no lock or confirmation; this is isolation from the normal library, not a privacy lock.
 - No boot-chain, IDB, PMU, fw2, partition or slot-layout changes.
 
 "Private" here means **UI isolation from the normal library**, not cryptographic privacy. The
@@ -57,8 +58,8 @@ index.
 
 ### Building the index
 
-**Device-built is the target.** The existing scanner can be reused for the private folder without
-duplicating the whole library scanner:
+**Device-built is the target and is implemented in the current branch.** The existing scanner is
+reused for the private folder without duplicating the whole library scanner:
 
 - Add a scan-root field to `ScanJob` (or a small filesystem wrapper). `library_scan` currently
   starts at `/`; a private run starts at `/.private`. The normal run stays `/`.
@@ -72,14 +73,13 @@ duplicating the whole library scanner:
 - The private scan is small (target 2,048 tracks), so its time is bounded. Show the normal
   rescan/private progress state rather than starting it silently in the background.
 
-The one open size question is the main rescan overlay, which has only about **688 bytes** free.
-Adding a root field and the initial path change should be small, but this must be compiled and
-measured before it is promised. The app-side second-scan orchestration has the normal 20.5 KB code
-window to work with.
+The rescan overlay was the size limit. With the private scan root and the second output, the
+current Lite release build still reports **688 bytes free** in the rescan overlay. The app-side
+second-scan orchestration fits in the normal code window.
 
-If the overlay change does not fit, the fallback is a PC-built private index: index `/.private`
-to `/.echo/private.db` while connected, and let the device only read it. That is lower risk but
-requires a computer step.
+A PC-built private index remains a fallback if later changes need more overlay room: index
+`/.private` to `/.echo/private.db` while connected, and let the device only read it. That is lower
+risk but requires a computer step.
 
 ### Player, queue and resume
 
@@ -106,77 +106,72 @@ requires a computer step.
 
 ### UI and keys
 
-The private list is **not a third root** in the normal root cycle. A third root would be
-reachable by Short Back, and if private playback continued when the user left it, Short Menu and
-Up Next would show private titles. Instead it is a session entered from a deliberate entry:
+The private list is a **third root**, shown only when `/.private/` has an indexed track:
 
-- Entry: **Settings → System → Private audio**. The row is only drawn when `/.private/` exists.
-- Opening it asks a confirmation question, for example `Open private audio?` with Play = yes and
-  Back = no. This is the "second confirmation"; it is not a password.
-- While the private session is open, the private list replaces the normal list; Short Menu opens
-  the private Now Playing, and Short Menu there opens the private Up Next. That is expected while
-  the session is deliberately open.
-- Leaving the private list, leaving Now Playing for Settings, screen-off, power-off or a
-  timeout **locks and stops the private session**. The normal player/queue is then restored, so
-  Short Menu, Now Playing and Up Next cannot display a private track from a normal screen.
-- There is no private auto-resume at boot. On the next start the normal roots appear first; the
-  private session starts only through the Settings entry and confirmation.
-- Inside the private list: Volume selects, hold scrolls; Play opens the recording; Long Menu is
-  A-Z; Short Menu is Now Playing; Back leaves and locks. Long Play does nothing (no Favorites
-  action).
+```text
+All Songs → Favorites → Private → All Songs
+```
+
+- Short Back at a root cycles the three roots; with no private index it stays the old
+  All Songs ↔ Favorites cycle.
+- Entering Private switches the active player/library to the private index and restores its own
+  queue and resume. Leaving Private saves the private state, stops/releases that player and
+  reopens the normal library/player.
+- Inside Private: Volume selects, hold scrolls; Play opens the recording; Long Menu is A-Z;
+  Short Menu is Now Playing; Back leaves the root. Long Play does nothing (no Favorites action).
+- While Private is the active root, Short Menu and Up Next show the private player/queue. That is
+  expected; switching back to All Songs/Favorites stops that private playback and restores the
+  normal player, so the normal roots cannot display a private title afterward.
 - Private tracks are never added to Favorites, normal Up Next, normal history or normal M3U.
-- The root meter stays two cells; the private session is a separate screen, not a root. The
-  private list can have a small "PRIVATE" marker in its header instead.
-- If the folder is removed or the index is empty, the Settings row disappears and the normal
-  two-root model is unchanged.
+- The left root meter gains a third cell on Private and stays two cells on the normal roots.
+- If the folder is removed or the index is empty, the Private root disappears on the next rescan
+  and the two-root model returns.
+- There is no lock, PIN or confirmation. The Private root is visible only after the private index
+  has content. A secret key sequence can hide the entry later, but it is not encryption; see
+  [README.md](README.md#secret-entry-and-encryption).
 
-This design is a **casual privacy curtain**, not security. It prevents the normal player from
-accidentally showing a private title; it does not stop someone who knows the Settings entry and
-opens it while the owner is not looking. A secret key sequence can replace the Settings entry
-later, but it is still not encryption; see
-[README.md](README.md#secret-entry-and-encryption).
+This is **UI isolation, not security**. Anyone who opens Private, plugs the card into a computer,
+or reads the private index can see the content.
 
 ## Capacity
 
 - **Hard library limit:** 65,535 private tracks (16-bit indices; `LIBRARY_NONE` is `0xFFFF`).
-- **Proposed private-list limit:** **2,048 tracks**.
-- **Index reservation:** about 2 MB for 2,048 paths/titles; raise if the cap is raised.
-- **Queue:** a private folder source query can play the whole 2,048-track list (the queue uses a
-  browse source, not the 512-entry explicit Up Next list). If private tracks are copied into an
-  explicit saved queue, the existing 512-entry Lite explicit-queue limit applies.
+- **Current implementation limit:** **512 tracks**, because the private list uses the existing
+  Lite `TrackListScreen`/explicit-queue capacity. The index may contain more, but only the first
+  512 are listed and playable until this is moved to a BrowseScreen source query.
+- **Index reservation:** 2 MB, enough for the current 512 plus the empty/library overhead.
+- **Queue:** the private list uses the existing 512-entry explicit queue. A future BrowseScreen
+  version could play the whole folder source without the explicit-queue cap.
 - The cap is independent of the 512-song Favorites capacity.
 
 ## RAM and code
 
-The current Lite image has roughly 20.5 KB of code window and 95.5 KB of loaded RAM free at the
-time of this note. A second `LibraryStore` plus its block cache is about 2.5–3 KB of static RAM;
-a private list screen and the save/switch logic add more. The second scan mainly reuses the
-already-loaded scanner, so the app-side code should fit, but the overlay root-field change must
-still fit the 688-byte margin. The normal library and resident tables should not change.
+The working implementation measures about 138.8 KB of code (18.5 KB free), 349.4 KB loaded
+(88.2 KB free), and 210.6 KB of `.bss`; the rescan overlay has 688 bytes free. A second
+`LibraryStore` plus its block cache is about 2.5–3 KB of static RAM, and the private player
+switch adds the private resume/up-next paths and state. The normal library and resident tables
+are unchanged.
 
 ## Test plan
 
 - Main scan, All Songs, Favorites, A-Z, shuffle and resume are unchanged when `/.private/` exists.
-- The Settings entry is present only when the folder/index exists; removing it restores the
-  normal two-root UI.
+- The Private root is present only when the folder/index has tracks; removing it restores the
+  normal two-root UI after a rescan.
 - Normal → Private → Normal restores the normal queue, track and position; private resume is
   independent and is not loaded at boot.
 - Private tracks never appear in Favorites, All Songs, artist/album/genre lists, shuffle or M3U.
-- **Leak checks:** after leaving Private, Short Menu, Now Playing, Up Next and Settings cannot
-  show a private title while normal playback is active; screen-off locks the session; a normal
-  boot never opens Private.
+- After leaving Private, normal Short Menu/Now Playing/Up Next cannot show a private title; a
+  normal boot never opens Private. Inside Private they show the private queue, as expected.
 - A-Z in Private, empty folder, unsupported file, missing folder, corrupt private index.
-- Capacity: 2,048 tracks load; the 2,049th is rejected or the index is capped with a clear
-  message.
+- Capacity: 512 tracks load; the 513th is not listed until the list moves to a BrowseScreen.
 - Device-built scan: normal rescan + private scan; USB copy + eject; private folder removed;
   private index missing; overlay size within its margin.
 - Device images still pass updater and RAM/code checks.
 
 ## Open decisions
 
-1. Confirm the Settings confirmation entry versus a visible third root. The session design is
-   recommended because it closes the Short Menu/Up Next leak.
-2. Private Up Next: reuse the normal Up Next screen and explicit queue, or omit it in v1.
-3. Whether the private session should lock on screen-off only, or also on a short idle timeout.
-4. Whether Long Play/Play Next from a private row is allowed (private Up Next only) or the private
+1. Raise the private list from 512 to a larger cap by using a BrowseScreen source query.
+2. Whether Long Play/Play Next from a private row is allowed (private Up Next only) or the private
    list is play-from-row only.
+3. Whether the private root should be hidden behind an optional key sequence later; no lock or
+   encryption is planned.

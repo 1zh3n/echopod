@@ -129,6 +129,9 @@ not device photos; see [design.md](design.md) for tokens and geometry.
 - **Roots:** All Songs and Favorites; Home removed. Short Back switches roots.
 - **Favorites:** song list with its own queue and resume, built through the reusable
   `TrackListScreen`, replacing the old album-only Home shortcut.
+- **Private root:** an optional third root for `/.private/`, indexed into `/.echo/private.db`.
+  It is hidden from All Songs/Favorites, has its own queue/resume and a 512-track cap; no lock
+  or encryption. See [private-audio.md](private-audio.md).
 - **Settings:** five-row home with colour dots, right-aligned values, four-row scrolling and
   five category pages. Date/Time was moved onto the same card style.
 - **Status row:** 10×10 blocks at y=8; Bluetooth, playback, then an always-visible mode block
@@ -143,8 +146,8 @@ not device photos; see [design.md](design.md) for tokens and geometry.
   articles are literal, so "The End of the World" sorts under T; an existing library needs a
   rescan to pick up the new order.
 - **Space work:** the Lite build drops the unused cover cache (about 67 KB of static RAM), so
-  song Favorites can hold 512 tracks. Lite app static RAM is 69,586 / 131,072 bytes (61,486
-  free); the loaded total has about 95 KB free. Lite icon masks
+  song Favorites can hold 512 tracks. Lite app static RAM is 74,830 / 131,072 bytes (56,242
+  free); the loaded total has about 88 KB free. Lite icon masks
   moved to the glyph face; Lite theme-store/assets removed. Resident tables still have only
   196 bytes free, so keep new table data small.
 - **Review fixes:** Settings categories remember their row; Date/Time preserves an unsaved edit
@@ -219,8 +222,8 @@ current need.
 ### Private audio as a third list
 
 Goal: leave normal All Songs and Favorites untouched, copy recordings into a hidden folder, and
-browse and play them only from a third list. This is not implemented. The detailed design,
-including the capacity limit and the build options, is in [private-audio.md](private-audio.md).
+browse and play them only from a third list. The detailed design, capacity and build details are
+in [private-audio.md](private-audio.md).
 
 A folder or an M3U file alone is not enough. The main library indexes every supported audio file,
 and an M3U entry has to resolve to a library track. The main scanner already skips dot-prefixed
@@ -232,32 +235,33 @@ Two implementation shapes were considered:
 1. **Separate private library (preferred for isolation).** The device builds a small private
    index from `/.private/`, for example `/.echo/private.db`, and the private list uses its own
    `LibraryStore`, track list, queue and resume file. The normal library and Favorites never see
-   the private tracks. The device index can reuse the existing rescan overlay with a private scan
-   root and a second output; the overlay has about 688 bytes free, so that root change must be
-   compiled and measured. A second `LibraryStore` and cache cost roughly 2.5–3 KB of static RAM.
+   the private tracks. The device index reuses the existing rescan overlay with a private scan
+   root and a second output; the release build still reports 688 bytes free in that overlay. A
+   second `LibraryStore` and cache cost roughly 2.5–3 KB of static RAM.
 2. **A private section in the normal library.** One player and queue are simpler at runtime, but
    the library format and both indexers need a new section, and every normal query must exclude
    it. The private names remain in `library.db`. This touches the main data format and is more
    invasive than the separate private library.
 
-The private list is **not a third root**. A third root would be reachable by Short Back, and if
-private playback continued after leaving it, Short Menu and Up Next would reveal private titles.
-Instead it is a **session** opened from a Settings → System → Private audio row, with a
-confirmation question. Leaving the list, opening Settings, screen-off/power-off or a timeout
-locks and stops the private session and restores normal playback. Normal boot never
-auto-resumes the private session.
+The private list is a **third root** when the private index has tracks:
+`All Songs → Favorites → Private → All Songs`. Entering Private switches the active player and
+library; leaving it saves the private state, stops/releases that player and restores the normal
+one. While Private is the active root, Short Menu and Up Next show the private queue; normal
+roots never do. There is no lock, PIN or confirmation. The root disappears when the private
+index is empty or after a rescan with no folder. The current implementation caps the list at
+512 tracks because it reuses the Lite TrackListScreen; the hard library limit is 65,535.
 
 This is **UI isolation, not encryption**: the files and the private index are still readable over
 USB.
 
-**Assessment:** feasible as a medium feature. Device-built scanning is the target and can reuse
-the rescan overlay; the open items are the 688-byte overlay margin, the player/library switch and
-their RAM/code measurement. It is not scheduled.
+**Assessment:** implemented in the working branch for the third-root/no-lock design. Device scan
+reuses the rescan overlay (688 bytes free); the remaining open item is raising the 512-track
+private list to a BrowseScreen source query if needed.
 
 ### Secret entry and encryption
 
-A game-style key sequence is feasible for hiding or revealing the private session entry. It can
-be a simultaneous hold or a sequence detected before normal key dispatch, but it must avoid the
+A game-style key sequence is feasible for hiding or revealing the private root entry. It can be
+a simultaneous hold or a sequence detected before normal key dispatch, but it must avoid the
 existing long-press meanings (Long Back is Settings, Long Menu is A-Z, volume hold is seek or
 scroll). The code cost is small and no storage is needed. It is a convenience, not a secret: the
 sequence is in the firmware and is visible to anyone watching or reading the source.
