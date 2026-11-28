@@ -511,8 +511,8 @@ static void root_status_blocks_track_bluetooth_and_root(void)
     wait_ms(300);
     CHECK(fake_hal_pixel(289, 8) == color_blend(header, blue, 90));
     CHECK(fake_hal_pixel(302, 8) == color_blend(header, cyan, 90));
-    CHECK(fake_hal_pixel(8, 8) == blue);
-    CHECK(fake_hal_pixel(23, 8) == color_blend(header, pink, 90));
+    CHECK(fake_hal_pixel(10, 10) == blue);
+    CHECK(fake_hal_pixel(23, 10) == DEFAULT_THEME.colors->divider);
     fake_hal_bluetooth()->state = HAL_BLUETOOTH_CONNECTED;
     wait_ms(300);
     CHECK(fake_hal_pixel(289, 8) == blue);
@@ -521,8 +521,8 @@ static void root_status_blocks_track_bluetooth_and_root(void)
     CHECK(fake_hal_pixel(289, 8) == color_blend(header, blue, 90));
     tap(KEY_BACK);
     wait_ms(300);
-    CHECK(fake_hal_pixel(8, 8) == color_blend(header, blue, 90));
-    CHECK(fake_hal_pixel(23, 8) == pink);
+    CHECK(fake_hal_pixel(10, 10) == DEFAULT_THEME.colors->divider);
+    CHECK(fake_hal_pixel(23, 10) == pink);
 }
 
 static void status_blocks_draw_flat_squares(void)

@@ -1048,8 +1048,8 @@ static void draw_lite_status_meter(Canvas *canvas, const Screen *screen)
     Color pink = COLOR_RGB(236, 72, 153);
     if (screen == app.screens.root_all_songs || screen == app.screens.root_favorites) {
         bool favorite = screen == app.screens.root_favorites;
-        lite_status_root_draw(canvas, (Point){8, 8}, status_color(theme, blue, !favorite),
-                              status_color(theme, pink, favorite));
+        lite_status_root_draw(canvas, theme, (Point){8, 8}, favorite ? theme->colors->divider : blue,
+                              favorite ? pink : theme->colors->divider);
     }
     int width = theme->metrics.screen_width;
     Point right = {width - 31, 8};

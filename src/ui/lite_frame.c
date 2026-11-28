@@ -104,11 +104,21 @@ void lite_status_block_draw(Canvas *canvas, Point origin, Color color)
     canvas_fill_rect(canvas, (Rect){origin.x, origin.y, 10, 10}, color);
 }
 
-void lite_status_root_draw(Canvas *canvas, Point origin, Color all, Color favorites)
+void lite_status_root_draw(Canvas *canvas, const Theme *theme, Point origin, Color all,
+                            Color favorites)
 {
-    canvas_fill_rect(canvas, (Rect){origin.x + 1, origin.y + 1, 28, 10}, lite_status_shadow());
-    canvas_fill_rect(canvas, (Rect){origin.x, origin.y, 13, 10}, all);
-    canvas_fill_rect(canvas, (Rect){origin.x + 15, origin.y, 13, 10}, favorites);
+    const int width = 28;
+    const int height = 10;
+    const int radius = 2;
+    const int border = 2;
+    fill_round_rect(canvas,
+                    (Rect){origin.x + 2, origin.y + 2, width, height}, radius,
+                    lite_status_shadow());
+    fill_round_rect(canvas, (Rect){origin.x, origin.y, width, height}, radius,
+                    lite_card_border_color(theme));
+    canvas_fill_rect(canvas, (Rect){origin.x + border, origin.y + border, 12, 6}, all);
+    canvas_fill_rect(canvas, (Rect){origin.x + border + 12, origin.y + border, 12, 6},
+                     favorites);
 }
 
 Rect lite_list_frame_no_title(Canvas *canvas, const Theme *theme)
