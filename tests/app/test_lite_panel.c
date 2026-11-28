@@ -503,22 +503,26 @@ static void long_back_on_favorites_opens_settings(void)
 
 static void root_status_blocks_track_bluetooth_and_root(void)
 {
+    Color blue = COLOR_RGB(47, 168, 255);
+    Color cyan = COLOR_RGB(53, 199, 232);
+    Color pink = COLOR_RGB(236, 72, 153);
+    Color header = DEFAULT_THEME.colors->header_background;
     start_app_with_library();
     wait_ms(300);
-    CHECK(fake_hal_pixel(289, 8) == DEFAULT_THEME.colors->text_tertiary);
-    CHECK(fake_hal_pixel(302, 8) == DEFAULT_THEME.colors->text_tertiary);
-    CHECK(fake_hal_pixel(8, 8) == COLOR_RGB(47, 168, 255));
-    CHECK(fake_hal_pixel(21, 8) == DEFAULT_THEME.colors->text_tertiary);
+    CHECK(fake_hal_pixel(289, 8) == color_blend(header, blue, 90));
+    CHECK(fake_hal_pixel(302, 8) == color_blend(header, cyan, 90));
+    CHECK(fake_hal_pixel(8, 8) == blue);
+    CHECK(fake_hal_pixel(23, 8) == color_blend(header, pink, 90));
     fake_hal_bluetooth()->state = HAL_BLUETOOTH_CONNECTED;
     wait_ms(300);
-    CHECK(fake_hal_pixel(289, 8) == COLOR_RGB(47, 168, 255));
+    CHECK(fake_hal_pixel(289, 8) == blue);
     fake_hal_bluetooth()->state = HAL_BLUETOOTH_OFF;
     wait_ms(300);
-    CHECK(fake_hal_pixel(289, 8) == DEFAULT_THEME.colors->text_tertiary);
+    CHECK(fake_hal_pixel(289, 8) == color_blend(header, blue, 90));
     tap(KEY_BACK);
     wait_ms(300);
-    CHECK(fake_hal_pixel(8, 8) == DEFAULT_THEME.colors->text_tertiary);
-    CHECK(fake_hal_pixel(21, 8) == COLOR_RGB(236, 72, 153));
+    CHECK(fake_hal_pixel(8, 8) == color_blend(header, blue, 90));
+    CHECK(fake_hal_pixel(23, 8) == pink);
 }
 
 static void status_blocks_draw_flat_squares(void)
@@ -529,7 +533,7 @@ static void status_blocks_draw_flat_squares(void)
     lite_status_block_draw(&canvas, (Point){10, 10}, COLOR_RGB(47, 168, 255));
     CHECK(canvas_pixel_at(&canvas, 10, 10) == COLOR_RGB(47, 168, 255));
     CHECK(canvas_pixel_at(&canvas, 19, 19) == COLOR_RGB(47, 168, 255));
-    CHECK(canvas_pixel_at(&canvas, 20, 20) == COLOR_RGB(250, 250, 249));
+    CHECK(canvas_pixel_at(&canvas, 20, 20) == COLOR_RGB(10, 10, 10));
 }
 
 static void now_playing_has_no_time_or_thumb(void)
@@ -556,7 +560,7 @@ static void hold_the_volume_key_seeks_without_a_hold_bar(void)
     now_ms += 1100;
     step();
     CHECK(fake_hal_audio_seek_count() > seeks_before);
-    CHECK(fake_hal_pixel(255, 10) == COLOR_RGB(47, 168, 255));
+    CHECK(fake_hal_pixel(294, 10) == COLOR_RGB(47, 168, 255));
     CHECK(fake_hal_pixel(229, 18) != COLOR_RGB(245, 158, 11));
     fake_hal_queue_transition(KEY_VOLUME_UP, false, now_ms);
     now_ms += 10;
@@ -569,7 +573,7 @@ static void now_playing_uses_bt_chip_with_controls(void)
     open_all_songs_and_play();
     fake_hal_bluetooth()->state = HAL_BLUETOOTH_CONNECTED;
     wait_ms(300);
-    CHECK(fake_hal_pixel(255, 10) == COLOR_RGB(47, 168, 255));
+    CHECK(fake_hal_pixel(294, 10) == COLOR_RGB(47, 168, 255));
     CHECK(fake_hal_pixel(8, 6) != COLOR_RGB(0, 111, 238));
 }
 
@@ -695,6 +699,18 @@ static void favorite_tracks_lists_two_favorites_in_title_order(void)
     char duration[TRACK_LIST_DETAIL_CAPACITY];
     format_duration(track.duration_ms, duration, sizeof duration);
     CHECK(strcmp(duration, favorites->details[1]) == 0);
+}
+
+static void favorite_tracks_az_works_for_one_track(void)
+{
+    Screen *screen = fresh_favorite_tracks();
+    favorites_store_toggle_track(&favorite_store, 0);
+    screen->enter(screen->context, START_MS);
+    CHECK_EQUAL(1, favorite_tracks.count);
+    CHECK(screen->long_menu_enabled);
+    ScreenAction opened = screen->long_menu(screen->long_menu_context, START_MS + 10);
+    CHECK_EQUAL(SCREEN_ACTION_PUSH, opened.type);
+    CHECK(strcmp("A-Z", opened.target->title) == 0);
 }
 
 static void favorite_tracks_support_az_jump(void)
@@ -1028,8 +1044,8 @@ static void now_playing_uses_native_18px_icons(void)
     start_app_with_library();
     open_all_songs_and_play();
     wait_ms(300);
-    CHECK(area_has_color(269, 8, 18, 18, COLOR_RGB(0, 111, 238)));
-    CHECK(area_has_color(294, 8, 18, 18, COLOR_RGB(10, 10, 10)));
+    CHECK(area_has_color(269, 24, 18, 18, COLOR_RGB(0, 111, 238)));
+    CHECK(area_has_color(294, 24, 18, 18, COLOR_RGB(10, 10, 10)));
     CHECK(fake_hal_pixel(40, 139) == DEFAULT_THEME.colors->divider);
 }
 
@@ -1320,8 +1336,8 @@ static void portrait_now_playing_icons(void)
     switch_orientation_to_portrait();
     open_all_songs_and_play();
     wait_ms(300);
-    CHECK(area_has_color(119, 8, 18, 18, COLOR_RGB(0, 111, 238)));
-    CHECK(area_has_color(144, 8, 18, 18, COLOR_RGB(10, 10, 10)));
+    CHECK(area_has_color(119, 24, 18, 18, COLOR_RGB(0, 111, 238)));
+    CHECK(area_has_color(144, 24, 18, 18, COLOR_RGB(10, 10, 10)));
     CHECK(fake_hal_pixel(40, 289) == DEFAULT_THEME.colors->divider);
 }
 
@@ -1398,6 +1414,7 @@ int main(void)
         TEST_CASE(compact_icons_are_native_18px),
         TEST_CASE(favorite_tracks_lists_nothing_when_empty),
         TEST_CASE(favorite_tracks_lists_two_favorites_in_title_order),
+        TEST_CASE(favorite_tracks_az_works_for_one_track),
         TEST_CASE(favorite_tracks_support_az_jump),
         TEST_CASE(starting_the_second_favorite_uses_the_favorites_queue),
         TEST_CASE(long_play_removes_a_song_favorite),

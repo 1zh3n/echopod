@@ -21,6 +21,7 @@
 #include "equalizer_store.h"
 #include "favorites_store.h"
 #include "frame_overlay.h"
+#include "gfx/color.h"
 #include "gfx/frame_diff.h"
 #include "gfx/strip_renderer.h"
 #include "hal/audio.h"
@@ -1032,10 +1033,9 @@ static void refresh_lite_status(void)
     lite_status_set(shadow, progress, bluetooth);
 }
 
-static void draw_lite_status_block(Canvas *canvas, const Theme *theme, Point origin, bool active,
-                                   Color color)
+static Color status_color(const Theme *theme, Color color, bool active)
 {
-    lite_status_block_draw(canvas, origin, active ? color : theme->colors->text_tertiary);
+    return active ? color : color_blend(theme->colors->header_background, color, 90);
 }
 
 static void draw_lite_status_meter(Canvas *canvas, const Screen *screen)
@@ -1045,21 +1045,16 @@ static void draw_lite_status_meter(Canvas *canvas, const Screen *screen)
     bool playing = player_status(&app.player).state == PLAYER_PLAYING;
     Color blue = COLOR_RGB(47, 168, 255);
     Color cyan = COLOR_RGB(53, 199, 232);
-    if (screen == &app.screens.now_playing.screen) {
-        int mode_x = theme_is_portrait(theme) ? 119 : 269;
-        draw_lite_status_block(canvas, theme, (Point){mode_x - 18, 8}, bluetooth, blue);
-        return;
+    Color pink = COLOR_RGB(236, 72, 153);
+    if (screen == app.screens.root_all_songs || screen == app.screens.root_favorites) {
+        bool favorite = screen == app.screens.root_favorites;
+        lite_status_root_draw(canvas, (Point){8, 8}, status_color(theme, blue, !favorite),
+                              status_color(theme, pink, favorite));
     }
     int width = theme->metrics.screen_width;
     Point right = {width - 31, 8};
-    draw_lite_status_block(canvas, theme, right, bluetooth, blue);
-    draw_lite_status_block(canvas, theme, (Point){right.x + 13, 8}, playing, cyan);
-    if (screen == app.screens.root_all_songs || screen == app.screens.root_favorites) {
-        bool favorite = screen == app.screens.root_favorites;
-        Color pink = COLOR_RGB(236, 72, 153);
-        draw_lite_status_block(canvas, theme, (Point){8, 8}, !favorite, blue);
-        draw_lite_status_block(canvas, theme, (Point){21, 8}, favorite, pink);
-    }
+    lite_status_block_draw(canvas, right, status_color(theme, blue, bluetooth));
+    lite_status_block_draw(canvas, (Point){right.x + 13, 8}, status_color(theme, cyan, playing));
 }
 #endif
 

@@ -149,7 +149,7 @@ static void set_visible_rows(TrackListScreen *screen)
 
 static void update_sections(TrackListScreen *screen)
 {
-    screen->screen.long_menu_enabled = list_view_sections_vary(&screen->list);
+    screen->screen.long_menu_enabled = screen->count > 0;
 }
 
 static ScreenAction open_section_jump(void *context, uint32_t now_ms)

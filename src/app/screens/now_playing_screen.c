@@ -657,19 +657,19 @@ static void landscape_layout(const NowPlayingScreen *now_playing, Layout *layout
 static void lite_layout(Layout *layout, bool portrait)
 {
     if (portrait) {
-        layout->boxes[THEME_LAYOUT_TITLE] = (Rect){8, 24, 154, 22};
-        layout->boxes[THEME_LAYOUT_ARTIST] = (Rect){8, 46, 154, 18};
-        layout->boxes[THEME_LAYOUT_ALBUM] = (Rect){8, 62, 154, 18};
+        layout->boxes[THEME_LAYOUT_TITLE] = (Rect){8, 44, 154, 22};
+        layout->boxes[THEME_LAYOUT_ARTIST] = (Rect){8, 66, 154, 18};
+        layout->boxes[THEME_LAYOUT_ALBUM] = (Rect){8, 82, 154, 18};
         layout->boxes[THEME_LAYOUT_FORMAT] = (Rect){0, 0, 0, 0};
-        layout->boxes[THEME_LAYOUT_LYRICS] = (Rect){8, 86, 154, 194};
+        layout->boxes[THEME_LAYOUT_LYRICS] = (Rect){8, 106, 154, 176};
         layout->boxes[THEME_LAYOUT_PROGRESS] = (Rect){8, 288, 154, 4};
         layout->boxes[THEME_LAYOUT_TIMES] = (Rect){8, 294, 154, 18};
     } else {
-        layout->boxes[THEME_LAYOUT_TITLE] = (Rect){8, 8, 200, 22};
-        layout->boxes[THEME_LAYOUT_ARTIST] = (Rect){8, 32, 304, 18};
-        layout->boxes[THEME_LAYOUT_ALBUM] = (Rect){8, 46, 304, 18};
+        layout->boxes[THEME_LAYOUT_TITLE] = (Rect){8, 24, 200, 22};
+        layout->boxes[THEME_LAYOUT_ARTIST] = (Rect){8, 48, 304, 18};
+        layout->boxes[THEME_LAYOUT_ALBUM] = (Rect){8, 62, 304, 18};
         layout->boxes[THEME_LAYOUT_FORMAT] = (Rect){224, 8, 88, 18};
-        layout->boxes[THEME_LAYOUT_LYRICS] = (Rect){8, 62, 304, 70};
+        layout->boxes[THEME_LAYOUT_LYRICS] = (Rect){8, 78, 304, 54};
         layout->boxes[THEME_LAYOUT_PROGRESS] = (Rect){8, 138, 304, 3};
         layout->boxes[THEME_LAYOUT_TIMES] = (Rect){8, 144, 304, 18};
         layout->aligns[THEME_LAYOUT_FORMAT] = THEME_ALIGN_RIGHT;
@@ -1001,11 +1001,11 @@ static void draw_lite_state(const NowPlayingScreen *now_playing, Canvas *canvas)
     PlaybackMode mode = player_playback_mode(now_playing->config.player);
     int mode_x = theme_is_portrait(theme) ? 119 : 269;
     int state_x = theme_is_portrait(theme) ? 144 : 294;
-    lite_icon_draw_scaled(canvas, lite_mode_icon_18(mode), (Rect){mode_x, 8, 18, 18},
+    lite_icon_draw_scaled(canvas, lite_mode_icon_18(mode), (Rect){mode_x, 24, 18, 18},
                           theme->colors->selection_background);
     const IconMask *state = now_playing->status.state == PLAYER_PLAYING ? &LITE_ICON_PAUSE_18
                                                                         : &LITE_ICON_PLAY_18;
-    lite_icon_draw_scaled(canvas, state, (Rect){state_x, 8, 18, 18}, theme->colors->text);
+    lite_icon_draw_scaled(canvas, state, (Rect){state_x, 24, 18, 18}, theme->colors->text);
 }
 #endif
 

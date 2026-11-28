@@ -100,7 +100,15 @@ void lite_card_rounded(Canvas *canvas, const Theme *theme, Rect card, int shadow
 
 void lite_status_block_draw(Canvas *canvas, Point origin, Color color)
 {
+    canvas_fill_rect(canvas, (Rect){origin.x + 1, origin.y + 1, 10, 10}, lite_status_shadow());
     canvas_fill_rect(canvas, (Rect){origin.x, origin.y, 10, 10}, color);
+}
+
+void lite_status_root_draw(Canvas *canvas, Point origin, Color all, Color favorites)
+{
+    canvas_fill_rect(canvas, (Rect){origin.x + 1, origin.y + 1, 28, 10}, lite_status_shadow());
+    canvas_fill_rect(canvas, (Rect){origin.x, origin.y, 13, 10}, all);
+    canvas_fill_rect(canvas, (Rect){origin.x + 15, origin.y, 13, 10}, favorites);
 }
 
 Rect lite_list_frame_no_title(Canvas *canvas, const Theme *theme)
