@@ -11,7 +11,7 @@
   <img src="docs/images/lite/home-final-v6.png" alt="Home screen in light and dark, landscape and portrait" width="100%">
 </p>
 
-<p align="center"><em>Home, Now Playing, Settings and the historical Quick panel sheet are design mockups (2×), not device screenshots. Quick is now the first Settings category. The boot sheet below is rendered from the actual firmware assets.</em></p>
+<p align="center"><em>The Home sheet is the pre-M8 design (Home was removed); Now Playing, Settings and the historical Quick panel sheet are design mockups (2×), not device screenshots. Quick is now the first Settings category. The boot sheet below is rendered from the actual firmware assets.</em></p>
 
 ## What this is
 
@@ -43,8 +43,9 @@ Keep the official firmware and a known recovery path before flashing.
 - **Runtime Light / Dark:** Settings → Display → Theme. Light is the default.
 - **Runtime Landscape / Portrait / Portrait-flipped:** Settings → Display → Orientation,
   320×170 or 170×320 (portrait can also be turned 180°).
-- **Lite Home:** three self-drawn colour badges — All Songs, Favorites, Settings — no text,
-  no page dots; a 28×8 status meter at top-left shows Bluetooth and playback.
+- **Lite roots:** All Songs and Favorites, no Home screen; Short Back at the root switches
+  them, Short Menu opens Now Playing and Long Back opens Settings. A 28×8 status meter at
+  top-left shows Bluetooth and playback. The two root icons are deferred for now.
 - **Lite Settings:** one category per screen; 400 ms long Menu switches category. Landscape
   drops the text header, leaving the half-badge, category dots and rows; portrait keeps the
   category name. Settings opens on Quick, with icon-only playback-mode and sleep-timer cards;
@@ -60,8 +61,9 @@ Keep the official firmware and a known recovery path before flashing.
 - **Sorting:** GB2312 Chinese sorts by pinyin and kana by romaji, interleaved with Latin
   under A-Z; unknown kanji falls under `#`. Long Menu in a lettered list opens the A-Z/# jump.
 - **Controls:** volume single/double/long press in Now Playing; short Menu opens Up Next, long
-  Menu opens Settings (or the A-Z/# jump in lettered lists); long Back goes Home. There is no
-  double Menu or standalone playback panel.
+  Menu opens Settings (or the A-Z/# jump in lettered lists); long Back opens Settings; short
+  Back at the root switches All Songs and Favorites. There is no double Menu or standalone
+  playback panel.
 - **Space work:** Lite icon masks moved to a glyph face; Lite theme store/assets removed;
   unused Lite paths dropped.
 - **Upstream:** current with EchoPod 0.13.2 when this README was written, including its playback,
@@ -75,11 +77,11 @@ The boot chain, IDB, PMU firmware, fw2 and slot layout are not modified.
 > palette; the real screen may differ in font rendering and final asset placement. The boot sheet
 > is rendered from the actual `LBOO` / `LBO2` assets, not a device photo.
 
-On Home, the top-left 28×8 status meter uses its left segment for Bluetooth and its right segment
+On the root lists, the top-left 28×8 status meter uses its left segment for Bluetooth and its right segment
 for playback. Now Playing keeps a Bluetooth-only chip beside the shuffle/play controls; the
 play/pause icon already shows playback. The card shadow carries the battery/charging colour.
 
-| Home | Now Playing |
+| Home (historical) | Now Playing |
 |---|---|
 | ![Home](docs/images/lite/home-final-v6.png) | ![Now Playing](docs/images/lite/now-playing-final-v3.png) |
 

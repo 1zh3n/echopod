@@ -21,7 +21,7 @@ The 512 MB updater scans the card root for:
 It does **not** scan `HIFIEC90.IMG`. Copy the build to the card root and rename it, for example:
 
 ```text
-build/release-lite/HIFIEC90.IMG  ->  /MINIV941.IMG
+build/release-lite/HIFIEC90.IMG  ->  /MINIV942.IMG
 ```
 
 Then use the player's updater.
@@ -36,20 +36,22 @@ cmake --build --preset release-lite
 ## Current build
 
 ```text
-image:  MINIV941.IMG
-sha256: d1eb274b6fa84ae431c0aca12c9d3d13b59f67a771b02f1c011cbe4024a019c2
+image:  MINIV942.IMG
+sha256: 6a5eed2e80ac2c19fb182eb3701ab04d958fe97bf10ad1aa642048be49dc89a6
 ```
 
-`MINIV941` is the song-favorites build. Lite Home is All Songs / Favorites / Settings; Favorites
-is a path-hashed song list of up to 256 tracks that plays as its own queue and restores through
-the resume file. Long Play on a track in All Songs, albums, folders, playlists or Up Next opens
-Play Next / Add to Up Next / Add or Remove Favorites. Settings absorbed the old Quick panel:
+`MINIV942` removes the Home carousel. Boot goes directly to All Songs; Short Back at the root
+switches to Favorites and back, and Long Back opens Settings. The root-tab icons are deferred,
+so the list frames and rows keep their existing appearance. Favorites is a path-hashed song list
+of up to 256 tracks that plays as its own queue and restores through the resume file. Long Play
+on a track in All Songs, albums, folders, playlists or Up Next opens Play Next / Add to Up Next /
+Add or Remove Favorites. Settings absorbed the old Quick panel:
 Quick / Sound / Display / System, 400 ms long Menu for the next category or Settings, and no
 double Menu. Category changes animate only the badge, glyph and dots; the status meter is drawn
 inside each screen so it moves with the page. The build also keeps the runtime Light/Dark and
 landscape/portrait/portrait-flipped modes, the 8 px padding system, the 28×8 status meter, the
-112×112 portrait Home card, no-text landscape Settings, black dark-mode shadows, and 200×112 /
-146×112 boot stills. CJK titles sort by pinyin/romaji and stay interleaved under A-Z.
+existing list frames, no-text landscape Settings, black dark-mode shadows, and 200×112 / 146×112
+boot stills. CJK titles sort by pinyin/romaji and stay interleaved under A-Z.
 
 It still needs a final device check; earlier Lite builds were tested on one 512 MB unit.
 The incremental images for this pass are:
@@ -63,19 +65,20 @@ The incremental images for this pass are:
 | `MINIV939` | Settings absorbs Quick; 400 ms long Menu; standalone Quick panel removed | `962a349f7a2ca78c6a3775a7aea11ae152e94f8138fdca458dc086cab2ee9e0d` |
 | `MINIV940` | local motion, screen-owned status meter, static Settings rows | `d9f06accd78d268e375eac79c656c52421b0a1323f7679af34cc5fb6fe9b112d` |
 | `MINIV941` | song Favorites on Home, explicit favorites queue and resume, Add/Remove actions; audio-fed collection and Lite-only actions | `d1eb274b6fa84ae431c0aca12c9d3d13b59f67a771b02f1c011cbe4024a019c2` |
+| `MINIV942` | remove Home; All Songs / Favorites roots, root Back switching, Long Back Settings; root tabs deferred | `6a5eed2e80ac2c19fb182eb3701ab04d958fe97bf10ad1aa642048be49dc89a6` |
 
 The 8 GB model is not supported.
 
 ## Verification
 
 - Host tests: 168/168 passed (`ctest --preset dev -E "^format$"`).
-- Lite panel tests: 57/57 passed.
+- Lite panel tests: 63/63 passed.
 - `release-lite` build and updater check valid.
-- Headroom: code 137,992 / 157,292 bytes (19,300 free); loaded total 410,536 / 437,600 bytes
-  (27,064 free); resident tables 18,240 / 18,432 (192 free); rescan overlay 85,400 / 86,016
+- Headroom: code 137,112 / 157,292 bytes (20,180 free); loaded total 409,352 / 437,600 bytes
+  (28,248 free); resident tables 18,240 / 18,432 (192 free); rescan overlay 85,400 / 86,016
   (616 free).
 - Still pending: the final 512 MB device pass over sorting, boot, dots, headers, navigation,
-  local motion, favorites and portrait-flipped.
+  local motion, root switching, favorites and portrait-flipped.
 
 ## After flashing
 

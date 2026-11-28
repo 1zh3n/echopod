@@ -11,7 +11,7 @@
   <img src="docs/images/lite/home-final-v6.png" alt="Home 的 Light/Dark、横屏/竖屏" width="100%">
 </p>
 
-<p align="center"><em>Home、Now Playing、Settings 和旧版 Quick panel 是设计稿（2×），不是实机截图；Quick 现已并入 Settings 的第一个分类。下方开机图是从真实固件素材渲染的。</em></p>
+<p align="center"><em>Home 是 M8 之前的旧设计（现已移除）；Now Playing、Settings 和旧版 Quick panel 是设计稿（2×），不是实机截图；Quick 现已并入 Settings 的第一个分类。下方开机图是从真实固件素材渲染的。</em></p>
 
 ## 这是什么
 
@@ -40,7 +40,7 @@
 - **运行时 Light / Dark：** Settings → Display → Theme；默认 Light。
 - **运行时 Landscape / Portrait / Portrait-flipped：** Settings → Display → Orientation，
   320×170 或 170×320（竖屏可翻转 180°）。
-- **Lite Home：** 三个自绘彩色 badge，无文字，无 page dots；左上角 28×8 状态 meter
+- **Lite 根页面：** All Songs 和 Favorites，没有 Home；根层短按 Back 切换两者，短按 Menu 打开 Now Playing，长按 Back 打开 Settings。左上角 28×8 状态 meter
   显示蓝牙和播放。
 - **Lite Settings：** 一屏一类；长按 Menu 切换类别。横屏去掉文字标题，由半圆 icon、类别圆点和菜单项表达；竖屏保留类别名。Settings 默认打开 Quick，内含播放模式和睡眠定时两张 icon-only 卡片。
 - **Settings Quick：** 两张 icon-only 卡片，播放模式和睡眠定时；定时显示秒级倒计时，并可等当前歌曲结束后关机。
@@ -48,7 +48,7 @@
 - **Now Playing：** 18px 原生模式/状态图标，无封面框；shuffle/play 旁是 14×8 的蓝牙-only chip。音量短按调音量、双击切歌、长按 seek；进度/时间本身就是反馈。
 - **启动和充电：** 开机图为 200×112 横版 / 146×112 竖版图片，带 5px 硬阴影，没有卡片和边框；充电仍用 96×64 动画卡。
 - **排序：** GB2312 中文按拼音、日文假名按罗马字，和英文一起按 A-Z 混排；未收录汉字落到 `#`。在可按字母分区的列表里长按 Menu 打开 A-Z/# 跳转。
-- **按键：** Now Playing 音量单击/双击/长按；短按 Menu 打开 Up Next，长按 Menu 打开 Settings（可分区列表中为 A-Z/# 跳转）；长按 Back 回 Home。没有双击 Menu，也没有独立播放面板。
+- **按键：** Now Playing 音量单击/双击/长按；短按 Menu 打开 Up Next，长按 Menu 打开 Settings（可分区列表中为 A-Z/# 跳转）；根层短按 Back 在 All Songs 和 Favorites 之间切换，长按 Back 打开 Settings。没有双击 Menu，也没有独立播放面板。
 - **空间清理：** Lite 图标 mask 移到 glyph face；移除 Lite theme store/assets；删掉未使用的 Lite 路径。
 - **上游：** 写这份说明时已合入 EchoPod 0.13.2，包括播放、USB、FAT 和 HE-AAC 修复。
 
@@ -59,9 +59,9 @@
 > **这些是设计稿，不是实机截图。** 它们展示预期布局和配色；实机字体渲染和最终素材位置可能略有不同。
 > 开机图是从真实 `LBOO` / `LBO2` 素材渲染的，不是设备照片。
 
-Home 左上角 28×8 状态 meter：左段是蓝牙，右段是播放。Now Playing 的 shuffle/play 旁保留一个蓝牙-only chip；播放状态由 play/pause 图标表达。卡片阴影承担电量/充电颜色。
+根列表左上角 28×8 状态 meter：左段是蓝牙，右段是播放。Now Playing 的 shuffle/play 旁保留一个蓝牙-only chip；播放状态由 play/pause 图标表达。卡片阴影承担电量/充电颜色。
 
-| Home | Now Playing |
+| Home（旧版） | Now Playing |
 |---|---|
 | ![Home](docs/images/lite/home-final-v6.png) | ![Now Playing](docs/images/lite/now-playing-final-v3.png) |
 

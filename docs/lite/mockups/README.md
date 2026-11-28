@@ -1,6 +1,6 @@
 # Final Lite mockups
 
-These are the final design-reference sheets for the 512 MB Lite UI. The Home, Now Playing,
+These are the final design-reference sheets for the 512 MB Lite UI. The Home sheet is the pre-M8 design (Home was removed); Now Playing,
 Settings and Quick panel sheets are **design mockups, not device screenshots**; real font
 rendering and final asset placement can differ slightly. The Quick panel sheet is historical:
 Quick is now the first Settings category. The boot sheet is rendered from the actual `LBOO` /
@@ -23,7 +23,7 @@ a screenshot source.
 - Battery/charging: still carried by the card shadow.
 - Dark: border `#52525B`, shadow `#000000`.
 
-## Home
+## Home (historical; removed in M8)
 
 ![Home](../../images/lite/home-final-v6.png)
 

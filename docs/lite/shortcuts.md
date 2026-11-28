@@ -4,22 +4,27 @@ These are the Lite controls. The boot/recovery button combinations are not chang
 
 | Screen | Volume | Play | Menu | Back |
 |---|---|---|---|---|
-| Home | change card | short: open | short: Now Playing; long: Settings | short: back; long: Home |
-| Lists | change row; hold: repeat, faster after 1.5 s | short: open; long: song actions on tracks | short: Now Playing; long: Settings (A-Z/# jump in lettered lists) | short: back; long: Home |
+| Root list (All Songs / Favorites) | change row; hold: repeat, faster after 1.5 s | short: open | short: Now Playing; long: A-Z in All Songs, Settings in Favorites | short: switch root; long: Settings |
+| Deeper list | change row; hold: repeat, faster after 1.5 s | short: open; long: song actions on tracks | short: Now Playing; long: Settings (A-Z in lettered lists) | short: up one level; long: Settings |
 | Song actions | change row | short: choose | short: close | short: close |
-| Favorites | change row | short: play the favorites queue | short: Now Playing; long: Settings | short: back; long: Home |
-| Now Playing | short: volume; double: previous/next; long: seek | short: pause/play | short: Up Next; long: Settings | short: leave; long: Home |
-| Up Next | change row | short: play the row | short: Now Playing; long: Settings | short: back; long: Home |
-| Settings | change row | short: change value / open | short: Now Playing; long: next category | short: back; long: Home |
-| A-Z / # jump | select letter | short: jump | short: close | short: close; long: Home |
-| Choice | change option | short: confirm | short: Now Playing; long: Settings | short: cancel; long: Home |
+| Favorites | change row | short: play the favorites queue | short: Now Playing; long: Settings | short: back to All Songs at the root; long: Settings |
+| Now Playing | short: volume; double: previous/next; long: seek | short: pause/play | short: Up Next; long: Settings | short: leave; long: Settings |
+| Up Next | change row | short: play the row | short: Now Playing; long: Settings | short: back; long: Settings |
+| Settings | change row | short: change value / open | short: Now Playing; long: next category | short: return to the root; long: return to the root |
+| A-Z / # jump | select letter | short: jump | short: close | short: close; long: close |
+
+The root is All Songs or Favorites. Short Back at the root switches between them; deeper Short
+Back goes up one list level. There is no Home screen. Long Back opens Settings from a root, a
+list or Now Playing. Settings Short Back returns to whichever root was current when it opened.
 
 Long Menu uses a 400 ms threshold. There is no double-Menu gesture: a short Menu acts
-immediately, and a long Menu opens Settings from Home, Now Playing, Up Next and non-lettered
-lists, or the A-Z/# jump from a lettered list. In Settings it advances to the next category.
+immediately. In Settings, Long Menu advances to the next category.
 
 The Menu-key setting is removed from Lite: Menu always opens Up Next in Now Playing. Volume
 double-press still does previous/next.
+
+The two 24×24 root icons and their selection outline are deferred. List headers, rows, cards and
+the status meter keep their existing M7 appearance.
 
 ## Song actions
 
@@ -37,7 +42,7 @@ Long Play on a row in the Favorites list removes that song directly.
 
 ## Settings Quick cards
 
-The standalone Quick panel is gone. Settings opens on Quick, which has two icon-only cards:
+Settings opens on Quick, which has two icon-only cards:
 
 - playback mode: Random → Loop → Loop One → Random;
 - sleep timer: Off → 15 → 30 → 45 → 60 → 90 → 120 → Off.

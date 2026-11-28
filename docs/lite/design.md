@@ -3,7 +3,7 @@
 The final Lite design is a neo-brutalist interface with runtime Light/Dark and landscape/portrait.
 The mockup sheet is [mockups/index.html](mockups/index.html).
 
-> The Home, Now Playing, Settings and Quick panel images are design mockups, not device screenshots.
+> The Home sheet is the pre-M8 design (Home was removed); Now Playing, Settings and Quick panel are design mockups, not device screenshots.
 > The standalone Quick panel sheet is historical: Quick is now the first Settings category.
 > The boot image is rendered from the actual firmware assets.
 
@@ -38,17 +38,18 @@ cyan `#35C7E8`, amber `#F59E0B`, success `#22C55E`.
   154 px portrait; the time row ends 8 px above the bottom edge.
 - Settings Quick is an intentional two-card exception inside the normal content area:
   12 px horizontal gutter and 30/58 px vertical starts.
-- Home is a centred composition; it has no outer panel gutter.
+- Root lists use the existing no-title list frame and card at `y=28`; the root-tab chrome is deferred.
 
 ## Layout
 
-### Home
+### Home (removed in M8)
 
-- Landscape: 104×104 card at (108, 24), 6 px radius, 64 px selected icon, 40 px side icons.
-- Portrait: 112×112 card at (29, 108), 6 px radius, 64 px selected icon, 40 px side icons above/below; 32 px gaps to the card.
-- No text, no page dots. No playback bars; playback lives in the global status meter.
+- The large three-card carousel is gone. All Songs and Favorites are roots; Short Back switches
+  them and Long Back opens Settings.
+- The two 24×24 root icons and the animated selection outline are deferred, so the list frames
+  stay unchanged for now.
 
-### Home status
+### Root status
 
 - Top-left 28×8 status meter at (8, 4): 2 px border, 2 px hard shadow, two 12×4 cells.
   Left cell blue `#006FEE` when Bluetooth is connected; right cell cyan `#35C7E8` when
