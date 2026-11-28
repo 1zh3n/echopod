@@ -222,4 +222,3 @@ char pinyin_table_initial(const PinyinTable *table, uint32_t codepoint)
     char syllable[SYLLABLE_BYTES];
     return pinyin_table_syllable(table, codepoint, syllable, sizeof syllable) ? syllable[0] : 0;
 }
-
