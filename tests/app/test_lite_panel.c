@@ -508,16 +508,17 @@ static void root_status_blocks_track_bluetooth_and_root(void)
     Color pink = COLOR_RGB(236, 72, 153);
     start_app_with_library();
     wait_ms(300);
+    CHECK(fake_hal_pixel(276, 8) == DEFAULT_THEME.colors->text_tertiary);
     CHECK(fake_hal_pixel(289, 8) == DEFAULT_THEME.colors->text_tertiary);
-    CHECK(fake_hal_pixel(302, 8) == DEFAULT_THEME.colors->text_tertiary);
+    CHECK(fake_hal_pixel(302, 8) == DEFAULT_THEME.colors->background);
     CHECK(fake_hal_pixel(10, 10) == all_blue);
     CHECK(fake_hal_pixel(23, 10) == DEFAULT_THEME.colors->divider);
     fake_hal_bluetooth()->state = HAL_BLUETOOTH_CONNECTED;
     wait_ms(300);
-    CHECK(fake_hal_pixel(289, 8) == bluetooth);
+    CHECK(fake_hal_pixel(276, 8) == bluetooth);
     fake_hal_bluetooth()->state = HAL_BLUETOOTH_OFF;
     wait_ms(300);
-    CHECK(fake_hal_pixel(289, 8) == DEFAULT_THEME.colors->text_tertiary);
+    CHECK(fake_hal_pixel(276, 8) == DEFAULT_THEME.colors->text_tertiary);
     tap(KEY_BACK);
     wait_ms(300);
     CHECK(fake_hal_pixel(10, 10) == DEFAULT_THEME.colors->divider);
@@ -559,7 +560,7 @@ static void hold_the_volume_key_seeks_without_a_hold_bar(void)
     now_ms += 1100;
     step();
     CHECK(fake_hal_audio_seek_count() > seeks_before);
-    CHECK(fake_hal_pixel(294, 10) == COLOR_RGB(15, 138, 219));
+    CHECK(fake_hal_pixel(278, 10) == COLOR_RGB(15, 138, 219));
     CHECK(fake_hal_pixel(229, 18) != COLOR_RGB(245, 158, 11));
     fake_hal_queue_transition(KEY_VOLUME_UP, false, now_ms);
     now_ms += 10;
@@ -572,9 +573,9 @@ static void now_playing_uses_bt_chip_with_controls(void)
     open_all_songs_and_play();
     fake_hal_bluetooth()->state = HAL_BLUETOOTH_CONNECTED;
     wait_ms(300);
-    CHECK(fake_hal_pixel(294, 10) == COLOR_RGB(15, 138, 219));
-    CHECK(fake_hal_pixel(307, 10) == COLOR_RGB(245, 158, 11));
-    CHECK(fake_hal_pixel(276, 10) == COLOR_RGB(139, 92, 246));
+    CHECK(fake_hal_pixel(278, 10) == COLOR_RGB(15, 138, 219));
+    CHECK(fake_hal_pixel(291, 10) == COLOR_RGB(245, 158, 11));
+    CHECK(fake_hal_pixel(302, 10) == COLOR_RGB(139, 92, 246));
     CHECK(fake_hal_pixel(8, 6) != COLOR_RGB(0, 111, 238));
 }
 
@@ -1052,13 +1053,13 @@ static void now_playing_uses_a_status_mode_block(void)
     open_all_songs_and_play();
     wait_ms(300);
     CHECK(!area_has_color(294, 24, 18, 18, COLOR_RGB(0, 111, 238)));
-    CHECK(fake_hal_pixel(276, 10) == COLOR_RGB(139, 92, 246));
-    CHECK(fake_hal_pixel(278, 10) == COLOR_RGB(255, 255, 255));
+    CHECK(fake_hal_pixel(302, 10) == COLOR_RGB(139, 92, 246));
+    CHECK(fake_hal_pixel(304, 10) == COLOR_RGB(255, 255, 255));
     CHECK(!area_has_color(8, 64, 304, 18, COLOR_RGB(0, 111, 238)));
     CHECK(fake_hal_pixel(40, 145) == DEFAULT_THEME.colors->divider);
     tap(KEY_PLAY);
     wait_ms(300);
-    CHECK(fake_hal_pixel(276, 10) != COLOR_RGB(139, 92, 246));
+    CHECK(fake_hal_pixel(302, 10) != COLOR_RGB(139, 92, 246));
 }
 
 static void all_songs_long_play_opens_song_actions(void)
@@ -1348,8 +1349,8 @@ static void portrait_now_playing_icons(void)
     switch_orientation_to_portrait();
     open_all_songs_and_play();
     wait_ms(300);
-    CHECK(fake_hal_pixel(126, 10) == COLOR_RGB(139, 92, 246));
-    CHECK(fake_hal_pixel(128, 10) == COLOR_RGB(255, 255, 255));
+    CHECK(fake_hal_pixel(152, 10) == COLOR_RGB(139, 92, 246));
+    CHECK(fake_hal_pixel(154, 10) == COLOR_RGB(255, 255, 255));
     CHECK(!area_has_color(144, 24, 18, 18, COLOR_RGB(0, 111, 238)));
     CHECK(fake_hal_pixel(40, 289) == DEFAULT_THEME.colors->divider);
 }

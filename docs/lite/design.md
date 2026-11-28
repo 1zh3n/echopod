@@ -54,9 +54,9 @@ cyan `#35C7E8`, amber `#F59E0B`, success `#22C55E`.
 - Status uses 10×10 blocks with a 1 px hard shadow at y=8.
 - Right side: Bluetooth `#0F8ADB` and playing `#F59E0B`, 3 px apart, 8 px from the right edge;
   inactive blocks are `text_tertiary` gray, so colour always means the state is on.
-- While playing, a purple `#8B5CF6` mode block sits 3 px left of Bluetooth and shows a white
-  `L` (loop), `1` (loop one) or `S` (shuffle); it is hidden while paused.
-  The group is `[mode] [Bluetooth] [play]` at x=276/289/302 landscape and 126/139/152 portrait.
+- While playing, a purple `#8B5CF6` mode block sits immediately right of the playback block and
+  shows a white `L` (loop), `1` (loop one) or `S` (shuffle); it is hidden while paused.
+  The group is `[Bluetooth] [play] [mode]` at x=276/289/302 landscape and 126/139/152 portrait.
 - Root lists use the original 28×10 segmented meter on the left: 2 px border/shadow, two 12×6
   cells; All Songs `#2FA8FF`, Favorites `#EC4899`, with the inactive half divider gray.
 - Now Playing uses the same top status row; there is no separate playback-mode icon on the page.

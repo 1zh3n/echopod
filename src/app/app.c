@@ -1055,15 +1055,15 @@ static void draw_lite_status_meter(Canvas *canvas, const Screen *screen)
                               favorite ? pink : theme->colors->divider);
     }
     int width = theme->metrics.screen_width;
-    Point right = {width - 31, 8};
+    Point group = {width - 44, 8};
+    lite_status_block_draw(canvas, group, status_color(theme, bluetooth_color, bluetooth));
+    lite_status_block_draw(canvas, (Point){group.x + 13, 8},
+                           status_color(theme, playing_color, playing));
     if (playing) {
         PlaybackMode mode = player_playback_mode(&app.player);
         char glyph = mode == PLAYBACK_ONE ? '1' : mode == PLAYBACK_RANDOM ? 'S' : 'L';
-        lite_status_mode_draw(canvas, (Point){right.x - 13, 8}, mode_color, glyph);
+        lite_status_mode_draw(canvas, (Point){group.x + 26, 8}, mode_color, glyph);
     }
-    lite_status_block_draw(canvas, right, status_color(theme, bluetooth_color, bluetooth));
-    lite_status_block_draw(canvas, (Point){right.x + 13, 8},
-                           status_color(theme, playing_color, playing));
 }
 #endif
 
