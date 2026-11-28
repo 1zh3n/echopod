@@ -79,6 +79,8 @@ orange `#FF9F1C`, green `#22C55E`.
 - The time row and progress thumb are removed. The progress bar ends 18 px above the bottom;
   that bottom band is empty. Changing volume reuses the bar as a yellow volume meter and draws
   no number.
+- Volume has 85 steps of 1 dB; the default is 30 (about the old level 4). 3.5 mm, 4.4 mm and
+  Bluetooth use the same step size, while their top levels stay as before.
 
 ### Sorting
 

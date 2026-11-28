@@ -72,8 +72,10 @@ Full details and the A-Z grid geometry: [shortcuts.md](shortcuts.md).
   matching the 8 px top margin plus the 10 px status block.
 - When the track has no synced lyrics, a small 9×9 ball bounces inside the lyric area. It
   changes colour at each edge and freezes when paused.
-- While changing volume, the progress bar temporarily turns yellow and follows the volume;
-  there is no separate volume number.
+- Volume has 85 steps of exactly 1 dB; the default is 30, close to the old level 4.
+  While changing volume, the progress bar temporarily turns yellow and follows the volume;
+  there is no separate volume number. Old 50-step settings and resume files migrate
+  automatically.
 - Volume short press changes volume, double press skips, long press seeks.
 - Bluetooth, playback and the mode block share the top status row.
 - There is no separate playback-mode icon on the page.
@@ -131,6 +133,8 @@ not device photos; see [design.md](design.md) for tokens and geometry.
   five category pages. Date/Time was moved onto the same card style.
 - **Status row:** 10×10 blocks at y=8; Bluetooth, playback, then an always-visible mode block
   (purple random, gray loop, gray `1` loop-one). Inactive states are neutral gray.
+- **Volume:** 85 one-decibel steps instead of the old 50 non-linear steps. The default is 30;
+  3.5 mm, 4.4 mm and Bluetooth all step by 1 dB, with each output's previous top level kept.
 - **Now Playing:** no time row or thumb; when no synced lyrics are available, a small ball
   bounces in the lyric area and changes colour at each edge; progress moved lower into the
   18 px bottom gap and doubles as the temporary volume meter, with no volume number; no

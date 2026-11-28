@@ -44,6 +44,9 @@ front end. The list below is the useful summary; the git history has the exact c
   separate volume number.
   The current/total time row and progress thumb are removed; the progress bar is the only
   progress and volume indicator.
+- Volume uses 85 steps of 1 dB each, with a default of 30. The old 50-step volumes in
+  `settings.bin` and the resume file are mapped by loudness, not by number. The 3.5 mm,
+  4.4 mm and Bluetooth outputs all use the 1 dB step size; their top levels are unchanged.
 - Boot uses 200×112 landscape / 146×112 portrait stills with a 5px hard shadow, no card or frame.
 - Charging keeps the 96×64 animation card.
 - Runtime Light/Dark and Landscape/Portrait/Portrait-flipped in Settings → Display.

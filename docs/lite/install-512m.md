@@ -36,9 +36,14 @@ cmake --build --preset release-lite
 ## Current build
 
 ```text
-image:  MINIV963.IMG
-sha256: 6a6cdbaa2e7d24c2affaa698a97867c45ca8fcfbeb4fa9f33609b60672b70e9b
+image:  MINIV964.IMG
+sha256: a2db54c2c8cf1b3dcf945cd1f0975c2d4c9e126d313436a4b02cdd2027175270
 ```
+
+`MINIV964` replaces the 50-step volume curve with 85 steps of exactly 1 dB. The default is 30,
+close to the old level 4. Old 50-step settings and resume files are mapped by loudness. The
+3.5 mm, 4.4 mm and Bluetooth curves all use 1 dB steps; their previous top levels are kept for
+now, so 4.4 mm and Bluetooth still need a device check.
 
 `MINIV963` removes the last volume number from Now Playing. Changing volume only turns the
 progress bar yellow and follows the level; the 18 px bottom gap is otherwise empty.
@@ -168,6 +173,7 @@ The incremental images for this pass are:
 | `MINIV961` | bouncing colour-changing Now Playing square, no fake spectrum | `137c474806aed0fde513dbc5d9c2f722a1523f8b796aa215a6e6bf050a037936` |
 | `MINIV962` | 18 px bottom gap, taller collision area, 9×9 flat ball | `e213f084daf813344217f143d6942ce530b3125fa5ed26120938c3ffe5a3ecdd` |
 | `MINIV963` | volume shown only by the yellow progress bar | `6a6cdbaa2e7d24c2affaa698a97867c45ca8fcfbeb4fa9f33609b60672b70e9b` |
+| `MINIV964` | 85 one-decibel volume steps, default 30, old volume settings migrated | `a2db54c2c8cf1b3dcf945cd1f0975c2d4c9e126d313436a4b02cdd2027175270` |
 
 The 8 GB model is not supported.
 
@@ -179,12 +185,12 @@ The 8 GB model is not supported.
 - Lite app static RAM: 69,586 / 131,072 bytes (61,486 free), via
   `tools/lite_ram_audit.py` and the `release-lite` compile commands.
 - `release-lite` build and updater check valid.
-- Headroom: code 136,688 / 157,292 bytes (20,604 free); loaded total 342,056 / 437,600 bytes
-  (95,544 free); resident tables 18,236 / 18,432 (196 free); rescan overlay 85,328 / 86,016
+- Headroom: code 136,728 / 157,292 bytes (20,564 free); loaded total 342,096 / 437,600 bytes
+  (95,504 free); resident tables 18,236 / 18,432 (196 free); rescan overlay 85,328 / 86,016
   (688 free).
 - Still pending: the final 512 MB device pass over sorting, boot, dots, headers, navigation,
-  local motion, the bouncing ball, root switching, Settings cards, favorites and
-  portrait-flipped.
+  local motion, the bouncing ball, the 4.4 mm and Bluetooth volume curves, root switching,
+  Settings cards, favorites and portrait-flipped.
 
 ## After flashing
 
