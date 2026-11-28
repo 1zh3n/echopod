@@ -139,92 +139,55 @@ recorded, not implemented.
 
 ## Home decision
 
-**Final direction 2026-11-28: keep the three-card Home.** The two-card Home and the no-Home
-model were both rejected. The Home carousel is the Lite visual identity; a two-card version
-loses the composition and removing it loses the screen entirely. The redundancy of a visible
-Settings card is accepted because it is the price of keeping the design.
+**Final direction 2026-11-28: remove Home after Favorites exists (M8).** The three-card Home
+stays through M7 so the tree is not half-finished. The two-card Home is rejected, and the exact
+large-card composition cannot survive without Home.
 
-Final Home:
+### Home removal model
 
-| Card | Behavior |
-|---|---|
-| All Songs | open All Songs |
-| Favorites | open song Favorites (M7); replaces Playlists |
-| Settings | open Settings at Quick; Long Menu is the shortcut |
-
-- Keep the three-card carousel and the existing animation.
-- Short Menu on Home: Now Playing.
-- Long Menu on Home: Settings / Quick.
-- Settings card is both a visual anchor and a discoverable fallback; the Long Menu shortcut
-  remains.
-- Playlists is removed from the Lite Home; the non-Lite menu keeps it.
-- Do not add a fourth card or turn Home into a grid.
-
-A separate productivity option remains a Lite Start screen setting (Home / All Songs /
-Favorites / Now Playing), for people who want to skip Home at boot. It is not part of M5-M7.
-
-### Rejected: two-card Home
-
-A static two-card layout was considered and rejected: with only All Songs and Favorites it
-still reads as a menu with no purpose, and it loses the three-card composition. Do not revive it
-unless the Home concept is redesigned.
-
-### Rejected: removing Home entirely
-
-Removing Home is possible only if there is a replacement root switch between All Songs and
-Favorites. The candidates are:
-
-- **Short Back at the root**: toggles All Songs <-> Favorites. Deeper Back still goes up.
-  Settings would need another gesture, for example Long Back; Long Back would no longer mean
-  Home because there is no Home.
-- **Long Back**: toggles the two roots from anywhere; then Settings needs a third gesture.
-- A tab/filter inside one list: needs a new key or a selectable header row.
-
-The two-card Home is already the direct switch: Volume selects, Play opens. That is one volume
-press when switching from the other root. However, after the device discussion the two-card Home
-was rejected as still feeling like a menu with no purpose. The no-Home model is now the
-candidate, with this key map:
-
-- root is All Songs or Favorites;
-- Short Back at the root toggles All Songs <-> Favorites; deeper Short Back goes up;
-- Long Back opens Settings;
-- Short Menu opens Now Playing;
+- Root is All Songs or Favorites.
+- Short Back at the root toggles All Songs <-> Favorites; deeper Short Back goes up.
+- Long Back opens Settings.
+- Short Menu opens Now Playing.
 - Long Menu is A-Z in lettered lists, Settings/Quick in Now Playing and non-lettered lists, next
   category in Settings.
+- Boots to All Songs, or to the last root; a Start screen setting can choose later.
+- Settings Back returns the current root.
 
 Trade-offs:
 
 - Back at the root is no longer inert; it changes lists.
 - Settings moves to Long Back; Long Back no longer means Home because there is no Home.
 - Switching roots from a deep list needs repeated Short Back to the root.
-- The Home visual identity and its visible Settings card disappear.
 - Boot must choose All Songs or Favorites, or remember the last root.
 
-Recommendation: **do not remove Home.** It was rejected because the visual identity matters more
-than the small redundancy. A Start screen option can still skip Home at boot without deleting
-the screen.
+### Root list visual
 
-### Rejected: visual continuity without Home
+The Lite visual language stays in the lists:
 
-The large three-card carousel cannot survive Home's removal; that composition is Home. The rest
-of the Lite language can stay: hard shadows, dark card borders, color badges, the status meter,
-the Settings category badge and the Now Playing icons.
+- hard shadows, dark card borders, rounded list cards, the status meter;
+- All Songs and Favorites color icons, about 24×24, in the top-right of the root list header;
+- the active root icon has a selection outline/shadow;
+- status meter stays top-left; rows still start at the card `y=28`;
+- Short Back animates the selected root outline between the two icons over 120-140 ms, while the
+  list content switches immediately;
+- Settings is not a third root icon; Long Back opens it.
 
-To keep a visual anchor at the root, draw a **compact two-icon switcher** in the top-right of
-All Songs and Favorites:
+This is a compact root chrome element, not a Home screen. It preserves the two-color icon
+identity and gives the no-Home model a visible root switch. The large three-card carousel is the
+only thing that cannot be preserved.
 
-- All Songs icon and Favorites icon, about 24x24, same color-icon style;
-- the active list has a selection outline;
-- the status meter stays at top-left;
-- rows still start at the existing card y=28;
-- Short Back at the root toggles the active icon/list.
+### Rejected: two-card Home
 
-This is not a Home screen: it is a small root chrome element. It preserves the two-color icon
-identity and makes the Back-to-switch behavior visible. If it feels too much like a tab bar, a
-single active icon is the fallback; the list change still happens on Back.
+A static two-card layout was considered and rejected: with only All Songs and Favorites it still
+reads as a menu with no purpose, and it loses the three-card composition. Do not revive it
+unless the Home concept is redesigned.
 
-If the big Home composition is the part that matters visually, then Home cannot be removed;
-the two options are mutually exclusive.
+### Rejected: keeping three-card Home
+
+The three-card Home is the visual identity, but the small efficiency gain of removing Playlists
+does not justify a screen that only exists to hold two or three shortcuts. The later decision is
+to remove it after M7 and carry the visual language into the root lists.
 
 ## Up Next stays a queue
 

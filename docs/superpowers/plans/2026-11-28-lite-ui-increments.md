@@ -323,15 +323,26 @@ performance item remains separate and is not part of this pass.
 ### M7: Song favorites
 
 - Add the path-hash song-favorites store and card file.
-- Replace the Home Playlists card with Favorites; keep Settings as the third Home card.
-- Do not remove Home; the three-card carousel is the chosen visual identity.
+- Replace the Home Playlists card with Favorites; keep Settings as the third Home card for M7.
+- Home remains the three-card carousel only until M8.
 - Add a favorite-song list and Add/Remove Favorites in the song actions menu.
 - Decide and implement the queue: a real favorites queue is preferred; starting All Songs is
   only the fallback.
 - Write a separate implementation plan before coding; this is larger than a Home-card rename.
 - Album-favorites cleanup follows after M7, not as its own image.
 
+### M8: Remove Home and add root tabs
+
+- Root is All Songs or Favorites; Short Back at the root toggles them.
+- Long Back opens Settings; Short Menu opens Now Playing.
+- Add two compact 24×24 color icon root tabs at the top-right of the root list header:
+  All Songs and Favorites; active tab has a selection outline/shadow.
+- Animate only the selected tab outline (120-140 ms); list content switches immediately.
+- Keep the status meter top-left and rows starting at the existing card `y=28`.
+- Remove the Home carousel, its scene, items and tests.
+- Boot to All Songs or the last root; Start screen setting is a later option.
+
 ### Separate
 
 - Rescan performance/stutter.
-- Any further Quick/Settings visual tuning after M5-M7 device checks.
+- Any further Quick/Settings visual tuning after M5-M8 device checks.

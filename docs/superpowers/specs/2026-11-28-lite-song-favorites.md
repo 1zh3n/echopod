@@ -34,6 +34,8 @@ Replace the Lite Home **Playlists** card with **Favorites**, and make Favorites 
 
 - Home card 1 becomes Favorites, using `MUSIC_FAVORITES`.
 - Playlists is removed from the Lite Home; the non-Lite menu keeps it.
+- This is the M7 state. M8 removes Home and makes All Songs/Favorites the two roots; the
+  Favorites screen and its icon stay, but the Home card disappears.
 - The Favorites card needs a heart/star-style icon. The current List icon does not read as
   favorites, so this is an asset/design task, not only a label change.
 

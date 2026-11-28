@@ -42,7 +42,8 @@ Key entry proposal:
 - Long Menu: Settings Quick from Home, Now Playing and non-lettered lists; A-Z in lettered
   lists; next category in Settings; no action in the A-Z overlay.
 - No double Menu. Lite long Menu threshold 400 ms.
-- Settings opens at Quick; Back returns the opener. The Home Settings card remains.
+- Settings opens at Quick; Back returns the opener. The Home Settings card remains through M7;
+  M8 removes Home and Settings is reached by Long Back.
 
 ## Options
 
@@ -115,13 +116,12 @@ Neither fits the current one-row Home carousel. Settings has subpages and statef
 do not fit a card. The only sensible Home-level settings are the two Quick cards, and those
 already have a better home as the first Settings category.
 
-Recommendation: keep Settings as one overlay with Quick first; keep Home as the two-card music
-launcher. Do not split the Settings tree onto Home. If a visible entry is wanted, keep a third
-Settings card, but do not turn its categories or rows into Home cards.
+Recommendation: keep Settings as one overlay with Quick first. Do not split the Settings tree
+onto Home. Home is removed in M8; until then the Settings card remains as the visible entry.
+After M8, Long Back opens Settings from the root/list screens.
 
 ## Still open
 
-- C or A.
-- If C: Quick as first category or a tab; how to show two 140x112 cards inside the Settings card
+- Quick as first category or a tab; how to show two 140x112 cards inside the Settings card
   area in landscape and portrait.
-- If C: whether the Home Settings card stays as a second entry.
+- Whether the Settings card remains until M8 only (current plan) or is removed earlier.
