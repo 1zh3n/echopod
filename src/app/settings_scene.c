@@ -34,14 +34,14 @@ enum {
     SETTINGS_DIVIDER_WIDTH = 280,
     HOME_CARD_X = 8,
     HOME_CARD_WIDTH = 304,
-    HOME_CARD_TOP = 30,
-    HOME_CARD_HEIGHT = 23,
-    HOME_CARD_GAP = 3,
+    HOME_CARD_TOP = 29,
+    HOME_CARD_HEIGHT = 25,
+    HOME_CARD_GAP = 2,
     HOME_PORTRAIT_X = 8,
     HOME_PORTRAIT_WIDTH = 154,
     HOME_PORTRAIT_TOP = 58,
-    HOME_PORTRAIT_HEIGHT = 44,
-    HOME_PORTRAIT_GAP = 4
+    HOME_PORTRAIT_HEIGHT = 48,
+    HOME_PORTRAIT_GAP = 3
 };
 
 typedef struct CategoryVisual {
@@ -94,7 +94,6 @@ static bool home_scene_draw(void *context, Canvas *canvas, MenuScreen *menu)
     int top = portrait ? HOME_PORTRAIT_TOP : HOME_CARD_TOP;
     int height = portrait ? HOME_PORTRAIT_HEIGHT : HOME_CARD_HEIGHT;
     int gap = portrait ? HOME_PORTRAIT_GAP : HOME_CARD_GAP;
-    TextStyle label_style = {.font = theme->fonts.body};
     TextStyle value_style = {.font = theme->fonts.small};
     for (int index = 0; index < 5; index++) {
         Rect card = {x, top + index * (height + gap), width, height};
@@ -106,33 +105,77 @@ static bool home_scene_draw(void *context, Canvas *canvas, MenuScreen *menu)
                              colors->selection_background);
             draw_card_border(canvas, card, colors->selection_background);
         }
-        lite_shape_fill_circle(canvas,
-                               (Point){card.x + 12, card.y + card.height / 2},
-                               portrait ? 7 : 5, HOME_COLORS[index]);
-        label_style.color = selected ? colors->selection_text : colors->text;
-        int label_x = card.x + 24;
-        int label_height = portrait ? 20 : height;
-        int label_y = portrait ? card.y + 6 : card.y;
-        label_draw(canvas, label_style,
-                   (Label){.area = {label_x, label_y, card.width - 60, label_height},
-                           .text = menu->model.label(menu->model.context, index)});
+        Point center = {card.x + (portrait ? 22 : 17), card.y + card.height / 2};
+        int icon_size = portrait ? 20 : 18;
+        if (index == 4) {
+            lite_shape_fill_circle(canvas, center, portrait ? 11 : 9,
+                                   colors->selection_text);
+            color_icon_draw_scaled(canvas, &LITE_COLOR_ICON_GEAR,
+                                   (Rect){center.x - icon_size / 2, center.y - icon_size / 2,
+                                          icon_size, icon_size});
+        } else {
+            Color icon_color = selected ? colors->selection_text : HOME_COLORS[index];
+            Rect icon = {center.x - icon_size / 2, center.y - icon_size / 2, icon_size, icon_size};
+            switch (index) {
+            case 0:
+                lite_icon_draw_scaled(canvas, &LITE_ICON_SHUFFLE_18, icon, icon_color);
+                break;
+            case 1:
+                lite_icon_draw_scaled(canvas, &LITE_ICON_MOON, icon, icon_color);
+                break;
+            case 2:
+                lite_icon_draw_scaled(canvas, &LITE_ICON_CATEGORY_SOUND, icon, icon_color);
+                break;
+            case 3:
+                lite_icon_draw_scaled(canvas, &LITE_ICON_CATEGORY_DISPLAY, icon, icon_color);
+                break;
+            default:
+                break;
+            }
+        }
+        TextStyle title_style = {.font = theme->fonts.title,
+                                 .color = selected ? colors->selection_text : colors->text};
+        TextStyle body_style = {.font = theme->fonts.body,
+                                .color = selected ? colors->selection_text : colors->text_secondary};
+        int label_x = card.x + (portrait ? 40 : 32);
+        int label_width = card.width - (label_x - card.x) - 10;
         const char *value = menu->model.detail != NULL
                                 ? menu->model.detail(menu->model.context, index)
                                 : NULL;
         bool opens = menu->model.opens != NULL &&
                      menu->model.opens(menu->model.context, index);
-        value_style.color = selected ? colors->selection_text : colors->text_secondary;
-        if (value != NULL) {
-            int value_width = text_width(value_style.font, value);
-            Rect area = {card.x + card.width - value_width - 10,
-                         portrait ? card.y + 24 : card.y + (height - 16) / 2, value_width, 16};
-            label_draw(canvas, value_style, (Label){.area = area, .text = value});
-        } else if (opens) {
-            int chevron_width = text_width(value_style.font, CHEVRON);
-            Rect area = {card.x + card.width - chevron_width - 10,
-                         portrait ? card.y + 24 : card.y + (height - 16) / 2, chevron_width, 16};
-            value_style.color = selected ? colors->selection_text : colors->chevron;
-            label_draw(canvas, value_style, (Label){.area = area, .text = CHEVRON});
+        if (portrait) {
+            label_draw(canvas, title_style,
+                       (Label){.area = {label_x, card.y + 6, label_width, 20},
+                               .text = menu->model.label(menu->model.context, index)});
+            if (value != NULL) {
+                int value_width = text_width(body_style.font, value);
+                Rect area = {card.x + card.width - value_width - 10, card.y + 26, value_width, 18};
+                label_draw(canvas, body_style, (Label){.area = area, .text = value});
+            } else if (opens) {
+                int chevron_width = text_width(value_style.font, CHEVRON);
+                Rect area = {card.x + card.width - chevron_width - 10, card.y + 26, chevron_width,
+                             18};
+                value_style.color = selected ? colors->selection_text : colors->chevron;
+                label_draw(canvas, value_style, (Label){.area = area, .text = CHEVRON});
+            }
+        } else {
+            label_draw(canvas, title_style,
+                       (Label){.area = {label_x, card.y, card.width - (label_x - card.x) - 52,
+                                        card.height},
+                               .text = menu->model.label(menu->model.context, index)});
+            if (value != NULL) {
+                int value_width = text_width(body_style.font, value);
+                Rect area = {card.x + card.width - value_width - 10,
+                             card.y + (card.height - 16) / 2, value_width, 16};
+                label_draw(canvas, body_style, (Label){.area = area, .text = value});
+            } else if (opens) {
+                int chevron_width = text_width(value_style.font, CHEVRON);
+                Rect area = {card.x + card.width - chevron_width - 10,
+                             card.y + (card.height - 16) / 2, chevron_width, 16};
+                value_style.color = selected ? colors->selection_text : colors->chevron;
+                label_draw(canvas, value_style, (Label){.area = area, .text = CHEVRON});
+            }
         }
     }
     return true;

@@ -503,22 +503,23 @@ static void long_back_on_favorites_opens_settings(void)
 
 static void root_status_blocks_track_bluetooth_and_root(void)
 {
-    Color blue = COLOR_RGB(47, 168, 255);
-    Color cyan = COLOR_RGB(53, 199, 232);
+    Color all_blue = COLOR_RGB(47, 168, 255);
+    Color bluetooth = COLOR_RGB(15, 138, 219);
+    Color playing = COLOR_RGB(245, 158, 11);
     Color pink = COLOR_RGB(236, 72, 153);
     Color header = DEFAULT_THEME.colors->header_background;
     start_app_with_library();
     wait_ms(300);
-    CHECK(fake_hal_pixel(289, 8) == color_blend(header, blue, 90));
-    CHECK(fake_hal_pixel(302, 8) == color_blend(header, cyan, 90));
-    CHECK(fake_hal_pixel(10, 10) == blue);
+    CHECK(fake_hal_pixel(289, 8) == color_blend(header, bluetooth, 90));
+    CHECK(fake_hal_pixel(302, 8) == color_blend(header, playing, 90));
+    CHECK(fake_hal_pixel(10, 10) == all_blue);
     CHECK(fake_hal_pixel(23, 10) == DEFAULT_THEME.colors->divider);
     fake_hal_bluetooth()->state = HAL_BLUETOOTH_CONNECTED;
     wait_ms(300);
-    CHECK(fake_hal_pixel(289, 8) == blue);
+    CHECK(fake_hal_pixel(289, 8) == bluetooth);
     fake_hal_bluetooth()->state = HAL_BLUETOOTH_OFF;
     wait_ms(300);
-    CHECK(fake_hal_pixel(289, 8) == color_blend(header, blue, 90));
+    CHECK(fake_hal_pixel(289, 8) == color_blend(header, bluetooth, 90));
     tap(KEY_BACK);
     wait_ms(300);
     CHECK(fake_hal_pixel(10, 10) == DEFAULT_THEME.colors->divider);
@@ -560,7 +561,7 @@ static void hold_the_volume_key_seeks_without_a_hold_bar(void)
     now_ms += 1100;
     step();
     CHECK(fake_hal_audio_seek_count() > seeks_before);
-    CHECK(fake_hal_pixel(294, 10) == COLOR_RGB(47, 168, 255));
+    CHECK(fake_hal_pixel(294, 10) == COLOR_RGB(15, 138, 219));
     CHECK(fake_hal_pixel(229, 18) != COLOR_RGB(245, 158, 11));
     fake_hal_queue_transition(KEY_VOLUME_UP, false, now_ms);
     now_ms += 10;
@@ -573,7 +574,7 @@ static void now_playing_uses_bt_chip_with_controls(void)
     open_all_songs_and_play();
     fake_hal_bluetooth()->state = HAL_BLUETOOTH_CONNECTED;
     wait_ms(300);
-    CHECK(fake_hal_pixel(294, 10) == COLOR_RGB(47, 168, 255));
+    CHECK(fake_hal_pixel(294, 10) == COLOR_RGB(15, 138, 219));
     CHECK(fake_hal_pixel(8, 6) != COLOR_RGB(0, 111, 238));
 }
 
@@ -608,9 +609,9 @@ static void the_sleep_quick_card_counts_down(void)
     move_down(1);
     tap(KEY_PLAY);
     wait_ms(100);
-    unsigned before = area_hash(8, 56, 304, 23);
+    unsigned before = area_hash(8, 56, 304, 25);
     wait_ms(1000);
-    unsigned after = area_hash(8, 56, 304, 23);
+    unsigned after = area_hash(8, 56, 304, 25);
     CHECK(before != after);
 }
 
@@ -866,11 +867,11 @@ static void settings_starts_on_home(void)
     hold(KEY_BACK);
     wait_ms(300);
     CHECK(title_is("Settings"));
-    CHECK(fake_hal_pixel(20, 41) == COLOR_RGB(47, 168, 255));
-    CHECK(fake_hal_pixel(20, 67) == COLOR_RGB(99, 102, 241));
-    CHECK(fake_hal_pixel(20, 93) == COLOR_RGB(47, 168, 255));
-    CHECK(fake_hal_pixel(20, 119) == COLOR_RGB(53, 199, 232));
-    CHECK(fake_hal_pixel(20, 145) == COLOR_RGB(139, 92, 246));
+    CHECK(area_has_color(16, 32, 18, 18, COLOR_RGB(255, 255, 255)));
+    CHECK(area_has_color(16, 59, 18, 18, COLOR_RGB(99, 102, 241)));
+    CHECK(area_has_color(16, 86, 18, 18, COLOR_RGB(47, 168, 255)));
+    CHECK(area_has_color(16, 113, 18, 18, COLOR_RGB(53, 199, 232)));
+    CHECK(area_has_color(16, 140, 18, 18, COLOR_RGB(139, 92, 246)));
 }
 
 static void landscape_settings_has_no_title(void)
@@ -998,7 +999,7 @@ static void settings_long_menu_does_nothing(void)
     hold(KEY_MENU);
     wait_ms(200);
     CHECK(title_is("Settings"));
-    CHECK(fake_hal_pixel(20, 41) == COLOR_RGB(47, 168, 255));
+    CHECK(fake_hal_pixel(12, 41) == COLOR_RGB(0, 111, 238));
 }
 
 static void settings_short_press_cycles_value(void)
@@ -1006,13 +1007,13 @@ static void settings_short_press_cycles_value(void)
     start_app_with_library();
     hold(KEY_BACK);
     wait_ms(300);
-    unsigned before = area_hash(8, 30, 304, 23);
+    unsigned before = area_hash(8, 29, 304, 25);
     int depth = app_screen_depth();
     tap(KEY_PLAY);
     wait_ms(100);
     CHECK(title_is("Settings"));
     CHECK_EQUAL(depth, app_screen_depth());
-    CHECK(area_hash(8, 30, 304, 23) != before);
+    CHECK(area_hash(8, 29, 304, 25) != before);
 }
 
 static void settings_subpage_opens(void)
