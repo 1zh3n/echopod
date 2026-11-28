@@ -8,19 +8,26 @@
 > Tested only on the **512 MB** Echo Mini. The **8 GB** model is not supported.
 
 <p align="center">
-  <img src="docs/images/lite/home-final-v6.png" alt="Home screen in light and dark, landscape and portrait" width="100%">
+  <img src="docs/images/lite/lite-current.png" alt="Current Lite UI: All Songs, Settings, Now Playing and Date/Time" width="100%">
 </p>
 
-<p align="center"><em>The Home sheet is the pre-M8 design (Home was removed); Now Playing, Settings and the historical Quick panel sheet are design mockups (2×), not device screenshots. Quick is split into direct items on the Settings home. The boot sheet below is rendered from the actual firmware assets.</em></p>
+<p align="center"><em>Current Lite UI at 2×: All Songs, Settings, Now Playing and Date/Time. Simulator screenshots; the key map and caveats are in <a href="docs/lite/README.md">docs/lite/README.md</a>.</em></p>
 
 ## What this is
 
 This is my personal build of [EchoPod](https://github.com/BasilSkyWalk/echopod) for the
 **512 MB** Echo Mini. It keeps EchoPod's playback engine and fixes, and replaces the interface
-with a compact Lite UI built around the 320×170 screen.
+with a compact Lite UI for 320×170 and 170×320.
 
-The firmware is **not** a stock replacement for the 8 GB player. Do not flash these images on
-an 8 GB unit.
+It is **not** a stock replacement for the 8 GB player. Do not flash these images on an 8 GB unit.
+
+**Start here:** [Lite guide and key map](docs/lite/README.md) ·
+[Full controls](docs/lite/shortcuts.md) ·
+[Install and recovery](docs/lite/install-512m.md).
+
+> **Personal build.** Not the official EchoPod project, and not affiliated with FiiO or Snowsky.
+> Flashing custom firmware can brick the device or erase data. Keep the official firmware and a
+> known recovery path. Tested on one 512 MB unit; the 8 GB model is not supported.
 
 ## Tested hardware
 
@@ -32,42 +39,46 @@ an 8 GB unit.
 | Tested | Earlier Lite builds on one 512 MB unit, 2026 |
 | Not tested | 8 GB Echo Mini, other hardware revisions |
 
-The dark/portrait build in this branch still needs a final device check.
+The newest dark/portrait build still needs a final device check. The stock FiiO updater and the
+MaskROM recovery path were both exercised during development.
 
-The stock FiiO updater and the MaskROM recovery path were both exercised during development.
-Keep the official firmware and a known recovery path before flashing.
+## Interaction and keys
+
+There is **no Home screen**. The roots are **All Songs** and **Favorites**.
+
+| Key | Behaviour |
+|---|---|
+| Short Back | Root: switch All Songs / Favorites. List: up one level. Settings: back one page, or leave to the current root. |
+| Long Back | Open Settings from a normal screen; inside Settings, return to the current root. |
+| Short Menu | Open Now Playing; from Now Playing, open Up Next. |
+| Long Menu | The screen's function key: A-Z in All Songs/Favorites, next row in A-Z, current-song actions in Now Playing. No action in Up Next/Settings. |
+| Play | Open/choose a row; in Settings change a value or open a category; in Date/Time start/stop editing. |
+| Volume | Move the selection; in Now Playing short = volume, double = previous/next, long = seek. |
+
+Long Back is the single Settings entry. There is no double Menu and no standalone playback panel.
+Full key table and A-Z geometry: [docs/lite/shortcuts.md](docs/lite/shortcuts.md).
 
 ## What I changed
 
-- **512 MB port and Lite build:** `ECHO_LITE=ON`, no covers, Lite menus and layouts.
-- **Runtime Light / Dark:** Settings → Display → Theme. Light is the default.
-- **Runtime Landscape / Portrait / Portrait-flipped:** Settings → Display → Orientation,
-  320×170 or 170×320 (portrait can also be turned 180°).
-- **Lite roots:** All Songs and Favorites, no Home screen; Short Back at the root switches
-  them, Short Menu opens Now Playing and Long Back opens Settings. Flat 10×10 status blocks show
-  Bluetooth/playback and the playback mode on the right, with a segmented root meter on the left.
-  The large root icons are deferred.
-- **Lite Settings:** a five-row home — Random mode, Sleep timer, Sound, Display, System.
-  Compact rows use an 8 px colour dot on the left and scroll four at a time with the next row peeking;
-  direct values sit on the right. Random/Sleep are direct; Sound/Display/System open category
-  pages. Category dots in the category pages are gone; landscape keeps the half-badge and glyph.
-  The sleep row shows a live countdown. Settings is reached by Long Back.
-- **Favorites:** a song list of up to 256 path-hashed tracks, shown like All Songs (title +
-  duration, A-Z jump), played as its own queue and restored after a restart; long Play on any
-  track offers Add/Remove Favorites.
-- **Now Playing:** no cover frame or separate mode icon; Bluetooth, playback and the playback
-  mode are shown by the top-right status blocks. Short volume changes volume, double skips, long
-  press seeks; the flat progress bar is the seek feedback, with no time row or thumb.
-- **Boot and charging:** boot uses 200×112 landscape / 146×112 portrait stills with a 5px hard
-  shadow, no card or frame; charging keeps the 96×64 animation card.
-- **Sorting:** GB2312 Chinese sorts by pinyin and kana by romaji, interleaved with Latin
-  under A-Z; unknown kanji falls under `#`. Long Menu in a lettered list opens the A-Z/# jump.
-- **Controls:** volume single/double/long press in Now Playing; Short Menu opens Now Playing
-  (Up Next from Now Playing); Long Menu is A-Z in All Songs/Favorites, next row in A-Z, or
-  current-song actions in Now Playing; Long Back opens Settings and returns to the root inside
-  Settings. There is no double Menu or standalone playback panel.
-- **Space work:** Lite icon masks moved to a glyph face; Lite theme store/assets removed;
-  unused Lite paths dropped.
+- **Roots:** All Songs and Favorites; Home removed. Short Back switches them, Short Menu opens
+  Now Playing, Long Back opens Settings.
+- **Status row:** 10×10 blocks at y=8; Bluetooth, playback and an always-visible mode block
+  (purple random, gray loop, gray `1` loop-one). Inactive states are neutral gray; root lists add
+  the segmented All Songs/Favorites meter on the left.
+- **Settings:** five compact rows with distinct orange/indigo/blue/cyan/purple dots and
+  right-aligned values; four rows visible with the next peeking. Random/Sleep are direct;
+  Sound/Display/System open category pages. Date/Time uses the same card.
+- **Favorites:** path-hashed song list (up to 256), title + duration, A-Z jump, its own explicit
+  queue and resume, Add/Remove in the song actions.
+- **Now Playing:** no time row, progress thumb or separate mode icon; flat progress bar, lower
+  spectrum, transient volume number, and the same top status row as every screen.
+- **Sorting:** GB2312 Chinese by pinyin and kana by romaji, interleaved with Latin under A-Z.
+- **Review fixes:** category selection is remembered; Date/Time keeps unsaved edits across the
+  Now Playing overlay; 90/120-minute sleep countdown is formatted correctly; dark-mode list
+  separators use the theme divider; portrait All Songs shows nine rows; Settings list subpages
+  start below the status row.
+- **Space work:** Lite icon masks moved to a glyph face; Lite theme-store/assets removed; unused
+  paths dropped. Resident tables are close to full, so keep new table data small.
 - **Upstream:** current with EchoPod 0.13.2 when this README was written, including its playback,
   USB, FAT and HE-AAC fixes.
 
@@ -75,28 +86,24 @@ The boot chain, IDB, PMU firmware, fw2 and slot layout are not modified.
 
 ## UI previews
 
-> **These are design mockups, not screenshots of the device.** They show the intended layout and
-> palette; the real screen may differ in font rendering and final asset placement. The boot sheet
-> is rendered from the actual `LBOO` / `LBO2` assets, not a device photo.
+> These are current simulator screenshots at 2×, not device photos. They show the actual firmware
+> drawing; colours on a real panel may differ slightly. The boot sheet is rendered from the real
+> `LBOO` / `LBO2` assets.
 
-On the root lists, the left 28×10 segmented meter shows the active root; Bluetooth and playback
-use 10×10 blocks at the top right, with the mode block right of playback: random is purple with
-no glyph, loop is gray with no glyph, and Loop One is gray with a `1`. Now Playing uses the same
-top row. The card shadow carries the battery/charging colour.
-
-| Home (historical) | Now Playing |
+| All Songs | Settings |
 |---|---|
-| ![Home](docs/images/lite/home-final-v6.png) | ![Now Playing](docs/images/lite/now-playing-final-v3.png) |
+| ![All Songs](docs/images/lite/all-songs-current.png) | ![Settings](docs/images/lite/settings-current.png) |
 
-| Settings | Quick panel (historical) |
+| Now Playing | Date/Time |
 |---|---|
-| ![Settings](docs/images/lite/settings-final-v4.png) | ![Quick panel](docs/images/lite/quick-panel-final-v3.png) |
+| ![Now Playing](docs/images/lite/now-playing-current.png) | ![Date/Time](docs/images/lite/date-time-current.png) |
 
-![Boot](docs/images/lite/boot-shadow.png)
+| Portrait | Boot |
+|---|---|
+| ![Portrait](docs/images/lite/lite-portrait-current.png) | ![Boot](docs/images/lite/boot-shadow.png) |
 
-*Actual boot art (2×), not a device photo: 200×112 landscape and 146×112 portrait stills with a 5px hard shadow, no card or frame. Art: Mountain Dusk by ansimuz, CC0 1.0.*
-
-Design images (PNG): [docs/lite/mockups/README.md](docs/lite/mockups/README.md).
+Historical design sheets are kept in [docs/lite/mockups/README.md](docs/lite/mockups/README.md);
+they are not current screenshots.
 
 ## Build
 

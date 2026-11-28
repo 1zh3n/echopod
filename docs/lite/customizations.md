@@ -25,7 +25,7 @@ front end. The list below is the useful summary; the git history has the exact c
   lists use the original 28×10 segmented meter on the left; the active half is bright, the other
   divider gray. Now Playing uses the same top row with no separate mode icon.
 - Settings opens on five compact rows with an 8 px colour dot on the left: Random mode, Sleep
-  timer, Sound, Display, System. Random and Sleep are direct items with their values right-aligned;
+  timer, Sound, Display, System. The dots are orange, indigo, blue, cyan and purple in row order. Random and Sleep are direct items with their values right-aligned;
   the other three open category pages. The home scrolls four rows at a time with the next row
   peeking. Category dots in the category pages are removed.
 - Date/Time uses the Settings card with six rows and an in-card hint; the selected row is blue
