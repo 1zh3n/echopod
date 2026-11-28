@@ -520,6 +520,17 @@ ECHO_STARTUP_CODE Screen *app_screens_init(AppScreens *screens, AppScreensContex
     message_screen_init(&screens->no_library, no_library);
     bluetooth_screen_init(&screens->bluetooth, context.bluetooth, theme);
     now_playing_screen_init(&screens->now_playing, now_playing);
+#ifdef ECHO_LITE
+    FavoriteTracksConfig favorite_tracks = {
+        .library = &context.store->library,
+        .favorites = context.favorites,
+        .player = context.player,
+        .now_playing = &screens->now_playing.screen,
+        .theme = theme,
+        .toast = context.toast,
+    };
+    favorite_tracks_screen_init(&screens->favorite_tracks, favorite_tracks);
+#endif
     build_music(screens, context);
 #ifndef ECHO_LITE
     diagnostics_menu_build(screens, context.options, theme);

@@ -18,6 +18,9 @@
 #include "screens/date_time_screen.h"
 #include "screens/equalizer_screen.h"
 #include "screens/now_playing_screen.h"
+#ifdef ECHO_LITE
+#include "screens/favorite_tracks_screen.h"
+#endif
 #ifndef ECHO_LITE
 #include "screens/test_pattern_screen.h"
 #endif
@@ -77,6 +80,9 @@ typedef struct AppScreens {
     BrowsePool browse;
     NowPlayingScreen now_playing;
     UpNextScreen up_next;
+#ifdef ECHO_LITE
+    FavoriteTracksScreen favorite_tracks;
+#endif
     CoverFlowScreen cover_flow;
     BrowseEntry browse_entries[MUSIC_ITEM_COUNT];
 #ifndef ECHO_LITE

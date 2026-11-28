@@ -8,8 +8,10 @@ if(NOT ECHO_LITE)
     )
 endif()
 set(ECHO_THEME_SOURCES theme_assets.c theme_store.c)
+set(ECHO_FAVORITE_TRACKS_SOURCES)
 if(ECHO_LITE)
     set(ECHO_THEME_SOURCES)
+    list(APPEND ECHO_FAVORITE_TRACKS_SOURCES screens/favorite_tracks_screen.c)
 endif()
 add_library(echo_app STATIC
     app.c
@@ -23,6 +25,7 @@ add_library(echo_app STATIC
     default_theme.c
     favorites_store.c
     ${ECHO_DIAGNOSTICS_SOURCES}
+    ${ECHO_FAVORITE_TRACKS_SOURCES}
     equalizer_files.c
     equalizer_store.c
     folders_store.c

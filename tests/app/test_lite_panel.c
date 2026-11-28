@@ -12,8 +12,11 @@
 #include "hal/system.h"
 #include "library/pinyin.h"
 #include "library/sort_key.h"
+#include "favorites_store.h"
 #include "lite_animation.h"
+#include "player.h"
 #include "screens/charge_screen.h"
+#include "screens/favorite_tracks_screen.h"
 #include "screens/now_playing_screen.h"
 #include "settings/settings.h"
 #include "ui/lite_badge.h"
@@ -519,6 +522,99 @@ static void charging_screen_has_green_shadow_and_no_text(void)
     CHECK(pixels[85 * HAL_DISPLAY_WIDTH + 160] != DEFAULT_THEME.colors->header_background);
 }
 
+static FixtureLibrary favorite_fixture;
+static FavoritesStore favorite_store;
+static Player favorite_player;
+static FavoriteTracksScreen favorite_tracks;
+static Screen favorite_target;
+static Toast favorite_toast;
+
+static Screen *fresh_favorite_tracks(void)
+{
+    fake_hal_reset();
+    Library *library = fixture_library_open(&favorite_fixture);
+    favorites_store_load_tracks(&favorite_store, library);
+    player_init(&favorite_player, library);
+    favorite_target = (Screen){0};
+    favorite_toast = (Toast){0};
+    FavoriteTracksConfig config = {
+        .library = library,
+        .favorites = &favorite_store,
+        .player = &favorite_player,
+        .now_playing = &favorite_target,
+        .theme = &DEFAULT_THEME,
+        .toast = &favorite_toast,
+    };
+    Screen *screen = favorite_tracks_screen_init(&favorite_tracks, config);
+    screen->enter(screen->context, START_MS);
+    return screen;
+}
+
+static void two_song_favorites(void)
+{
+    favorites_store_toggle_track(&favorite_store, 0);
+    favorites_store_toggle_track(&favorite_store, 1);
+}
+
+static void favorite_tracks_lists_nothing_when_empty(void)
+{
+    Screen *screen = fresh_favorite_tracks();
+    FavoriteTracksScreen *favorites = screen->context;
+    CHECK_EQUAL(0, favorites->count);
+    ScreenAction action = screen->handle_key(
+        favorites, (KeyEvent){.key = KEY_PLAY, .gesture = KEY_GESTURE_PRESS}, START_MS);
+    CHECK_EQUAL(SCREEN_ACTION_NONE, action.type);
+}
+
+static void favorite_tracks_lists_two_favorites_in_title_order(void)
+{
+    Screen *screen = fresh_favorite_tracks();
+    two_song_favorites();
+    screen->enter(screen->context, START_MS);
+    FavoriteTracksScreen *favorites = screen->context;
+    CHECK_EQUAL(2, favorites->count);
+    LibraryTrack track;
+    CHECK(library_read_track(favorites->config.library, favorites->tracks[0], &track));
+    char title[FAVORITE_TRACK_LABEL_CAPACITY];
+    CHECK(library_read_string(favorites->config.library, track.title, title, sizeof title));
+    CHECK(strcmp(title, favorites->labels[0]) == 0);
+    CHECK(library_read_track(favorites->config.library, favorites->tracks[1], &track));
+    CHECK(library_read_string(favorites->config.library, track.title, title, sizeof title));
+    CHECK(strcmp(title, favorites->labels[1]) == 0);
+}
+
+static void starting_the_second_favorite_uses_the_favorites_queue(void)
+{
+    Screen *screen = fresh_favorite_tracks();
+    two_song_favorites();
+    screen->enter(screen->context, START_MS);
+    FavoriteTracksScreen *favorites = screen->context;
+    screen->handle_key(favorites,
+                       (KeyEvent){.key = KEY_VOLUME_UP, .gesture = KEY_GESTURE_PRESS},
+                       START_MS + 10);
+    ScreenAction action = screen->handle_key(
+        favorites, (KeyEvent){.key = KEY_PLAY, .gesture = KEY_GESTURE_PRESS}, START_MS + 20);
+    CHECK_EQUAL(SCREEN_ACTION_PUSH, action.type);
+    CHECK(action.target == &favorite_target);
+    PlayerStatus status = player_status(&favorite_player);
+    CHECK_EQUAL(favorites->tracks[1], status.track);
+    CHECK_EQUAL(2, status.place.total);
+}
+
+static void long_play_removes_a_song_favorite(void)
+{
+    Screen *screen = fresh_favorite_tracks();
+    two_song_favorites();
+    screen->enter(screen->context, START_MS);
+    FavoriteTracksScreen *favorites = screen->context;
+    screen->handle_key(favorites,
+                       (KeyEvent){.key = KEY_PLAY, .gesture = KEY_GESTURE_LONG_PRESS},
+                       START_MS + 10);
+    CHECK_EQUAL(1, favorites->count);
+    CHECK(favorite_toast.visible);
+    CHECK_EQUAL(1, favorite_store.favorites.count);
+}
+
 static void settings_starts_on_quick(void)
 {
     start_app_with_library();
@@ -967,6 +1063,10 @@ int main(void)
         TEST_CASE(charge_card_is_portrait),
         TEST_CASE(category_icons_are_40px),
         TEST_CASE(compact_icons_are_native_18px),
+        TEST_CASE(favorite_tracks_lists_nothing_when_empty),
+        TEST_CASE(favorite_tracks_lists_two_favorites_in_title_order),
+        TEST_CASE(starting_the_second_favorite_uses_the_favorites_queue),
+        TEST_CASE(long_play_removes_a_song_favorite),
         TEST_CASE(settings_starts_on_quick),
         TEST_CASE(landscape_settings_has_no_title),
         TEST_CASE(settings_long_menu_switches_category),
