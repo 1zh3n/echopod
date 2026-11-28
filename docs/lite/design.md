@@ -4,6 +4,7 @@ The final Lite design is a neo-brutalist interface with runtime Light/Dark and l
 The mockup sheet is [mockups/index.html](mockups/index.html).
 
 > The Home, Now Playing, Settings and Quick panel images are design mockups, not device screenshots.
+> The standalone Quick panel sheet is historical: Quick is now the first Settings category.
 > The boot image is rendered from the actual firmware assets.
 
 ## Palette
@@ -35,8 +36,8 @@ cyan `#35C7E8`, amber `#F59E0B`, success `#22C55E`.
   Their cards end 8 px above the bottom edge.
 - Now Playing uses 8 px top/sides/bottom. Content width is 304 px landscape and
   154 px portrait; the time row ends 8 px above the bottom edge.
-- Quick panel is an intentional two-card exception: 12 px horizontal gutter and
-  30/35 px vertical margins.
+- Settings Quick is an intentional two-card exception inside the normal content area:
+  12 px horizontal gutter and 30/58 px vertical starts.
 - Home is a centred composition; it has no outer panel gutter.
 
 ## Layout
@@ -70,8 +71,8 @@ cyan `#35C7E8`, amber `#F59E0B`, success `#22C55E`.
   A-Z. Unknown Hanzi/kanji keep their code point and fall under the final `#`.
 - The asset is `assets/pinyin.bin`; sorting uses the rescan scratch, not daily RAM. The
   selected row's section is read from the image on demand.
-- Double Menu in a lettered list opens the A-Z/# jump overlay; volume selects, Play jumps.
-  Volume hold only scrolls rows.
+- Long Menu in a lettered list opens the A-Z/# jump overlay; volume selects, Play jumps.
+  Volume hold only scrolls rows. There is no double Menu.
 
 ### Now Playing seek feedback
 
@@ -83,14 +84,17 @@ was prototyped and deferred because it duplicated that feedback and hid the Blue
 - Landscape: no text header; the half-badge, category dots and rows carry the category. The
   status meter is at (8, 4) and the category dots centre on y=8; the card stays at y=28;
   five 26 px rows.
-- Portrait: no large icon; category title, colour rule, two-line rows.
-  Sound 6×38 px, System 7×34 px in a 154×254 card at (8, 58). The card ends 8 px above
-  the bottom edge. The category title stays because portrait has no half-badge.
+- Portrait: no large icon; category title, colour rule, two-line rows. Seven 34 px rows are
+  visible in a 154×254 card at (8, 58). The card ends 8 px above the bottom edge. The category
+  title stays because portrait has no half-badge.
+- Categories: Quick (two cards), Sound (6 rows), Display (6 rows), System (10 rows).
 
-### Quick panel
+### Settings Quick
 
-- Landscape: two 140×112 cards side by side.
-- Portrait: two 146×118 cards stacked at y=35/167.
+- Landscape: playback-mode card at (12, 30) and sleep card at (168, 30), both 140×112.
+- Portrait: both 146×118, stacked at y=58 and y=186.
+- The category badge, glyph and dots animate on a category change; the cards and rows stay
+  static.
 
 ### Sleep timer
 

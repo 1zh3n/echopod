@@ -11,7 +11,7 @@
   <img src="docs/images/lite/home-final-v6.png" alt="Home screen in light and dark, landscape and portrait" width="100%">
 </p>
 
-<p align="center"><em>Home, Now Playing, Settings and Quick panel are design mockups (2×), not device screenshots. The boot sheet below is rendered from the actual firmware assets.</em></p>
+<p align="center"><em>Home, Now Playing, Settings and the historical Quick panel sheet are design mockups (2×), not device screenshots. Quick is now the first Settings category. The boot sheet below is rendered from the actual firmware assets.</em></p>
 
 ## What this is
 
@@ -43,21 +43,25 @@ Keep the official firmware and a known recovery path before flashing.
 - **Runtime Light / Dark:** Settings → Display → Theme. Light is the default.
 - **Runtime Landscape / Portrait / Portrait-flipped:** Settings → Display → Orientation,
   320×170 or 170×320 (portrait can also be turned 180°).
-- **Lite Home:** three self-drawn colour badges, no text, no page dots; a 28×8 status meter
-  at top-left shows Bluetooth and playback.
-- **Lite Settings:** one category per screen; double Menu switches category. Landscape drops the
-  text header, leaving the half-badge, category dots and rows; portrait keeps the category name.
-- **Quick panel:** two icon-only cards for playback mode and sleep timer; the timer shows a
-  second-by-second countdown and can wait for the current track before powering off.
+- **Lite Home:** three self-drawn colour badges — All Songs, Favorites, Settings — no text,
+  no page dots; a 28×8 status meter at top-left shows Bluetooth and playback.
+- **Lite Settings:** one category per screen; 400 ms long Menu switches category. Landscape
+  drops the text header, leaving the half-badge, category dots and rows; portrait keeps the
+  category name. Settings opens on Quick, with icon-only playback-mode and sleep-timer cards;
+  the timer shows a second-by-second countdown and can wait for the current track before
+  powering off.
+- **Favorites:** a song list of up to 256 path-hashed tracks, played as its own queue and
+  restored after a restart; long Play on any track offers Add/Remove Favorites.
 - **Now Playing:** 18 px native mode/state icons, no cover frame; a 14×8 Bluetooth-only
   chip sits next to the shuffle/play controls. Short volume changes volume, double skips,
   long press seeks; the progress/time display is the seek feedback.
 - **Boot and charging:** boot uses 200×112 landscape / 146×112 portrait stills with a 5px hard
   shadow, no card or frame; charging keeps the 96×64 animation card.
 - **Sorting:** GB2312 Chinese sorts by pinyin and kana by romaji, interleaved with Latin
-  under A-Z; unknown kanji falls under `#`. Double Menu in a lettered list opens the A-Z/# jump.
-- **Controls:** volume single/double/long press in Now Playing; double Menu opens the playback
-  panel; long Menu opens Settings; long Back in the panel goes Home.
+  under A-Z; unknown kanji falls under `#`. Long Menu in a lettered list opens the A-Z/# jump.
+- **Controls:** volume single/double/long press in Now Playing; short Menu opens Up Next, long
+  Menu opens Settings (or the A-Z/# jump in lettered lists); long Back goes Home. There is no
+  double Menu or standalone playback panel.
 - **Space work:** Lite icon masks moved to a glyph face; Lite theme store/assets removed;
   unused Lite paths dropped.
 - **Upstream:** current with EchoPod 0.13.2 when this README was written, including its playback,
@@ -79,7 +83,7 @@ play/pause icon already shows playback. The card shadow carries the battery/char
 |---|---|
 | ![Home](docs/images/lite/home-final-v6.png) | ![Now Playing](docs/images/lite/now-playing-final-v3.png) |
 
-| Settings | Quick panel |
+| Settings | Quick panel (historical) |
 |---|---|
 | ![Settings](docs/images/lite/settings-final-v4.png) | ![Quick panel](docs/images/lite/quick-panel-final-v3.png) |
 

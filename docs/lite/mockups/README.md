@@ -2,8 +2,9 @@
 
 These are the final design-reference sheets for the 512 MB Lite UI. The Home, Now Playing,
 Settings and Quick panel sheets are **design mockups, not device screenshots**; real font
-rendering and final asset placement can differ slightly. The boot sheet is rendered from the
-actual `LBOO` / `LBO2` firmware assets.
+rendering and final asset placement can differ slightly. The Quick panel sheet is historical:
+Quick is now the first Settings category. The boot sheet is rendered from the actual `LBOO` /
+`LBO2` firmware assets.
 
 The PNG files below are the design source. The HTML page is only a convenience index; it is not
 a screenshot source.
@@ -18,7 +19,7 @@ a screenshot source.
   on y=8. Portrait keeps the category name and ends its card 8 px above the bottom.
 - Now Playing: 8 px sides/top/bottom; content width 304/154; times end 8 px above the bottom.
 - Lists portrait: 154×272 card ending 8 px above the bottom.
-- Quick panel: intentional 12 px horizontal / 30–35 px vertical exception.
+- Settings Quick: intentional 12 px horizontal / 30–58 px vertical exception inside Settings.
 - Battery/charging: still carried by the card shadow.
 - Dark: border `#52525B`, shadow `#000000`.
 
@@ -34,7 +35,7 @@ a screenshot source.
 
 ![Settings](../../images/lite/settings-final-v4.png)
 
-## Quick panel
+## Quick panel (historical; now Settings Quick)
 
 ![Quick panel](../../images/lite/quick-panel-final-v3.png)
 
