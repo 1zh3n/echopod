@@ -3,7 +3,9 @@
 #include <string.h>
 
 #include "app/app.h"
+#include "browse_screen.h"
 #include "check.h"
+#include "core/i18n.h"
 #include "default_theme.h"
 #include "fake_hal.h"
 #include "fixture_library.h"
@@ -12,6 +14,7 @@
 #include "hal/system.h"
 #include "library/pinyin.h"
 #include "library/sort_key.h"
+#include "big_library.h"
 #include "favorites_store.h"
 #include "lite_animation.h"
 #include "player.h"
@@ -613,6 +616,68 @@ static void starting_the_second_favorite_uses_the_favorites_queue(void)
     CHECK_EQUAL(2, status.place.total);
 }
 
+static BrowsePool lite_actions_pool;
+
+static void song_actions_add_and_remove_in_lite(void)
+{
+    fake_hal_reset();
+    Library *library = fixture_library_open(&favorite_fixture);
+    favorites_store_load_tracks(&favorite_store, library);
+    player_init(&favorite_player, library);
+    favorite_target = (Screen){0};
+    favorite_toast = (Toast){0};
+    BrowsePoolConfig config = {
+        .library = library,
+        .theme = &DEFAULT_THEME,
+        .player = &favorite_player,
+        .now_playing = &favorite_target,
+        .favorites = &favorite_store,
+        .toast = &favorite_toast,
+    };
+    browse_pool_init(&lite_actions_pool, config);
+    ScreenAction opened = browse_pool_song_actions(&lite_actions_pool, 0, "Track", START_MS);
+    SongActions *actions = &lite_actions_pool.song_actions;
+    CHECK_EQUAL(SCREEN_ACTION_PUSH, opened.type);
+    CHECK(opened.target == &actions->menu.screen);
+    CHECK_EQUAL(3, actions->menu.config.item_count);
+    CHECK(strcmp(i18n_text(STR_MENU_ADD_TO_FAVORITES), actions->items[2].label) == 0);
+    ScreenAction result = actions->items[2].select(actions->items[2].context);
+    CHECK_EQUAL(SCREEN_ACTION_POP, result.type);
+    CHECK(favorites_store_contains_track(&favorite_store, 0));
+    browse_pool_song_actions(&lite_actions_pool, 0, "Track", START_MS);
+    CHECK(strcmp(i18n_text(STR_MENU_REMOVE_FROM_FAVORITES), actions->items[2].label) == 0);
+    actions->items[2].select(actions->items[2].context);
+    CHECK(!favorites_store_contains_track(&favorite_store, 0));
+}
+
+static void collecting_many_favorites_services_audio(void)
+{
+    static BigLibrary big;
+    fake_hal_reset();
+    Library *library = big_library_open(&big, 40, 4);
+    favorites_store_load_tracks(&favorite_store, library);
+    for (uint16_t track = 0; track < 20; track++) {
+        favorites_toggle(&favorite_store.favorites, library_track_key(library, track));
+    }
+    favorite_store.revision++;
+    player_init(&favorite_player, library);
+    favorite_target = (Screen){0};
+    favorite_toast = (Toast){0};
+    FavoriteTracksConfig config = {
+        .library = library,
+        .favorites = &favorite_store,
+        .player = &favorite_player,
+        .now_playing = &favorite_target,
+        .theme = &DEFAULT_THEME,
+        .toast = &favorite_toast,
+    };
+    Screen *screen = favorite_tracks_screen_init(&favorite_tracks, config);
+    int before = fake_hal_audio_service_count();
+    screen->enter(screen->context, START_MS);
+    CHECK(fake_hal_audio_service_count() > before);
+    big_library_close(&big);
+}
+
 static void long_play_removes_a_song_favorite(void)
 {
     Screen *screen = fresh_favorite_tracks();
@@ -1094,6 +1159,8 @@ int main(void)
         TEST_CASE(favorite_tracks_lists_two_favorites_in_title_order),
         TEST_CASE(starting_the_second_favorite_uses_the_favorites_queue),
         TEST_CASE(long_play_removes_a_song_favorite),
+        TEST_CASE(song_actions_add_and_remove_in_lite),
+        TEST_CASE(collecting_many_favorites_services_audio),
         TEST_CASE(settings_starts_on_quick),
         TEST_CASE(landscape_settings_has_no_title),
         TEST_CASE(settings_long_menu_switches_category),

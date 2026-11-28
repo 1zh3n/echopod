@@ -4,12 +4,14 @@
 #include <stdbool.h>
 
 #include "core/i18n.h"
+#include "hal/audio.h"
 #include "ui/label.h"
 #include "ui/lite_frame.h"
 #include "ui/list_navigation.h"
 
 enum {
-    DETAIL_MAX_WIDTH = 110
+    DETAIL_MAX_WIDTH = 110,
+    TRACKS_PER_AUDIO_SERVICE = 16
 };
 
 static int min_of(int first, int second)
@@ -31,6 +33,9 @@ static void collect_tracks(FavoriteTracksScreen *favorites)
     if (store->favorites.count > 0) {
         uint32_t total = library_count(library, LIBRARY_TITLE_ORDER);
         for (uint32_t position = 0; position < total; position++) {
+            if (position % TRACKS_PER_AUDIO_SERVICE == 0) {
+                hal_audio_service();
+            }
             uint16_t track = 0;
             if (library_read_index(library, LIBRARY_TITLE_ORDER, position, &track) &&
                 favorites_store_contains_track(store, track)) {

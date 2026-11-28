@@ -288,22 +288,16 @@ static Screen *long_press_track(BrowseScreen *browse, int index, uint16_t *track
     return action.target;
 }
 
-static void song_actions_add_then_remove_a_favorite(void)
+static void song_actions_keep_two_items_without_lite_favorites(void)
 {
     BrowseScreen *browse = opened(browse_root_query(BROWSE_ALL_SONGS));
     uint16_t track = 0;
     Screen *menu = long_press_track(browse, 1, &track);
     SongActions *actions = &pool.song_actions;
     CHECK(menu == &actions->menu.screen);
-    CHECK_EQUAL(3, actions->menu.config.item_count);
-    CHECK(strcmp(i18n_text(STR_MENU_ADD_TO_FAVORITES), actions->items[2].label) == 0);
-    ScreenAction result = actions->items[2].select(actions->items[2].context);
-    CHECK_EQUAL(SCREEN_ACTION_POP, result.type);
-    CHECK(favorites_store_contains_track(&favorites, track));
-    long_press_track(browse, 1, &track);
-    CHECK(strcmp(i18n_text(STR_MENU_REMOVE_FROM_FAVORITES), actions->items[2].label) == 0);
-    actions->items[2].select(actions->items[2].context);
-    CHECK(!favorites_store_contains_track(&favorites, track));
+    CHECK_EQUAL(2, actions->menu.config.item_count);
+    CHECK(strcmp(i18n_text(STR_MENU_PLAY_NEXT), actions->items[0].label) == 0);
+    CHECK(strcmp(i18n_text(STR_MENU_ADD_TO_UP_NEXT), actions->items[1].label) == 0);
 }
 
 static void song_actions_reach_every_track_list(void)
@@ -343,7 +337,7 @@ int main(void)
         TEST_CASE(scrolling_one_row_loads_only_the_new_row),
         TEST_CASE(coming_back_to_a_list_reads_nothing),
         TEST_CASE(a_favorite_added_elsewhere_shows_when_the_list_comes_back),
-        TEST_CASE(song_actions_add_then_remove_a_favorite),
+        TEST_CASE(song_actions_keep_two_items_without_lite_favorites),
         TEST_CASE(song_actions_reach_every_track_list),
         TEST_CASE(opening_another_list_at_the_same_level_shows_its_own_rows),
     };

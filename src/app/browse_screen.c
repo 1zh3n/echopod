@@ -576,6 +576,7 @@ static ScreenAction add_song_to_up_next(void *context)
     return queue_song(context, false);
 }
 
+#ifdef ECHO_LITE
 static ScreenAction toggle_song_favorite(void *context)
 {
     BrowsePool *pool = context;
@@ -589,6 +590,7 @@ static ScreenAction toggle_song_favorite(void *context)
     }
     return screen_action_pop();
 }
+#endif
 
 ScreenAction browse_pool_song_actions(void *context, uint16_t track, const char *title,
                                      uint32_t now_ms)
@@ -604,6 +606,7 @@ ScreenAction browse_pool_song_actions(void *context, uint16_t track, const char 
     actions->items[1] = (MenuItem){.label = i18n_text(STR_MENU_ADD_TO_UP_NEXT),
                                    .select = add_song_to_up_next,
                                    .context = pool};
+#ifdef ECHO_LITE
     bool favorite = pool->config.favorites != NULL &&
                     favorites_store_contains_track(pool->config.favorites, track);
     actions->items[2] =
@@ -611,6 +614,7 @@ ScreenAction browse_pool_song_actions(void *context, uint16_t track, const char 
                                               : STR_MENU_ADD_TO_FAVORITES),
                    .select = toggle_song_favorite,
                    .context = pool};
+#endif
     MenuConfig config = {.title = actions->title,
                          .items = actions->items,
                          .item_count = SONG_ACTION_COUNT,

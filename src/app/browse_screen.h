@@ -23,7 +23,11 @@ enum {
     BROWSE_LABEL_CAPACITY = 128,
     BROWSE_DETAIL_CAPACITY = 16,
     BROWSE_TITLE_CAPACITY = 96,
+#ifdef ECHO_LITE
     SONG_ACTION_COUNT = 3
+#else
+    SONG_ACTION_COUNT = 2
+#endif
 };
 
 typedef struct BrowseRowStamp {

@@ -510,8 +510,11 @@ ECHO_STARTUP_CODE Screen *app_screens_init(AppScreens *screens, AppScreensContex
     UpNextConfig up_next = {.library = &context.store->library,
                             .theme = theme,
                             .player = context.player,
+#ifdef ECHO_LITE
                             .song_actions = browse_pool_song_actions,
-                            .song_actions_context = &screens->browse};
+                            .song_actions_context = &screens->browse,
+#endif
+    };
     NowPlayingConfig now_playing = {.player = context.player,
                                     .library = &context.store->library,
                                     .theme = theme,
