@@ -96,15 +96,16 @@ void resume_state_encode(const ResumeState *state, uint8_t *bytes)
     put_u32(bytes, CHECKSUM_FIELD, checksum_of(bytes));
 }
 
-static bool header_valid(const uint8_t *bytes)
+static bool header_valid(const uint8_t *bytes, uint32_t length)
 {
     for (int index = 0; index < MAGIC_SIZE; index++) {
         if (bytes[MAGIC_FIELD + index] != MAGIC[index]) {
             return false;
         }
     }
+    uint32_t checksum_field = length - 4;
     return get_u16(bytes, VERSION_FIELD) == VERSION &&
-           get_u32(bytes, CHECKSUM_FIELD) == checksum_of(bytes);
+           get_u32(bytes, (int)checksum_field) == hash_update(HASH_START, bytes, checksum_field);
 }
 
 static bool group_valid(uint8_t group)
@@ -137,11 +138,13 @@ static PlayQueuePlan decode_plan(const uint8_t *bytes)
 
 bool resume_state_decode(const uint8_t *bytes, uint32_t length, ResumeState *state)
 {
-    if (length < RESUME_STATE_SIZE || !header_valid(bytes) || !modes_valid(bytes)) {
+    if ((length != RESUME_STATE_SIZE && length != RESUME_STATE_MIN_SIZE) ||
+        !header_valid(bytes, length) || !modes_valid(bytes)) {
         return false;
     }
     uint16_t count = get_u16(bytes, EXPLICIT_COUNT_FIELD);
-    if (count > PLAY_QUEUE_TRACK_LIST_MAX) {
+    uint32_t track_bytes = length - EXPLICIT_TRACKS_FIELD - 4;
+    if (count > PLAY_QUEUE_TRACK_LIST_MAX || count > track_bytes / 2) {
         return false;
     }
     *state = (ResumeState){

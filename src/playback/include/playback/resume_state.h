@@ -7,10 +7,11 @@
 
 enum {
 #ifdef ECHO_LITE
-    RESUME_STATE_SIZE = 1070
+    RESUME_STATE_SIZE = 1070,
 #else
-    RESUME_STATE_SIZE = 558
+    RESUME_STATE_SIZE = 558,
 #endif
+    RESUME_STATE_MIN_SIZE = 558
 };
 
 typedef struct ResumeState {

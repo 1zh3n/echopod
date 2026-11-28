@@ -682,9 +682,10 @@ static bool read_resume_state(ResumeState *state)
     if (!hal_file_open(&file, PLAYER_RESUME_PATH)) {
         return false;
     }
-    bool read = file.size >= RESUME_STATE_SIZE && hal_file_read(file, 0, bytes, sizeof bytes);
+    uint32_t length = file.size < RESUME_STATE_SIZE ? file.size : RESUME_STATE_SIZE;
+    bool read = file.size >= RESUME_STATE_MIN_SIZE && hal_file_read(file, 0, bytes, length);
     hal_file_close(&file);
-    return read && resume_state_decode(bytes, sizeof bytes, state);
+    return read && resume_state_decode(bytes, length, state);
 }
 
 static bool rebuild_queue(Player *player, const ResumeState *state)
