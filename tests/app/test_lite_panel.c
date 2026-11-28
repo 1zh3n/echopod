@@ -633,7 +633,8 @@ static void now_playing_has_no_time_or_thumb(void)
     CHECK(fake_hal_pixel(157, 148) == DEFAULT_THEME.colors->background);
     tap(KEY_VOLUME_UP);
     wait_ms(300);
-    CHECK(area_has_color(8, 154, 304, 14, DEFAULT_THEME.colors->text));
+    CHECK(!area_has_color(8, 154, 304, 14, DEFAULT_THEME.colors->text));
+    CHECK(area_has_color(8, 149, 304, 3, COLOR_RGB(255, 212, 59)));
 }
 
 static void now_playing_progress_keeps_the_bottom_status_gap(void)
@@ -648,8 +649,8 @@ static void now_playing_progress_keeps_the_bottom_status_gap(void)
     CHECK_EQUAL(149, progress->y);
     CHECK_EQUAL(3, progress->height);
     CHECK_EQUAL(170 - 18, progress->y + progress->height);
-    CHECK_EQUAL(154, times->y);
-    CHECK(times->y >= progress->y + progress->height);
+    CHECK_EQUAL(0, times->width);
+    CHECK_EQUAL(0, times->height);
     CHECK_EQUAL(88 + 57, lyrics->y + lyrics->height);
 
     Theme portrait = default_theme_for(true);
@@ -661,8 +662,8 @@ static void now_playing_progress_keeps_the_bottom_status_gap(void)
     CHECK_EQUAL(298, progress->y);
     CHECK_EQUAL(4, progress->height);
     CHECK_EQUAL(320 - 18, progress->y + progress->height);
-    CHECK_EQUAL(304, times->y);
-    CHECK(times->y >= progress->y + progress->height);
+    CHECK_EQUAL(0, times->width);
+    CHECK_EQUAL(0, times->height);
     CHECK_EQUAL(106 + 188, lyrics->y + lyrics->height);
 }
 

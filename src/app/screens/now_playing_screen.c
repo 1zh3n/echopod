@@ -665,7 +665,7 @@ static void lite_layout(Layout *layout, bool portrait)
         layout->boxes[THEME_LAYOUT_FORMAT] = (Rect){0, 0, 0, 0};
         layout->boxes[THEME_LAYOUT_LYRICS] = (Rect){8, 106, 154, 188};
         layout->boxes[THEME_LAYOUT_PROGRESS] = (Rect){8, 298, 154, 4};
-        layout->boxes[THEME_LAYOUT_TIMES] = (Rect){8, 304, 154, 14};
+        layout->boxes[THEME_LAYOUT_TIMES] = (Rect){0, 0, 0, 0};
     } else {
         layout->boxes[THEME_LAYOUT_TITLE] = (Rect){8, 24, 200, 22};
         layout->boxes[THEME_LAYOUT_ARTIST] = (Rect){8, 48, 304, 18};
@@ -673,7 +673,7 @@ static void lite_layout(Layout *layout, bool portrait)
         layout->boxes[THEME_LAYOUT_FORMAT] = (Rect){224, 8, 88, 18};
         layout->boxes[THEME_LAYOUT_LYRICS] = (Rect){8, 88, 304, 57};
         layout->boxes[THEME_LAYOUT_PROGRESS] = (Rect){8, 149, 304, 3};
-        layout->boxes[THEME_LAYOUT_TIMES] = (Rect){8, 154, 304, 14};
+        layout->boxes[THEME_LAYOUT_TIMES] = (Rect){0, 0, 0, 0};
         layout->aligns[THEME_LAYOUT_FORMAT] = THEME_ALIGN_RIGHT;
     }
     layout->boxes[THEME_LAYOUT_COVER] = (Rect){0, 0, 0, 0};
@@ -911,6 +911,7 @@ static void draw_progress(const NowPlayingScreen *now_playing, Canvas *canvas, c
 #endif
 }
 
+#ifndef ECHO_LITE
 static void draw_right_aligned(Canvas *canvas, TextStyle style, Rect area, const char *text)
 {
     int width = text_width(style.font, text);
@@ -922,19 +923,7 @@ static void draw_times(const NowPlayingScreen *now_playing, Canvas *canvas, cons
 {
     const Theme *theme = now_playing->config.theme;
     Rect area = layout->boxes[THEME_LAYOUT_TIMES];
-#ifdef ECHO_LITE
-    TextStyle style = {.font = theme->fonts.small, .color = theme->colors->text};
-#else
     TextStyle style = {.font = theme->fonts.small, .color = theme->colors->text_secondary};
-#endif
-#ifdef ECHO_LITE
-    if (showing(now_playing, NOW_PLAYING_FEEDBACK_VOLUME)) {
-        char level[TIME_CAPACITY];
-        StringBuilder text = string_builder_make(level, sizeof level);
-        string_builder_append_unsigned(&text, now_playing->status.volume);
-        draw_right_aligned(canvas, style, area, level);
-    }
-#else
     uint32_t position_ms = shown_position(now_playing);
     uint32_t duration_ms = now_playing->status.duration_ms;
     uint32_t remaining_ms = duration_ms > position_ms ? duration_ms - position_ms : 0;
@@ -950,8 +939,8 @@ static void draw_times(const NowPlayingScreen *now_playing, Canvas *canvas, cons
     }
     label_draw(canvas, style, (Label){.area = area, .text = elapsed});
     draw_right_aligned(canvas, style, area, remaining);
-#endif
 }
+#endif
 #ifndef ECHO_LITE
 static void modes_text(const PlayerStatus *status, char *buffer, size_t capacity)
 {
@@ -1351,7 +1340,9 @@ static void draw(void *context, Canvas *canvas)
     draw_badge(now_playing, canvas, &layout);
     draw_track_text(now_playing, canvas, &layout);
     draw_progress(now_playing, canvas, &layout);
+#ifndef ECHO_LITE
     draw_times(now_playing, canvas, &layout);
+#endif
 #ifdef ECHO_LITE
     if (layout.lyrics) {
         draw_lyrics(now_playing, canvas, &layout);
