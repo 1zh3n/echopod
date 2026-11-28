@@ -1,6 +1,7 @@
 # Settings and the Quick Panel merge
 
-Status: **assessment, not implemented.** Recorded 2026-11-28.
+Status: **direction approved: Settings absorbs the Quick Panel; details open, not implemented.**
+Recorded 2026-11-28.
 
 ## Current structure
 
@@ -12,6 +13,36 @@ Status: **assessment, not implemented.** Recorded 2026-11-28.
 
 The question: upgrade the Quick Panel into a settings menu and let it replace the current
 Settings.
+
+## Direction
+
+Settings absorbs the Quick Panel. The standalone Quick Panel is removed; its two cards become a
+**Quick** category at the front of Settings.
+
+Proposed simplified Settings:
+
+| Category | Rows |
+|---|---|
+| Quick | playback mode card, sleep timer card |
+| Sound | gain, output, filter, balance, Bluetooth level, equalizer |
+| Display | theme, orientation, brightness, timeout, animations, lyrics |
+| System | language, date/time, auto-off, Bluetooth, USB mode, USB prompt, music folders, rescan, swap volume, power on |
+
+This removes the two-row Buttons category and the three-row Library category. Lyrics moves to
+Display; music folders and rescan move to System; the Menu-key row stays hidden. The Sleep row is
+removed from System because the Quick card owns it. Four category dots replace five.
+
+The Quick category is still a `MenuScreen` list with two items; Volume selects a card and Play
+changes its value. The scene draws those two rows as the existing large cards. No separate
+key handler is needed.
+
+Key entry proposal:
+
+- Short Menu: Now Playing / Up Next, immediately.
+- Long Menu: Settings Quick from Home, Now Playing and non-lettered lists; A-Z in lettered
+  lists; next category in Settings; no action in the A-Z overlay.
+- No double Menu. Lite long Menu threshold 400 ms.
+- Settings opens at Quick; Back returns the opener. The Home Settings card remains.
 
 ## Options
 
@@ -49,20 +80,17 @@ Settings.
 
 ## Recommendation
 
-Do **C** if the goal is one settings overlay: Settings gains a Quick category, the standalone
-Quick Panel disappears, and Long Menu can open it from Now Playing. This preserves full
-Settings and keeps playback mode/sleep one step closer.
-
-Do **A** if the goal is only a faster Settings entry: add a Settings card to the existing Quick
-Panel and keep both screens.
-
-Do **D** only if the full Settings UI will be redesigned anyway; do not do it as a shortcut.
+**C is chosen:** Settings gains a Quick category, the standalone Quick Panel disappears, and
+Long Menu opens Settings/Quick from Now Playing. This preserves full Settings and keeps playback
+mode/sleep one step closer. A is only the fallback if the Settings redesign has to be postponed;
+D is rejected.
 
 ## Effects of C
 
-- Settings category count 5 -> 6; dots and group row tables change.
-- Playback mode and sleep move from the panel into the Quick category; their card drawing and
-  key handling need a second home.
+- Settings category count becomes four (Quick / Sound / Display / System); dots and group row
+  tables change. The old Buttons and Library groups are folded into System/Display.
+- Playback mode and sleep move from the panel into the Quick category; their card drawing moves
+  with them.
 - Remove the panel from the overlay set and from the navigation key table.
 - Long Menu in Now Playing becomes Settings/Quick instead of a separate panel.
 - Tests: category transitions, quick card values, Long Menu/Back from Now Playing, and no

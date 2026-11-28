@@ -116,24 +116,23 @@ and moves the same actions to long Menu:
 
 | Screen | Short Menu | Long Menu |
 |---|---|---|
-| Home | Now Playing | no action |
+| Home | Now Playing | Settings / Quick |
 | Lettered list | Now Playing | A-Z/# overlay |
-| Now Playing | Up Next | Quick Panel |
+| Other lists | Now Playing | Settings / Quick |
+| Now Playing | Up Next | Settings / Quick |
 | Settings | Now Playing | next category |
-| Playback panel | close | no action |
-| Up Next | Now Playing | no action |
+| Up Next | Now Playing | Settings / Quick |
 | A-Z/# overlay | close | close |
 
 - No double Menu. Short Menu acts immediately, so the 200 ms wait disappears.
-- Settings is no longer opened from anywhere by Menu. It is reached from the Home Settings
-  card, which matches its low frequency; Back returns Home.
+- The standalone Quick Panel is removed: Settings absorbs its two cards as the Quick category.
+  Long Menu opens Settings at Quick from Home, Now Playing and non-lettered lists.
+- Lettered lists keep Long Menu for A-Z; Settings remains reachable from Home.
+- Settings Back returns the opener. The Home Settings card stays.
 - Lite lowers the Menu long-press threshold from 600 ms to 400 ms. Volume long press stays at
   1000 ms.
-- The panel changes from `KEY_MENU` closing on any gesture to closing only on short Menu.
-- Long Menu is a group/navigation key, not a global Settings shortcut.
-- If Settings later needs quicker access, add it to the Quick Panel rather than restoring the
-  double-Menu wait.
+- Long Play remains the track context action; it is a no-op in Now Playing, Settings and Up Next.
 
-Assessed risks: the group actions are slower than double tap, Settings from a deep list needs
-Long Back -> Home -> Settings, and long press is less discoverable. The proposal is recorded,
-not implemented.
+Assessed risks: the group actions are slower than double tap, Settings from a lettered list
+needs Long Back -> Home -> Settings, and long press is less discoverable. The proposal is
+recorded, not implemented.
