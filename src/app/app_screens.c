@@ -257,7 +257,7 @@ static void build_settings(AppScreens *screens, AppScreensContext context)
                              .theme = context.theme};
     folders_screen_init(&screens->folders, folders);
 #ifdef ECHO_LITE
-    screens->settings_home = settings_screens_init(&screens->settings, settings, context.theme);
+    settings_screens_init(&screens->settings, settings, context.theme);
     screens->folders.screen.settings = true;
     screens->date_time.screen.settings = true;
 #else
@@ -382,6 +382,10 @@ ECHO_STARTUP_CODE Screen *app_screens_init(AppScreens *screens, AppScreensContex
                                     .covers = context.covers,
                                     .up_next = up_next_screen_init(&screens->up_next, up_next),
                                     .options = context.settings->settings.options};
+#ifdef ECHO_LITE
+    now_playing.song_actions = browse_pool_song_actions;
+    now_playing.song_actions_context = &screens->browse;
+#endif
     EqualizerConfig equalizer = {
         .store = context.equalizer, .toast = context.toast, .theme = theme};
     now_playing.equalizer = equalizer_screen_init(&screens->equalizer, equalizer);

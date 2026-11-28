@@ -525,6 +525,19 @@ static ScreenAction handle_key(void *context, KeyEvent event, uint32_t now_ms)
     return action;
 }
 
+#ifdef ECHO_LITE
+static ScreenAction long_menu(void *context, uint32_t now_ms)
+{
+    NowPlayingScreen *now_playing = context;
+    if (now_playing->config.song_actions == NULL || !now_playing->status.has_track) {
+        return screen_action_none();
+    }
+    return now_playing->config.song_actions(now_playing->config.song_actions_context,
+                                            now_playing->status.track, now_playing->title,
+                                            now_ms);
+}
+
+#endif
 static void enter(void *context, uint32_t now_ms)
 {
     NowPlayingScreen *now_playing = context;
@@ -1373,6 +1386,11 @@ Screen *now_playing_screen_init(NowPlayingScreen *now_playing, NowPlayingConfig 
         .title = i18n_text(STR_MENU_NOW_PLAYING),
         .context = now_playing,
         .hold_volume_keys = true,
+#ifdef ECHO_LITE
+        .long_menu_enabled = config.song_actions != NULL,
+        .long_menu_context = now_playing,
+        .long_menu = long_menu,
+#endif
 #ifdef ECHO_LITE
         .overlay = true,
 #endif

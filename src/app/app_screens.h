@@ -84,7 +84,6 @@ typedef struct AppScreens {
 #ifdef ECHO_LITE
     TrackListScreen favorite_tracks;
     FavoriteTrackSource favorite_source;
-    Screen *settings_home;
 #endif
     CoverFlowScreen cover_flow;
     BrowseEntry browse_entries[MUSIC_ITEM_COUNT];

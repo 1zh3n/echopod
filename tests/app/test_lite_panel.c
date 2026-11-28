@@ -490,13 +490,13 @@ static void back_from_now_playing_returns_to_favorites_root(void)
     CHECK(title_is("Favorites"));
 }
 
-static void long_menu_on_favorites_opens_settings(void)
+static void long_back_on_favorites_opens_settings(void)
 {
     start_app_with_library();
     tap(KEY_BACK);
     wait_ms(300);
     CHECK(title_is("Favorites"));
-    hold(KEY_MENU);
+    hold(KEY_BACK);
     wait_ms(200);
     CHECK(title_is("Settings"));
 }
@@ -561,7 +561,8 @@ static void the_sleep_timer_waits_for_the_current_track(void)
     fake_hal_set_battery(
         (HalBattery){.known = true, .percent = 80, .millivolts = 3900, .usb_power = false});
     open_all_songs_and_play();
-    hold(KEY_MENU);
+    hold(KEY_BACK);
+    wait_ms(200);
     move_down(1);
     tap(KEY_PLAY);
 
@@ -579,7 +580,7 @@ static void the_sleep_quick_card_counts_down(void)
 {
     start_app_with_library();
     open_all_songs_and_play();
-    hold(KEY_MENU);
+    hold(KEY_BACK);
     wait_ms(200);
     CHECK(title_is("Settings"));
     move_down(1);
@@ -950,27 +951,31 @@ static void short_menu_in_settings_returns_to_now_playing(void)
     start_app_with_library();
     open_all_songs_and_play();
     int depth = app_screen_depth();
-    hold(KEY_MENU);
+    hold(KEY_BACK);
+    wait_ms(200);
     CHECK(title_is("Settings"));
     CHECK_EQUAL(depth + 1, app_screen_depth());
     tap(KEY_MENU);
     CHECK(title_is("Now Playing"));
     CHECK_EQUAL(depth, app_screen_depth());
-    hold(KEY_MENU);
+    hold(KEY_BACK);
+    wait_ms(200);
     CHECK(title_is("Settings"));
     tap(KEY_MENU);
     CHECK(title_is("Now Playing"));
     CHECK_EQUAL(depth, app_screen_depth());
 }
 
-static void long_menu_on_now_playing_opens_settings(void)
+static void long_menu_on_now_playing_opens_song_actions(void)
 {
     start_app_with_library();
     open_all_songs_and_play();
+    int depth = app_screen_depth();
     hold(KEY_MENU);
-    CHECK(title_is("Settings"));
+    CHECK_EQUAL(depth + 1, app_screen_depth());
     tap(KEY_BACK);
-    CHECK(title_is("All Songs"));
+    CHECK(title_is("Now Playing"));
+    CHECK_EQUAL(depth, app_screen_depth());
 }
 
 static void long_play_on_now_playing_does_nothing(void)
@@ -986,7 +991,8 @@ static void settings_menu_goes_to_now_playing_and_drops_settings(void)
 {
     start_app_with_library();
     open_all_songs_and_play();
-    hold(KEY_MENU);
+    hold(KEY_BACK);
+    wait_ms(200);
     CHECK(title_is("Settings"));
     tap(KEY_MENU);
     wait_ms(300);
@@ -1012,7 +1018,7 @@ static void long_menu_opens_and_closes_section_jump(void)
     CHECK(title_is("All Songs"));
 }
 
-static void menu_closes_section_jump_without_opening_now_playing(void)
+static void short_menu_in_az_opens_now_playing(void)
 {
     start_app_with_library();
     open_all_songs_and_play();
@@ -1021,9 +1027,42 @@ static void menu_closes_section_jump_without_opening_now_playing(void)
     hold(KEY_MENU);
     CHECK(title_is("A-Z"));
     tap(KEY_MENU);
+    CHECK(title_is("Now Playing"));
+}
+
+static void long_menu_in_az_moves_one_row(void)
+{
+    start_app_with_library();
+    hold(KEY_MENU);
+    CHECK(title_is("A-Z"));
+    hold(KEY_MENU);
+    wait_ms(100);
+    CHECK(title_is("A-Z"));
+    tap(KEY_PLAY);
     CHECK(title_is("All Songs"));
-    wait_ms(300);
-    CHECK(title_is("All Songs"));
+}
+
+static void long_back_in_az_opens_settings(void)
+{
+    start_app_with_library();
+    hold(KEY_MENU);
+    CHECK(title_is("A-Z"));
+    hold(KEY_BACK);
+    wait_ms(200);
+    CHECK(title_is("Settings"));
+}
+
+static void long_menu_in_up_next_does_nothing(void)
+{
+    start_app_with_library();
+    open_all_songs_and_play();
+    tap(KEY_MENU);
+    CHECK(title_is("Up Next"));
+    int depth = app_screen_depth();
+    hold(KEY_MENU);
+    wait_ms(100);
+    CHECK(title_is("Up Next"));
+    CHECK_EQUAL(depth, app_screen_depth());
 }
 
 static void section_jump_play_returns_to_the_list(void)
@@ -1050,26 +1089,11 @@ static void long_back_in_settings_returns_to_root(void)
 {
     start_app_with_library();
     open_all_songs_and_play();
-    hold(KEY_MENU);
+    hold(KEY_BACK);
+    wait_ms(200);
     CHECK(title_is("Settings"));
     hold(KEY_BACK);
     CHECK(title_is("All Songs"));
-}
-
-static void long_menu_in_settings_opens_next_category(void)
-{
-    start_app_with_library();
-    open_all_songs_and_play();
-    hold(KEY_MENU);
-    CHECK(title_is("Settings"));
-    hold(KEY_MENU);
-    CHECK(title_is("Settings"));
-    tap(KEY_BACK);
-    CHECK(title_is("All Songs"));
-    tap(KEY_MENU);
-    CHECK(title_is("Now Playing"));
-    tap(KEY_MENU);
-    CHECK(title_is("Up Next"));
 }
 
 static void open_settings_display(void)
@@ -1245,16 +1269,18 @@ int main(void)
         TEST_CASE(all_songs_long_play_opens_song_actions),
 
         TEST_CASE(short_menu_in_settings_returns_to_now_playing),
-        TEST_CASE(long_menu_on_now_playing_opens_settings),
+        TEST_CASE(long_menu_on_now_playing_opens_song_actions),
         TEST_CASE(long_play_on_now_playing_does_nothing),
         TEST_CASE(settings_menu_goes_to_now_playing_and_drops_settings),
         TEST_CASE(lite_ignores_the_menu_key_setting),
         TEST_CASE(long_menu_opens_and_closes_section_jump),
-        TEST_CASE(menu_closes_section_jump_without_opening_now_playing),
+        TEST_CASE(short_menu_in_az_opens_now_playing),
+        TEST_CASE(long_menu_in_az_moves_one_row),
+        TEST_CASE(long_back_in_az_opens_settings),
+        TEST_CASE(long_menu_in_up_next_does_nothing),
         TEST_CASE(section_jump_play_returns_to_the_list),
         TEST_CASE(short_menu_in_a_lettered_list_opens_now_playing),
         TEST_CASE(long_back_in_settings_returns_to_root),
-        TEST_CASE(long_menu_in_settings_opens_next_category),
         TEST_CASE(gear_glyph_draws_only_white_outline),
         TEST_CASE(every_lite_icon_draws),
         TEST_CASE(badge_draws_flat_circle_and_half),
@@ -1299,7 +1325,7 @@ int main(void)
         TEST_CASE(settings_from_favorites_returns_to_favorites),
         TEST_CASE(long_back_on_now_playing_opens_settings),
         TEST_CASE(back_from_now_playing_returns_to_favorites_root),
-        TEST_CASE(long_menu_on_favorites_opens_settings),
+        TEST_CASE(long_back_on_favorites_opens_settings),
         TEST_CASE(root_status_meter_tracks_bluetooth),
         TEST_CASE(now_playing_uses_bt_chip_with_controls),
         TEST_CASE(hold_the_volume_key_seeks_without_a_hold_bar),

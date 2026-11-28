@@ -85,7 +85,6 @@ struct SettingsScreens {
 #ifdef ECHO_LITE
     MenuScreen home;
     MenuItem home_items[5];
-    SettingsGroupLink links[SETTINGS_GROUP_COUNT];
 #else
     MenuScreen group;
     SettingsGroupLink links[SETTINGS_GROUP_COUNT];

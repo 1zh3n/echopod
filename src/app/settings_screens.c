@@ -897,18 +897,18 @@ static ScreenAction open_group(void *context)
 #ifdef ECHO_LITE
 static ScreenAction open_category(void *context)
 {
-    SettingsGroupLink *link = context;
-    SettingsScreens *screens = link->owner;
-    if (link->group >= SETTINGS_GROUP_COUNT) {
+    SettingsScreens *screens = (SettingsScreens *)((uintptr_t)context & ~(uintptr_t)0x3);
+    int group = (int)((uintptr_t)context & 0x3);
+    if (group >= SETTINGS_GROUP_COUNT) {
         return screen_action_none();
     }
-    const SettingsGroupRows *rows = &GROUPS[link->group];
-    screens->shown = link->group;
+    const SettingsGroupRows *rows = &GROUPS[group];
+    screens->shown = (uint8_t)group;
     fill_rows(screens, screens->rows, rows->first, rows->count);
     screens->menu.config.items = screens->rows;
     screens->menu.config.item_count = rows->count;
     screens->menu.list.top = 0;
-    list_view_select(&screens->menu.list, screens->selected[link->group], 0);
+    list_view_select(&screens->menu.list, screens->selected[group], 0);
     screens->menu.list.visible_rows =
         theme_is_portrait(screens->theme) ? 7 : SETTINGS_LIST_ROWS;
     return screen_action_push(&screens->menu.screen);
@@ -1002,7 +1002,6 @@ Screen *settings_screens_init(SettingsScreens *screens, SettingsContext context,
     screens->shown = SETTINGS_SOUND;
     for (int group = 0; group < SETTINGS_GROUP_COUNT; group++) {
         screens->selected[group] = 0;
-        screens->links[group] = (SettingsGroupLink){.owner = screens, .group = (uint8_t)group};
     }
     screens->home_items[0] = (MenuItem){.label = i18n_text(STR_SETTINGS_PLAYBACK_MODE),
                                         .select = quick_playback_mode,
@@ -1014,15 +1013,15 @@ Screen *settings_screens_init(SettingsScreens *screens, SettingsContext context,
                                         .value = quick_sleep_value};
     screens->home_items[2] = (MenuItem){.label = i18n_text(STR_SETTINGS_SOUND),
                                         .select = open_category,
-                                        .context = &screens->links[SETTINGS_SOUND],
+                                        .context = (void *)((uintptr_t)screens | SETTINGS_SOUND),
                                         .opens = true};
     screens->home_items[3] = (MenuItem){.label = i18n_text(STR_SETTINGS_DISPLAY),
                                         .select = open_category,
-                                        .context = &screens->links[SETTINGS_DISPLAY],
+                                        .context = (void *)((uintptr_t)screens | SETTINGS_DISPLAY),
                                         .opens = true};
     screens->home_items[4] = (MenuItem){.label = i18n_text(STR_SETTINGS_SYSTEM),
                                         .select = open_category,
-                                        .context = &screens->links[SETTINGS_SYSTEM],
+                                        .context = (void *)((uintptr_t)screens | SETTINGS_SYSTEM),
                                         .opens = true};
     MenuConfig home = {.title = i18n_text(STR_MENU_SETTINGS),
                        .items = screens->home_items,

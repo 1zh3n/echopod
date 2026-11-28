@@ -99,7 +99,13 @@ static ScreenAction handle_key(void *context, KeyEvent event, uint32_t now_ms)
         return event.gesture == KEY_GESTURE_LONG_PRESS ? screen_action_pop_to_root()
                                                        : screen_action_pop();
     case KEY_MENU:
-        return screen_action_pop();
+        if (event.gesture == KEY_GESTURE_LONG_PRESS) {
+            move_selection(jump, theme_is_portrait(jump->theme) ? PORTRAIT_COLUMNS
+                                                                : LANDSCAPE_COLUMNS);
+        } else if (event.gesture == KEY_GESTURE_PRESS) {
+            return screen_action_pop();
+        }
+        return screen_action_none();
     case KEY_POWER:
         return screen_action_none();
     }

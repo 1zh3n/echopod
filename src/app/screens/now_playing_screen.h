@@ -66,6 +66,11 @@ typedef struct NowPlayingConfig {
     CoverCache *covers;
     Screen *up_next;
     Screen *equalizer;
+#ifdef ECHO_LITE
+    ScreenAction (*song_actions)(void *context, uint16_t track, const char *title,
+                                 uint32_t now_ms);
+    void *song_actions_context;
+#endif
     const uint8_t *options;
 } NowPlayingConfig;
 
