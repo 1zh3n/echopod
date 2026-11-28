@@ -178,6 +178,41 @@ static void an_empty_favorites_list_answers_without_reading_the_library(void)
     CHECK_EQUAL(0, fixture.memory.reads);
 }
 
+static void toggling_a_track_adds_it_and_saves(void)
+{
+    fake_hal_reset();
+    Library *library = fixture_library_open(&fixture);
+    favorites_store_load_tracks(&favorites, library);
+    FavoriteResult result = favorites_store_toggle_track(&favorites, 0);
+    CHECK_EQUAL(FAVORITE_ADDED, result.change);
+    CHECK(result.saved);
+    CHECK(favorites_store_contains_track(&favorites, 0));
+    CHECK(!favorites_store_contains_track(&favorites, 1));
+    uint32_t size = 0;
+    CHECK(fake_hal_file_bytes(FAVORITE_TRACKS_PATH, &size) != NULL);
+    CHECK(fake_hal_file_bytes(FAVORITES_STORE_PATH, &size) == NULL);
+    favorites_store_load_tracks(&favorites, library);
+    CHECK(favorites_store_contains_track(&favorites, 0));
+    CHECK_EQUAL(FAVORITE_REMOVED, favorites_store_toggle_track(&favorites, 0).change);
+    favorites_store_load_tracks(&favorites, library);
+    CHECK(!favorites_store_contains_track(&favorites, 0));
+}
+
+static void a_full_track_list_refuses_new_tracks(void)
+{
+    fake_hal_reset();
+    Library *library = fixture_library_open(&fixture);
+    favorites_store_load_tracks(&favorites, library);
+    for (uint32_t index = 0; index < FAVORITES_CAPACITY; index++) {
+        favorites.favorites.keys[index] = 0x1000u + index;
+    }
+    favorites.favorites.count = FAVORITES_CAPACITY;
+    FavoriteResult result = favorites_store_toggle_track(&favorites, 0);
+    CHECK_EQUAL(FAVORITE_FULL, result.change);
+    CHECK(result.saved);
+    CHECK(!favorites_store_contains_track(&favorites, 0));
+}
+
 static const char COVERS_PATH[] = "/.echo/covers.bin";
 
 enum {
@@ -284,6 +319,8 @@ int main(void)
         TEST_CASE(toggling_an_album_adds_it_and_saves),
         TEST_CASE(favorites_are_loaded_again),
         TEST_CASE(an_empty_favorites_list_answers_without_reading_the_library),
+        TEST_CASE(toggling_a_track_adds_it_and_saves),
+        TEST_CASE(a_full_track_list_refuses_new_tracks),
         TEST_CASE(the_covers_file_is_sized_with_room_to_spare),
         TEST_CASE(a_covers_file_that_fits_the_albums_is_left_alone),
         TEST_CASE(a_covers_file_grows_for_more_albums),

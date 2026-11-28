@@ -7,6 +7,7 @@
 #include "library/library.h"
 
 extern const char FAVORITES_STORE_PATH[];
+extern const char FAVORITE_TRACKS_PATH[];
 
 typedef enum FavoriteChange {
     FAVORITE_ADDED,
@@ -28,4 +29,7 @@ typedef struct FavoritesStore {
 void favorites_store_load(FavoritesStore *store, const Library *library);
 bool favorites_store_contains_album(const FavoritesStore *store, uint16_t album);
 FavoriteResult favorites_store_toggle_album(FavoritesStore *store, uint16_t album);
+void favorites_store_load_tracks(FavoritesStore *store, const Library *library);
+bool favorites_store_contains_track(const FavoritesStore *store, uint16_t track);
+FavoriteResult favorites_store_toggle_track(FavoritesStore *store, uint16_t track);
 const char *favorites_store_message(FavoriteResult result);
