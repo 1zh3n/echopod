@@ -21,7 +21,7 @@ The 512 MB updater scans the card root for:
 It does **not** scan `HIFIEC90.IMG`. Copy the build to the card root and rename it, for example:
 
 ```text
-build/release-lite/HIFIEC90.IMG  ->  /MINIV950.IMG
+build/release-lite/HIFIEC90.IMG  ->  /MINIV951.IMG
 ```
 
 Then use the player's updater.
@@ -36,9 +36,12 @@ cmake --build --preset release-lite
 ## Current build
 
 ```text
-image:  MINIV950.IMG
-sha256: 1fe93f7ce39bc760a8276f1ba2003b639ca080633104d1b46386964b1b2e7aec
+image:  MINIV951.IMG
+sha256: c31bc36b6073ab3e38c07a2c536e0e009423922672a62d314b006b832030230a
 ```
+
+`MINIV951` puts the mode block immediately right of the playback block, so the top-right group
+is `[Bluetooth] [play] [mode]`.
 
 `MINIV950` doubles the Settings home cards to 304×50 landscape / 154×96 portrait and lets the
 list scroll two cards at a time. The playback mode moves into the status bar as a purple 10×10
@@ -101,7 +104,7 @@ The incremental images for this pass are:
 | `MINIV945` | flat 10×10 status blocks, root markers, cleaner repeat icon | `0f6ee445ae536dc581bf88b4702e1d142666427e5332f7f78b0256164dc65f67` |
 | `MINIV946` | coloured shadowed blocks, global Now Playing status row, Favorites A-Z threshold removed | `e5bc90b5270c36686b2dc977196708abee84cd26cfac281ccf1d0abaeac313c5` |
 | `MINIV947` | original rounded segmented root meter on the left | `0736cf5f1c8956c8403ccac23786fbd020606609662744a1620eabada67903e0` |
-| `MINIV948` | larger Settings cards with icons, Bluetooth blue / playing amber | `1fe93f7ce39bc760a8276f1ba2003b639ca080633104d1b46386964b1b2e7aec` |
+| `MINIV948` | larger Settings cards with icons, Bluetooth blue / playing amber | `c31bc36b6073ab3e38c07a2c536e0e009423922672a62d314b006b832030230a` |
 
 The 8 GB model is not supported.
 
@@ -110,8 +113,8 @@ The 8 GB model is not supported.
 - Host tests: 168/168 passed (`ctest --preset dev -E "^format$"`).
 - Lite panel tests: 75/75 passed.
 - `release-lite` build and updater check valid.
-- Headroom: code 136,976 / 157,292 bytes (20,316 free); loaded total 409,656 / 437,600 bytes
-  (27,944 free); resident tables 18,236 / 18,432 (196 free); rescan overlay 85,400 / 86,016
+- Headroom: code 136,972 / 157,292 bytes (20,320 free); loaded total 409,652 / 437,600 bytes
+  (27,948 free); resident tables 18,236 / 18,432 (196 free); rescan overlay 85,400 / 86,016
   (616 free).
 - Still pending: the final 512 MB device pass over sorting, boot, dots, headers, navigation,
   local motion, root switching, Settings cards, favorites and portrait-flipped.
