@@ -230,6 +230,26 @@ static void album_keys_are_stable_and_distinct(void)
     CHECK_EQUAL(0, library_album_key(library, FIXTURE_ALBUMS));
 }
 
+static void track_keys_survive_a_reordered_library(void)
+{
+    Library *library = fixture_library_open(&fixture);
+    uint32_t first = library_track_key(library, 0);
+    uint32_t second = library_track_key(library, 1);
+    CHECK(first != 0);
+    CHECK(second != 0);
+    CHECK(first != second);
+    uint32_t order = library->sections[LIBRARY_TITLE_ORDER].offset;
+    uint8_t swapped = fixture.bytes[order];
+    fixture.bytes[order] = fixture.bytes[order + 2];
+    fixture.bytes[order + 2] = swapped;
+    Library reordered;
+    CHECK_EQUAL(LIBRARY_OK,
+                library_open(&reordered, memory_source(&fixture.memory), fixture.size));
+    CHECK_EQUAL(first, library_track_key(&reordered, 0));
+    CHECK_EQUAL(second, library_track_key(&reordered, 1));
+    CHECK_EQUAL(0, library_track_key(library, FIXTURE_TRACKS));
+}
+
 int main(void)
 {
     static const TestCase cases[] = {
@@ -248,6 +268,7 @@ int main(void)
         TEST_CASE(indices_out_of_range_are_refused),
         TEST_CASE(playlists_link_to_their_tracks_in_order),
         TEST_CASE(album_keys_are_stable_and_distinct),
+        TEST_CASE(track_keys_survive_a_reordered_library),
         TEST_CASE(the_fingerprint_is_stable_for_the_same_library),
         TEST_CASE(the_fingerprint_changes_when_the_library_changes),
     };

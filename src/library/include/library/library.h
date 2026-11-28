@@ -96,3 +96,4 @@ bool library_read_index(const Library *library, LibrarySection section, uint32_t
 bool library_read_string(const Library *library, uint32_t offset, char *buffer, size_t capacity);
 uint32_t library_fingerprint(const Library *library);
 uint32_t library_album_key(const Library *library, uint32_t album_index);
+uint32_t library_track_key(const Library *library, uint32_t track_index);

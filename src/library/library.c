@@ -333,6 +333,15 @@ static uint32_t hash_string(const Library *library, uint32_t hash, uint32_t offs
     return hash;
 }
 
+uint32_t library_track_key(const Library *library, uint32_t track_index)
+{
+    LibraryTrack track;
+    if (!library_read_track(library, track_index, &track)) {
+        return 0;
+    }
+    return hash_string(library, HASH_START, track.path);
+}
+
 uint32_t library_album_key(const Library *library, uint32_t album_index)
 {
     LibraryAlbum album;
