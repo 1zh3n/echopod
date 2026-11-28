@@ -15,7 +15,6 @@
 
 enum {
     SETTINGS_TRANSITION_MS = 140,
-    SETTINGS_TRANSITION_PX = 24,
     SETTINGS_ICON_X = 8,
     SETTINGS_ICON_Y = 95,
     SETTINGS_ICON_RADIUS = 62,
@@ -72,24 +71,41 @@ static bool settings_scene_update(void *context, uint32_t now_ms)
     return true;
 }
 
-static void draw_category_dots(Canvas *canvas, const Theme *theme, int group, int x, int y)
+static uint8_t category_progress(const SettingsScreens *screens, int group)
+{
+    if (!screens->transitioning || screens->previous_group == group) {
+        return 255;
+    }
+    uint32_t duration =
+        settings_animation_ms(screens->context.store->settings.options, SETTINGS_TRANSITION_MS);
+    uint32_t elapsed = screens->menu.now_ms - screens->transition_started_ms;
+    if (duration == 0 || elapsed >= duration) {
+        return 255;
+    }
+    return (uint8_t)(elapsed * 255u / duration);
+}
+
+static void draw_category_dots(Canvas *canvas, const Theme *theme, int group, int previous,
+                               uint8_t progress, int x, int y)
 {
     for (int index = 0; index < SETTINGS_GROUP_COUNT; index++) {
         Point center = {x + index * SETTINGS_DOT_GAP, y};
-        if (index == group) {
-            lite_shape_fill_circle(canvas, center, 4, theme->colors->text);
-            lite_shape_fill_circle(canvas, center, 2, CATEGORIES[index].base);
-        } else {
-            lite_shape_fill_circle(canvas, center, 3, CATEGORIES[index].base);
-        }
+        lite_shape_fill_circle(canvas, center, 3, CATEGORIES[index].base);
     }
+    int from = previous >= 0 && previous < SETTINGS_GROUP_COUNT ? previous : group;
+    int position = from + (group - from) * progress / 255;
+    Point selected = {x + position * SETTINGS_DOT_GAP, y};
+    lite_shape_fill_circle(canvas, selected, 4, theme->colors->text);
+    lite_shape_fill_circle(canvas, selected, 2, CATEGORIES[group].base);
 }
 
-static void draw_category_glyph(Canvas *canvas, int group)
+static void draw_category_glyph(Canvas *canvas, int group, int previous, uint8_t progress)
 {
-    if (CATEGORIES[group].glyph != NULL) {
+    int shown = progress >= 128 || previous < 0 || previous >= SETTINGS_GROUP_COUNT ? group
+                                                                                      : previous;
+    if (CATEGORIES[shown].glyph != NULL) {
         lite_icon_draw_scaled(
-            canvas, CATEGORIES[group].glyph,
+            canvas, CATEGORIES[shown].glyph,
             (Rect){SETTINGS_CATEGORY_LEFT, SETTINGS_CATEGORY_TOP, SETTINGS_CATEGORY_SIZE,
                    SETTINGS_CATEGORY_SIZE},
             COLOR_RGB(255, 255, 255));
@@ -205,7 +221,16 @@ static void draw_scene(SettingsScreens *screens, Canvas *canvas, MenuScreen *men
     if (group < 0 || group >= SETTINGS_GROUP_COUNT) {
         group = SETTINGS_SOUND;
     }
-    const CategoryVisual *visual = &CATEGORIES[group];
+    uint8_t progress = category_progress(screens, group);
+    CategoryVisual visual = CATEGORIES[group];
+    int previous = screens->transitioning ? screens->previous_group : group;
+    if (progress < 255 && previous != group && previous >= 0 &&
+        previous < SETTINGS_GROUP_COUNT && group != SETTINGS_QUICK &&
+        previous != SETTINGS_QUICK) {
+        visual.base = color_blend(CATEGORIES[previous].base, CATEGORIES[group].base, progress);
+        visual.light = color_blend(CATEGORIES[previous].light, CATEGORIES[group].light, progress);
+        visual.dark = color_blend(CATEGORIES[previous].dark, CATEGORIES[group].dark, progress);
+    }
     int count = menu->model.count(menu->model.context);
     int selected = menu->list.selected;
     int top = menu->list.top;
@@ -226,8 +251,8 @@ static void draw_scene(SettingsScreens *screens, Canvas *canvas, MenuScreen *men
         TextStyle title_style = {.font = theme->fonts.title, .color = colors->text};
         label_draw(canvas, title_style,
                    (Label){.area = {12, 8, 146, 20}, .text = settings_category_title(group)});
-        draw_category_dots(canvas, theme, group, 112, 18);
-        canvas_fill_rect(canvas, (Rect){12, 34, 36, 4}, visual->base);
+        draw_category_dots(canvas, theme, group, previous, progress, 112, 18);
+        canvas_fill_rect(canvas, (Rect){12, 34, 36, 4}, visual.base);
         if (quick) {
             draw_quick_cards(screens, canvas, menu);
             return;
@@ -241,7 +266,7 @@ static void draw_scene(SettingsScreens *screens, Canvas *canvas, MenuScreen *men
         divider_width = 130;
     } else {
         canvas_fill_rect(canvas, theme_content_area(theme), colors->background);
-        draw_category_dots(canvas, theme, group, SETTINGS_DOT_X, SETTINGS_DOT_Y);
+        draw_category_dots(canvas, theme, group, previous, progress, SETTINGS_DOT_X, SETTINGS_DOT_Y);
         if (quick) {
             draw_quick_cards(screens, canvas, menu);
             return;
@@ -275,15 +300,15 @@ static void draw_scene(SettingsScreens *screens, Canvas *canvas, MenuScreen *men
 
     if (!portrait) {
         LiteBadgeStyle badge = {
-            .base = visual->base,
-            .light = visual->light,
-            .dark = visual->dark,
+            .base = visual.base,
+            .light = visual.light,
+            .dark = visual.dark,
             .ink = colors->text,
             .shadow = lite_card_shadow_color(theme),
         };
         lite_badge_draw_half(canvas, (Point){SETTINGS_ICON_X, SETTINGS_ICON_Y},
                              SETTINGS_ICON_RADIUS, &badge);
-        draw_category_glyph(canvas, group);
+        draw_category_glyph(canvas, group, previous, progress);
     }
 
     TextStyle label_style = {.font = theme->fonts.body};
@@ -366,36 +391,13 @@ static void draw_scene(SettingsScreens *screens, Canvas *canvas, MenuScreen *men
     }
 }
 
-static int transition_distance(uint32_t elapsed, uint32_t duration)
-{
-    if (duration == 0 || elapsed >= duration) {
-        return SETTINGS_TRANSITION_PX;
-    }
-    uint64_t remaining = duration - elapsed;
-    uint64_t left = (uint64_t)SETTINGS_TRANSITION_PX * remaining * remaining * remaining /
-                    ((uint64_t)duration * duration * duration);
-    return SETTINGS_TRANSITION_PX - (int)left;
-}
-
 static bool settings_scene_draw(void *context, Canvas *canvas, MenuScreen *menu)
 {
     SettingsScreens *screens = context;
-    if (!screens->transitioning) {
-        draw_scene(screens, canvas, menu, screens->shown, 0);
-        return true;
-    }
-    uint32_t duration =
-        settings_animation_ms(screens->context.store->settings.options, SETTINGS_TRANSITION_MS);
-    uint32_t elapsed = screens->menu.now_ms - screens->transition_started_ms;
-    if (duration == 0 || elapsed >= duration) {
+    if (screens->transitioning && category_progress(screens, screens->shown) >= 255) {
         screens->transitioning = false;
-        draw_scene(screens, canvas, menu, screens->shown, 0);
-        return true;
     }
-    int moved = transition_distance(elapsed, duration);
-    screens->previous_menu.now_ms = screens->menu.now_ms;
-    draw_scene(screens, canvas, &screens->previous_menu, screens->previous_group, -moved);
-    draw_scene(screens, canvas, menu, screens->shown, SETTINGS_TRANSITION_PX - moved);
+    draw_scene(screens, canvas, menu, screens->shown, 0);
     return true;
 }
 

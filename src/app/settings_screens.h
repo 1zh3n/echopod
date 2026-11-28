@@ -94,8 +94,6 @@ struct SettingsScreens {
     MenuItem rows[SETTINGS_GROUP_ROWS_MAX];
 #ifdef ECHO_LITE
     MenuItem quick_items[2];
-    MenuScreen previous_menu;
-    MenuItem previous_rows[SETTINGS_GROUP_ROWS_MAX];
     uint8_t previous_group;
     uint32_t transition_started_ms;
     bool transitioning;
