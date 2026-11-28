@@ -90,6 +90,56 @@ static void the_format_waits_for_the_audio_to_reach_the_track(void)
     CHECK_EQUAL(HAL_AUDIO_CODEC_UNKNOWN, player_status(started).format.codec);
 }
 
+static void a_track_list_starts_at_the_requested_favorite(void)
+{
+    Player *started = fresh_player();
+    const uint16_t tracks[] = {HELP, ARMY_OF_ME, SHOOT_TO_THRILL};
+    CHECK(player_play_tracks(started, tracks, 3, 1));
+    CHECK(path_is(fake_hal_audio_playing_path(), ARMY_OF_ME_PATH));
+    PlayerStatus status = player_status(started);
+    CHECK_EQUAL(2, status.place.number);
+    CHECK_EQUAL(3, status.place.total);
+}
+
+static void a_track_list_keeps_next_inside_its_tracks(void)
+{
+    Player *started = fresh_player();
+    const uint16_t tracks[] = {HELP, ARMY_OF_ME, SHOOT_TO_THRILL};
+    CHECK(player_play_tracks(started, tracks, 3, 0));
+    fake_hal_audio_finish_track();
+    player_update(started, 100);
+    CHECK(path_is(fake_hal_audio_playing_path(), ARMY_OF_ME_PATH));
+    CHECK_EQUAL(ARMY_OF_ME, player_status(started).track);
+}
+
+static void the_last_favorite_stops_instead_of_entering_all_songs(void)
+{
+    Player *started = fresh_player();
+    const uint16_t tracks[] = {HELP, ARMY_OF_ME, SHOOT_TO_THRILL};
+    CHECK(player_play_tracks(started, tracks, 3, 2));
+    fake_hal_audio_finish_track();
+    player_update(started, 100);
+    CHECK_EQUAL(PLAYER_IDLE, player_status(started).state);
+}
+
+static void a_saved_track_list_restores_the_same_queue(void)
+{
+    static const uint16_t tracks[] = {HELP, ARMY_OF_ME, SHOOT_TO_THRILL};
+    Player *started = fresh_player();
+    CHECK(player_play_tracks(started, tracks, 3, 1));
+    CHECK(player_save(started));
+    Player resumed;
+    player_init(&resumed, &fixture.library);
+    CHECK(player_restore(&resumed));
+    PlayerStatus status = player_status(&resumed);
+    CHECK_EQUAL(2, status.place.number);
+    CHECK_EQUAL(3, status.place.total);
+    CHECK_EQUAL(ARMY_OF_ME, status.track);
+    fake_hal_audio_finish_track();
+    player_update(&resumed, 100);
+    CHECK(path_is(fake_hal_audio_playing_path(), SHOOT_TO_THRILL_PATH));
+}
+
 static void the_status_counts_the_place_in_the_queue(void)
 {
     Player *started = playing(0);
@@ -615,6 +665,10 @@ int main(void)
         TEST_CASE(playing_a_list_starts_the_selected_track),
         TEST_CASE(the_status_carries_the_playing_tracks_format),
         TEST_CASE(the_format_waits_for_the_audio_to_reach_the_track),
+        TEST_CASE(a_track_list_starts_at_the_requested_favorite),
+        TEST_CASE(a_track_list_keeps_next_inside_its_tracks),
+        TEST_CASE(the_last_favorite_stops_instead_of_entering_all_songs),
+        TEST_CASE(a_saved_track_list_restores_the_same_queue),
         TEST_CASE(the_status_counts_the_place_in_the_queue),
         TEST_CASE(the_following_track_is_queued_for_gapless_playback),
         TEST_CASE(a_finished_track_moves_the_queue_on),

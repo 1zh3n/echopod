@@ -87,6 +87,7 @@ extern const char PLAYER_UP_NEXT_PATH[];
 
 void player_init(Player *player, const Library *library);
 bool player_play_list(Player *player, BrowseQuery source, uint32_t position, uint32_t seed);
+bool player_play_tracks(Player *player, const uint16_t *tracks, uint16_t count, uint16_t position);
 bool player_play_from(Player *player, PlayerListStart start);
 void player_set_resume(Player *player, PlayerResume resume);
 void player_jump(Player *player, int32_t delta_ms);

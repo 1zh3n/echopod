@@ -6,7 +6,7 @@
 #include "playback/play_queue.h"
 
 enum {
-    RESUME_STATE_SIZE = 44
+    RESUME_STATE_SIZE = 558
 };
 
 typedef struct ResumeState {
@@ -18,6 +18,8 @@ typedef struct ResumeState {
     uint16_t track;
     uint32_t position_ms;
     bool from_up_next;
+    uint16_t explicit_count;
+    uint16_t explicit_tracks[PLAY_QUEUE_TRACK_LIST_MAX];
 } ResumeState;
 
 void resume_state_encode(const ResumeState *state, uint8_t *bytes);

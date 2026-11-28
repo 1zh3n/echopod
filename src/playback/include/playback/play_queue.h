@@ -21,7 +21,8 @@ typedef enum RepeatMode {
 
 enum {
     SHUFFLE_MODE_COUNT = SHUFFLE_ALBUMS + 1,
-    REPEAT_MODE_COUNT = REPEAT_ALL + 1
+    REPEAT_MODE_COUNT = REPEAT_ALL + 1,
+    PLAY_QUEUE_TRACK_LIST_MAX = 256
 };
 
 typedef struct PlayQueuePlan {
@@ -30,6 +31,8 @@ typedef struct PlayQueuePlan {
     ShuffleMode shuffle;
     uint32_t seed;
     uint32_t anchor_position;
+    const uint16_t *tracks;
+    uint16_t track_count;
 } PlayQueuePlan;
 
 typedef struct PlayQueueCursor {
@@ -52,6 +55,7 @@ typedef struct PlayQueue {
     Permutation order;
     uint16_t count;
     PlayQueueCursor cursor;
+    uint16_t explicit_tracks[PLAY_QUEUE_TRACK_LIST_MAX];
 } PlayQueue;
 
 bool play_queue_build(PlayQueue *queue, const Library *library, PlayQueuePlan plan);

@@ -2,12 +2,13 @@
 
 #include "check.h"
 #include "core/hash.h"
+#include "fixture_library.h"
 #include "playback/resume_state.h"
 
 enum {
     SHUFFLE_FIELD = 6,
     SOURCE_KIND_FIELD = 16,
-    CHECKSUM_FIELD = 40
+    CHECKSUM_FIELD = RESUME_STATE_SIZE - 4
 };
 
 static ResumeState sample_state(void)
@@ -64,6 +65,36 @@ static void a_state_survives_a_round_trip(void)
     CHECK(!decoded.from_up_next);
 }
 
+static void an_explicit_track_list_survives_a_round_trip(void)
+{
+    static FixtureLibrary fixture;
+    static PlayQueue queue;
+    const uint16_t tracks[] = {2, 6, 5};
+    ResumeState original = sample_state();
+    original.plan.tracks = tracks;
+    original.plan.track_count = 3;
+    original.plan.anchor_track = 6;
+    original.plan.anchor_position = 1;
+    original.plan.shuffle = SHUFFLE_OFF;
+    original.cursor = (PlayQueueCursor){1, 0};
+    original.track = 6;
+    uint8_t bytes[RESUME_STATE_SIZE];
+    ResumeState decoded;
+    resume_state_encode(&original, bytes);
+    CHECK(resume_state_decode(bytes, sizeof bytes, &decoded));
+    CHECK_EQUAL(3, decoded.plan.track_count);
+    CHECK(decoded.plan.tracks == decoded.explicit_tracks);
+    CHECK_EQUAL(2, decoded.plan.tracks[0]);
+    CHECK_EQUAL(6, decoded.plan.tracks[1]);
+    CHECK_EQUAL(5, decoded.plan.tracks[2]);
+    Library *library = fixture_library_open(&fixture);
+    CHECK(play_queue_build(&queue, library, decoded.plan));
+    play_queue_move_to(&queue, decoded.cursor);
+    uint16_t current = 0;
+    CHECK(play_queue_current(&queue, &current));
+    CHECK_EQUAL(decoded.track, current);
+}
+
 static void a_song_from_up_next_is_remembered(void)
 {
     ResumeState original = sample_state();
@@ -91,6 +122,13 @@ static void a_corrupted_byte_fails_the_checksum(void)
     uint8_t bytes[RESUME_STATE_SIZE];
     resume_state_encode(&state, bytes);
     bytes[33] ^= 0x01;
+    CHECK(!resume_state_decode(bytes, sizeof bytes, &state));
+}
+
+static void an_old_44_byte_file_is_rejected(void)
+{
+    uint8_t bytes[44] = {'E', 'M', 'R', 'S', 1};
+    ResumeState state;
     CHECK(!resume_state_decode(bytes, sizeof bytes, &state));
 }
 
@@ -157,9 +195,11 @@ int main(void)
 {
     static const TestCase cases[] = {
         TEST_CASE(a_state_survives_a_round_trip),
+        TEST_CASE(an_explicit_track_list_survives_a_round_trip),
         TEST_CASE(a_wrong_magic_is_rejected),
         TEST_CASE(a_corrupted_byte_fails_the_checksum),
         TEST_CASE(a_short_file_is_rejected),
+        TEST_CASE(an_old_44_byte_file_is_rejected),
         TEST_CASE(unknown_modes_are_rejected),
         TEST_CASE(playlist_sources_are_accepted),
         TEST_CASE(folder_track_sources_are_accepted),

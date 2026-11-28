@@ -6,6 +6,7 @@
 #include "core/format.h"
 #include "core/i18n.h"
 #include "core/string_builder.h"
+#include "hal/clock.h"
 #include "hal/storage.h"
 #include "playback/resume_state.h"
 #include "playback/spoken.h"
@@ -279,6 +280,32 @@ bool player_play_list(Player *player, BrowseQuery source, uint32_t position, uin
     PlayerListStart start = {
         .source = source, .position = position, .seed = seed, .in_order = false};
     return player_play_from(player, start);
+}
+
+bool player_play_tracks(Player *player, const uint16_t *tracks, uint16_t count, uint16_t position)
+{
+    if (tracks == NULL || count == 0 || position >= count) {
+        return false;
+    }
+    player->from_up_next = false;
+    PlayQueuePlan plan = {
+        .source = {.kind = BROWSE_ALL_SONGS,
+                   .group = LIBRARY_ARTISTS,
+                   .subject = LIBRARY_NONE,
+                   .artist = LIBRARY_NONE},
+        .anchor_track = tracks[position],
+        .shuffle = player->shuffle,
+        .seed = hal_clock_microseconds(),
+        .anchor_position = position,
+        .tracks = tracks,
+        .track_count = count,
+    };
+    if (!play_queue_build(&player->queue, player->library, plan) ||
+        !start_playable(player, 0, 1, player->repeat == REPEAT_ALL)) {
+        return false;
+    }
+    save_later(player);
+    return true;
 }
 
 bool player_play_from(Player *player, PlayerListStart start)

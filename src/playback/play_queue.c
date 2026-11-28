@@ -4,9 +4,14 @@ enum {
     MOST_ENTRIES = UINT16_MAX
 };
 
+static bool uses_explicit_tracks(const PlayQueue *queue)
+{
+    return queue->plan.tracks != NULL && queue->plan.track_count > 0;
+}
+
 static bool shuffles_albums(const PlayQueue *queue)
 {
-    return queue->plan.shuffle == SHUFFLE_ALBUMS;
+    return !uses_explicit_tracks(queue) && queue->plan.shuffle == SHUFFLE_ALBUMS;
 }
 
 static bool anchor_in_list(const PlayQueue *queue)
@@ -16,6 +21,13 @@ static bool anchor_in_list(const PlayQueue *queue)
 
 static bool source_track(const PlayQueue *queue, uint32_t position, uint16_t *track)
 {
+    if (uses_explicit_tracks(queue)) {
+        if (position >= queue->plan.track_count) {
+            return false;
+        }
+        *track = queue->plan.tracks[position];
+        return true;
+    }
     BrowseItem item;
     if (!browse_item(queue->library, queue->plan.source, position, &item) ||
         item.kind != BROWSE_ITEM_TRACK) {
@@ -93,6 +105,15 @@ static void finish_layout(PlayQueue *queue)
     queue->order = permutation_make(shuffled ? (uint32_t)queue->count - 1 : 0, queue->plan.seed);
 }
 
+static bool build_explicit_queue(PlayQueue *queue)
+{
+    queue->base_count = queue->plan.track_count;
+    queue->anchor_value = queue->plan.anchor_track;
+    queue->anchor_base = place_anchor(queue);
+    finish_layout(queue);
+    return true;
+}
+
 static bool build_track_queue(PlayQueue *queue)
 {
     uint32_t available = browse_count(queue->library, queue->plan.source);
@@ -124,7 +145,28 @@ static bool build_album_queue(PlayQueue *queue)
 
 bool play_queue_build(PlayQueue *queue, const Library *library, PlayQueuePlan plan)
 {
-    *queue = (PlayQueue){.library = library, .plan = plan};
+    bool explicit = plan.tracks != NULL && plan.track_count > 0;
+    uint16_t count = plan.track_count;
+    if (count > PLAY_QUEUE_TRACK_LIST_MAX) {
+        count = PLAY_QUEUE_TRACK_LIST_MAX;
+    }
+    queue->library = library;
+    queue->plan = plan;
+    queue->first_track = 0;
+    queue->base_count = 0;
+    queue->anchor_base = 0;
+    queue->anchor_value = 0;
+    queue->order = (Permutation){0};
+    queue->count = 0;
+    queue->cursor = (PlayQueueCursor){0};
+    if (explicit) {
+        for (uint16_t index = 0; index < count; index++) {
+            queue->explicit_tracks[index] = plan.tracks[index];
+        }
+        queue->plan.tracks = queue->explicit_tracks;
+        queue->plan.track_count = count;
+        return build_explicit_queue(queue);
+    }
     return shuffles_albums(queue) ? build_album_queue(queue) : build_track_queue(queue);
 }
 

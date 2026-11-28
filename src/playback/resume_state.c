@@ -3,7 +3,7 @@
 #include "core/hash.h"
 
 enum {
-    VERSION = 1,
+    VERSION = 2,
     MAGIC_FIELD = 0,
     VERSION_FIELD = 4,
     SHUFFLE_FIELD = 6,
@@ -21,10 +21,14 @@ enum {
     VOLUME_FIELD = 30,
     POSITION_FIELD = 32,
     FROM_UP_NEXT_FIELD = 36,
-    CHECKSUM_FIELD = 40,
+    EXPLICIT_COUNT_FIELD = 40,
+    EXPLICIT_TRACKS_FIELD = 42,
+    CHECKSUM_FIELD = EXPLICIT_TRACKS_FIELD + PLAY_QUEUE_TRACK_LIST_MAX * 2,
     MAGIC_SIZE = 4,
     BITS_PER_BYTE = 8
 };
+
+_Static_assert(CHECKSUM_FIELD + 4 == RESUME_STATE_SIZE, "resume state size");
 
 static const uint8_t MAGIC[MAGIC_SIZE] = {'E', 'M', 'R', 'S'};
 
@@ -81,6 +85,14 @@ void resume_state_encode(const ResumeState *state, uint8_t *bytes)
     bytes[VOLUME_FIELD] = state->volume;
     put_u32(bytes, POSITION_FIELD, state->position_ms);
     bytes[FROM_UP_NEXT_FIELD] = state->from_up_next ? 1 : 0;
+    uint16_t count = state->plan.track_count;
+    if (state->plan.tracks == NULL || count > PLAY_QUEUE_TRACK_LIST_MAX) {
+        count = 0;
+    }
+    put_u16(bytes, EXPLICIT_COUNT_FIELD, count);
+    for (uint16_t index = 0; index < count; index++) {
+        put_u16(bytes, EXPLICIT_TRACKS_FIELD + index * 2, state->plan.tracks[index]);
+    }
     put_u32(bytes, CHECKSUM_FIELD, checksum_of(bytes));
 }
 
@@ -128,6 +140,10 @@ bool resume_state_decode(const uint8_t *bytes, uint32_t length, ResumeState *sta
     if (length < RESUME_STATE_SIZE || !header_valid(bytes) || !modes_valid(bytes)) {
         return false;
     }
+    uint16_t count = get_u16(bytes, EXPLICIT_COUNT_FIELD);
+    if (count > PLAY_QUEUE_TRACK_LIST_MAX) {
+        return false;
+    }
     *state = (ResumeState){
         .library_fingerprint = get_u32(bytes, FINGERPRINT_FIELD),
         .plan = decode_plan(bytes),
@@ -137,6 +153,13 @@ bool resume_state_decode(const uint8_t *bytes, uint32_t length, ResumeState *sta
         .track = get_u16(bytes, TRACK_FIELD),
         .position_ms = get_u32(bytes, POSITION_FIELD),
         .from_up_next = bytes[FROM_UP_NEXT_FIELD] != 0,
+        .explicit_count = count,
     };
+    for (uint16_t index = 0; index < count; index++) {
+        state->explicit_tracks[index] =
+            get_u16(bytes, EXPLICIT_TRACKS_FIELD + index * 2);
+    }
+    state->plan.track_count = count;
+    state->plan.tracks = count > 0 ? state->explicit_tracks : NULL;
     return true;
 }

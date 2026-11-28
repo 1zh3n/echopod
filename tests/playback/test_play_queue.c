@@ -381,6 +381,79 @@ static void a_playlist_with_a_repeated_track_anchors_at_its_first_place_whatever
     CHECK_EQUAL(SHOOT_TO_THRILL, current_track(&queue));
 }
 
+static PlayQueuePlan explicit_plan(const uint16_t *tracks, uint16_t count, uint16_t anchor,
+                                   uint16_t position)
+{
+    return (PlayQueuePlan){
+        .source = {.kind = BROWSE_ALL_SONGS,
+                   .group = LIBRARY_ARTISTS,
+                   .subject = LIBRARY_NONE,
+                   .artist = LIBRARY_NONE},
+        .anchor_track = anchor,
+        .anchor_position = position,
+        .shuffle = SHUFFLE_OFF,
+        .seed = 1,
+        .tracks = tracks,
+        .track_count = count,
+    };
+}
+
+static int explicit_track_after(const PlayQueue *list, int direction, bool wrap)
+{
+    PlayQueueCursor next;
+    uint16_t track = 0;
+    if (!play_queue_neighbor(list, direction, wrap, &next) ||
+        !play_queue_track_at(list, next, &track)) {
+        return -1;
+    }
+    return track;
+}
+
+static void an_explicit_list_stays_inside_its_tracks(void)
+{
+    const uint16_t tracks[] = {HELP, JOGA, HUNTER};
+    Library *library = fixture_library_open(&fixture);
+    CHECK(play_queue_build(&queue, library,
+                           explicit_plan(tracks, 3, JOGA, 1)));
+    CHECK_EQUAL(3, queue.count);
+    CHECK_EQUAL(JOGA, current_track(&queue));
+    CHECK_EQUAL(2, play_queue_place(&queue).number);
+    CHECK_EQUAL(HELP, explicit_track_after(&queue, -1, false));
+    CHECK_EQUAL(HUNTER, explicit_track_after(&queue, 1, false));
+    PlayQueueCursor last = {2, 0};
+    PlayQueueCursor wrapped;
+    CHECK(!play_queue_step(&queue, last, 1, false, &wrapped));
+    CHECK(play_queue_step(&queue, last, 1, true, &wrapped));
+    uint16_t track = 0;
+    CHECK(play_queue_track_at(&queue, wrapped, &track));
+    CHECK_EQUAL(HELP, track);
+}
+
+static void rebuilding_from_its_own_explicit_list_keeps_the_tracks(void)
+{
+    const uint16_t tracks[] = {HELP, JOGA, HUNTER};
+    Library *library = fixture_library_open(&fixture);
+    CHECK(play_queue_build(&queue, library, explicit_plan(tracks, 3, JOGA, 1)));
+    PlayQueuePlan plan = queue.plan;
+    CHECK(play_queue_build(&queue, library, plan));
+    CHECK_EQUAL(3, queue.count);
+    CHECK_EQUAL(JOGA, current_track(&queue));
+    CHECK_EQUAL(2, explicit_track_after(&queue, -1, false));
+    CHECK_EQUAL(5, explicit_track_after(&queue, 1, false));
+}
+
+static void a_single_track_explicit_list_has_no_next(void)
+{
+    const uint16_t tracks[] = {HELP};
+    Library *library = fixture_library_open(&fixture);
+    CHECK(play_queue_build(&queue, library, explicit_plan(tracks, 1, HELP, 0)));
+    CHECK_EQUAL(1, queue.count);
+    CHECK_EQUAL(HELP, current_track(&queue));
+    CHECK_EQUAL(1, play_queue_place(&queue).number);
+    PlayQueueCursor next;
+    CHECK(!play_queue_upcoming(&queue, REPEAT_OFF, &next));
+}
+
 static void shuffling_a_long_list_reaches_every_track_once(void)
 {
     big_library_open(&big, BIG_LIST, BIG_LIST);
@@ -440,6 +513,9 @@ int main(void)
         TEST_CASE(a_hinted_anchor_is_found_without_reading_the_list),
         TEST_CASE(a_wrong_hint_still_finds_the_anchor),
         TEST_CASE(a_playlist_with_a_repeated_track_anchors_at_its_first_place_whatever_the_hint),
+        TEST_CASE(an_explicit_list_stays_inside_its_tracks),
+        TEST_CASE(rebuilding_from_its_own_explicit_list_keeps_the_tracks),
+        TEST_CASE(a_single_track_explicit_list_has_no_next),
         TEST_CASE(shuffling_a_long_list_reaches_every_track_once),
         TEST_CASE(a_big_folder_queues_all_its_tracks),
         TEST_CASE(shuffling_many_albums_reaches_every_album_once),
