@@ -1032,17 +1032,34 @@ static void refresh_lite_status(void)
     lite_status_set(shadow, progress, bluetooth);
 }
 
+static void draw_lite_status_block(Canvas *canvas, const Theme *theme, Point origin, bool active,
+                                   Color color)
+{
+    lite_status_block_draw(canvas, origin, active ? color : theme->colors->text_tertiary);
+}
+
 static void draw_lite_status_meter(Canvas *canvas, const Screen *screen)
 {
     const Theme *theme = current_theme();
     bool bluetooth = lite_status_bluetooth();
     bool playing = player_status(&app.player).state == PLAYER_PLAYING;
+    Color blue = COLOR_RGB(47, 168, 255);
+    Color cyan = COLOR_RGB(53, 199, 232);
     if (screen == &app.screens.now_playing.screen) {
-        Point origin = {theme_is_portrait(theme) ? 93 : 243, 13};
-        lite_status_bt_chip_draw(canvas, theme, origin, bluetooth);
+        int mode_x = theme_is_portrait(theme) ? 119 : 269;
+        draw_lite_status_block(canvas, theme, (Point){mode_x - 18, 8}, bluetooth, blue);
         return;
     }
-    lite_status_meter_draw(canvas, theme, (Point){8, 4}, bluetooth, playing);
+    int width = theme->metrics.screen_width;
+    Point right = {width - 31, 8};
+    draw_lite_status_block(canvas, theme, right, bluetooth, blue);
+    draw_lite_status_block(canvas, theme, (Point){right.x + 13, 8}, playing, cyan);
+    if (screen == app.screens.root_all_songs || screen == app.screens.root_favorites) {
+        bool favorite = screen == app.screens.root_favorites;
+        Color pink = COLOR_RGB(236, 72, 153);
+        draw_lite_status_block(canvas, theme, (Point){8, 8}, !favorite, blue);
+        draw_lite_status_block(canvas, theme, (Point){21, 8}, favorite, pink);
+    }
 }
 #endif
 

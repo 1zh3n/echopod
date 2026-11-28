@@ -190,7 +190,7 @@ static bool settings_scene_draw(void *context, Canvas *canvas, MenuScreen *menu)
         canvas_fill_rect(canvas, theme_content_area(theme), colors->background);
         TextStyle title_style = {.font = theme->fonts.title, .color = colors->text};
         label_draw(canvas, title_style,
-                   (Label){.area = {12, 8, 146, 20}, .text = settings_category_title(group)});
+                   (Label){.area = {12, 8, 119, 20}, .text = settings_category_title(group)});
         canvas_fill_rect(canvas, (Rect){12, 34, 36, 4}, visual.base);
         rows = lite_card(canvas, theme, (Rect){8, 58, 154, 254}, 4);
         row_height = count > 6 ? 34 : 38;

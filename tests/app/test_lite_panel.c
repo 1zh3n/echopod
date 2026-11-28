@@ -501,30 +501,35 @@ static void long_back_on_favorites_opens_settings(void)
     CHECK(title_is("Settings"));
 }
 
-static void root_status_meter_tracks_bluetooth(void)
+static void root_status_blocks_track_bluetooth_and_root(void)
 {
     start_app_with_library();
     wait_ms(300);
-    CHECK(fake_hal_pixel(14, 8) == DEFAULT_THEME.colors->divider);
+    CHECK(fake_hal_pixel(289, 8) == DEFAULT_THEME.colors->text_tertiary);
+    CHECK(fake_hal_pixel(302, 8) == DEFAULT_THEME.colors->text_tertiary);
+    CHECK(fake_hal_pixel(8, 8) == COLOR_RGB(47, 168, 255));
+    CHECK(fake_hal_pixel(21, 8) == DEFAULT_THEME.colors->text_tertiary);
     fake_hal_bluetooth()->state = HAL_BLUETOOTH_CONNECTED;
     wait_ms(300);
-    CHECK(fake_hal_pixel(14, 8) == COLOR_RGB(0, 111, 238));
-    CHECK(fake_hal_pixel(26, 8) == DEFAULT_THEME.colors->divider);
+    CHECK(fake_hal_pixel(289, 8) == COLOR_RGB(47, 168, 255));
     fake_hal_bluetooth()->state = HAL_BLUETOOTH_OFF;
     wait_ms(300);
-    CHECK(fake_hal_pixel(14, 8) == DEFAULT_THEME.colors->divider);
+    CHECK(fake_hal_pixel(289, 8) == DEFAULT_THEME.colors->text_tertiary);
+    tap(KEY_BACK);
+    wait_ms(300);
+    CHECK(fake_hal_pixel(8, 8) == DEFAULT_THEME.colors->text_tertiary);
+    CHECK(fake_hal_pixel(21, 8) == COLOR_RGB(236, 72, 153));
 }
 
-static void status_meter_and_chip_draw_native_segments(void)
+static void status_blocks_draw_flat_squares(void)
 {
     static Color pixels[HAL_DISPLAY_WIDTH * HAL_DISPLAY_HEIGHT];
     Canvas canvas = canvas_make(pixels, (Rect){0, 0, HAL_DISPLAY_WIDTH, HAL_DISPLAY_HEIGHT});
     canvas_clear(&canvas, COLOR_RGB(250, 250, 249));
-    lite_status_meter_draw(&canvas, &DEFAULT_THEME, (Point){10, 10}, true, true);
-    CHECK(canvas_pixel_at(&canvas, 14, 14) == COLOR_RGB(0, 111, 238));
-    CHECK(canvas_pixel_at(&canvas, 26, 14) == COLOR_RGB(53, 199, 232));
-    lite_status_bt_chip_draw(&canvas, &DEFAULT_THEME, (Point){50, 10}, true);
-    CHECK(canvas_pixel_at(&canvas, 54, 14) == COLOR_RGB(0, 111, 238));
+    lite_status_block_draw(&canvas, (Point){10, 10}, COLOR_RGB(47, 168, 255));
+    CHECK(canvas_pixel_at(&canvas, 10, 10) == COLOR_RGB(47, 168, 255));
+    CHECK(canvas_pixel_at(&canvas, 19, 19) == COLOR_RGB(47, 168, 255));
+    CHECK(canvas_pixel_at(&canvas, 20, 20) == COLOR_RGB(250, 250, 249));
 }
 
 static void now_playing_has_no_time_or_thumb(void)
@@ -551,7 +556,7 @@ static void hold_the_volume_key_seeks_without_a_hold_bar(void)
     now_ms += 1100;
     step();
     CHECK(fake_hal_audio_seek_count() > seeks_before);
-    CHECK(fake_hal_pixel(248, 16) == COLOR_RGB(0, 111, 238));
+    CHECK(fake_hal_pixel(255, 10) == COLOR_RGB(47, 168, 255));
     CHECK(fake_hal_pixel(229, 18) != COLOR_RGB(245, 158, 11));
     fake_hal_queue_transition(KEY_VOLUME_UP, false, now_ms);
     now_ms += 10;
@@ -564,7 +569,7 @@ static void now_playing_uses_bt_chip_with_controls(void)
     open_all_songs_and_play();
     fake_hal_bluetooth()->state = HAL_BLUETOOTH_CONNECTED;
     wait_ms(300);
-    CHECK(fake_hal_pixel(248, 16) == COLOR_RGB(0, 111, 238));
+    CHECK(fake_hal_pixel(255, 10) == COLOR_RGB(47, 168, 255));
     CHECK(fake_hal_pixel(8, 6) != COLOR_RGB(0, 111, 238));
 }
 
@@ -1278,7 +1283,7 @@ static void settings_can_switch_to_dark(void)
 {
     switch_theme_to_dark();
     CHECK(title_is("All Songs"));
-    CHECK(fake_hal_pixel(10, 16) == COLOR_RGB(11, 11, 13));
+    CHECK(fake_hal_pixel(40, 16) == COLOR_RGB(11, 11, 13));
     CHECK(fake_hal_pixel(120, 40) == COLOR_RGB(23, 23, 28));
     CHECK(fake_hal_pixel(8, 30) == COLOR_RGB(82, 82, 91));
 }
@@ -1301,7 +1306,7 @@ static void dark_portrait_root_and_settings(void)
 {
     switch_dark_portrait();
     CHECK(title_is("All Songs"));
-    CHECK(fake_hal_pixel(10, 16) == COLOR_RGB(11, 11, 13));
+    CHECK(fake_hal_pixel(40, 16) == COLOR_RGB(11, 11, 13));
     CHECK(fake_hal_pixel(85, 110) == COLOR_RGB(23, 23, 28));
     CHECK(fake_hal_pixel(8, 30) == COLOR_RGB(82, 82, 91));
 
@@ -1381,7 +1386,7 @@ int main(void)
         TEST_CASE(badge_draws_flat_circle_and_half),
         TEST_CASE(category_dots_have_no_cardinal_spikes),
         TEST_CASE(dark_palette_and_borders),
-        TEST_CASE(status_meter_and_chip_draw_native_segments),
+        TEST_CASE(status_blocks_draw_flat_squares),
         TEST_CASE(settings_can_switch_to_portrait),
         TEST_CASE(settings_can_switch_to_portrait_flipped),
         TEST_CASE(settings_can_switch_to_dark),
@@ -1425,7 +1430,7 @@ int main(void)
         TEST_CASE(long_back_on_now_playing_opens_settings),
         TEST_CASE(back_from_now_playing_returns_to_favorites_root),
         TEST_CASE(long_back_on_favorites_opens_settings),
-        TEST_CASE(root_status_meter_tracks_bluetooth),
+        TEST_CASE(root_status_blocks_track_bluetooth_and_root),
         TEST_CASE(now_playing_uses_bt_chip_with_controls),
         TEST_CASE(now_playing_has_no_time_or_thumb),
         TEST_CASE(hold_the_volume_key_seeks_without_a_hold_bar),

@@ -98,47 +98,9 @@ void lite_card_rounded(Canvas *canvas, const Theme *theme, Rect card, int shadow
                     radius > border ? radius - border : 1, theme->colors->header_background);
 }
 
-void lite_status_meter_draw(Canvas *canvas, const Theme *theme, Point origin, bool bluetooth,
-                            bool playing)
+void lite_status_block_draw(Canvas *canvas, Point origin, Color color)
 {
-    if (canvas == NULL || theme == NULL) {
-        return;
-    }
-    const int width = 28;
-    const int height = 8;
-    const int radius = 2;
-    const int border = 2;
-    Color track = theme->colors->divider;
-    fill_round_rect(canvas,
-                    (Rect){origin.x + 2, origin.y + 2, width, height}, radius,
-                    lite_card_shadow_color(theme));
-    fill_round_rect(canvas, (Rect){origin.x, origin.y, width, height}, radius,
-                    lite_card_border_color(theme));
-    canvas_fill_rect(canvas,
-                     (Rect){origin.x + border, origin.y + border, 12, 4},
-                     bluetooth ? theme->colors->selection_background : track);
-    canvas_fill_rect(canvas,
-                     (Rect){origin.x + border + 12, origin.y + border, 12, 4},
-                     playing ? COLOR_RGB(53, 199, 232) : track);
-}
-
-void lite_status_bt_chip_draw(Canvas *canvas, const Theme *theme, Point origin, bool bluetooth)
-{
-    if (canvas == NULL || theme == NULL) {
-        return;
-    }
-    const int width = 14;
-    const int height = 8;
-    const int radius = 2;
-    const int border = 2;
-    fill_round_rect(canvas,
-                    (Rect){origin.x + 2, origin.y + 2, width, height}, radius,
-                    lite_card_shadow_color(theme));
-    fill_round_rect(canvas, (Rect){origin.x, origin.y, width, height}, radius,
-                    lite_card_border_color(theme));
-    canvas_fill_rect(canvas,
-                     (Rect){origin.x + border, origin.y + border, 10, 4},
-                     bluetooth ? theme->colors->selection_background : theme->colors->divider);
+    canvas_fill_rect(canvas, (Rect){origin.x, origin.y, 10, 10}, color);
 }
 
 Rect lite_list_frame_no_title(Canvas *canvas, const Theme *theme)
@@ -161,14 +123,14 @@ Rect lite_list_frame(Canvas *canvas, const Theme *theme, const char *title)
     canvas_fill_rect(canvas, content, colors->background);
     TextStyle style = {.font = theme->fonts.title, .color = colors->text};
     if (theme_is_portrait(theme)) {
-        label_draw(canvas, style, (Label){.area = {12, 8, content.width - 24, 20}, .text = title});
+        label_draw(canvas, style, (Label){.area = {12, 8, content.width - 51, 20}, .text = title});
         canvas_fill_rect(canvas, (Rect){12, 30, content.width - 24, lite_card_border_width(theme)},
                          lite_card_border_color(theme));
         lite_card(canvas, theme, (Rect){8, 40, content.width - 16, 272}, 4);
         return (Rect){12, 44, content.width - 24, 264};
     }
     label_draw(canvas, style,
-               (Label){.area = {16, 8, content.width - 32, 20}, .text = title});
+               (Label){.area = {16, 8, content.width - 55, 20}, .text = title});
     canvas_fill_rect(canvas, (Rect){16, 25, content.width - 32, lite_card_border_width(theme)},
                      lite_card_border_color(theme));
     lite_card(canvas, theme, (Rect){8, 28, content.width - 16, 134}, 4);
