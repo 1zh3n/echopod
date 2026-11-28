@@ -9,7 +9,9 @@ Read `docs/known-issues.md` before you install. EchoPod has been tested on one p
 ## Which players
 
 - **Echo Mini 8 GB: supported.** Its FiiO update file is called `HIFIECnn.IMG`.
-- **Echo Mini 512 MB: supported by this personal fork, not by upstream 0.13.1.** Its FiiO update file is called `MINIVnnn.IMG`. This fork uses the SD NAND port and installs 512 MB builds from `MINIVnnn.IMG` / `ECHOMINI.IMG`; see `docs/device-install.md` for the exact steps. Upstream 0.13.1 refuses its firmware, and the stock 512 MB firmware ignores upstream EchoPod's file.
+- **Echo Mini 512 MB: supported from 0.14.0, and new.** Its FiiO update file is called `MINIVnnn.IMG`, so download `MINIV898.IMG` instead: the same firmware under the name that model installs. Wherever this guide says `HIFIEC90.IMG`, read `MINIV898.IMG`. It has run on two 512 MB players, both owned by contributors (see `docs/known-issues.md`).
+
+Each model ignores the other's file. If you're not sure which you have, look at the size of the ECHO MINI drive on a computer: about 500 MB or less on the 512 MB model, several GB on the 8 GB one.
 
 Tested starting points: FiiO firmware 3.7.0, 3.9.0 and 4.0.0 (Settings → About on the player shows yours).
 
@@ -17,7 +19,7 @@ Tested starting points: FiiO firmware 3.7.0, 3.9.0 and 4.0.0 (Settings → About
 
 1. Copy anything you want to keep off the player's internal storage.
 2. Charge the battery.
-3. Download `HIFIEC90.IMG` and `SHA256SUMS.txt` from the [EchoPod releases](https://github.com/BasilSkyWalk/echopod/releases), and check the file:
+3. Download `HIFIEC90.IMG` (512 MB model: `MINIV898.IMG`) and `SHA256SUMS.txt` from the [EchoPod releases](https://github.com/BasilSkyWalk/echopod/releases), and check the file:
    - Windows (PowerShell): `Get-FileHash HIFIEC90.IMG`
    - macOS or Linux: `shasum -a 256 HIFIEC90.IMG`
 
@@ -26,7 +28,7 @@ Tested starting points: FiiO firmware 3.7.0, 3.9.0 and 4.0.0 (Settings → About
 ## Install
 
 1. Connect the player to your computer. The internal storage appears as a drive called ECHO MINI.
-2. Copy `HIFIEC90.IMG` to the top level of that drive, not into a folder. Delete any other `HIFIECnn.IMG` or `ECHOMINI.IMG` file there first: the player installs the one with the highest number.
+2. Copy `HIFIEC90.IMG` to the top level of that drive, not into a folder. Delete any other `HIFIECnn.IMG`, `MINIVnnn.IMG` or `ECHOMINI.IMG` file there first: the player installs the one with the highest number.
 3. Eject the drive (Windows: Safely Remove; macOS: Eject), then unplug.
 4. Take the microSD card out.
 5. Switch the player off and on again. It shows "Updating, Don't power off" for about a minute or two. Leave it alone until EchoPod starts.
@@ -200,7 +202,7 @@ Choose Settings on Home, or hold ≡ anywhere except on Now Playing. The top of 
     A theme file can bring a Now Playing screen of its own in the same way. These screens use their own colours, so Accent color and Highlight don't apply to them, and the header and status bar follow the face while it shows. They move only while a track plays, and stand still while it's paused. With Lyrics on and timed lyrics, the current line shows as one line in the face's feedback line instead of the five-line list; lyrics without times don't show on a face. The seek hint, the volume and the skip, play and pause badge appear on every face. With nothing playing you see Standard's message.
   - **Brightness**, **Screen timeout**, **Orientation** (see Portrait mode). **Animations** makes screen slides and Cover Flow scrolling Slower (1.5× as long) or Faster (0.6×). **Battery percent** hides the number next to the battery. **Portrait status bar** → Large makes the status bar's icons and text bigger when the screen is in portrait (it has no effect in landscape). **Clock** shows the time in the status bar (see Clock).
 - **Library:** **Music folders** chooses which top-level folders are in the library (see Your music) and **Rescan library** rebuilds it. **Start screen** picks what the player opens on: Main menu (Home), Now Playing, or one of the Music lists (Albums, Artists, Favorites, Playlists, Cover Flow, Album Artists, Genres, Folders or All Songs). **Cover Flow** shows 5 covers (the centre one and two each side) or 3 (one each side), and **Cover Flow order** sorts it by album artist or by album title. **Artist albums** → Cover Flow opens an artist, album artist or genre as a Cover Flow of just their albums. **Folders & playlists** → Cover Flow opens a playlist as a Cover Flow of its albums and a folder of folders as a Cover Flow of those folders (below). **Lyrics** shows or hides lyrics on Now Playing (see Lyrics). **Listen history** turns the log of played songs on or off (see Listen history and Last.fm).
-- **Buttons:** **Volume buttons** and **Swap volume buttons** (see Buttons). **Menu button** makes ≡ on Now Playing open Up Next (the default) or skip to the next track. On the 512 MB Lite build the Menu-button choice is hidden: Menu always opens Up Next, and double Menu opens the Quick Panel in Now Playing, the next category in Settings, or the A-Z/# jump in a lettered list. **Power on** → Hold makes the player start only when Power is held for about a second; a shorter press switches it straight back off, so a tap in a pocket or bag doesn't turn it on. With a cable plugged in it always starts, and RST always starts it.
+- **Buttons:** **Volume buttons** and **Swap volume buttons** (see Buttons). **Menu button** makes ≡ on Now Playing open Up Next (the default) or skip to the next track. **Power on** → Hold makes the player start only when Power is held for about a second; a shorter press switches it straight back off, so a tap in a pocket or bag doesn't turn it on. With a cable plugged in it always starts, and RST always starts it.
 - **System:** **Language** (see Language), **Date & time** sets the clock (see Clock), **Auto off** turns the player off after 1, 5 or 10 minutes without a key press (never while music plays or a cable gives power), **USB mode** (Storage or DAC) and **Ask when connected** choose what plugging into a computer does (see Using the player as a USB DAC).
 
 With **Folders & playlists** set to Cover Flow, a playlist opens as a Cover Flow of its albums in playlist order: songs next to each other from the same album make one tile, and an album that comes back later in the playlist gets a tile again. ▶ on a tile opens the whole album. Music → Folders, and any folder that holds only folders, opens as a Cover Flow of its folders, each showing the cover of the album of its first song (the folder's own songs first, otherwise its first folder's, and so on down). ▶ on a folder that again holds only folders moves into it, and Back moves out again; a folder with songs opens as a list, with Shuffle all at the top when it or an immediate subfolder holds songs. A folder's own picture (`folder.jpg`) isn't used yet. Audiobooks and Podcasts stay lists.
@@ -315,7 +317,7 @@ The player keeps a log of the songs you play in `/.echo/history.bin` on the card
 
 ## Updating EchoPod
 
-1. Copy the new `HIFIEC90.IMG` to the top level of internal storage.
+1. Copy the new `HIFIEC90.IMG` (512 MB model: `MINIV898.IMG`) to the top level of internal storage.
 2. Eject both drives. The player checks the file and shows "Installing update", then "Update installed".
 3. Unplug, then hold Power to turn the player off, and switch it on again.
 
@@ -323,14 +325,16 @@ The player keeps a log of the songs you play in `/.echo/history.bin` on the card
 
 1. Download FiiO's firmware for the **8 GB** Echo Mini from FiiO's website and unzip it.
 2. Delete `HIFIEC90.IMG` from internal storage if it's still there.
-3. Copy FiiO's `HIFIECnn.IMG` (for example `HIFIEC40.IMG`) to the top level of internal storage, unchanged. Don't copy the `MINIVnnn.IMG` file from the same zip: that one is for the 512 MB model, and EchoPod refuses it.
+3. Copy FiiO's `HIFIECnn.IMG` (for example `HIFIEC40.IMG`) to the top level of internal storage, unchanged. Don't copy the `MINIVnnn.IMG` file from the same zip: that one is for the 512 MB model, and EchoPod on an 8 GB player refuses it.
 4. Eject both drives. The player checks the file (this takes a while) and shows "Installing FiiO firmware", then "FiiO firmware installed".
 5. Unplug, take the microSD card out, hold Power to turn the player off, and switch it on. FiiO's firmware starts, shows "Updating" once more for a minute or two while it installs the same file, and deletes it.
+
+**On the 512 MB model** the two file names swap: download FiiO's firmware for the 512 MB Echo Mini, delete `MINIV898.IMG`, and copy FiiO's `MINIVnnn.IMG` (for example `MINIV400.IMG`); EchoPod refuses the 8 GB model's `HIFIECnn.IMG` there. Nobody has gone back this way on a 512 MB player yet. The way back that has been used on that model is maskrom (`docs/device-recovery.md`).
 
 ## If something goes wrong
 
 - **"isn't a valid image for this player (E6/…)" when going back to FiiO:** the code means FiiO's file doesn't fit the player's firmware area. EchoPod 0.12.0 and earlier show it on players whose slots are under 32 MiB (`E6/30`); update EchoPod to 0.12.1 or later and copy FiiO's file again. If 0.12.1 still shows it, maskrom is the way back (below): please report the whole code.
-- **"isn't a valid image for this player" with another code when going back to FiiO:** check that you copied the `HIFIECnn.IMG` file, not `MINIVnnn.IMG`, and that it's unchanged (its hash matches the one in FiiO's zip). EchoPod 0.2.0 and earlier also refuse FiiO's 4.0.0 firmware: update EchoPod first, or install FiiO 3.9.0 (`HIFIEC39.IMG`) and then FiiO's own update to 4.0.0. To switch to another custom firmware, go back to FiiO's first: EchoPod only installs its own images and FiiO's.
+- **"isn't a valid image for this player" with another code when going back to FiiO:** check that you copied the `HIFIECnn.IMG` file, not `MINIVnnn.IMG` (the other way round on the 512 MB model), and that it's unchanged (its hash matches the one in FiiO's zip). EchoPod 0.2.0 and earlier also refuse FiiO's 4.0.0 firmware: update EchoPod first, or install FiiO 3.9.0 (`HIFIEC39.IMG`) and then FiiO's own update to 4.0.0. To switch to another custom firmware, go back to FiiO's first: EchoPod only installs its own images and FiiO's.
 - **The install doesn't take** (FiiO's firmware comes back after a short "Updating"): copy the file again, check its hash on the player's drive, and make sure it's the only `HIFIECnn.IMG` there. If it keeps failing, the only other way in is maskrom (below).
 - **The player doesn't start at all:** every case so far was recovered through the chip's maskrom mode, which writes FiiO's firmware back from a computer over USB. It needs a patched `rkdeveloptool` and some care; the steps are in `docs/device-recovery.md`.
 - **A "STALL" or "FAULT" screen** (white text on black with PC and LR lines): photograph it, then press the small RST hole rather than holding Power. RST keeps the player's memory, so Home → Diagnostics → Last start and Last stack still show what stopped; holding Power on battery wipes it.

@@ -10,11 +10,10 @@ EchoPod is early firmware made by one person and tested on one player. It comes 
 
 ## Installing
 
-- **Tested on one 8 GB player and one 512 MB player.** The 8 GB unit started from FiiO firmware 3.7.0, 3.9.0 and 4.0.0 and was installed from Windows 11; the 512 MB fork unit started from 4.0.0 and was installed from Linux. Other units, other FiiO versions and other computers haven't been tried.
+- **Tested on one player.** One Echo Mini 8 GB, starting from FiiO firmware 3.7.0, 3.9.0 and 4.0.0, installed from Windows 11. Other units, other FiiO versions and other computers haven't been tried.
 - **Installing from a Mac is unproven.** Earlier attempts to copy an image from a Mac with FiiO's firmware running were refused (FiiO's firmware showed "Updating" for under a second and kept itself). The cause isn't known. Install from Windows if you can.
-- **The 512 MB Echo Mini is supported by this fork, not by upstream 0.13.1.** The fork's `integration/512m` / `custom/lite-ui` branches use the SD NAND path and the `MINIVnnn.IMG` / `ECHOMINI.IMG` updater names; upstream 0.13.1 refuses its firmware, and the stock 512 MB firmware ignores upstream EchoPod's file. Tested on one 512 MB V4.0.0 unit; see `docs/device-install.md`.
+- **The 512 MB Echo Mini is new in 0.14.0.** It has run on two such players, both owned by contributors. The person who makes EchoPod has none, so releases are tested on the 8 GB model only. Going back to FiiO's firmware from a file (FiiO's `MINIVnnn.IMG`) hasn't been tried on that model; maskrom has.
 - **Going back to FiiO's firmware** is checked with FiiO's 8 GB 3.7.0, 3.8.0, 3.9.0 and 4.0.0 images, and 0.3.0 installed FiiO 4.0.0 on the player and was installed back from it (EchoPod 0.2.0 refuses 4.0.0, see `docs/user-guide.md`). Another custom firmware can't be installed from EchoPod: go back to FiiO's first. On a player whose firmware area is too small for two copies of FiiO's image (0.12.0 and earlier refuse FiiO's file there with `E6/30`), EchoPod writes one copy only; that path hasn't been run on such a player yet, and a power cut near its end needs maskrom (`docs/device-recovery.md`).
-- **Update notices are English-only.** Once the installer has written a firmware slot, glyph-pack reads are refused until the next start, so a localized "Update installed / unplug and restart" message would turn into `?`. The progress, success and failure notices therefore use ASCII English. The menus, song titles and album names return to the selected language after the power cycle.
 - **If the player doesn't start at all,** the only recovery known is the chip's maskrom mode (`docs/device-recovery.md`). It works, but it needs a patched tool and care.
 
 ## USB

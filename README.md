@@ -19,6 +19,12 @@ This is my personal build of [EchoPod](https://github.com/BasilSkyWalk/echopod) 
 **512 MB** Echo Mini. It keeps EchoPod's playback engine and fixes, and replaces the interface
 with a compact Lite UI for 320×170 and 170×320.
 
+This branch now also carries the upstream **EchoPod 0.14.0** 512 MB support and fixes, including
+its eMMC/SD-NAND start-up, updater and power-off changes. See
+[docs/release-notes.md](docs/release-notes.md), [docs/known-issues.md](docs/known-issues.md)
+and [docs/user-guide.md](docs/user-guide.md) for the upstream documentation; the Lite-specific
+guide is [docs/lite/README.md](docs/lite/README.md).
+
 It is **not** a stock replacement for the 8 GB player. Do not flash these images on an 8 GB unit.
 
 **Start here:** [Lite guide and key map](docs/lite/README.md) ·

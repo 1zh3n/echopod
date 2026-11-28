@@ -313,7 +313,7 @@ target_link_options(echo_usb_overlay PRIVATE
     -Wl,-Map=${CMAKE_CURRENT_BINARY_DIR}/echo_usb_overlay.map
 )
 
-set(ECHO_FIRMWARE_VERSION "0.13.2" CACHE STRING "major.minor.patch written to the image header")
+set(ECHO_FIRMWARE_VERSION "0.14.0" CACHE STRING "major.minor.patch written to the image header")
 find_package(Python3 REQUIRED COMPONENTS Interpreter)
 set(ECHO_DEVICE_IMAGE ${CMAKE_BINARY_DIR}/HIFIEC90.IMG)
 set(ECHO_GLYPH_FACE_ARGUMENTS "")
@@ -342,7 +342,9 @@ add_custom_target(echo_device_image ALL
         --output ${ECHO_DEVICE_IMAGE}
     COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tools/size_report.py
         --build ${CMAKE_BINARY_DIR} --summary --nm ${CMAKE_NM}
-    BYPRODUCTS ${ECHO_DEVICE_IMAGE}
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ECHO_DEVICE_IMAGE}
+        ${CMAKE_BINARY_DIR}/MINIV898.IMG
+    BYPRODUCTS ${ECHO_DEVICE_IMAGE} ${CMAKE_BINARY_DIR}/MINIV898.IMG
     DEPENDS echo_device echo_rescan_overlay echo_usb_overlay ${ECHO_CORE1_MP3_BINARY} ${ECHO_CORE1_BINARY}
         ${ECHO_CORE1_AAC_BINARY} ${ECHO_CORE1_OPUS_BINARY}
         ${PROJECT_SOURCE_DIR}/tools/make_image.py
