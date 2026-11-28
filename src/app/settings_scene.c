@@ -35,12 +35,12 @@ enum {
     HOME_CARD_X = 8,
     HOME_CARD_WIDTH = 304,
     HOME_CARD_TOP = 29,
-    HOME_CARD_HEIGHT = 50,
+    HOME_CARD_HEIGHT = 44,
     HOME_CARD_GAP = 4,
     HOME_PORTRAIT_X = 8,
     HOME_PORTRAIT_WIDTH = 154,
     HOME_PORTRAIT_TOP = 58,
-    HOME_PORTRAIT_HEIGHT = 96,
+    HOME_PORTRAIT_HEIGHT = 72,
     HOME_PORTRAIT_GAP = 4,
     HOME_BOTTOM_MARGIN = 8
 };
@@ -74,7 +74,7 @@ static int home_visible_rows(const Theme *theme)
     int height = portrait ? HOME_PORTRAIT_HEIGHT : HOME_CARD_HEIGHT;
     int gap = portrait ? HOME_PORTRAIT_GAP : HOME_CARD_GAP;
     int bottom = theme->metrics.screen_height - HOME_BOTTOM_MARGIN;
-    int rows = (bottom - top + gap) / (height + gap);
+    int rows = (bottom - top + height / 2) / (height + gap);
     return rows > 0 ? rows : 1;
 }
 
@@ -121,10 +121,10 @@ static bool home_scene_draw(void *context, Canvas *canvas, MenuScreen *menu)
                              colors->selection_background);
             draw_card_border(&cards, card, colors->selection_background);
         }
-        Point center = {card.x + (portrait ? 24 : 22), card.y + card.height / 2};
-        int icon_size = portrait ? 32 : 24;
+        Point center = {card.x + (portrait ? 20 : 22), card.y + card.height / 2};
+        int icon_size = portrait ? 28 : 24;
         if (index == 4) {
-            lite_shape_fill_circle(&cards, center, portrait ? 18 : 14,
+            lite_shape_fill_circle(&cards, center, portrait ? 16 : 14,
                                    colors->selection_text);
             color_icon_draw_scaled(&cards, &LITE_COLOR_ICON_GEAR,
                                    (Rect){center.x - icon_size / 2, center.y - icon_size / 2,
@@ -153,22 +153,26 @@ static bool home_scene_draw(void *context, Canvas *canvas, MenuScreen *menu)
                                  .color = selected ? colors->selection_text : colors->text};
         TextStyle body_style = {.font = theme->fonts.body,
                                 .color = selected ? colors->selection_text : colors->text_secondary};
-        int label_x = card.x + (portrait ? 54 : 46);
-        int label_width = card.width - (label_x - card.x) - 10;
+        int label_x = card.x + (portrait ? 38 : 46);
+        int label_width = card.width - (label_x - card.x) - (portrait ? 6 : 10);
         const char *value = menu->model.detail != NULL
                                 ? menu->model.detail(menu->model.context, index)
                                 : NULL;
         bool opens = menu->model.opens != NULL &&
                      menu->model.opens(menu->model.context, index);
-        bool two_lines = value != NULL;
-        Rect title_area = two_lines
-                              ? (Rect){label_x, card.y + (portrait ? 27 : 7), label_width, 20}
-                              : (Rect){label_x, card.y, label_width, card.height};
+        bool two_lines = value != NULL && portrait;
+        int value_width = value != NULL ? text_width(body_style.font, value) : 0;
+        int title_width = two_lines ? label_width : label_width - (value != NULL ? value_width + 10 : 0);
+        int content_top = card.y + (card.height - 42) / 2;
+        Rect title_area = two_lines ? (Rect){label_x, content_top, title_width, 20}
+                                    : (Rect){label_x, card.y, title_width, card.height};
         label_draw(&cards, title_style,
                    (Label){.area = title_area,
                            .text = menu->model.label(menu->model.context, index)});
         if (value != NULL) {
-            Rect area = {label_x, card.y + (portrait ? 51 : 27), label_width, 18};
+            Rect area = {card.x + card.width - value_width - 10,
+                         portrait ? content_top + 24 : card.y + (card.height - 18) / 2,
+                         value_width, 18};
             label_draw(&cards, body_style, (Label){.area = area, .text = value});
         } else if (opens) {
             int chevron_width = text_width(value_style.font, CHEVRON);

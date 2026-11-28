@@ -510,7 +510,7 @@ static void root_status_blocks_track_bluetooth_and_root(void)
     wait_ms(300);
     CHECK(fake_hal_pixel(276, 8) == DEFAULT_THEME.colors->text_tertiary);
     CHECK(fake_hal_pixel(289, 8) == DEFAULT_THEME.colors->text_tertiary);
-    CHECK(fake_hal_pixel(302, 8) == DEFAULT_THEME.colors->background);
+    CHECK(fake_hal_pixel(302, 8) == DEFAULT_THEME.colors->text_tertiary);
     CHECK(fake_hal_pixel(10, 10) == all_blue);
     CHECK(fake_hal_pixel(23, 10) == DEFAULT_THEME.colors->divider);
     fake_hal_bluetooth()->state = HAL_BLUETOOTH_CONNECTED;
@@ -534,6 +534,39 @@ static void status_blocks_draw_flat_squares(void)
     CHECK(canvas_pixel_at(&canvas, 10, 10) == COLOR_RGB(47, 168, 255));
     CHECK(canvas_pixel_at(&canvas, 19, 19) == COLOR_RGB(47, 168, 255));
     CHECK(canvas_pixel_at(&canvas, 20, 20) == COLOR_RGB(10, 10, 10));
+}
+
+static void status_mode_block_centers_the_one(void)
+{
+    static Color pixels[HAL_DISPLAY_WIDTH * HAL_DISPLAY_HEIGHT];
+    Canvas canvas = canvas_make(pixels, (Rect){0, 0, HAL_DISPLAY_WIDTH, HAL_DISPLAY_HEIGHT});
+    canvas_clear(&canvas, COLOR_RGB(250, 250, 249));
+    lite_status_mode_draw(&canvas, (Point){10, 10}, COLOR_RGB(139, 92, 246), '1');
+    CHECK(canvas_pixel_at(&canvas, 10, 10) == COLOR_RGB(139, 92, 246));
+    CHECK(canvas_pixel_at(&canvas, 15, 12) == COLOR_RGB(255, 255, 255));
+    CHECK(canvas_pixel_at(&canvas, 14, 18) == COLOR_RGB(255, 255, 255));
+    CHECK(canvas_pixel_at(&canvas, 13, 12) == COLOR_RGB(139, 92, 246));
+}
+
+static void status_mode_block_cycles_gray_one_and_purple(void)
+{
+    start_app_with_library();
+    hold(KEY_BACK);
+    wait_ms(200);
+    tap(KEY_PLAY);
+    wait_ms(200);
+    tap(KEY_BACK);
+    wait_ms(200);
+    CHECK(fake_hal_pixel(302, 8) == DEFAULT_THEME.colors->text_tertiary);
+    CHECK(fake_hal_pixel(307, 10) == COLOR_RGB(255, 255, 255));
+    hold(KEY_BACK);
+    wait_ms(200);
+    tap(KEY_PLAY);
+    wait_ms(200);
+    tap(KEY_BACK);
+    wait_ms(200);
+    CHECK(fake_hal_pixel(302, 8) == COLOR_RGB(139, 92, 246));
+    CHECK(fake_hal_pixel(307, 10) == COLOR_RGB(139, 92, 246));
 }
 
 static void now_playing_has_no_time_or_thumb(void)
@@ -575,7 +608,7 @@ static void now_playing_uses_bt_chip_with_controls(void)
     wait_ms(300);
     CHECK(fake_hal_pixel(278, 10) == COLOR_RGB(15, 138, 219));
     CHECK(fake_hal_pixel(291, 10) == COLOR_RGB(245, 158, 11));
-    CHECK(fake_hal_pixel(302, 10) == COLOR_RGB(139, 92, 246));
+    CHECK(fake_hal_pixel(302, 10) == DEFAULT_THEME.colors->text_tertiary);
     CHECK(fake_hal_pixel(8, 6) != COLOR_RGB(0, 111, 238));
 }
 
@@ -610,9 +643,9 @@ static void the_sleep_quick_card_counts_down(void)
     move_down(1);
     tap(KEY_PLAY);
     wait_ms(100);
-    unsigned before = area_hash(8, 83, 304, 50);
+    unsigned before = area_hash(8, 77, 304, 44);
     wait_ms(1000);
-    unsigned after = area_hash(8, 83, 304, 50);
+    unsigned after = area_hash(8, 77, 304, 44);
     CHECK(before != after);
 }
 
@@ -868,17 +901,19 @@ static void settings_starts_on_home(void)
     hold(KEY_BACK);
     wait_ms(300);
     CHECK(title_is("Settings"));
-    CHECK(area_has_color(16, 42, 24, 24, COLOR_RGB(255, 255, 255)));
-    CHECK(area_has_color(16, 96, 24, 24, COLOR_RGB(99, 102, 241)));
-    CHECK(area_has_color(16, 150, 24, 12, COLOR_RGB(47, 168, 255)));
-    move_down(2);
+    CHECK(area_has_color(16, 39, 24, 24, COLOR_RGB(255, 255, 255)));
+    CHECK(area_has_color(16, 87, 24, 24, COLOR_RGB(99, 102, 241)));
+    CHECK(area_has_color(16, 135, 24, 24, COLOR_RGB(47, 168, 255)));
+    CHECK(area_has_color(240, 29, 70, 44, COLOR_RGB(255, 255, 255)));
+    CHECK(area_has_color(240, 77, 70, 44, DEFAULT_THEME.colors->text_secondary));
+    move_down(3);
     wait_ms(200);
-    CHECK(area_has_color(16, 42, 24, 24, COLOR_RGB(99, 102, 241)));
-    CHECK(fake_hal_pixel(160, 108) == DEFAULT_THEME.colors->selection_background);
-    move_down(2);
+    CHECK(area_has_color(16, 39, 24, 24, COLOR_RGB(99, 102, 241)));
+    CHECK(fake_hal_pixel(160, 147) == DEFAULT_THEME.colors->selection_background);
+    move_down(1);
     wait_ms(200);
-    CHECK(area_has_color(16, 42, 24, 24, COLOR_RGB(53, 199, 232)));
-    CHECK(fake_hal_pixel(160, 108) == DEFAULT_THEME.colors->selection_background);
+    CHECK(area_has_color(16, 39, 24, 24, COLOR_RGB(47, 168, 255)));
+    CHECK(fake_hal_pixel(160, 147) == DEFAULT_THEME.colors->selection_background);
 }
 
 static void landscape_settings_has_no_title(void)
@@ -1014,13 +1049,13 @@ static void settings_short_press_cycles_value(void)
     start_app_with_library();
     hold(KEY_BACK);
     wait_ms(300);
-    unsigned before = area_hash(8, 29, 304, 50);
+    unsigned before = area_hash(8, 29, 304, 44);
     int depth = app_screen_depth();
     tap(KEY_PLAY);
     wait_ms(100);
     CHECK(title_is("Settings"));
     CHECK_EQUAL(depth, app_screen_depth());
-    CHECK(area_hash(8, 29, 304, 50) != before);
+    CHECK(area_hash(8, 29, 304, 44) != before);
 }
 
 static void settings_subpage_opens(void)
@@ -1053,13 +1088,13 @@ static void now_playing_uses_a_status_mode_block(void)
     open_all_songs_and_play();
     wait_ms(300);
     CHECK(!area_has_color(294, 24, 18, 18, COLOR_RGB(0, 111, 238)));
-    CHECK(fake_hal_pixel(302, 10) == COLOR_RGB(139, 92, 246));
-    CHECK(fake_hal_pixel(304, 10) == COLOR_RGB(255, 255, 255));
+    CHECK(fake_hal_pixel(302, 10) == DEFAULT_THEME.colors->text_tertiary);
+    CHECK(fake_hal_pixel(304, 10) == DEFAULT_THEME.colors->text_tertiary);
     CHECK(!area_has_color(8, 64, 304, 18, COLOR_RGB(0, 111, 238)));
     CHECK(fake_hal_pixel(40, 145) == DEFAULT_THEME.colors->divider);
     tap(KEY_PLAY);
     wait_ms(300);
-    CHECK(fake_hal_pixel(302, 10) != COLOR_RGB(139, 92, 246));
+    CHECK(fake_hal_pixel(302, 10) == DEFAULT_THEME.colors->text_tertiary);
 }
 
 static void all_songs_long_play_opens_song_actions(void)
@@ -1349,8 +1384,8 @@ static void portrait_now_playing_icons(void)
     switch_orientation_to_portrait();
     open_all_songs_and_play();
     wait_ms(300);
-    CHECK(fake_hal_pixel(152, 10) == COLOR_RGB(139, 92, 246));
-    CHECK(fake_hal_pixel(154, 10) == COLOR_RGB(255, 255, 255));
+    CHECK(fake_hal_pixel(152, 10) == DEFAULT_THEME.colors->text_tertiary);
+    CHECK(fake_hal_pixel(154, 10) == DEFAULT_THEME.colors->text_tertiary);
     CHECK(!area_has_color(144, 24, 18, 18, COLOR_RGB(0, 111, 238)));
     CHECK(fake_hal_pixel(40, 289) == DEFAULT_THEME.colors->divider);
 }
@@ -1417,6 +1452,8 @@ int main(void)
         TEST_CASE(category_dots_have_no_cardinal_spikes),
         TEST_CASE(dark_palette_and_borders),
         TEST_CASE(status_blocks_draw_flat_squares),
+        TEST_CASE(status_mode_block_centers_the_one),
+        TEST_CASE(status_mode_block_cycles_gray_one_and_purple),
         TEST_CASE(settings_can_switch_to_portrait),
         TEST_CASE(settings_can_switch_to_portrait_flipped),
         TEST_CASE(settings_can_switch_to_dark),
