@@ -899,26 +899,8 @@ static ScreenAction open_group(void *context)
 static void settings_show_category(SettingsScreens *screens, int group, int selected,
                                    uint32_t now_ms)
 {
-    int previous_count = screens->menu.config.item_count;
-    int previous_selected = screens->menu.list.selected;
-    int previous_top = screens->menu.list.top;
     screens->previous_group = screens->shown;
-    if (previous_count > SETTINGS_GROUP_ROWS_MAX) {
-        previous_count = SETTINGS_GROUP_ROWS_MAX;
-    }
-    for (int index = 0; index < previous_count; index++) {
-        screens->previous_rows[index] = screens->menu.config.items[index];
-    }
-    screens->previous_menu.now_ms = now_ms;
-    MenuConfig previous = {.title = i18n_text(STR_MENU_SETTINGS),
-                           .items = screens->previous_rows,
-                           .item_count = previous_count,
-                           .theme = screens->theme};
-    menu_screen_init(&screens->previous_menu, previous);
-    screens->previous_menu.list.selected = previous_selected;
-    screens->previous_menu.list.top = previous_top;
-    screens->previous_menu.list.visible_rows = screens->menu.list.visible_rows;
-    screens->transitioning = previous_count > 0;
+    screens->transitioning = true;
     screens->transition_started_ms = now_ms;
 
     screens->shown = (uint8_t)group;

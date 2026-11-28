@@ -30,11 +30,11 @@ struct Screen {
     bool select_on_press;
     bool overlay;
     bool menu_consumes;
-    bool double_menu_enabled;
-    void *double_menu_context;
+    bool long_menu_enabled;
+    void *long_menu_context;
     void (*enter)(void *context, uint32_t now_ms);
     ScreenAction (*handle_key)(void *context, KeyEvent event, uint32_t now_ms);
-    ScreenAction (*double_menu)(void *context, uint32_t now_ms);
+    ScreenAction (*long_menu)(void *context, uint32_t now_ms);
     void (*update)(void *context, uint32_t now_ms);
     void (*draw)(void *context, Canvas *canvas);
 };
