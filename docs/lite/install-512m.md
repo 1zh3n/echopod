@@ -21,7 +21,7 @@ The 512 MB updater scans the card root for:
 It does **not** scan `HIFIEC90.IMG`. Copy the build to the card root and rename it, for example:
 
 ```text
-build/release-lite/HIFIEC90.IMG  ->  /MINIV957.IMG
+build/release-lite/HIFIEC90.IMG  ->  /MINIV958.IMG
 ```
 
 Then use the player's updater.
@@ -36,9 +36,13 @@ cmake --build --preset release-lite
 ## Current build
 
 ```text
-image:  MINIV957.IMG
-sha256: cd58010c7c586fa8c8c3b7d2a99897be13368849f57f3e63a76dd1e55834add3
+image:  MINIV958.IMG
+sha256: de625aedc403db1ba5aead8603efa7bbc289d5d21b2f7c86163637af5d68e534
 ```
+
+`MINIV958` sorts leading articles literally: "The End of the World" now falls under T, not E.
+The C sort key and the PC indexer both changed; an existing library needs a rescan. An
+existing card's library order stays old until that rescan.
 
 `MINIV957` gives the five Settings rows distinct dot colours: orange, indigo, blue, cyan and
 purple, so adjacent rows no longer share a blue.
@@ -137,6 +141,7 @@ The incremental images for this pass are:
 | `MINIV955` | Random mode cycle fix, Date/Time card layout, yellow edit value | `1ab6ae94dabc402f07b3974571bd26f96e813f9f882741d50bb0f6425d7fe798` |
 | `MINIV956` | list subpage inset, category selection memory, Date/Time edit preservation, sleep countdown and dark divider fixes | `7bddbdc05f4d46825871a90be24b261fda08061359365502a7d44549e1d55dd4` |
 | `MINIV957` | five distinct Settings dot colours | `cd58010c7c586fa8c8c3b7d2a99897be13368849f57f3e63a76dd1e55834add3` |
+| `MINIV958` | literal leading-article sorting; "The ..." under T | `de625aedc403db1ba5aead8603efa7bbc289d5d21b2f7c86163637af5d68e534` |
 
 The 8 GB model is not supported.
 
@@ -145,9 +150,9 @@ The 8 GB model is not supported.
 - Host tests: 168/168 passed (`ctest --preset dev -E "^format$"`).
 - Lite panel tests: 81/81 passed.
 - `release-lite` build and updater check valid.
-- Headroom: code 136,904 / 157,292 bytes (20,388 free); loaded total 409,584 / 437,600 bytes
-  (28,016 free); resident tables 18,236 / 18,432 (196 free); rescan overlay 85,400 / 86,016
-  (616 free).
+- Headroom: code 136,808 / 157,292 bytes (20,484 free); loaded total 409,488 / 437,600 bytes
+  (28,112 free); resident tables 18,236 / 18,432 (196 free); rescan overlay 85,328 / 86,016
+  (688 free).
 - Still pending: the final 512 MB device pass over sorting, boot, dots, headers, navigation,
   local motion, root switching, Settings cards, favorites and portrait-flipped.
 
