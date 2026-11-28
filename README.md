@@ -77,7 +77,7 @@ Full key table and A-Z geometry: [docs/lite/shortcuts.md](docs/lite/shortcuts.md
 - **Favorites:** path-hashed song list (up to 512), title + duration, A-Z jump, its own explicit
   queue and resume, Add/Remove in the song actions.
 - **Now Playing:** no time row, progress thumb or separate mode icon; when a track has no synced
-  lyrics, a small square bounces in the lyric area and changes colour at each edge, with a flat
+  lyrics, a small ball bounces in the lyric area and changes colour at each edge, with a flat
   progress bar, transient volume number, and the same top status row as every screen.
 - **Sorting:** GB2312 Chinese by pinyin and kana by romaji, interleaved with Latin under A-Z.
   Leading articles are literal: "The End of the World" sorts under T, not E.

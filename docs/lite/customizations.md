@@ -38,8 +38,9 @@ front end. The list below is the useful summary; the git history has the exact c
   keep their existing motion.
 - Now Playing has no separate playback-mode icon or persistent play/pause icon: the amber status
   block carries the playing state and the mode block carries random/loop/loop-one. When there
-  are no synced lyrics, a small 8×8 square bounces in the lyric area, changes colour at each
-  edge and freezes when paused. The progress bar sits lower, clear of the album line.
+  are no synced lyrics, a small 9×9 ball bounces in the lyric area, changes colour at each
+  edge and freezes when paused. The progress bar sits 18 px above the bottom, matching the
+  top status band; the transient volume number stays below it.
   The current/total time row and progress thumb are removed; only the volume number appears
   temporarily while changing volume.
 - Boot uses 200×112 landscape / 146×112 portrait stills with a 5px hard shadow, no card or frame.
