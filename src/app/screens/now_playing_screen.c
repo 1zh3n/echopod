@@ -992,20 +992,16 @@ static const IconMask *lite_mode_icon_18(PlaybackMode mode)
     return &LITE_ICON_LOOP_18;
 }
 
-static void draw_lite_state(const NowPlayingScreen *now_playing, Canvas *canvas)
+static void draw_lite_mode(const NowPlayingScreen *now_playing, Canvas *canvas)
 {
     if (!now_playing->status.has_track) {
         return;
     }
     const Theme *theme = now_playing->config.theme;
     PlaybackMode mode = player_playback_mode(now_playing->config.player);
-    int mode_x = theme_is_portrait(theme) ? 119 : 269;
-    int state_x = theme_is_portrait(theme) ? 144 : 294;
+    int mode_x = theme_is_portrait(theme) ? 144 : 294;
     lite_icon_draw_scaled(canvas, lite_mode_icon_18(mode), (Rect){mode_x, 24, 18, 18},
                           theme->colors->selection_background);
-    const IconMask *state = now_playing->status.state == PLAYER_PLAYING ? &LITE_ICON_PAUSE_18
-                                                                        : &LITE_ICON_PLAY_18;
-    lite_icon_draw_scaled(canvas, state, (Rect){state_x, 24, 18, 18}, theme->colors->text);
 }
 #endif
 
@@ -1339,7 +1335,7 @@ static void draw(void *context, Canvas *canvas)
     draw_badge(now_playing, canvas, &layout);
     draw_track_text(now_playing, canvas, &layout);
 #ifdef ECHO_LITE
-    draw_lite_state(now_playing, canvas);
+    draw_lite_mode(now_playing, canvas);
 #endif
     draw_progress(now_playing, canvas, &layout);
     draw_times(now_playing, canvas, &layout);

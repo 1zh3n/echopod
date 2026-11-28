@@ -1035,7 +1035,7 @@ static void refresh_lite_status(void)
 
 static Color status_color(const Theme *theme, Color color, bool active)
 {
-    return active ? color : color_blend(theme->colors->header_background, color, 90);
+    return active ? color : theme->colors->text_tertiary;
 }
 
 static void draw_lite_status_meter(Canvas *canvas, const Screen *screen)

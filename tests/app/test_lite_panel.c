@@ -505,13 +505,11 @@ static void root_status_blocks_track_bluetooth_and_root(void)
 {
     Color all_blue = COLOR_RGB(47, 168, 255);
     Color bluetooth = COLOR_RGB(15, 138, 219);
-    Color playing = COLOR_RGB(245, 158, 11);
     Color pink = COLOR_RGB(236, 72, 153);
-    Color header = DEFAULT_THEME.colors->header_background;
     start_app_with_library();
     wait_ms(300);
-    CHECK(fake_hal_pixel(289, 8) == color_blend(header, bluetooth, 90));
-    CHECK(fake_hal_pixel(302, 8) == color_blend(header, playing, 90));
+    CHECK(fake_hal_pixel(289, 8) == DEFAULT_THEME.colors->text_tertiary);
+    CHECK(fake_hal_pixel(302, 8) == DEFAULT_THEME.colors->text_tertiary);
     CHECK(fake_hal_pixel(10, 10) == all_blue);
     CHECK(fake_hal_pixel(23, 10) == DEFAULT_THEME.colors->divider);
     fake_hal_bluetooth()->state = HAL_BLUETOOTH_CONNECTED;
@@ -519,7 +517,7 @@ static void root_status_blocks_track_bluetooth_and_root(void)
     CHECK(fake_hal_pixel(289, 8) == bluetooth);
     fake_hal_bluetooth()->state = HAL_BLUETOOTH_OFF;
     wait_ms(300);
-    CHECK(fake_hal_pixel(289, 8) == color_blend(header, bluetooth, 90));
+    CHECK(fake_hal_pixel(289, 8) == DEFAULT_THEME.colors->text_tertiary);
     tap(KEY_BACK);
     wait_ms(300);
     CHECK(fake_hal_pixel(10, 10) == DEFAULT_THEME.colors->divider);
@@ -575,6 +573,7 @@ static void now_playing_uses_bt_chip_with_controls(void)
     fake_hal_bluetooth()->state = HAL_BLUETOOTH_CONNECTED;
     wait_ms(300);
     CHECK(fake_hal_pixel(294, 10) == COLOR_RGB(15, 138, 219));
+    CHECK(fake_hal_pixel(307, 10) == COLOR_RGB(245, 158, 11));
     CHECK(fake_hal_pixel(8, 6) != COLOR_RGB(0, 111, 238));
 }
 
@@ -1045,8 +1044,9 @@ static void now_playing_uses_native_18px_icons(void)
     start_app_with_library();
     open_all_songs_and_play();
     wait_ms(300);
-    CHECK(area_has_color(269, 24, 18, 18, COLOR_RGB(0, 111, 238)));
-    CHECK(area_has_color(294, 24, 18, 18, COLOR_RGB(10, 10, 10)));
+    CHECK(area_has_color(294, 24, 18, 18, COLOR_RGB(0, 111, 238)));
+    CHECK(!area_has_color(269, 24, 18, 18, COLOR_RGB(10, 10, 10)));
+    CHECK(!area_has_color(294, 24, 18, 18, COLOR_RGB(10, 10, 10)));
     CHECK(fake_hal_pixel(40, 139) == DEFAULT_THEME.colors->divider);
 }
 
@@ -1337,8 +1337,9 @@ static void portrait_now_playing_icons(void)
     switch_orientation_to_portrait();
     open_all_songs_and_play();
     wait_ms(300);
-    CHECK(area_has_color(119, 24, 18, 18, COLOR_RGB(0, 111, 238)));
-    CHECK(area_has_color(144, 24, 18, 18, COLOR_RGB(10, 10, 10)));
+    CHECK(area_has_color(144, 24, 18, 18, COLOR_RGB(0, 111, 238)));
+    CHECK(!area_has_color(119, 24, 18, 18, COLOR_RGB(10, 10, 10)));
+    CHECK(!area_has_color(144, 24, 18, 18, COLOR_RGB(10, 10, 10)));
     CHECK(fake_hal_pixel(40, 289) == DEFAULT_THEME.colors->divider);
 }
 
