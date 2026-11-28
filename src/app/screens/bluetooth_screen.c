@@ -7,6 +7,9 @@
 #include "ui/backdrop.h"
 #include "ui/header.h"
 #include "ui/label.h"
+#ifdef ECHO_LITE
+#include "ui/lite_frame.h"
+#endif
 #include "ui/list_navigation.h"
 #include "ui/navigation.h"
 
@@ -291,6 +294,10 @@ static int footer_lines(const BluetoothScreen *bluetooth)
 static Rect list_area(const BluetoothScreen *bluetooth)
 {
     Rect content = theme_content_area(bluetooth->theme);
+#ifdef ECHO_LITE
+    content.y = 28;
+    content.height -= 28;
+#endif
     content.height -= footer_lines(bluetooth) * FOOTER_LINE_HEIGHT + FOOTER_GAP;
     return content;
 }
@@ -363,6 +370,8 @@ static void update(void *context, uint32_t now_ms)
 {
     BluetoothScreen *bluetooth = context;
     bluetooth->now_ms = now_ms;
+    bluetooth->list.visible_rows =
+        list_area(bluetooth).height / bluetooth->theme->metrics.row_height;
     refresh(bluetooth);
 }
 
@@ -371,10 +380,11 @@ static void draw(void *context, Canvas *canvas)
     const BluetoothScreen *bluetooth = context;
     const Theme *theme = bluetooth->theme;
     Rect list = list_area(bluetooth);
+    Rect content = theme_content_area(theme);
     header_draw(canvas, theme, bluetooth->screen.title);
     list_view_draw(&bluetooth->list, canvas, list, bluetooth->now_ms);
     Rect footer = {list.x, list.y + list.height, list.width,
-                   theme_content_area(theme).height - list.height};
+                   content.y + content.height - list.y - list.height};
     backdrop_paint(canvas, theme, footer);
     for (int index = 0; index < footer_lines(bluetooth); index++) {
         TextStyle style = {.font = theme->fonts.small,

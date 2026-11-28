@@ -907,6 +907,7 @@ static ScreenAction open_category(void *context)
         return screen_action_none();
     }
     const SettingsGroupRows *rows = &GROUPS[group];
+    screens->selected[screens->shown] = (uint8_t)screens->menu.list.selected;
     screens->shown = (uint8_t)group;
     fill_rows(screens, screens->rows, rows->first, rows->count);
     screens->menu.config.items = screens->rows;
@@ -970,9 +971,11 @@ static const char *quick_sleep_value(const void *context)
         1000u;
     int length = 0;
     if (seconds >= 3600u) {
+        uint32_t minutes = seconds / 60u % 60u;
         value[length++] = (char)('0' + seconds / 3600u % 10);
         value[length++] = ':';
-        value[length++] = (char)('0' + seconds / 60u % 10);
+        value[length++] = (char)('0' + minutes / 10u);
+        value[length++] = (char)('0' + minutes % 10u);
     } else {
         if (seconds / 60u >= 10u) {
             value[length++] = (char)('0' + seconds / 60u / 10u % 10);

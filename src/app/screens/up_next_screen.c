@@ -267,9 +267,7 @@ static ScreenAction handle_key(void *context, KeyEvent event, uint32_t now_ms)
 static void set_visible_rows(UpNextScreen *up_next)
 {
 #ifdef ECHO_LITE
-    up_next->list.visible_rows = theme_is_portrait(up_next->config.theme)
-                                     ? 0
-                                     : lite_list_rows(up_next->config.theme);
+    up_next->list.visible_rows = lite_list_rows(up_next->config.theme);
 #else
     (void)up_next;
 #endif
@@ -306,13 +304,10 @@ static void draw(void *context, Canvas *canvas)
     const Theme *theme = up_next->config.theme;
     Rect content = theme_content_area(theme);
 #ifdef ECHO_LITE
-    bool paint_backdrop = theme_is_portrait(theme);
-    if (!paint_backdrop) {
-        content = lite_list_frame_no_title(canvas, theme);
-    } else {
-        header_draw(canvas, theme,
-                    i18n_text(up_next->chapters ? STR_MENU_CHAPTERS : STR_MENU_UP_NEXT));
-    }
+    bool paint_backdrop = false;
+    const char *title = i18n_text(up_next->chapters ? STR_MENU_CHAPTERS : STR_MENU_UP_NEXT);
+    content = theme_is_portrait(theme) ? lite_list_frame(canvas, theme, title)
+                                       : lite_list_frame_no_title(canvas, theme);
 #else
     bool paint_backdrop = true;
     header_draw(canvas, theme, i18n_text(up_next->chapters ? STR_MENU_CHAPTERS : STR_MENU_UP_NEXT));

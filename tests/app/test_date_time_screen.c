@@ -139,6 +139,19 @@ static void play_adjusts_the_chosen_field_and_values_wrap(void)
     CHECK(date_time.changed);
 }
 
+static void reentering_after_an_overlay_keeps_an_unsaved_edit(void)
+{
+    Screen *screen = open_screen(running_chip());
+    adjust(screen, FIELD_HOUR, 1);
+    CHECK_EQUAL(10, date_time.civil.hour);
+    screen->enter(screen->context, START_MS);
+    CHECK_EQUAL(10, date_time.civil.hour);
+    CHECK(date_time.changed);
+    ScreenAction action = tap(screen, KEY_BACK);
+    CHECK_EQUAL(SCREEN_ACTION_POP, action.type);
+    CHECK_EQUAL(10, fake_hal_time().hour);
+}
+
 static void back_while_adjusting_only_stops_adjusting(void)
 {
     Screen *screen = open_screen(running_chip());
@@ -245,6 +258,7 @@ int main(void)
         TEST_CASE(the_editor_starts_from_a_fixed_date_when_the_clock_is_unknown),
         TEST_CASE(volume_keys_move_between_fields_and_wrap),
         TEST_CASE(play_adjusts_the_chosen_field_and_values_wrap),
+        TEST_CASE(reentering_after_an_overlay_keeps_an_unsaved_edit),
         TEST_CASE(back_while_adjusting_only_stops_adjusting),
         TEST_CASE(leaving_without_a_change_sets_nothing),
         TEST_CASE(leaving_after_a_change_sets_the_clock_the_chip_and_the_zone),

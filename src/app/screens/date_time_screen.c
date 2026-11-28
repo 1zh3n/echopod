@@ -121,6 +121,8 @@ static ScreenAction leave(DateTimeScreen *screen, ScreenAction action)
     if (screen->changed) {
         save(screen);
     }
+    screen->changed = false;
+    screen->editing = false;
     return action;
 }
 
@@ -162,6 +164,9 @@ static void enter(void *context, uint32_t now_ms)
 {
     DateTimeScreen *screen = context;
     const DateTimeConfig *config = &screen->config;
+    if (screen->changed || screen->editing) {
+        return;
+    }
     if (!clock_store_now(config->clock, now_ms, &screen->civil)) {
         uint32_t build_day = hal_system_build_day();
         screen->civil = (WallCivil){.year = DEFAULT_YEAR, .month = 1, .day = 1};

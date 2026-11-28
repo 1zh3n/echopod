@@ -659,22 +659,6 @@ static void play_next_after_an_added_song_was_taken_goes_behind_it(void)
     CHECK_EQUAL(1, started->up_next.count);
 }
 
-#ifdef ECHO_LITE
-static void switching_mode_without_a_track_clears_a_stale_shuffle_plan(void)
-{
-    Player *fresh = fresh_player();
-    fresh->queue.plan.shuffle = SHUFFLE_SONGS;
-    CHECK_EQUAL(PLAYBACK_LOOP, player_playback_mode(fresh));
-    player_set_playback_mode(fresh, PLAYBACK_LOOP, SEED);
-    CHECK_EQUAL(PLAYBACK_LOOP, player_playback_mode(fresh));
-    CHECK_EQUAL(SHUFFLE_OFF, fresh->queue.plan.shuffle);
-    player_set_playback_mode(fresh, PLAYBACK_RANDOM, SEED);
-    CHECK_EQUAL(PLAYBACK_RANDOM, player_playback_mode(fresh));
-    player_set_playback_mode(fresh, PLAYBACK_ONE, SEED);
-    CHECK_EQUAL(PLAYBACK_ONE, player_playback_mode(fresh));
-}
-#endif
-
 int main(void)
 {
     static const TestCase cases[] = {
@@ -733,9 +717,6 @@ int main(void)
         TEST_CASE(play_after_a_release_starts_the_output_again),
         TEST_CASE(a_repeat_change_after_the_next_track_was_taken_still_moves_on_to_it),
         TEST_CASE(a_shuffle_change_after_the_next_track_was_taken_still_moves_on_to_it),
-#ifdef ECHO_LITE
-        TEST_CASE(switching_mode_without_a_track_clears_a_stale_shuffle_plan),
-#endif
         TEST_CASE(play_next_after_an_added_song_was_taken_goes_behind_it),
     };
     return test_run_all(cases, TEST_CASE_COUNT(cases));

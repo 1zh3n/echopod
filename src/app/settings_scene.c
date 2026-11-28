@@ -209,7 +209,7 @@ static bool settings_scene_draw(void *context, Canvas *canvas, MenuScreen *menu)
     CategoryVisual visual = CATEGORIES[group];
     int count = menu->model.count(menu->model.context);
     int selected = menu->list.selected;
-    int top = menu->list.top;
+    int top = list_view_top(&menu->list);
     bool portrait = theme_is_portrait(theme);
     Rect rows;
     int row_height;

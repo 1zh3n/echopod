@@ -289,7 +289,7 @@ static void draw_row(const ListView *view, Canvas *canvas, Row row, uint32_t now
         canvas_fill_rect(canvas,
                          (Rect){row.area.x + 12, row.area.y + row.area.height - 1,
                                 row.area.width - 16, 1},
-                         COLOR_RGB(209, 213, 219));
+                         view->theme->colors->divider);
     }
 #endif
 }

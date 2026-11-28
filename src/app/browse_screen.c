@@ -711,7 +711,7 @@ static void draw(void *context, Canvas *canvas)
     Rect rows = browse->query.kind == BROWSE_ALL_SONGS
                     ? lite_list_frame_no_title(canvas, theme)
                     : lite_list_frame(canvas, theme, browse->title);
-    browse->list.visible_rows = 5;
+    browse->list.visible_rows = lite_list_rows(theme);
     list_view_draw_over(&browse->list, canvas, rows, browse->now_ms);
 #else
     header_draw(canvas, theme, browse->title);

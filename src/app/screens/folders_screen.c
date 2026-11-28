@@ -12,6 +12,9 @@
 #include "library/spoken_path.h"
 #include "ui/header.h"
 #include "ui/list_navigation.h"
+#ifdef ECHO_LITE
+#include "ui/lite_frame.h"
+#endif
 
 enum {
     NUMBER_CAPACITY = 12,
@@ -204,10 +207,20 @@ static ScreenAction handle_key(void *context, KeyEvent event, uint32_t now_ms)
     return action;
 }
 
+static void set_visible_rows(FoldersScreen *folders)
+{
+#ifdef ECHO_LITE
+    folders->list.visible_rows = lite_list_rows(folders->config.theme);
+#else
+    (void)folders;
+#endif
+}
+
 static void enter(void *context, uint32_t now_ms)
 {
     FoldersScreen *folders = context;
     folders->now_ms = now_ms;
+    set_visible_rows(folders);
     list_view_select(&folders->list, 0, now_ms);
 }
 
@@ -215,14 +228,20 @@ static void update(void *context, uint32_t now_ms)
 {
     FoldersScreen *folders = context;
     folders->now_ms = now_ms;
+    set_visible_rows(folders);
 }
 
 static void draw(void *context, Canvas *canvas)
 {
     const FoldersScreen *folders = context;
     const Theme *theme = folders->config.theme;
+#ifdef ECHO_LITE
+    Rect area = lite_list_frame_no_title(canvas, theme);
+    list_view_draw_over(&folders->list, canvas, area, folders->now_ms);
+#else
     header_draw(canvas, theme, folders->screen.title);
     list_view_draw(&folders->list, canvas, theme_content_area(theme), folders->now_ms);
+#endif
 }
 
 Screen *folders_screen_init(FoldersScreen *folders, FoldersConfig config)

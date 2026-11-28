@@ -917,6 +917,44 @@ static void long_play_removes_a_song_favorite(void)
     CHECK_EQUAL(1, favorite_store.favorites.count);
 }
 
+static void settings_list_subpages_keep_the_status_row_clear(void)
+{
+    start_app_with_library();
+    hold(KEY_BACK);
+    wait_ms(200);
+    move_down(4);
+    tap(KEY_PLAY);
+    wait_ms(200);
+    move_down(6);
+    tap(KEY_PLAY);
+    wait_ms(200);
+    CHECK(fake_hal_pixel(20, 8) == DEFAULT_THEME.colors->background);
+    tap(KEY_BACK);
+    wait_ms(200);
+    for (int index = 0; index < 3; index++) {
+        tap(KEY_VOLUME_DOWN);
+    }
+    tap(KEY_PLAY);
+    wait_ms(200);
+    CHECK(fake_hal_pixel(20, 8) == DEFAULT_THEME.colors->background);
+}
+
+static void settings_category_remembers_its_row(void)
+{
+    start_app_with_library();
+    hold(KEY_BACK);
+    wait_ms(200);
+    move_down(2);
+    tap(KEY_PLAY);
+    wait_ms(200);
+    move_down(2);
+    tap(KEY_BACK);
+    wait_ms(200);
+    tap(KEY_PLAY);
+    wait_ms(200);
+    CHECK(fake_hal_pixel(100, 90) == DEFAULT_THEME.colors->selection_background);
+}
+
 static void settings_starts_on_home(void)
 {
     start_app_with_library();
@@ -1393,10 +1431,22 @@ static void dark_portrait_root_and_settings(void)
     CHECK(fake_hal_pixel(40, 16) == COLOR_RGB(11, 11, 13));
     CHECK(fake_hal_pixel(85, 110) == COLOR_RGB(23, 23, 28));
     CHECK(fake_hal_pixel(8, 30) == COLOR_RGB(82, 82, 91));
+    CHECK(fake_hal_pixel(40, 57) == COLOR_RGB(63, 63, 70));
 
     tap(KEY_PLAY);
     wait_ms(300);
     CHECK(title_is("Now Playing"));
+}
+
+static void portrait_up_next_uses_the_list_card(void)
+{
+    switch_orientation_to_portrait();
+    open_all_songs_and_play();
+    tap(KEY_MENU);
+    wait_ms(300);
+    CHECK(title_is("Up Next"));
+    CHECK(fake_hal_pixel(8, 40) == DEFAULT_THEME.colors->text);
+    CHECK(fake_hal_pixel(12, 42) == DEFAULT_THEME.colors->header_background);
 }
 
 static void portrait_now_playing_icons(void)
@@ -1478,6 +1528,7 @@ int main(void)
         TEST_CASE(settings_can_switch_to_portrait_flipped),
         TEST_CASE(settings_can_switch_to_dark),
         TEST_CASE(dark_portrait_root_and_settings),
+        TEST_CASE(portrait_up_next_uses_the_list_card),
         TEST_CASE(portrait_now_playing_icons),
         TEST_CASE(boot_has_portrait_still),
         TEST_CASE(charge_card_is_portrait),
@@ -1493,6 +1544,8 @@ int main(void)
         TEST_CASE(favorite_tracks_do_not_rescan_on_every_enter),
         TEST_CASE(favorite_tracks_refresh_when_the_store_changes),
         TEST_CASE(collecting_many_favorites_services_audio),
+        TEST_CASE(settings_list_subpages_keep_the_status_row_clear),
+        TEST_CASE(settings_category_remembers_its_row),
         TEST_CASE(settings_starts_on_home),
         TEST_CASE(landscape_settings_has_no_title),
         TEST_CASE(settings_category_back_returns_home),
