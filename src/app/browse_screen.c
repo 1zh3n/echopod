@@ -79,9 +79,13 @@ static void forget_rows(BrowseScreen *browse)
 static BrowseRowStamp row_stamp(const BrowseScreen *browse)
 {
     const BrowsePoolConfig *config = &browse->pool->config;
+#ifdef ECHO_LITE
+    return (BrowseRowStamp){.portrait = theme_is_portrait(config->theme)};
+#else
     return (BrowseRowStamp){.favorites_revision =
                                 config->favorites != NULL ? config->favorites->revision : 0,
                             .portrait = theme_is_portrait(config->theme)};
+#endif
 }
 
 static bool stamps_match(BrowseRowStamp first, BrowseRowStamp second)
@@ -113,7 +117,14 @@ static bool rows_current(const BrowseScreen *browse)
 
 static uint32_t source_position(const BrowseScreen *browse, int index)
 {
-    return browse->favorites_only ? browse->pool->favorite_albums[index] : (uint32_t)index;
+#ifdef ECHO_LITE
+    (void)browse;
+#else
+    if (browse->favorites_only) {
+        return browse->pool->favorite_albums[index];
+    }
+#endif
+    return (uint32_t)index;
 }
 
 static bool item_at(const BrowseScreen *browse, int index, BrowseItem *item)
@@ -712,7 +723,9 @@ void browse_pool_init(BrowsePool *pool, BrowsePoolConfig config)
 {
     pool->config = config;
     pool->row_uses = 0;
+#ifndef ECHO_LITE
     pool->favorites_collected = false;
+#endif
     for (int slot = 0; slot < BROWSE_ROW_CACHES; slot++) {
         pool->rows[slot] = (BrowseRows){.level = NO_LEVEL};
     }

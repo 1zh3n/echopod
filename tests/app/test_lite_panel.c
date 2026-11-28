@@ -418,6 +418,8 @@ static void home_middle_card_opens_favorites(void)
 {
     start_app_with_library();
     move_down(1);
+    wait_ms(300);
+    CHECK(area_has_color(130, 50, 60, 60, COLOR_RGB(236, 72, 153)));
     tap(KEY_PLAY);
     wait_ms(300);
     CHECK(title_is("Favorites"));

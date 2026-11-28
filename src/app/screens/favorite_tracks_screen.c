@@ -1,3 +1,4 @@
+#ifdef ECHO_LITE
 #include "screens/favorite_tracks_screen.h"
 
 #include <stdbool.h>
@@ -212,3 +213,4 @@ Screen *favorite_tracks_screen_init(FavoriteTracksScreen *favorites, FavoriteTra
     };
     return &favorites->screen;
 }
+#endif

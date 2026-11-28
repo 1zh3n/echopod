@@ -87,10 +87,12 @@ struct BrowsePool {
     BrowseRows rows[BROWSE_ROW_CACHES];
     uint32_t row_uses;
     BrowseScreen screens[BROWSE_DEPTH];
+#ifndef ECHO_LITE
     uint16_t favorite_albums[FAVORITES_CAPACITY];
     uint16_t favorite_count;
     bool favorites_collected;
     uint32_t favorites_revision;
+#endif
 #ifdef ECHO_LITE
     SectionJumpScreen section_jump;
 #endif
