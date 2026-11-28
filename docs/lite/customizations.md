@@ -8,14 +8,14 @@ front end. The list below is the useful summary; the git history has the exact c
 - 512 MB (SD NAND) port and build configuration.
 - Lite build (`ECHO_LITE`), no cover cache, no non-Lite diagnostics.
 - `release-lite` CMake preset.
-- Upstream EchoPod 0.13.2 playback, USB, FAT and HE-AAC fixes included.
+- Upstream EchoPod 0.14.0 512 MB support, playback, USB, FAT and HE-AAC fixes included.
 
 ## UI
 
 - Neo-brutalist Lite visual language: 2 px borders, hard shadows, flat colour badges.
 - No Home screen. All Songs and Favorites are roots; Short Back at the root switches them.
   The deferred root-tab icons are not drawn yet, so the existing list frames stay unchanged.
-- Song Favorites: a path-hashed list of up to 256 tracks, shown like All Songs (title + duration,
+- Song Favorites: a path-hashed list of up to 512 tracks, shown like All Songs (title + duration,
   A-Z jump), played as its own queue, with Add/Remove in the song actions menu and direct removal
   from the Favorites list. The list is built through a reusable TrackListScreen for future
   explicit track collections.
@@ -66,6 +66,8 @@ front end. The list below is the useful summary; the git history has the exact c
 ## Code and assets
 
 - Song favorites use `/.echo/favorite_tracks.bin`; album favorites stay available to non-Lite.
+  The Lite build removes the unused cover cache and raises the Favorites/queue/resume limits
+  to 512.
 - The Favorites queue is an explicit track list in `PlayQueue` and is saved in the resume file,
   so next/previous and restart stay inside Favorites.
 - Sort keys keep leading articles: "The End of the World" sorts under T. An existing

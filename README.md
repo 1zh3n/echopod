@@ -74,7 +74,7 @@ Full key table and A-Z geometry: [docs/lite/shortcuts.md](docs/lite/shortcuts.md
 - **Settings:** five compact rows with distinct orange/indigo/blue/cyan/purple dots and
   right-aligned values; four rows visible with the next peeking. Random/Sleep are direct;
   Sound/Display/System open category pages. Date/Time uses the same card.
-- **Favorites:** path-hashed song list (up to 256), title + duration, A-Z jump, its own explicit
+- **Favorites:** path-hashed song list (up to 512), title + duration, A-Z jump, its own explicit
   queue and resume, Add/Remove in the song actions.
 - **Now Playing:** no time row, progress thumb or separate mode icon; flat progress bar, lower
   spectrum, transient volume number, and the same top status row as every screen.
@@ -86,7 +86,7 @@ Full key table and A-Z geometry: [docs/lite/shortcuts.md](docs/lite/shortcuts.md
   start below the status row.
 - **Space work:** Lite icon masks moved to a glyph face; Lite theme-store/assets removed; unused
   paths dropped. Resident tables are close to full, so keep new table data small.
-- **Upstream:** current with EchoPod 0.13.2 when this README was written, including its playback,
+- **Upstream:** current with EchoPod 0.14.0 when this README was written, including its playback,
   USB, FAT and HE-AAC fixes.
 
 The boot chain, IDB, PMU firmware, fw2 and slot layout are not modified.

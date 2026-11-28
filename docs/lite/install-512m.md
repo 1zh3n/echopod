@@ -21,7 +21,7 @@ The 512 MB updater scans the card root for:
 It does **not** scan `HIFIEC90.IMG`. Copy the build to the card root and rename it, for example:
 
 ```text
-build/release-lite/HIFIEC90.IMG  ->  /MINIV958.IMG
+build/release-lite/HIFIEC90.IMG  ->  /MINIV959.IMG
 ```
 
 Then use the player's updater.
@@ -36,9 +36,14 @@ cmake --build --preset release-lite
 ## Current build
 
 ```text
-image:  MINIV958.IMG
-sha256: de625aedc403db1ba5aead8603efa7bbc289d5d21b2f7c86163637af5d68e534
+image:  MINIV959.IMG
+sha256: 84ca0de4501bbc858bdad3aa457cb97e40759211a6e221e03902bc6bc95b0988
 ```
+
+`MINIV959` syncs upstream EchoPod 0.14.0 and its 512 MB fixes, removes the unused Lite cover
+cache (about 67 KB of static RAM) and raises the Lite song-favorites limit from 256 to 512.
+The eMMC/SD-NAND start-up, updater and power-off changes come from upstream. An existing
+library still needs a rescan for the literal sorting.
 
 `MINIV958` sorts leading articles literally: "The End of the World" now falls under T, not E.
 The C sort key and the PC indexer both changed; an existing library needs a rescan. An
@@ -104,7 +109,7 @@ the time row and progress thumb but keeps the transient volume number.
 It also keeps the Favorites collection cache between root switches. Boot goes directly to All
 Songs; Short Back at the root switches to Favorites and back, and Long Back opens Settings. The root-tab icons are deferred,
 so the list frames and rows keep their existing appearance. Favorites is a path-hashed song list
-of up to 256 tracks that plays as its own queue and restores through the resume file. Long Play
+of up to 512 tracks that plays as its own queue and restores through the resume file. Long Play
 on a track in All Songs, albums, folders, playlists or Up Next opens Play Next / Add to Up Next /
 Add or Remove Favorites. Settings opens on five cards — Random mode, Sleep timer, Sound,
 Display, System — with no category dots; the status blocks are drawn inside each screen so they move
@@ -142,16 +147,17 @@ The incremental images for this pass are:
 | `MINIV956` | list subpage inset, category selection memory, Date/Time edit preservation, sleep countdown and dark divider fixes | `7bddbdc05f4d46825871a90be24b261fda08061359365502a7d44549e1d55dd4` |
 | `MINIV957` | five distinct Settings dot colours | `cd58010c7c586fa8c8c3b7d2a99897be13368849f57f3e63a76dd1e55834add3` |
 | `MINIV958` | literal leading-article sorting; "The ..." under T | `de625aedc403db1ba5aead8603efa7bbc289d5d21b2f7c86163637af5d68e534` |
+| `MINIV959` | upstream 0.14.0/512 MB fixes, Lite cover cache removed, 512 favorites | `84ca0de4501bbc858bdad3aa457cb97e40759211a6e221e03902bc6bc95b0988` |
 
 The 8 GB model is not supported.
 
 ## Verification
 
 - Host tests: 168/168 passed (`ctest --preset dev -E "^format$"`).
-- Lite panel tests: 81/81 passed.
+- Lite panel tests: 82/82 passed.
 - `release-lite` build and updater check valid.
-- Headroom: code 136,808 / 157,292 bytes (20,484 free); loaded total 409,488 / 437,600 bytes
-  (28,112 free); resident tables 18,236 / 18,432 (196 free); rescan overlay 85,328 / 86,016
+- Headroom: code 136,740 / 157,292 bytes (20,552 free); loaded total 342,108 / 437,600 bytes
+  (95,492 free); resident tables 18,236 / 18,432 (196 free); rescan overlay 85,328 / 86,016
   (688 free).
 - Still pending: the final 512 MB device pass over sorting, boot, dots, headers, navigation,
   local motion, root switching, Settings cards, favorites and portrait-flipped.

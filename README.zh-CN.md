@@ -65,7 +65,7 @@ MaskROM 恢复路径。
   未激活为中性灰；根列表左侧另有 All Songs/Favorites 分段条。
 - **Settings：** 五行紧凑首页，橙/靛蓝/蓝/青/紫五种圆点，值靠右；一次显示四行，下一行露出一部分。
   Random/Sleep 直接操作；Sound/Display/System 进入分类页。Date/Time 使用同一张卡片。
-- **Favorites：** 路径哈希歌曲列表（最多 256 首），歌名+时长、A-Z、独立队列和 resume；
+- **Favorites：** 路径哈希歌曲列表（最多 512 首），歌名+时长、A-Z、独立队列和 resume；
   歌曲操作里 Add/Remove。
 - **Now Playing：** 去掉时间行、进度 thumb 和独立模式图标；平进度条、下移的频谱、临时音量数字，
   顶部和所有页面共用同一状态栏。
@@ -76,7 +76,7 @@ MaskROM 恢复路径。
   Settings 子页面从状态栏下方开始。
 - **空间清理：** Lite 图标 mask 移到 glyph face；移除 Lite theme store/assets；删掉未使用路径。
   resident tables 余量很小，新增表数据要谨慎。
-- **上游：** 写这份说明时已合入 EchoPod 0.13.2，包括播放、USB、FAT 和 HE-AAC 修复。
+- **上游：** 写这份说明时已合入 EchoPod 0.14.0，包括播放、USB、FAT 和 HE-AAC 修复。
 
 没有修改启动链、IDB、PMU 固件、fw2 或 slot 布局。
 

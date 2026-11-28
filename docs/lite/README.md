@@ -25,7 +25,7 @@ It is not a general replacement firmware. The 8 GB model is not supported.
 - **UI:** Lite layout, Light/Dark, landscape/portrait/portrait-flipped.
 - **Build:** `release-lite` preset, image size and headroom recorded in
   [install-512m.md](install-512m.md).
-- **Upstream:** EchoPod 0.13.2 plus this fork's Lite changes.
+- **Upstream:** EchoPod 0.14.0 512 MB support and fixes, plus this fork's Lite changes.
 - **Boot chain:** boot chain, IDB, PMU firmware, fw2 and slot layout are not modified.
 
 ## Interaction at a glance
@@ -77,7 +77,7 @@ Full details and the A-Z grid geometry: [shortcuts.md](shortcuts.md).
 
 Favorites is a real track list, not an album shortcut:
 
-- path-hashed, up to 256 songs;
+- path-hashed, up to 512 songs;
 - title + duration, sorted by title, same A-Z/# jump as All Songs;
 - selecting a row starts its **own queue**, so next/previous stay in Favorites;
 - Long Play removes the selected song;
@@ -131,8 +131,10 @@ not device photos; see [design.md](design.md) for tokens and geometry.
 - **Sorting:** GB2312 pinyin and kana romaji interleaved with Latin under A-Z. Leading
   articles are literal, so "The End of the World" sorts under T; an existing library needs a
   rescan to pick up the new order.
-- **Space work:** Lite icon masks moved to the glyph face; Lite theme-store/assets removed;
-  unused Lite paths dropped. Resident tables have 196 bytes free, so keep new table data small.
+- **Space work:** the Lite build drops the unused cover cache (about 67 KB of static RAM), so
+  song Favorites can hold 512 tracks and the loaded total has about 95 KB free. Lite icon masks
+  moved to the glyph face; Lite theme-store/assets removed. Resident tables still have only
+  196 bytes free, so keep new table data small.
 - **Review fixes:** Settings categories remember their row; Date/Time preserves an unsaved edit
   across the Now Playing overlay; 90/120-minute sleep countdown formats correctly; dark-mode row
   separators follow the theme; portrait All Songs shows nine rows; list subpages stay below the
