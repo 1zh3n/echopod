@@ -136,3 +136,21 @@ and moves the same actions to long Menu:
 Assessed risks: the group actions are slower than double tap, Settings from a lettered list
 needs Long Back -> Home -> Settings, and long press is less discoverable. The proposal is
 recorded, not implemented.
+
+## Up Next stays a queue
+
+Up Next is not replaced by All Songs or Favorites. It is the playback queue view:
+
+- row 0 is the playing track;
+- rows after it are manually added tracks and the remaining queue;
+- for a book it becomes the chapter list;
+- it is the visible destination of Play Next / Add to Up Next;
+- selecting a row jumps within the current queue.
+
+All Songs and Favorites are already Home entries. Replacing Up Next with either would duplicate
+a browse list and remove the only view of what will play next, especially after shuffle or an
+album queue. The only gain would be a shortcut to All Songs/Favorites, which Home already
+provides.
+
+Possible small clarification later: section labels such as Playing / Added / Next, or a title
+that says Queue. That is cosmetic and not part of the current change.
