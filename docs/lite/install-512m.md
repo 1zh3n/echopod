@@ -21,7 +21,7 @@ The 512 MB updater scans the card root for:
 It does **not** scan `HIFIEC90.IMG`. Copy the build to the card root and rename it, for example:
 
 ```text
-build/release-lite/HIFIEC90.IMG  ->  /MINIV959.IMG
+build/release-lite/HIFIEC90.IMG  ->  /MINIV960.IMG
 ```
 
 Then use the player's updater.
@@ -36,9 +36,13 @@ cmake --build --preset release-lite
 ## Current build
 
 ```text
-image:  MINIV959.IMG
-sha256: 84ca0de4501bbc858bdad3aa457cb97e40759211a6e221e03902bc6bc95b0988
+image:  MINIV960.IMG
+sha256: 9ebc29a3cd3f620794bdc8847c906c555ecb37c3e8002fddb6b93c9ec3de75fd
 ```
+
+`MINIV960` keeps the 512-track Favorites/queue/resume format and also reads the older
+558-byte Lite resume file, so a resume saved before the capacity change is not lost; the next
+save writes the larger file.
 
 `MINIV959` syncs upstream EchoPod 0.14.0 and its 512 MB fixes, removes the unused Lite cover
 cache (about 67 KB of static RAM) and raises the Lite song-favorites limit from 256 to 512.
@@ -148,6 +152,7 @@ The incremental images for this pass are:
 | `MINIV957` | five distinct Settings dot colours | `cd58010c7c586fa8c8c3b7d2a99897be13368849f57f3e63a76dd1e55834add3` |
 | `MINIV958` | literal leading-article sorting; "The ..." under T | `de625aedc403db1ba5aead8603efa7bbc289d5d21b2f7c86163637af5d68e534` |
 | `MINIV959` | upstream 0.14.0/512 MB fixes, Lite cover cache removed, 512 favorites | `84ca0de4501bbc858bdad3aa457cb97e40759211a6e221e03902bc6bc95b0988` |
+| `MINIV960` | read old 558-byte Lite resume files | `9ebc29a3cd3f620794bdc8847c906c555ecb37c3e8002fddb6b93c9ec3de75fd` |
 
 The 8 GB model is not supported.
 

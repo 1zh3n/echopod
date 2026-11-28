@@ -67,7 +67,7 @@ front end. The list below is the useful summary; the git history has the exact c
 
 - Song favorites use `/.echo/favorite_tracks.bin`; album favorites stay available to non-Lite.
   The Lite build removes the unused cover cache and raises the Favorites/queue/resume limits
-  to 512.
+  to 512. Old 558-byte resume files still load once, then save in the larger format.
 - The Favorites queue is an explicit track list in `PlayQueue` and is saved in the resume file,
   so next/previous and restart stay inside Favorites.
 - Sort keys keep leading articles: "The End of the World" sorts under T. An existing
