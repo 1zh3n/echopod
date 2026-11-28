@@ -93,8 +93,9 @@ was prototyped and deferred because it duplicated that feedback and hid the Blue
   timer, Sound, Display, System. Landscape rows are 304×28 at y=29 with 4 px gaps; portrait
   rows are 154×52 at y=58 with 6 px gaps. The list scrolls four rows at a time with the next row
   peeking. Direct values are right-aligned (landscape on the same line, portrait on the second
-  line). Selected rows get the selection fill, border and white dot; the label uses the 16 px
-  title font and the value uses the small font.
+  line). The dots are orange, indigo, blue, cyan and purple in row order, so adjacent rows never
+  share a colour; selected rows get the selection fill, border and white dot. The label uses the
+  16 px title font and the value uses the small font.
 - Random and Sleep are direct items; Sound/Display/System open category pages.
 - Category pages: no text header landscape; the half-badge and glyph identify the category.
   Portrait keeps the category title and colour rule. Category dots are removed.

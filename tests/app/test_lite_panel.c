@@ -967,7 +967,10 @@ static void settings_starts_on_home(void)
     CHECK(area_has_color(18, 134, 10, 10, COLOR_RGB(53, 199, 232)));
     CHECK(area_has_color(240, 29, 70, 28, COLOR_RGB(255, 255, 255)));
     CHECK(area_has_color(240, 61, 70, 28, DEFAULT_THEME.colors->text_secondary));
-    move_down(4);
+    move_down(1);
+    wait_ms(200);
+    CHECK(area_has_color(18, 38, 10, 10, COLOR_RGB(255, 159, 28)));
+    move_down(3);
     wait_ms(200);
     CHECK(area_has_color(18, 38, 10, 10, COLOR_RGB(99, 102, 241)));
     CHECK(fake_hal_pixel(160, 139) == DEFAULT_THEME.colors->selection_background);
