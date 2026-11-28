@@ -95,4 +95,5 @@ front end. The list below is the useful summary; the git history has the exact c
   512 songs. See the future-ideas section in [README.md](README.md).
 - Private audio as a third list, a secret key sequence and encryption are design notes only.
   The recommended private-list design is a separate hidden folder/library, not a normal M3U or
-  folder list; a key sequence is UI hiding, not encryption. See [README.md](README.md#private-audio-as-a-third-list).
+  folder list; a key sequence is UI hiding, not encryption. See
+  [private-audio.md](private-audio.md).

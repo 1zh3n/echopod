@@ -219,7 +219,8 @@ current need.
 ### Private audio as a third list
 
 Goal: leave normal All Songs and Favorites untouched, copy recordings into a hidden folder, and
-browse and play them only from a third list. This is not implemented.
+browse and play them only from a third list. This is not implemented. The detailed design,
+including the capacity limit and the build options, is in [private-audio.md](private-audio.md).
 
 A folder or an M3U file alone is not enough. The main library indexes every supported audio file,
 and an M3U entry has to resolve to a library track. The main scanner already skips dot-prefixed
