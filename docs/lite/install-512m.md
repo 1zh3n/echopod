@@ -118,7 +118,14 @@ The incremental images for this pass are:
 | `MINIV945` | flat 10×10 status blocks, root markers, cleaner repeat icon | `0f6ee445ae536dc581bf88b4702e1d142666427e5332f7f78b0256164dc65f67` |
 | `MINIV946` | coloured shadowed blocks, global Now Playing status row, Favorites A-Z threshold removed | `e5bc90b5270c36686b2dc977196708abee84cd26cfac281ccf1d0abaeac313c5` |
 | `MINIV947` | original rounded segmented root meter on the left | `0736cf5f1c8956c8403ccac23786fbd020606609662744a1620eabada67903e0` |
-| `MINIV948` | larger Settings cards with icons, Bluetooth blue / playing amber | `1ab6ae94dabc402f07b3974571bd26f96e813f9f882741d50bb0f6425d7fe798` |
+| `MINIV948` | larger Settings cards with icons, Bluetooth blue / playing amber | `4914db5e1ea1f4205f962939d05cfdf305e8efbb0e137c81032abcffb207101b` |
+| `MINIV949` | gray status blocks when off, no persistent Now Playing play/pause icon | `0a48f8ac5b9c67d44a8c464fb2ae41cdf51729a2e3dbcd6795252f90847cb434` |
+| `MINIV950` | double-height scrolling Settings cards, `L`/`1`/`S` mode block, lower Now Playing spectrum | `1fe93f7ce39bc760a8276f1ba2003b639ca080633104d1b46386964b1b2e7aec` |
+| `MINIV951` | mode block immediately right of playback | `c31bc36b6073ab3e38c07a2c536e0e009423922672a62d314b006b832030230a` |
+| `MINIV952` | lower Settings cards, right-aligned values, always-visible mode block | `4cb75dc860ea517d95f0d0362ebdad6fc77ebd302f05d58672027af768faff16` |
+| `MINIV953` | compact Settings rows with colour dots, four visible | `01e4401a6e9c54420ce687676bc33582b2bbd43cd42cc660c1e9e1f90c94ad37` |
+| `MINIV954` | clearer Settings row spacing, 8 px dots, four visible | `f29398dd249ac3c1c8f2e29debebf6964bd8ae2727097b7755cbb8e5d9773aa7` |
+| `MINIV955` | Random mode cycle fix, Date/Time card layout, yellow edit value | `1ab6ae94dabc402f07b3974571bd26f96e813f9f882741d50bb0f6425d7fe798` |
 
 The 8 GB model is not supported.
 
